@@ -1,9 +1,29 @@
 # 0.9.<<VERSION>> Release
 
-- guid: e8fd116d-12ab-4281-aaf3-b6441056dd63
-- author: Mihael Pranjić
-- pubDate: Tue, 14 Mar 2023 10:05:11 +0100
-- shortDesc: Bugfix, Ubuntu Packages
+This release did not happen yet.
+
+Please always update this file within **every PR**:
+
+1. write what changed
+2. use links pointing to your change (See [Documentation Guidelines](/doc/contrib/documentation.md))
+3. add your name at the end of the line **Syntax:** _(your name)_
+
+For example, Max would write:
+
+```
+- Added a new [doc plugin](https://www.libelektra.org/plugins/doc) _(Max)_
+```
+
+Pick a random line to write your changes to minimize the chances of conflicts in this file.
+
+For non-trivial changes, you can choose to be part of the highlighted changes.
+Please write a highlight section in this case.
+
+After the horizontal line the release notes for the next version starts.
+
+---
+
+<<`scripts/generate-news-entry`>>
 
 We are proud to release Elektra 0.9.<<VERSION>>.
 
@@ -24,91 +44,439 @@ docker run -it elektra/elektra
 
 ## Highlights
 
-- The main purpose of this bugfix release is to fix a regression ([#4859](https://github.com/ElektraInitiative/libelektra/issues/4859)) introduced in Elektra 0.9.12.
-- We added fresh Ubuntu Jammy Jellyfish (22.04 LTS) and Kinetic Kudu (22.10) packages.
-- Please refer to the [Elektra 0.9.12](https://www.libelektra.org/news/0.9.12-release) release notes for a complete list of changes. Due to breaking changes since 0.9.11 we highly recommend to read the upgrade instructions.
+- <<HIGHLIGHT>>
+- <<HIGHLIGHT>>
+- <<HIGHLIGHT>>
+
+### <<HIGHLIGHT>>
+
+### <<HIGHLIGHT>>
+
+### <<HIGHLIGHT>>
 
 ## Plugins
 
 The following text lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-### spec
+### <<Plugin>>
 
-- Add hook placement to spec plugin in [README](../../src/plugins/spec/README.md) _(Tomislav Makar @tmakar)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
-### gopts
+### <<Plugin>>
 
-- Add hook placement to gopts plugin in [README](../../src/plugins/gopts/README.md) _(Tomislav Makar @tmakar)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
-### internalnotifications
+### <<Plugin>>
 
-- Add Maximilian Irlinger as maintainer _(Maximilian Irlinger @atmaxinger)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
-### logchange
+### <<Plugin>>
 
-- Add Maximilian Irlinger as maintainer _(Maximilian Irlinger @atmaxinger)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
-### dbus
+### <<Plugin>>
 
-- Add Maximilian Irlinger as maintainer _(Maximilian Irlinger @atmaxinger)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Plugin>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Plugin>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
 
-### tools
+### Compatibility
 
-- Check for hook placement on `plugin-check` _(Tomislav Makar @tmakar)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
-### merge
+### Core
 
-- Add Maximilian Irlinger as maintainer _(Maximilian Irilnger @atmaxinger)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Library>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Library>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Library>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Library>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Library>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+## Bindings
+
+Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme).
+This section keeps you up-to-date with the multi-language support provided by Elektra.
+
+### <<Binding>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Binding>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Binding>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Binding>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Binding>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+## Tools
+
+### <<Tool>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Tool>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Tool>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Tool>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+## Scripts
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Documentation
 
-- .github rework _(Markus Raab)_
-- Added `hook` to `placements` contract in [CONTRACT.ini](../CONTRACT.ini) _(Tomislav Makar @tmakar)_
-- Added `hook` information to [hooks.md](../dev/hooks.md)
-- Add correct error code in hosts readme _(Tomislav Makar)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Use Cases
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Decisions
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Tutorials
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Man Pages
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+## Tests
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### C
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Shell Recorder
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### C++
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+## Packaging
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Build
 
 ### CMake
 
-- Add `infos/maintainer` in plugins. _(Maximilian Irlinger @atmaxinger)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ### Docker
 
-- Add Ubuntu Jammy Jellyfish (22.04 LTS) images. _(Mihael Pranjić @mpranj)_
-- Add Ubuntu Kinetic Kudu (22.10) images. _(Mihael Pranjić @mpranj)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Infrastructure
 
 ### Jenkins
 
-- Add Ubuntu Jammy Jellyfish (22.04 LTS) builds and drop Bionic builds. _(Mihael Pranjić @mpranj)_
-- Add Ubuntu Kinetic Kudu (22.10) builds. _(Mihael Pranjić @mpranj)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Cirrus
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### GitHub Actions
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+## Website
+
+The website is generated from the repository, so all information about plugins, bindings and tools are always up-to-date. Furthermore, we changed:
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Outlook
 
 We are currently working on following topics:
 
-- 1.0 API _(Klemens Böswirth @kodebach)_ and _(Stefan Hanreich)_
-- Session recording and better Ansible integration _(Maximilian Irlinger @atmaxinger)_
-- Change tracking _(Maximilian Irlinger @atmaxinger)_
-- Rewriting tools in C _(@hannes99)_
-- Elektrify KDE and GNOME _(Mihael Pranjić @mpranj)_
-- Elektrify XFCE _(Richard Stöckl @Eiskasten)_
-- Mounting SQL databases _(Florian Lindner @flo91)_
-- Recording Configuration _(Maximilian Irlinger)_
-- Ansible-Elektra _(Lukas Hartl)_ and _(Maximilian Irlinger)_
-- Configure Olimex Base Images _(Maximilian Irlinger)_
-- Improving Build Server Infrastructure _(Lukas Hartl)_ and _(Maximilian Irlinger)_
-- Improve Java Development Experience _(Michael Tucek)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Statistics
 
-We closed [5 issues](https://github.com/ElektraInitiative/libelektra/milestone/34?closed=1) for this release.
+We closed [<<NUMISSUES>> issues](https://github.com/ElektraInitiative/libelektra/milestone/<<MILESTONE>>?closed=1) for this release.
 
 <<`scripts/git-release-stats 0.9.VER-1 0.9.<<VERSION>>`>>
 
