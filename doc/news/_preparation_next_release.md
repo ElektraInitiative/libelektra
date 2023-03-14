@@ -35,49 +35,30 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 ### spec
 
 - Add hook placement to spec plugin in [README](../../src/plugins/spec/README.md) _(Tomislav Makar @tmakar)_
-- <<TODO>>
-- <<TODO>>
 
 ### gopts
 
 - Add hook placement to gopts plugin in [README](../../src/plugins/gopts/README.md) _(Tomislav Makar @tmakar)_
-- <<TODO>>
-- <<TODO>>
 
 ### <<Plugin>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### <<Plugin>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### internalnotifications
 
-- <<TODO>>
 - Add Maximilian Irlinger as maintainer _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
 
 ### logchange
 
 - Add Maximilian Irlinger as maintainer _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
 
 ### <<Plugin>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### dbus
 
-- <<TODO>>
-- <<TODO>>
 - Add Maximilian Irlinger as maintainer _(Maximilian Irlinger @atmaxinger)_
 
 ## Libraries
@@ -86,57 +67,26 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Compatibility
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Core
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### tools
 
 - Check for hook placement on `plugin-check` _(Tomislav Makar @tmakar)_
-- <<TODO>>
-- <<TODO>>
 
 ### <<Library>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### <<Library>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### merge
 
-- <<TODO>>
 - Add Maximilian Irlinger as maintainer _(Maximilian Irilnger @atmaxinger)_
-- <<TODO>>
 
 ### <<Library>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Bindings
 
@@ -145,320 +95,103 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ### <<Binding>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### <<Binding>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### <<Binding>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### <<Binding>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### <<Binding>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Tools
 
 ### <<Tool>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### <<Tool>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### <<Tool>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### <<Tool>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Scripts
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Documentation
 
 - .github rework _(Markus Raab)_
 - Added `hook` to `placements` contract in [CONTRACT.ini](../CONTRACT.ini) _(Tomislav Makar @tmakar)_
 - Added `hook` information to [hooks.md](../dev/hooks.md)
-- <<TODO>>
 - Add correct error code in hosts readme _(Tomislav Makar)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Use Cases
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Decisions
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Tutorials
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Man Pages
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Tests
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### C
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Shell Recorder
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### C++
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Packaging
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Build
 
 ### CMake
 
-- <<TODO>>
-- <<TODO>>
 - Add `infos/maintainer` in plugins. _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Docker
 
-- <<TODO>>
-- <<TODO>>
 - Add Ubuntu Jammy Jellyfish (22.04 LTS) images. _(Mihael Pranjić @mpranj)_
 - Add Ubuntu Kinetic Kudu (22.10) images. _(Mihael Pranjić @mpranj)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Infrastructure
 
 ### Jenkins
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 - Add Ubuntu Jammy Jellyfish (22.04 LTS) builds and drop Bionic builds. _(Mihael Pranjić @mpranj)_
 - Add Ubuntu Kinetic Kudu (22.10) builds. _(Mihael Pranjić @mpranj)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Cirrus
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### GitHub Actions
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Website
 
 The website is generated from the repository, so all information about plugins, bindings and tools are always up-to-date. Furthermore, we changed:
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Outlook
 
 We are currently working on following topics:
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Statistics
 
