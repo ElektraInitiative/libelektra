@@ -196,13 +196,13 @@ def dockerInit() {
     )
 
     DOCKER_IMAGES.jammy = dockerUtils.createDockerImageDesc(
-      'ubuntu-jammy, dockerUtils.&idTesting,
+      'ubuntu-jammy', dockerUtils.&idTesting,
       './scripts/docker/ubuntu/jammy',
       './scripts/docker/ubuntu/jammy/Dockerfile'
     )
 
     DOCKER_IMAGES.kinetic = dockerUtils.createDockerImageDesc(
-      'ubuntu-kinetic, dockerUtils.&idTesting,
+      'ubuntu-kinetic', dockerUtils.&idTesting,
       './scripts/docker/ubuntu/kinetic',
       './scripts/docker/ubuntu/kinetic/Dockerfile'
     )
