@@ -40,12 +40,6 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 
 - Add hook placement to gopts plugin in [README](../../src/plugins/gopts/README.md) _(Tomislav Makar @tmakar)_
 
-### <<Plugin>>
-
-
-### <<Plugin>>
-
-
 ### internalnotifications
 
 - Add Maximilian Irlinger as maintainer _(Maximilian Irlinger @atmaxinger)_
@@ -53,9 +47,6 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 ### logchange
 
 - Add Maximilian Irlinger as maintainer _(Maximilian Irlinger @atmaxinger)_
-
-### <<Plugin>>
-
 
 ### dbus
 
@@ -65,65 +56,13 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
 
-### Compatibility
-
-
-### Core
-
-
 ### tools
 
 - Check for hook placement on `plugin-check` _(Tomislav Makar @tmakar)_
 
-### <<Library>>
-
-
-### <<Library>>
-
-
 ### merge
 
 - Add Maximilian Irlinger as maintainer _(Maximilian Irilnger @atmaxinger)_
-
-### <<Library>>
-
-
-## Bindings
-
-Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme).
-This section keeps you up-to-date with the multi-language support provided by Elektra.
-
-### <<Binding>>
-
-
-### <<Binding>>
-
-
-### <<Binding>>
-
-
-### <<Binding>>
-
-
-### <<Binding>>
-
-
-## Tools
-
-### <<Tool>>
-
-
-### <<Tool>>
-
-
-### <<Tool>>
-
-
-### <<Tool>>
-
-
-## Scripts
-
 
 ## Documentation
 
@@ -131,33 +70,6 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Added `hook` to `placements` contract in [CONTRACT.ini](../CONTRACT.ini) _(Tomislav Makar @tmakar)_
 - Added `hook` information to [hooks.md](../dev/hooks.md)
 - Add correct error code in hosts readme _(Tomislav Makar)_
-
-### Use Cases
-
-
-### Decisions
-
-
-### Tutorials
-
-
-### Man Pages
-
-
-## Tests
-
-
-### C
-
-
-### Shell Recorder
-
-
-### C++
-
-
-## Packaging
-
 
 ## Build
 
@@ -177,25 +89,26 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Add Ubuntu Jammy Jellyfish (22.04 LTS) builds and drop Bionic builds. _(Mihael Pranjić @mpranj)_
 - Add Ubuntu Kinetic Kudu (22.10) builds. _(Mihael Pranjić @mpranj)_
 
-### Cirrus
-
-
-### GitHub Actions
-
-
-## Website
-
-The website is generated from the repository, so all information about plugins, bindings and tools are always up-to-date. Furthermore, we changed:
-
-
 ## Outlook
 
 We are currently working on following topics:
 
+- 1.0 API _(Klemens Böswirth @kodebach)_ and _(Stefan Hanreich)_
+- Session recording and better Ansible integration _(Maximilian Irlinger @atmaxinger)_
+- Change tracking _(Maximilian Irlinger @atmaxinger)_
+- Rewriting tools in C _(@hannes99)_
+- Elektrify KDE and GNOME _(Mihael Pranjić @mpranj)_
+- Elektrify XFCE _(Richard Stöckl @Eiskasten)_
+- Mounting SQL databases _(Florian Lindner @flo91)_
+- Recording Configuration _(Maximilian Irlinger)_
+- Ansible-Elektra _(Lukas Hartl)_ and _(Maximilian Irlinger)_
+- Configure Olimex Base Images _(Maximilian Irlinger)_
+- Improving Build Server Infrastructure _(Lukas Hartl)_ and _(Maximilian Irlinger)_
+- Improve Java Development Experience _(Michael Tucek)_
 
 ## Statistics
 
-We closed [<<NUMISSUES>> issues](https://github.com/ElektraInitiative/libelektra/milestone/<<MILESTONE>>?closed=1) for this release.
+We closed [5 issues](https://github.com/ElektraInitiative/libelektra/milestone/34?closed=1) for this release.
 
 <<`scripts/git-release-stats 0.9.VER-1 0.9.<<VERSION>>`>>
 
