@@ -20,9 +20,6 @@ struct _TimeofdayInfo
 {
 	struct timeval start;
 	struct timeval last;
-	int nrget;
-	int nrset;
-	int nrerr;
 };
 
 typedef struct _TimeofdayInfo TimeofdayInfo;
@@ -31,5 +28,6 @@ int elektraTimeofdayOpen (Plugin * handle, Key *);
 int elektraTimeofdayClose (Plugin * handle, Key *);
 int elektraTimeofdayGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraTimeofdaySet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraTimeofdayCommit (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraTimeofdayError (Plugin * handle, KeySet * ks, Key * parentKey);
 Plugin * ELEKTRA_PLUGIN_EXPORT;

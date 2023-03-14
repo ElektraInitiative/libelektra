@@ -107,17 +107,6 @@ int elektraTimeofdayGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	char t[ARRAY_LENGTH];
 	TimeofdayInfo * ti = elektraPluginGetData (handle);
-	const char * position = "get";
-
-	ti->nrset = 0;
-	++ti->nrget;
-	if (ti->nrget == 1)
-		position = "pregetstorage";
-	else if (ti->nrget == 2)
-	{
-		ti->nrget = 0;
-		position = "postgetstorage";
-	}
 
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/timeofday"))
 	{
@@ -128,7 +117,7 @@ int elektraTimeofdayGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			keyNew ("system:/elektra/modules/timeofday/exports/close", KEY_FUNC, elektraTimeofdayClose, KEY_END),
 			keyNew ("system:/elektra/modules/timeofday/exports/get", KEY_FUNC, elektraTimeofdayGet, KEY_END),
 			keyNew ("system:/elektra/modules/timeofday/exports/set", KEY_FUNC, elektraTimeofdaySet, KEY_END),
-			keyNew ("system:/elektra/modules/timeofday/exports/commit", KEY_FUNC, elektraTimeofdaySet, KEY_END),
+			keyNew ("system:/elektra/modules/timeofday/exports/commit", KEY_FUNC, elektraTimeofdayCommit, KEY_END),
 			keyNew ("system:/elektra/modules/timeofday/exports/error", KEY_FUNC, elektraTimeofdayError, KEY_END),
 #include "readme_timeofday.c"
 			keyNew ("system:/elektra/modules/timeofday/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
@@ -144,6 +133,20 @@ int elektraTimeofdayGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		return 1;
 	}
 
+	const char * position;
+	switch (elektraPluginGetPhase (handle))
+	{
+	case ELEKTRA_KDB_GET_PHASE_PRE_STORAGE:
+		position = "get/prestorage";
+		break;
+	case ELEKTRA_KDB_GET_PHASE_POST_STORAGE:
+		position = "get/poststorage";
+		break;
+	default:
+		position = "get/???";
+		break;
+	}
+
 	fprintf (stderr, "get\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), position);
 
 	return 1;
@@ -153,21 +156,42 @@ int elektraTimeofdaySet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 {
 	char t[ARRAY_LENGTH];
 	TimeofdayInfo * ti = elektraPluginGetData (handle);
-	const char * position = "set";
+	const char * position;
 
-	ti->nrget = 0;
-	++ti->nrset;
-	if (ti->nrset == 1)
-		position = "presetstorage";
-	else if (ti->nrset == 2)
-		position = "precommit";
-	else if (ti->nrset == 3)
+	switch (elektraPluginGetPhase (handle))
 	{
-		ti->nrset = 0;
-		position = "postcommit";
+	case ELEKTRA_KDB_SET_PHASE_PRE_STORAGE:
+		position = "set/prestorage";
+		break;
+	default:
+		position = "set/???";
+		break;
+	}
+	fprintf (stderr, "set\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), position);
+
+	return 1;
+}
+
+int elektraTimeofdayCommit (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+{
+	char t[ARRAY_LENGTH];
+	TimeofdayInfo * ti = elektraPluginGetData (handle);
+	const char * position;
+
+	switch (elektraPluginGetPhase (handle))
+	{
+	case ELEKTRA_KDB_SET_PHASE_PRE_COMMIT:
+		position = "set/precommit";
+		break;
+	case ELEKTRA_KDB_SET_PHASE_POST_COMMIT:
+		position = "set/postcommit";
+		break;
+	default:
+		position = "set/???";
+		break;
 	}
 
-	fprintf (stderr, "set\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), position);
+	fprintf (stderr, "commit\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), position);
 
 	return 1;
 }
@@ -176,20 +200,21 @@ int elektraTimeofdayError (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Ke
 {
 	char t[ARRAY_LENGTH];
 	TimeofdayInfo * ti = elektraPluginGetData (handle);
-	const char * position = "error";
+	const char * position;
 
-	ti->nrset = 0;
-	ti->nrget = 0;
-	++ti->nrerr;
-	if (ti->nrerr == 1)
-		position = "prerollback";
-	else if (ti->nrerr == 2)
+	switch (elektraPluginGetPhase (handle))
 	{
-		ti->nrerr = 0;
-		position = "postrollback";
+	case ELEKTRA_KDB_SET_PHASE_PRE_ROLLBACK:
+		position = "set/prerollback";
+		break;
+	case ELEKTRA_KDB_SET_PHASE_POST_ROLLBACK:
+		position = "set/postrollback";
+		break;
+	default:
+		position = "set/???";
+		break;
 	}
-
-	fprintf (stderr, "err\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), position);
+	fprintf (stderr, "error\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), position);
 
 	return 1;
 }
@@ -202,7 +227,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 		ELEKTRA_PLUGIN_CLOSE,	&elektraTimeofdayClose,
 		ELEKTRA_PLUGIN_GET,	&elektraTimeofdayGet,
 		ELEKTRA_PLUGIN_SET,	&elektraTimeofdaySet,
-		ELEKTRA_PLUGIN_COMMIT,	&elektraTimeofdaySet,
+		ELEKTRA_PLUGIN_COMMIT,	&elektraTimeofdayCommit,
 		ELEKTRA_PLUGIN_ERROR,	&elektraTimeofdayError,
 		ELEKTRA_PLUGIN_END);
 }

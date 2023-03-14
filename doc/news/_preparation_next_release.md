@@ -88,10 +88,10 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### timeofday
 
-- <<TODO>>
-- <<TODO>>
+- Use separate symbols for `set` and `commit` functions to satisfy `kdb plugin-check` _(@kodebach)_
+- Use new `elektraPluginGetPhase()` instead of counting executions _(@kodebach)_
 - <<TODO>>
 
 ### tracer
