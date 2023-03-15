@@ -29,11 +29,13 @@ The changetracking benchmark will evaluate the performance with changetracking e
 For it to work, you first have to load at least one plugin that utilizes changetracking.
 
 A very simple case would be the `dbus` plugin:
+
 ```sh
 kdb set system:/hook/notification/send/plugins/#0 dbus
 ```
 
-You can then watch its output with 
+You can then watch its output with
+
 ```sh
 dbus-monitor --session "interface='org.libelektra'"
 ```
