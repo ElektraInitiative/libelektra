@@ -410,7 +410,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ### Docker
 
-- <<TODO>>
+- Fix conflicting Java versions in CentOS Stream 8 image _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
