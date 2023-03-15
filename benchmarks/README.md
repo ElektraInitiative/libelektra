@@ -23,6 +23,31 @@ which will run the `callgrind` tool of Valgrind on it.
 The old STATISTICS file is no longer used and will be
 removed with this commit.
 
+# changetracking
+
+The changetracking benchmark will evaluate the performance with changetracking enabled in KDB.
+For it to work, you first have to load at least one plugin that utilizes changetracking.
+
+A very simple case would be the `dbus` plugin:
+```sh
+kdb set system:/hook/notification/send/plugins/#0 dbus
+```
+
+You can then watch its output with 
+```sh
+dbus-monitor --session "interface='org.libelektra'"
+```
+
+The output of a single benchmark is a single semicolon seperated line `time it took kdbSet to insert all keys;time it took kdbSet to update the keys`.
+The time is measured in microseconds.
+
+This benchmark has several command-line options:
+
+- `--key-count <keys>`: how many keys should be generated (default 5000)
+- `--harmonize-names`: all keys values and names have the same length
+- `--verbose`: print how many keys have been generated and modified
+- `--binary-tree`: build a binary tree of keys instead of a linear list
+
 ## OPMPHM
 
 The OPMPHM benchmarks need an external seed source. Use the `generate-seeds` script
