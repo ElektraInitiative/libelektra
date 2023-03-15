@@ -28,6 +28,13 @@ for PLUGIN in $ACTUAL_PLUGINS; do
 	ARGS=""
 	case "$PLUGIN" in
 	# exclude plugins with known issues
+	"xfconf")
+		# xfconf needs running dbus
+		# sometimes dbus is available when compiling, but not during packaging
+		if ! command -v dbus-launch; then
+			continue
+		fi
+		;;
 	esac
 
 	ASAN='@ENABLE_ASAN@'
