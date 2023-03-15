@@ -7,7 +7,7 @@ char * keyNameFormat = "user:/test/key%zu";
 char * keyValueFormat = "value%zu";
 char * keyValueModifiedFormat = "value-modified%zu";
 
-KeySet * (*keySetBuilder)(void) = NULL;
+KeySet * (*keySetBuilder) (void) = NULL;
 
 bool verbose = false;
 bool harmonizeKeys = false;
@@ -63,7 +63,7 @@ static KeySet * buildBinaryTree (void)
 	KeySet * generated = generateKeySet (keys, &seed, &shape);
 	KeySet * ks = ksNew (ksGetSize (generated), KS_END);
 
-	char buffer [2048] = "";
+	char buffer[2048] = "";
 	for (elektraCursor i = 0; i < ksGetSize (generated); i++)
 	{
 		Key * k = keyDup (ksAtCursor (generated, i), KEY_CP_ALL);
@@ -155,7 +155,7 @@ int main (int argc, char ** argv)
 	kdbGet (kdb, ks, parentKey);
 
 	KeySet * generated = keySetBuilder ();
-	ksAppend(ks, generated);
+	ksAppend (ks, generated);
 	ksDel (generated);
 
 	timeInit ();
