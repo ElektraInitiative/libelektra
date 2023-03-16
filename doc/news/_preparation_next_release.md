@@ -60,45 +60,27 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 
 ### <<Plugin>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### <<Plugin>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### <<Plugin>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### <<Plugin>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### <<Plugin>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### timeofday
 
 - Use separate symbols for `set` and `commit` functions to satisfy `kdb plugin-check` _(@kodebach)_
 - Use new `elektraPluginGetPhase()` instead of counting executions _(@kodebach)_
-- <<TODO>>
 
 ### tracer
 
 - Use separate symbols for `set` and `commit` functions to satisfy `kdb plugin-check` _(@kodebach)_
-- <<TODO>>
-- <<TODO>>
 
 ## Libraries
 
@@ -106,57 +88,24 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Compatibility
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Core
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### <<Library>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### <<Library>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### <<Library>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### <<Library>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### <<Library>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Bindings
 
@@ -165,314 +114,96 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ### <<Binding>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### <<Binding>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### <<Binding>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### <<Binding>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### <<Binding>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Tools
 
 ### <<Tool>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### <<Tool>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### <<Tool>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### <<Tool>>
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Scripts
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Documentation
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Use Cases
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Decisions
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Tutorials
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Man Pages
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Tests
 
 - Enable more `kdb plugin-check` tests _(@kodebach)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### C
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Shell Recorder
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### C++
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Packaging
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Build
 
 ### CMake
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Docker
 
 - Fix conflicting Java versions in CentOS Stream 8 image _(@kodebach)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Infrastructure
 
 ### Jenkins
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Cirrus
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### GitHub Actions
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Website
 
 The website is generated from the repository, so all information about plugins, bindings and tools are always up-to-date. Furthermore, we changed:
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Outlook
 
 We are currently working on following topics:
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Statistics
 
