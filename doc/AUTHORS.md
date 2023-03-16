@@ -166,3 +166,11 @@ documentation, elektraMerge including its Python bindings, copy-on-write functio
 - email: max@maxirlinger.at
 - GitHub user: [atmaxinger](https://github.com/atmaxinger)
 - devel/test on: Fedora, macOS
+
+## Stefan Hanreich
+
+elektra-core, rust implementation
+
+- email: e01227486@student.tuwien.ac.at
+- GitHub user: [lawli3t](https://github.com/lawli3t)
+- devel/test on: Arch Linux / Debian Docker
