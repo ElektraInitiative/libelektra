@@ -1,29 +1,9 @@
 # 0.9.<<VERSION>> Release
 
-This release did not happen yet.
-
-Please always update this file within **every PR**:
-
-1. write what changed
-2. use links pointing to your change (See [Documentation Guidelines](/doc/contrib/documentation.md))
-3. add your name at the end of the line **Syntax:** _(your name)_
-
-For example, Max would write:
-
-```
-- Added a new [doc plugin](https://www.libelektra.org/plugins/doc) _(Max)_
-```
-
-Pick a random line to write your changes to minimize the chances of conflicts in this file.
-
-For non-trivial changes, you can choose to be part of the highlighted changes.
-Please write a highlight section in this case.
-
-After the horizontal line the release notes for the next version starts.
-
----
-
-<<`scripts/generate-news-entry`>>
+- guid: 9e1e0790-e7ae-4947-9906-2c176a4f8dd2
+- author: Mihael Pranjić
+- pubDate: Thu, 16 Mar 2023 14:43:04 +0100
+- shortDesc: Bugfix Release
 
 We are proud to release Elektra 0.9.<<VERSION>>.
 
@@ -44,34 +24,12 @@ docker run -it elektra/elektra
 
 ## Highlights
 
-- <<HIGHLIGHT>>
-- <<HIGHLIGHT>>
-- <<HIGHLIGHT>>
-
-### <<HIGHLIGHT>>
-
-### <<HIGHLIGHT>>
-
-### <<HIGHLIGHT>>
+- The main purpose of this bugfix release is to fix regressions ([#4859](https://github.com/ElektraInitiative/libelektra/issues/4859)) introduced in Elektra 0.9.12 and 0.9.13.
+- Please refer to the [Elektra 0.9.12](https://www.libelektra.org/news/0.9.12-release) release notes for a complete list of changes. Due to breaking changes since 0.9.11 we highly recommend to read the upgrade instructions.
 
 ## Plugins
 
 The following text lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
-
-### <<Plugin>>
-
-
-### <<Plugin>>
-
-
-### <<Plugin>>
-
-
-### <<Plugin>>
-
-
-### <<Plugin>>
-
 
 ### timeofday
 
@@ -82,132 +40,36 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 
 - Use separate symbols for `set` and `commit` functions to satisfy `kdb plugin-check` _(@kodebach)_
 
-## Libraries
-
-The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
-
-### Compatibility
-
-
-### Core
-
-
-### <<Library>>
-
-
-### <<Library>>
-
-
-### <<Library>>
-
-
-### <<Library>>
-
-
-### <<Library>>
-
-
-## Bindings
-
-Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme).
-This section keeps you up-to-date with the multi-language support provided by Elektra.
-
-### <<Binding>>
-
-
-### <<Binding>>
-
-
-### <<Binding>>
-
-
-### <<Binding>>
-
-
-### <<Binding>>
-
-
-## Tools
-
-### <<Tool>>
-
-
-### <<Tool>>
-
-
-### <<Tool>>
-
-
-### <<Tool>>
-
-
-## Scripts
-
-
-## Documentation
-
-
-### Use Cases
-
-
-### Decisions
-
-
-### Tutorials
-
-
-### Man Pages
-
-
 ## Tests
 
 - Enable more `kdb plugin-check` tests _(@kodebach)_
 
-### C
-
-
-### Shell Recorder
-
-
-### C++
-
-
-## Packaging
-
-
 ## Build
-
-### CMake
-
 
 ### Docker
 
 - Fix conflicting Java versions in CentOS Stream 8 image _(@kodebach)_
 
-## Infrastructure
-
-### Jenkins
-
-
-### Cirrus
-
-
-### GitHub Actions
-
-
-## Website
-
-The website is generated from the repository, so all information about plugins, bindings and tools are always up-to-date. Furthermore, we changed:
-
-
 ## Outlook
 
 We are currently working on following topics:
 
+- 1.0 API _(Klemens Böswirth @kodebach)_ and _(Stefan Hanreich)_
+- Session recording and better Ansible integration _(Maximilian Irlinger @atmaxinger)_
+- Change tracking _(Maximilian Irlinger @atmaxinger)_
+- Rewriting tools in C _(@hannes99)_
+- Elektrify KDE and GNOME _(Mihael Pranjić @mpranj)_
+- Elektrify XFCE _(Richard Stöckl @Eiskasten)_
+- Mounting SQL databases _(Florian Lindner @flo91)_
+- Recording Configuration _(Maximilian Irlinger)_
+- Ansible-Elektra _(Lukas Hartl)_ and _(Maximilian Irlinger)_
+- Configure Olimex Base Images _(Maximilian Irlinger)_
+- Improving Build Server Infrastructure _(Lukas Hartl)_ and _(Maximilian Irlinger)_
+- Improve Java Development Experience _(Michael Tucek)_
 
 ## Statistics
 
-We closed [<<NUMISSUES>> issues](https://github.com/ElektraInitiative/libelektra/milestone/<<MILESTONE>>?closed=1) for this release.
+We closed [2 issues](https://github.com/ElektraInitiative/libelektra/milestone/35?closed=1) for this release.
 
 <<`scripts/git-release-stats 0.9.VER-1 0.9.<<VERSION>>`>>
 
