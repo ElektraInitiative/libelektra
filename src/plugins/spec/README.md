@@ -1,5 +1,5 @@
 - infos = Information about the spec plugin is in keys below
-- infos/author = Thomas Waser <thomas.waser@libelektra.org>, Klemens Böswirth <k.boeswirth+git@gmail.com>
+- infos/author = Thomas Waser <thomas.waser@libelektra.org>, Klemens Böswirth <k.boeswirth+git@gmail.com>, Tomislav Makar <tmakar23@gmail.com>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = check apply
