@@ -229,7 +229,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Added `scripts/dev/check-includes.sh` which checks our [new rules](/doc/decisions/4_decided/header_include.md) for `#include`s _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -448,7 +448,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ### GitHub Actions
 
-- <<TODO>>
+- Added workflow which runs the new `check-includes` script _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
