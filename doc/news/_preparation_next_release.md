@@ -95,6 +95,7 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - Use separate symbols for `set` and `commit` functions to satisfy `kdb plugin-check` _(@kodebach)_
 - Use new `elektraPluginGetPhase()` instead of counting executions _(@kodebach)_
+
 ### syslog
 
 - Convert to hook plugin _(Maximilian Irlinger @atmaxinger)_
