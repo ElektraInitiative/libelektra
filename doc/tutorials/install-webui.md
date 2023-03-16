@@ -64,8 +64,7 @@ instance, you must first start elektrad via `kdb run-elektrad`. Afterwards, you 
 client with:
 
 ```sh
-$ export INSTANCE="http://localhost:33333"
-$ npm start 
+export INSTANCE="http://localhost:33333" && npm start
 ```
 
 It is also possible to set visibility by prefixing the host with `VISIBILITY@`.
@@ -73,8 +72,7 @@ It is also possible to set visibility by prefixing the host with `VISIBILITY@`.
 For example (`advanced` visibility, `user` is default):
 
 ```sh
-$ export INSTANCE="advanced@http://localhost:33333" 
-$ npm start
+export INSTANCE="advanced@http://localhost:33333" && npm start
 ```
 
 Now, when you open [http://localhost:33334](http://localhost:33334) in your
