@@ -56,12 +56,112 @@ struct StringNode * addStrAtEnd (struct StringNode * startNode, const char * str
 	return newNode;
 }
 
+/* Structs for managing plugins */
+
 struct PluginSpec
 {
 	char * name;
 	char * refname;
 	KeySet * config;
 };
+
+/* List with information for a plugin */
+struct PluginInfos
+{
+	const char * infoName;
+	const char * infoVal;
+	struct PluginInfos * next;
+};
+
+/* Returns the newly allocated node
+ * If NULL is passed for ps, a new List is created and returned */
+struct PluginInfos * addInfoToInfoList (struct PluginInfos * startNode, const char * infoName, const char * infoVal)
+{
+	struct PluginInfos * newNode = elektraMalloc (sizeof (struct PluginInfos));
+	newNode->infoName = infoName;
+	newNode->infoVal = infoVal;
+
+	if (startNode)
+	{
+		/* forward to last node */
+		for (; startNode->next; startNode = startNode->next);
+		startNode->next = newNode;
+	}
+
+	return newNode;
+}
+
+const char * getInfoFromList (struct PluginInfos * startNode, const char * infoName)
+{
+	for (; startNode; startNode = startNode->next)
+	{
+		if (elektraStrCmp (startNode->infoName, infoName) == 0)
+		{
+			return startNode->infoVal;
+		}
+	}
+
+	return NULL;
+}
+
+/* List of symbols (functions) for a plugin */
+struct PluginSymbols
+{
+	const char * symbolName;
+	void (* symbolFunc) (void);
+	struct PluginSymbols * next;
+};
+
+/* Returns the newly allocated node
+ * If NULL is passed for startNode, a new List is created and returned */
+struct PluginSymbols * addFuncToSymbolList (struct PluginSymbols * startNode, const char * symbolName, void (* symbolFunc) (void))
+{
+	struct PluginSymbols * newNode = elektraMalloc (sizeof (struct PluginSymbols));
+	newNode->symbolName = symbolName;
+	newNode->symbolFunc = symbolFunc;
+
+	if (startNode)
+	{
+		/* forward to last node */
+		for (; startNode->next; startNode = startNode->next);
+		startNode->next = newNode;
+	}
+
+	return newNode;
+}
+
+void (*getSymbolFromList (struct PluginSymbols * startNode, const char * symbolName)) (void)
+{
+	for (; startNode; startNode = startNode->next)
+	{
+		if (elektraStrCmp (startNode->symbolName, symbolName) == 0)
+		{
+			return startNode->symbolFunc;
+		}
+	}
+
+	return NULL;
+}
+
+struct Plugin
+{
+	/* the low-level representation of a plugin inside Elektra */
+	struct _Plugin * plugin;
+
+	/* TODO: Evaluate if both, keyset and list, are necessary for info */
+	KeySet * ksInfo;
+	struct PluginSpec ps;
+	struct PluginSymbols * symbols;
+	struct PluginInfos * infos;
+};
+
+/* Can be used as a node for a list of plugins */
+struct PluginNode
+{
+	struct Plugin plugin;
+	struct PluginNode * next;
+};
+
 
 /* Can be used as a node for a linked list */
 struct PluginSpecNode
@@ -153,6 +253,7 @@ enum PluginType
 
 /* Read mount configuration from the KDB
  * Make sure to ksDel(...) the returned KeySet */
+// C++: MountBaseCommand::readMountConf in mountbase.cpp[31-41]
 KeySet * getMountConfig (KDB * handle, Key * errorKey, const char * const mountpointsPath)
 {
 	Key * parent = NULL;
@@ -610,11 +711,11 @@ const KeySet * cParsePluginArguments (char * pluginArguments, const char * const
 	for (size_t posEqual, posComma; (posEqual = strcspn (pluginArguments, "=")) > 0; pluginArguments = pluginArguments + posComma + 1)
 	{
 		/* Replace '=' with '\0' to use the current substring as parameter for a keyname */
-		pluginArguments[posEqual] = 0;
+		pluginArguments[posEqual] = '\0';
 		/* TODO: Handle error ('=' not found) */
 
 		posComma = strcspn (pluginArguments + posEqual + 1, ",");
-		pluginArguments[posComma] = 0;
+		pluginArguments[posComma] = '\0';
 
 		/* elektraStrLen includes '\0', so we counted it two times, but use one byte for the '/' character */
 		char * pluginKeyName = elektraMalloc (elektraStrLen (pluginArguments) + elektraStrLen (basepath));
@@ -715,7 +816,7 @@ bool isRefNumber (struct PluginSpec ps)
 {
 	if (!ps.refname) return false;
 
-	for (char * c = ps.refname; *c; c++)
+	for (const char * c = ps.refname; *c; c++)
 	{
 		if (*c < '0' || *c > '9') return false;
 	}
@@ -1104,10 +1205,140 @@ const char * pluginLookupInfo (struct PluginSpec ps, KeySet * info, const char *
 	}
 }
 
-const char * modulesPluginDatabaseLookupInfo (struct PluginSpec ps, KeySet * ksInfo, const char * info)
+
+
+void (*getFuncFromKey (Key * k)) (void)
+{
+	union
+	{
+		void (*f) (void);
+		void * v;
+	} conversation;
+
+	/* TODO: Replace if with assert */
+	if (sizeof (conversation) != sizeof (void (*) (void)))
+	{
+		fprintf (stderr, "union does not have size of function pointer\n");
+	}
+
+	if (keyGetBinary (k, &conversation.v, sizeof (conversation)) != sizeof (conversation))
+	{
+		/* TODO: Handle error */
+		fprintf (stderr, "Key type mismatch\n");
+	}
+
+	return conversation.f;
+}
+
+/* The returned plugin takes ownership of _ps (esp. of the pointers inside the struct)! */
+struct Plugin loadPluginFromSpec (struct PluginSpec _ps, KeySet * ksModules)
+{
+	struct Plugin p;
+	p.ps = _ps;
+	/* TODO: replace NULL with errorKey for error handling */
+	/* TODO: Check if ksDup is needed here */
+	p.plugin = elektraPluginOpen (p.ps.name, ksModules, ksDup (p.ps.config), NULL);
+
+	if (!p.plugin)
+	{
+		/* TODO: Handle error */
+		fprintf (stderr, "No plugin could be loaded (elektraPluginOpen returned NULL)!\n");
+	}
+
+	if (elektraStrCmp (p.ps.name, p.plugin->name) != 0)
+	{
+		/* save virtual name as refname */
+		char * tmp = p.ps.refname;
+		p.ps.refname = getPluginFullName (p.ps);
+		elektraFree (tmp);
+
+		/* use actual name */
+		p.ps.name = elektraStrDup (p.plugin->name);
+	}
+
+
+	// C++: from Plugin::loadInfo() (plugin.cpp[96-112])
+	Key * keyInfo = keyNew ("system:/elektra/modules", KEY_END);
+	keyAddBaseName (keyInfo, p.ps.name);
+
+	if (p.plugin->kdbGet)
+	{
+		p.plugin->kdbGet (p.plugin, p.ksInfo, keyInfo);
+	}
+	else
+	{
+		/* TODO: Handle error */
+		// C++: throw MissingSymbol ("kdbGet", plugin->name);
+		fprintf (stderr,"The symbol 'kdbGet' is missing from the plugin: %s\n", p.plugin->name);
+	}
+
+
+
+	// C++: from Plugin::parse() (plugin.cpp[115-155])
+	Key * k = ksLookup (p.ksInfo, keyInfo, KDB_O_NONE);
+
+	if (!k)
+	{
+		/* TODO: Handle error */
+		// C++: throw PluginNoContract ();
+		fprintf (stderr, "A contract is missing from the plugin: %s\n", p.plugin->name);
+	}
+
+	keyAddBaseName (keyInfo, "exports");
+
+	elektraCursor it = ksSearch (p.ksInfo, keyInfo) + 1;
+	if (it > 0)
+	{
+		for (; it < ksGetSize (p.ksInfo); it++)
+		{
+			k = ksAtCursor (p.ksInfo, it);
+			if (keyIsBelow (keyInfo, k))
+			{
+				addFuncToSymbolList (p.symbols, keyName (k) + keyGetNameSize (keyInfo), getFuncFromKey (k));
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+
+	keySetBaseName (keyInfo, "infos");
+	it = ksSearch (p.ksInfo, keyInfo) + 1;
+	if (it > 0)
+	{
+		for (; it < ksGetSize (p.ksInfo); it++)
+		{
+			k = ksAtCursor (p.ksInfo, it);
+			if (keyIsBelow (keyInfo, k))
+			{
+				addInfoToInfoList (p.infos, keyName (k) + keyGetNameSize (keyInfo), keyString (k));
+			}
+		}
+	}
+	else
+	{
+		/* TODO: Handle error */
+		fprintf (stderr, "No pluging info for plugin: %s\n", p.plugin->name);
+	}
+
+	return p;
+}
+
+
+
+
+const char * modulesPluginDatabaseLookupInfo (struct PluginSpec ps, const char * info, KeySet * ksModules)
 {
 	ksAppendKey (ps.config, keyNew ("system:/module", KEY_VALUE, "this plugin was loaded for the status", KEY_END));
-	return pluginLookupInfo (ps, ksInfo, info, "infos");
+
+	// C++: PluginPtr plugin = impl->modules.load (spec.getName (), conf);
+
+	struct Plugin p = loadPluginFromSpec (ps, ksModules);
+
+
+
+	//return pluginLookupInfo (ps, ksInfo, info, "infos");
 }
 
 
@@ -1225,28 +1456,7 @@ bool hasProvides (KeySet * ksInfo, const char * const infoProvides)
 }
 
 
-void (*getFuncFromKey (Key * k)) (void)
-{
-	union
-	{
-		void (*f) (void);
-		void * v;
-	} conversation;
 
-	/* TODO: Replace if with assert */
-	if (sizeof (conversation) != sizeof (void (*) (void)))
-	{
-		fprintf (stderr, "union does not have size of function pointer\n");
-	}
-
-	if (keyGetBinary (k, &conversation.v, sizeof (conversation)) != sizeof (conversation))
-	{
-		/* TODO: Handle error */
-		fprintf (stderr, "Key type mismatch\n");
-	}
-
-	return conversation.f;
-}
 
 
 /* Populates the KeySet `ksInfo` with a call to kdbGet() */
@@ -1427,12 +1637,6 @@ struct PluginSpec lookupProvides (char * const pluginName, KeySet ** ksSymbols, 
 	return ps;
 }
 
-
-void pluginLoadInfo (struct PluginSpec const spec)
-{
-	Key * infoKey = keyNew ("system:/elektra/modules", KEY_END);
-	keyAddBaseName (infoKey, spec.name);
-}
 
 // C++: backendbuilder.cpp[424-489]
 struct PluginSpec backendBuilderAddPlugin (const KeySet * const ks, struct PluginSpec ps, KeySet * ksModules)
@@ -1718,33 +1922,15 @@ void sortPluginSpecArray (struct PluginSpec * pluginSpecsToAdd, size_t n, KeySet
 	elektraFree (pluginSpecsToAddCopy);
 }
 
-// C++: backendbuilder.cpp[580-597]
-/*TODO: Evaluate if needed */
-void mountBackendBuilderUseConfigFile (const char * file, struct PluginSpec * psToAdd, size_t numPs, KeySet * ksInfo)
-{
-	// C++: MountBackendInterfacePtr b = getBackendFactory ().create ();
 
-	bool checkPossible = false;
-	for (size_t i = 0; i < numPs; i++)
-	{
-		if (strcmp (modulesPluginDatabaseLookupInfo (*(psToAdd + i), ksInfo, "provides"), "resolver") == 0)
-		{
-			checkPossible = true;
-		}
-	}
 
-	if (checkPossible)
-	{
-		// C++: fullPlugins (*b)
-		// C++: b->useConfigFile (configfile);
-	}
-}
+
 
 
 /**@pre: resolver needs to be loaded first
  * Will check the filename and use it as configFile for this backend. */
 // C++: backend.cpp[246-274], void Backend::useConfigFile (std::string file)
-bool backendCheckConfigFile (const char * file, struct PluginSpecNode * plugins, KeySet * ksSymbols)
+bool backendCheckConfigFile (const char * file, const struct PluginSpecNode * plugins, KeySet * ksSymbols)
 {
 	int (*checkFileFunction) (const char *) = NULL;
 
@@ -1781,6 +1967,27 @@ bool backendCheckConfigFile (const char * file, struct PluginSpecNode * plugins,
 
 	return true;
 }
+
+// C++: backendbuilder.cpp[580-597]
+/*TODO: rename */
+bool mountBackendBuilderUseConfigFile (const char * file, const struct PluginSpecNode * psn, KeySet * ksModules)
+{
+	// C++: MountBackendInterfacePtr b = getBackendFactory ().create ();
+	for (const struct PluginSpecNode * curPs = psn; curPs; curPs = curPs->next)
+	{
+		if (elektraStrCmp (modulesPluginDatabaseLookupInfo (curPs->ps, "provides", ksModules), "resolver") == 0)
+		{
+			// C++: fillPlugins (*b)
+			// C++: b->useConfigFile (configfile);
+			/* TODO: Set real values for arguments */
+			return backendCheckConfigFile (file, curPs, ksModules);
+		}
+	}
+
+	/* accept file */
+	return true;
+}
+
 
 
 /**
@@ -2830,10 +3037,24 @@ void serializePlugins (const Key * baseKey, KeySet * ksMountConf, struct PluginS
 
 // C++ backendbuilder.cpp[604-612] - void MountBackendBuilder::serialize (kdb::KeySet & ret)
 /* returns mountConf KeySet */
-void serialize (KeySet * ksMountConf, struct PluginSpecNode * toAdd, KeySet * ksInfo, KeySet * ksSymbols, const char * mp, KeySet * ksConfig)
+void serialize (KeySet * ksMountConf, const char * mp, KeySet * ksConfig, const char * configFile)
 {
 	// C++ backend.cpp[398]
 	//TODO: assert (mp && *mp);
+
+	/* Check config file */
+	if (!configFile || !(*configFile))
+	{
+		/* TODO: handle error */
+		return;
+	}
+
+	if (!backendCheckConfigFile (configFile, NULL, NULL))
+	{
+		/* TODO: Handle error */
+		return;
+	}
+
 
 	char * mpBasePath = getBasePath (mp);
 
@@ -2880,7 +3101,7 @@ void serialize (KeySet * ksMountConf, struct PluginSpecNode * toAdd, KeySet * ks
 
 	keyGetName (backendRootKey, nameBuf, nameBufSize);
 	strcat (nameBuf, "/definition/path");
-	Key * pathKey = keyNew (nameBuf, KEY_VALUE, NULL);
+	Key * pathKey = keyNew (nameBuf, KEY_VALUE, configFile, KEY_END);
 	ksAppendKey (ksMountConf, pathKey);
 
 	strcpy (nameBuf, mpBasePath);
@@ -2904,28 +3125,11 @@ void serialize (KeySet * ksMountConf, struct PluginSpecNode * toAdd, KeySet * ks
 	}
 
 	ksAppendKey (ksMountConf, backendRootKey);
-
-
-
-
-
-	unsigned int nrResolverPlugins = 0;
-	unsigned int nrStoragePlugins = 0;
-
-	// C++: MountBackendInterfacePtr mbi = getBackendFactory ().create ();
-	//	fillPlugins (*mbi);
-	for (; toAdd; toAdd = toAdd->next)
-	{
-		// C++: b.addPlugin (plugin);
-		backendAddPlugin (toAdd->ps, ksSymbols, &nrResolverPlugins, &nrStoragePlugins, NULL, ksInfo, ksMountConf);
-	}
-
-	// C++: mbi->setMountpoint (mountpoint, mountConf);
 }
 
 
 void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, char * pluginsConfig, bool clForce, bool clDebug,
-		    int mergeStrategy, const char * resolverName, const char * path, const KeySet * ksPlugins, bool withRecommends)
+		    int mergeStrategy, char * resolverName, const char * path, const KeySet * ksPlugins, bool withRecommends)
 {
 	// TODO: Maybe directly require a key as parameter (instead of the keyname)
 	Key * const keyMountpoint = keyNew (mountPoint, KEY_END);
@@ -2942,10 +3146,10 @@ void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, cha
 	if (clForce || mergeStrategy != MERGE_STRATEGY_ABORT)
 	{
 		Key * const cutKey = keyNew (DEFAULT_MOUNTPOINTS_PATH, KEY_END);
-		keyAddBaseName (cutKey, mountPoint);
-		KeySet * ksCutted = ksCut (mountConf, cutKey);
+		keyAddBaseName (cutKey, keyName (keyMountpoint));
+		KeySet * ksTmp = ksCut (mountConf, cutKey);
 		/* We don't need the cut-out KeySet, but only the changed mountconf KeySet */
-		ksDel (ksCutted);
+		ksDel (ksTmp);
 		keyDel (cutKey);
 	}
 
@@ -2958,6 +3162,7 @@ void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, cha
 
 
 	/* TODO: Check if basepath should be with or without '/' */
+	/* pluginsConfig is a cmd-line parameter (NULL if not provided) */
 	/* in C++: backend.setBackendConfig (cl.getPluginsConfig ("system:/")); */
 	const KeySet * ksBackendConfig = cParsePluginArguments (pluginsConfig, "system:/");
 
@@ -3031,6 +3236,12 @@ void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, cha
 	}
 
 	// C++: backend.serialize (mountConf);
+	serialize (mountConf, mountPoint, NULL, path);
+
+
+	/* TODO: Should cl.strategy == "unchanged" be supported? (like in legecy cpp-code) */
+
+
 }
 
 

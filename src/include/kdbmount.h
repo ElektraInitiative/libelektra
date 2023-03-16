@@ -23,7 +23,7 @@ const char * cGetMountpoint (const KeySet * const mountconf, bool clInteractive)
 void cOutputMtab (KeySet * mountConf, bool clFirst, bool clSecond, bool clNull);
 void cProcessArguments (bool clInteractive, int numArgs);
 void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, char * pluginsConfig, bool clForce, bool clDebug,
-		    int mergeStrategy, const char * resolverName, const char * path, const KeySet * plugins, bool withRecommends);
+		    int mergeStrategy, char * resolverName, const char * path, const KeySet * plugins, bool withRecommends);
 
 
 /* Backend related stuff */
