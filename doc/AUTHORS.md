@@ -177,7 +177,7 @@ elektra-core, rust implementation
 
 ## Tomislav Makar
 
-spec plugin, go-elektra, web-api
+spec plugin, [go-elektra](https://github.com/ElektraInitiative/go-elektra), elektrad, web-ui
 
 - email: tmakar23@gmail.com
 - GitHub user: [tmakar](https://github.com/tmakar)
