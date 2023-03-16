@@ -80,7 +80,7 @@ int elektraTracerGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			       keyNew ("system:/elektra/modules/tracer/exports/close", KEY_FUNC, elektraTracerClose, KEY_END),
 			       keyNew ("system:/elektra/modules/tracer/exports/get", KEY_FUNC, elektraTracerGet, KEY_END),
 			       keyNew ("system:/elektra/modules/tracer/exports/set", KEY_FUNC, elektraTracerSet, KEY_END),
-			       keyNew ("system:/elektra/modules/tracer/exports/commit", KEY_FUNC, elektraTracerSet, KEY_END),
+			       keyNew ("system:/elektra/modules/tracer/exports/commit", KEY_FUNC, elektraTracerCommit, KEY_END),
 			       keyNew ("system:/elektra/modules/tracer/exports/error", KEY_FUNC, elektraTracerError, KEY_END),
 #include "readme_tracer.c"
 			       keyNew ("system:/elektra/modules/tracer/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
@@ -103,6 +103,24 @@ int elektraTracerGet (Plugin * handle, KeySet * returned, Key * parentKey)
 }
 
 int elektraTracerSet (Plugin * handle, KeySet * returned, Key * parentKey)
+{
+	ssize_t nr_keys = 0;
+	Key * k = 0;
+
+	printf ("tracer: set(%p, %s, %s): ", (void *) handle, keyName (parentKey), keyString (parentKey));
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
+	{
+		k = ksAtCursor (returned, it);
+		printf ("%s ", keyName (k));
+		++nr_keys;
+	}
+	printf ("%zd\n", nr_keys);
+
+	return nr_keys;
+}
+
+int elektraTracerCommit (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	ssize_t nr_keys = 0;
 	Key * k = 0;
@@ -146,7 +164,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 		ELEKTRA_PLUGIN_CLOSE,	&elektraTracerClose,
 		ELEKTRA_PLUGIN_GET,	&elektraTracerGet,
 		ELEKTRA_PLUGIN_SET,	&elektraTracerSet,
-		ELEKTRA_PLUGIN_COMMIT,	&elektraTracerSet,
+		ELEKTRA_PLUGIN_COMMIT,	&elektraTracerCommit,
 		ELEKTRA_PLUGIN_ERROR,	&elektraTracerError,
 		ELEKTRA_PLUGIN_END);
 }

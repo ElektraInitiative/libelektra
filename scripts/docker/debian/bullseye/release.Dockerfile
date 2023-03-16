@@ -34,6 +34,7 @@ RUN --mount=type=tmpfs,target=/tmp \
     --mount=type=tmpfs,target=/root/.cache/elektra \
     --mount=type=tmpfs,target=/root/.config \
     export $(dbus-launch); \
+    systemd-machine-id-setup || true # xfconf also requires a machine-id; \
     kdb run_all
 
 RUN echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers

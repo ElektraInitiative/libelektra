@@ -53,6 +53,7 @@ This plugin is tested with the xfconf versions `4.16` and above.
 Before you can start working with the plugin, you have to make sure dbus is running.
 If you use a common desktop environment this should already be fulfilled.
 Otherwise, `export $(dbus-launch)` can be used to start it.
+You may also need to use `systemd-machine-id-setup` to create `/etc/machine-id`.
 
 Note that this plugin does not support macOS since Xfce is not commonly used there, Mac Ports only provides a very old version (`4.12`) and Brew does not provide Xfce at all.
 

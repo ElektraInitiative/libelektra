@@ -88,15 +88,15 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### timeofday
 
-- <<TODO>>
-- <<TODO>>
+- Use separate symbols for `set` and `commit` functions to satisfy `kdb plugin-check` _(@kodebach)_
+- Use new `elektraPluginGetPhase()` instead of counting executions _(@kodebach)_
 - <<TODO>>
 
-### <<Plugin>>
+### tracer
 
-- <<TODO>>
+- Use separate symbols for `set` and `commit` functions to satisfy `kdb plugin-check` _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 
@@ -343,7 +343,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ## Tests
 
-- <<TODO>>
+- Enable more `kdb plugin-check` tests _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -410,7 +410,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ### Docker
 
-- <<TODO>>
+- Fix conflicting Java versions in CentOS Stream 8 image _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
