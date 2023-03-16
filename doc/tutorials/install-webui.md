@@ -23,12 +23,6 @@ To build Elektra with the elektra-web tool:
 - Build libelektra: `make`
 - Install libelektra: `sudo make install`
 
-## Getting Started
-
-- Start an elektrad instance: `kdb run-elektrad`
-- Start the client: `kdb run-webd`
-- You can now access the client on: [http://localhost:33334](http://localhost:33334)
-
 ## Getting Started (docker)
 
 - Create and run a new docker container: `docker run -d -it -p 33333:33333 -p 33334:33334 elektra/web`
@@ -70,7 +64,8 @@ instance, you must first start elektrad via `kdb run-elektrad`. Afterwards, you 
 client with:
 
 ```sh
-INSTANCE="http://localhost:33333" kdb run-webd
+$ export INSTANCE="http://localhost:33333"
+$ npm start 
 ```
 
 It is also possible to set visibility by prefixing the host with `VISIBILITY@`.
@@ -78,7 +73,8 @@ It is also possible to set visibility by prefixing the host with `VISIBILITY@`.
 For example (`advanced` visibility, `user` is default):
 
 ```sh
-INSTANCE="advanced@http://localhost:33333" kdb run-webd
+$ export INSTANCE="advanced@http://localhost:33333" 
+$ npm start
 ```
 
 Now, when you open [http://localhost:33334](http://localhost:33334) in your

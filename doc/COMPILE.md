@@ -143,7 +143,7 @@ Note: You have to enclose a value with quotes `""` if it contains a semicolon (`
 E.g.:
 
 ```sh
-cmake -DPLUGINS="dump;resolver;yajl;list;spec" ..
+cmake -DPLUGINS="dump;resolver_fm_hpu_b;yajl;list;spec" ..
 ```
 
 Some scripts in the folder of the same name may help you running CMake.

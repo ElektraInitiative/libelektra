@@ -244,7 +244,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ## Documentation
 
-- <<TODO>>
+- Adapt and remove outdated docs https://github.com/ElektraInitiative/libelektra/issues/4882 _(Tomislav Makar @tmakar)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
