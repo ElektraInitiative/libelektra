@@ -249,6 +249,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Added `hook` to `placements` contract in [CONTRACT.ini](../CONTRACT.ini) _(Tomislav Makar @tmakar)_
 - Added `hook` information to [hooks.md](../dev/hooks.md)
 - Added Hannes Laimer to `AUTHORS.md` _(Hannes Laimer @hannes99)_
+- Add README to tools/kdb _(Hannes Laimer @hannes99)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
