@@ -102,7 +102,7 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 		{
 			// No more keys in new --> must have been removed
 
-			if (removedKeys && (parentKey == NULL || keyIsBelowOrSame (parentKey, oldKey)))
+			if (removedKeys && keyGetNamespace(oldKey) != KEY_NS_CASCADING && (parentKey == NULL || keyIsBelowOrSame (parentKey, oldKey)))
 			{
 				ksAppendKey (removedKeys, oldKey);
 			}
@@ -115,7 +115,7 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 		{
 			// No more keys in old --> must have been added
 
-			if (addedKeys && (parentKey == NULL || keyIsBelowOrSame (parentKey, newKey)))
+			if (addedKeys && keyGetNamespace(newKey) != KEY_NS_CASCADING && (parentKey == NULL || keyIsBelowOrSame (parentKey, newKey)))
 			{
 				ksAppendKey (addedKeys, newKey);
 			}
@@ -129,6 +129,13 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 		if (modifiedKeys && cmpRes == 0)
 		{
 			// keys have the same name --> check if modified
+
+			if (keyGetNamespace(oldKey) == KEY_NS_CASCADING)
+			{
+				iOld++;
+				iNew++;
+				continue;
+			}
 
 			if (parentKey != NULL && !keyIsBelowOrSame (parentKey, newKey))
 			{
@@ -184,7 +191,7 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 		else if (cmpRes < 0)
 		{
 			// key is present in old but not in new
-			if (removedKeys && (parentKey == NULL || keyIsBelowOrSame (parentKey, oldKey)))
+			if (removedKeys && keyGetNamespace(oldKey) != KEY_NS_CASCADING && (parentKey == NULL || keyIsBelowOrSame (parentKey, oldKey)))
 			{
 				ksAppendKey (removedKeys, oldKey);
 			}
@@ -194,7 +201,7 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 		else
 		{
 			// key is present in new but not in old
-			if (addedKeys && (parentKey == NULL || keyIsBelowOrSame (parentKey, newKey)))
+			if (addedKeys && keyGetNamespace(newKey) != KEY_NS_CASCADING && (parentKey == NULL || keyIsBelowOrSame (parentKey, newKey)))
 			{
 				ksAppendKey (addedKeys, newKey);
 			}
@@ -298,6 +305,22 @@ void elektraDiffDel (ElektraDiff * ksd)
 	ksDel (ksd->addedKeys);
 
 	elektraFree (ksd);
+}
+
+/**
+ * Determine whether the given diff is empty
+ * @param ksd the diff
+ * @return @p true if diff is empty, @p false otherwise. Will also return @p true if @p ksd is @p NULL.
+ */
+bool elektraDiffIsEmpty (const ElektraDiff * ksd)
+{
+	if (ksd == NULL)
+	{
+		return true;
+	}
+
+	ssize_t keys = ksGetSize (ksd->addedKeys) + ksGetSize (ksd->removedKeys) + ksGetSize (ksd->modifiedKeys);
+	return keys == 0;
 }
 
 /**

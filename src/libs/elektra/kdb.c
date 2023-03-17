@@ -1967,11 +1967,14 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	// Step 18: merge data into ks and return
-	backendsMerge (backends, ks);
+	KeySet * keysFromBackends = ksNew (0, KS_END);
+	backendsMerge (backends, keysFromBackends);
+	ksAppend (ks, keysFromBackends);
 	clearAllSync (ks);
 
 	// TODO (atmaxinger): should we have a default:/ backend?
 	ksAppend (ks, defaults);
+	ksAppend (keysFromBackends, defaults);
 	ksDel (defaults);
 	keyDel (defaultCutpoint);
 
@@ -1998,8 +2001,9 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	if (handle->allKeys != NULL)
 	{
-		ksAppendDup (handle->allKeys, ks);
+		ksAppendDup (handle->allKeys, keysFromBackends);
 	}
+	ksDel (keysFromBackends);
 
 	errno = errnosave;
 	return procOnly ? 2 : 1;
@@ -2455,8 +2459,18 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		Key * backendKey = ksAtCursor (backends, i);
 		const BackendData * backendData = keyValue (backendKey);
 
+		ElektraDiff *diff = elektraDiffCalculate (backendData->keys, handle->allKeys, backendKey);
+
 		bool readOnly = keyGetMeta (backendKey, "meta:/internal/kdbreadonly") != NULL;
-		bool changed = backendData->keyNeedsSync || backendData->getSize != (size_t) ksGetSize (backendData->keys);
+		bool changedOld = backendData->keyNeedsSync || backendData->getSize != (size_t) ksGetSize (backendData->keys);
+		bool changed = !elektraDiffIsEmpty (diff) || backendData->getSize != (size_t) ksGetSize (backendData->keys);
+
+		if (changedOld != changed)
+		{
+			fprintf(stderr, "changedOld != changed\n");
+		}
+
+		elektraDiffDel (diff);
 
 		// issue warning, if readonly but changed
 		if (readOnly && changed)

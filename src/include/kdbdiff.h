@@ -21,6 +21,8 @@ uint16_t elektraDiffIncRef (ElektraDiff * ksd);
 uint16_t elektraDiffDecRef (ElektraDiff * ksd);
 uint16_t elektraDiffGetRef (ElektraDiff * ksd);
 
+bool elektraDiffIsEmpty (const ElektraDiff * ksd);
+
 const Key * elektraDiffGetParentKey (const ElektraDiff * ksd);
 
 KeySet * elektraDiffGetAddedKeys (const ElektraDiff * ksd);

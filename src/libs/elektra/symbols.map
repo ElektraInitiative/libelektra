@@ -152,6 +152,7 @@ libelektra_1.0 {
 	elektraChangeTrackingCalculateDiff;
 	elektraDiffCalculate;
 
+	elektraDiffIsEmpty;
 	elektraDiffGetParentKey;
 	elektraDiffNew;
 
