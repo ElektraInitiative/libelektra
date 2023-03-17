@@ -102,7 +102,8 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 		{
 			// No more keys in new --> must have been removed
 
-			if (removedKeys && keyGetNamespace(oldKey) != KEY_NS_CASCADING && (parentKey == NULL || keyIsBelowOrSame (parentKey, oldKey)))
+			if (removedKeys && keyGetNamespace (oldKey) != KEY_NS_CASCADING &&
+			    (parentKey == NULL || keyIsBelowOrSame (parentKey, oldKey)))
 			{
 				ksAppendKey (removedKeys, oldKey);
 			}
@@ -115,7 +116,8 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 		{
 			// No more keys in old --> must have been added
 
-			if (addedKeys && keyGetNamespace(newKey) != KEY_NS_CASCADING && (parentKey == NULL || keyIsBelowOrSame (parentKey, newKey)))
+			if (addedKeys && keyGetNamespace (newKey) != KEY_NS_CASCADING &&
+			    (parentKey == NULL || keyIsBelowOrSame (parentKey, newKey)))
 			{
 				ksAppendKey (addedKeys, newKey);
 			}
@@ -130,7 +132,7 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 		{
 			// keys have the same name --> check if modified
 
-			if (keyGetNamespace(oldKey) == KEY_NS_CASCADING)
+			if (keyGetNamespace (oldKey) == KEY_NS_CASCADING)
 			{
 				iOld++;
 				iNew++;
@@ -191,7 +193,8 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 		else if (cmpRes < 0)
 		{
 			// key is present in old but not in new
-			if (removedKeys && keyGetNamespace(oldKey) != KEY_NS_CASCADING && (parentKey == NULL || keyIsBelowOrSame (parentKey, oldKey)))
+			if (removedKeys && keyGetNamespace (oldKey) != KEY_NS_CASCADING &&
+			    (parentKey == NULL || keyIsBelowOrSame (parentKey, oldKey)))
 			{
 				ksAppendKey (removedKeys, oldKey);
 			}
@@ -201,7 +204,8 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 		else
 		{
 			// key is present in new but not in old
-			if (addedKeys && keyGetNamespace(newKey) != KEY_NS_CASCADING && (parentKey == NULL || keyIsBelowOrSame (parentKey, newKey)))
+			if (addedKeys && keyGetNamespace (newKey) != KEY_NS_CASCADING &&
+			    (parentKey == NULL || keyIsBelowOrSame (parentKey, newKey)))
 			{
 				ksAppendKey (addedKeys, newKey);
 			}

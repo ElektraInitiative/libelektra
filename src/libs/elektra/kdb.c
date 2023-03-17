@@ -2459,7 +2459,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		Key * backendKey = ksAtCursor (backends, i);
 		const BackendData * backendData = keyValue (backendKey);
 
-		ElektraDiff *diff = elektraDiffCalculate (backendData->keys, handle->allKeys, backendKey);
+		ElektraDiff * diff = elektraDiffCalculate (backendData->keys, handle->allKeys, backendKey);
 
 		bool readOnly = keyGetMeta (backendKey, "meta:/internal/kdbreadonly") != NULL;
 		bool changedOld = backendData->keyNeedsSync || backendData->getSize != (size_t) ksGetSize (backendData->keys);
@@ -2467,7 +2467,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 
 		if (changedOld != changed)
 		{
-			fprintf(stderr, "changedOld != changed\n");
+			fprintf (stderr, "changedOld != changed\n");
 		}
 
 		elektraDiffDel (diff);
