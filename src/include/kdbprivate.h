@@ -561,8 +561,6 @@ typedef struct _BackendData
 	size_t getSize;		     /*!< the size of @ref _BackendData.keys at the end of kdbGet()
 		      More precisely this is set by backendsMerge() to the size of @ref _BackendData.keys */
 	bool initialized;	     /*!< whether or not the init function of this backend has been called */
-	bool keyNeedsSync;	     /*!< whether or not any key in this backend needs a sync (keyNeedSync())
-		   More precisely this is set by backendsDivide() to indicate whether it encountered a key that needs sync */
 } BackendData;
 
 // clang-format on

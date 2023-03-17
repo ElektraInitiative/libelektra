@@ -329,7 +329,6 @@ static void addMountpoint (KeySet * backends, Key * mountpoint, Plugin * backend
 		.definition = definition,
 		.getSize = 0,
 		.initialized = false,
-		.keyNeedsSync = false,
 	};
 	keySetBinary (mountpoint, &backendData, sizeof (backendData));
 	ksAppendKey (backends, mountpoint);
@@ -2462,13 +2461,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		ElektraDiff * diff = elektraDiffCalculate (backendData->keys, handle->allKeys, backendKey);
 
 		bool readOnly = keyGetMeta (backendKey, "meta:/internal/kdbreadonly") != NULL;
-		bool changedOld = backendData->keyNeedsSync || backendData->getSize != (size_t) ksGetSize (backendData->keys);
 		bool changed = !elektraDiffIsEmpty (diff) || backendData->getSize != (size_t) ksGetSize (backendData->keys);
-
-		if (changedOld != changed)
-		{
-			fprintf (stderr, "changedOld != changed\n");
-		}
 
 		elektraDiffDel (diff);
 

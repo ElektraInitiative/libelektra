@@ -108,8 +108,6 @@ static elektraCursor backendsDivideInternal (KeySet * backends, elektraCursor * 
 		}
 		else if (*curBackend < 0 || keyIsBelowOrSame (backendKey, k) == 1)
 		{
-			backendData->keyNeedsSync = backendData->keyNeedsSync || keyNeedSync (k) == 1;
-
 			Key * d = keyDup (k, KEY_CP_ALL);
 
 			// set the value of the sync flag to the same value as the original key
@@ -133,10 +131,8 @@ bool backendsDivide (KeySet * backends, const KeySet * ks)
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
 		BackendData * backendData = (BackendData *) keyValue (ksAtCursor (backends, i));
-		backendData->keyNeedsSync = false;
 		ksClear (backendData->keys);
 	}
-
 
 	elektraCursor curBackend = -1;
 	elektraCursor ret = backendsDivideInternal (backends, &curBackend, ks, 0);
