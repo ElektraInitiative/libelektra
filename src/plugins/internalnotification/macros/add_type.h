@@ -51,7 +51,7 @@
 
 #define DISABLE_UNDEF_PARAMETERS
 #define NAME_MACRO INTERNALNOTIFICATION_CONVERSION_FUNCTION_NAME
-#include <macros/type_create_to_value.h>
+#include <internal/macros/type_create_to_value.h>
 
 INTERNALNOTIFICATION_CONVERSION_CALLBACK_SIGNATURE (TYPE_NAME)
 {

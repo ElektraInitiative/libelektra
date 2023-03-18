@@ -7,11 +7,11 @@
  */
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 
 #include "noresolver.h"
-#include <kdblogger.h>
+#include <internal/utility/logger.h>
 #include <string.h>
 
 /**

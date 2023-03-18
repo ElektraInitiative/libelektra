@@ -7,7 +7,7 @@
  *
  */
 
-#include <kdberrors.h>
+#include <elektra/kdb/errors.h>
 #include <regex.h>
 #include <stdio.h>
 

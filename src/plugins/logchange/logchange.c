@@ -9,7 +9,7 @@
 
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 
 #include <stdio.h>

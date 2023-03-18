@@ -9,8 +9,8 @@
 
 #include "c.h"
 
-#include <kdberrors.h>
-#include <kdbhelper.h>
+#include <elektra/kdb/errors.h>
+#include <internal/utility/old_helper.h>
 
 #include <ctype.h>
 #include <stdio.h>

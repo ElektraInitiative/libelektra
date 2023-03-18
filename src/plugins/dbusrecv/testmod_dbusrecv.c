@@ -10,8 +10,8 @@
 
 #include <stdio.h> // printf() & co
 
-#include <kdbio/uv.h>
-#include <kdbioplugin.h>
+#include <elektra/io/uv.h>
+#include <elektra/io/plugin.h>
 
 #include <uv.h>
 

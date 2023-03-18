@@ -8,12 +8,12 @@
 
 
 #ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 
 #include <stdio.h>
 
-#include <kdbassert.h>
+#include <internal/utility/assert.h>
 
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
@@ -43,9 +43,15 @@
 #include <errno.h>
 #endif
 
-#include <kdbinternal.h>
-
-
+#include <elektra/kdb.h>
+#include <internal/kdb/config.h>
+#include <elektra/kdb/errors.h>
+#include <elektra/ease/old_ease.h>
+#include <elektra/ease/meta.h>
+#include <internal/utility/logger.h>
+#include <internal/pluginload/module.h>
+#include <elektra/plugin/plugin.h>
+#include <internal/kdbprivate.h>
 #define KDB_GET_PHASE_POST_STORAGE_SPEC (KDB_GET_PHASE_POST_STORAGE "/spec")
 #define KDB_GET_PHASE_POST_STORAGE_NONSPEC (KDB_GET_PHASE_POST_STORAGE "/nonspec")
 

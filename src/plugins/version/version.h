@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_VERSION_H
 #define ELEKTRA_PLUGIN_VERSION_H
 
-#include <kdbplugin.h>
+#include <elektra/plugin/plugin.h>
 
 int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * handle, KeySet * definition, Key * parentKey);
 int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks, Key * parentKey);

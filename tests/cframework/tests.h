@@ -10,7 +10,7 @@
 #define TESTS_H
 
 #ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 
 #ifdef HAVE_STDIO_H
@@ -25,9 +25,9 @@
 #include <string.h>
 #endif
 
-#include <kdb.h>
-#include <kdbhelper.h>
-#include <kdbmacros.h>
+#include <elektra/kdb.h>
+#include <internal/utility/old_helper.h>
+#include <internal/macros/utils.h>
 
 #define BUFFER_LENGTH 4096
 #define ELEKTRA_TEST_ROOT "/tests/ckdb/"

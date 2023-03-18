@@ -13,7 +13,7 @@
 #include <string.h>
 #include <windows.h>
 
-#include <kdbhelper.h>
+#include <internal/utility/old_helper.h>
 
 static int loadArgs (char *** argvp)
 {

@@ -16,8 +16,8 @@
 #include <tests.h>
 
 #include "test.h"
-#include <kdbio.h>
-#include <kdbiotest.h>
+#include <elektra/io/api.h>
+#include <internal/io/test.h>
 
 #define MIX_TIMER_INTERVAL 100
 #define MIX_DIFF_WARNING_THRESHOLD 5

@@ -11,7 +11,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include <kdbtypes.h>
+#include <elektra/type/types.h>
 
 /**
  * Order Preserving Minimal Perfect Hash Map

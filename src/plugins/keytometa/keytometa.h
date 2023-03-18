@@ -11,9 +11,10 @@
 #ifndef ELEKTRA_PLUGIN_KEYTOMETA_H
 #define ELEKTRA_PLUGIN_KEYTOMETA_H
 
-#include <kdberrors.h>
-#include <kdbextension.h>
-#include <kdbplugin.h>
+#include <elektra/kdb/errors.h>
+#include <elektra/ease/old_ease.h>
+#include <elektra/ease/meta.h>
+#include <elektra/plugin/plugin.h>
 
 int elektraKeyToMetaGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraKeyToMetaSet (Plugin * handle, KeySet * ks, Key * parentKey);

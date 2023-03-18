@@ -10,8 +10,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdbinvoke.h>
-#include <kdbmodule.h>
+#include <elektra/plugin/invoke.h>
+#include <internal/pluginload/module.h>
 
 #include "testdata.h"
 

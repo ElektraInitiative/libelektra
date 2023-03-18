@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_EMAIL_H
 #define ELEKTRA_PLUGIN_EMAIL_H
 
-#include <kdbplugin.h>
+#include <elektra/plugin/plugin.h>
 
 int elektraEmailGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraEmailSet (Plugin * handle, KeySet * ks, Key * parentKey);

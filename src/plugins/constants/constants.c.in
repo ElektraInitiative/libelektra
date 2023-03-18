@@ -6,14 +6,14 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdb.h>
-#include <kdbconfig.h>
-#include <kdbmacros.h>
-#include <kdbplugin.h>
+#include <elektra/kdb.h>
+#include <internal/kdb/config.h>
+#include <internal/macros/utils.h>
+#include <elektra/plugin/plugin.h>
 
 #include <string.h>
 
-#include <kdberrors.h>
+#include <elektra/kdb/errors.h>
 
 int elektraConstantsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED);
 int elektraConstantsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED);

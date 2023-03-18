@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_XFCONF_H
 #define ELEKTRA_PLUGIN_XFCONF_H
 
-#include <kdbplugin.h>
+#include <elektra/plugin/plugin.h>
 
 int elektraXfconfInit (Key * errorKey, int xfconfCode, int xfconfShutdown);
 int elektraXfconfOpen (Plugin * handle, Key * errorKey);

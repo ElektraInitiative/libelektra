@@ -11,7 +11,7 @@
 
 #include <tests_plugin.h>
 
-#include <kdbconfig.h>
+#include <internal/kdb/config.h>
 
 
 static void test_length (void)

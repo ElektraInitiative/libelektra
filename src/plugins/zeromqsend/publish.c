@@ -8,8 +8,8 @@
 
 #include "zeromqsend.h"
 
-#include <kdbhelper.h>
-#include <kdblogger.h>
+#include <internal/utility/old_helper.h>
+#include <internal/utility/logger.h>
 
 #include <time.h>   // clock_gettime()
 #include <unistd.h> // usleep()

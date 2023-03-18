@@ -16,7 +16,7 @@
 
 #include "dynarray.h"
 
-#include <kdblogger.h>
+#include <internal/utility/logger.h>
 
 /* -- DynArray Implementation ----------------------------------------------------------------------------------------------------------- */
 

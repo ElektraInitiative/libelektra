@@ -9,7 +9,7 @@
 #ifndef ELEKTRA_PLUGIN_WRESOLVER_H
 #define ELEKTRA_PLUGIN_WRESOLVER_H
 
-#include <kdbplugin.h>
+#include <elektra/plugin/plugin.h>
 
 
 int elektraWresolverOpen (Plugin * handle, Key * errorKey);

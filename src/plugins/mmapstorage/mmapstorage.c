@@ -14,14 +14,14 @@
 #include "dynarray.h"
 #include "internal.h"
 
-#include <kdbassert.h>
-#include <kdberrors.h>
-#include <kdbhelper.h>
-#include <kdblogger.h>
-#include <kdbprivate.h>
+#include <internal/utility/assert.h>
+#include <elektra/kdb/errors.h>
+#include <internal/utility/old_helper.h>
+#include <internal/utility/logger.h>
+#include <internal/kdbprivate.h>
 
 #ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 
 #include <errno.h>

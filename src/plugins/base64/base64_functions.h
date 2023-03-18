@@ -1,8 +1,8 @@
 #ifndef ELEKTRA_PLUGIN_BASE64_FUNC_H
 #define ELEKTRA_PLUGIN_BASE64_FUNC_H
 
-#include <kdbplugin.h>
-#include <kdbtypes.h>
+#include <elektra/plugin/plugin.h>
+#include <elektra/type/types.h>
 #include <stdio.h>
 
 #define ELEKTRA_PLUGIN_BASE64_PREFIX "@BASE64"

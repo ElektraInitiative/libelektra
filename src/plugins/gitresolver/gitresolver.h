@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_GITRESOLVER_H
 #define ELEKTRA_PLUGIN_GITRESOLVER_H
 
-#include <kdbplugin.h>
+#include <elektra/plugin/plugin.h>
 
 
 int elektraGitresolverOpen (Plugin * handle, Key * errorKey);

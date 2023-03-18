@@ -16,10 +16,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdb.h>
-#include <kdbassert.h>
-#include <kdberrors.h>
-#include <kdbhelper.h>
+#include <elektra/kdb.h>
+#include <internal/utility/assert.h>
+#include <elektra/kdb/errors.h>
+#include <internal/utility/old_helper.h>
 
 #include "driver.h"
 #include "error.h"

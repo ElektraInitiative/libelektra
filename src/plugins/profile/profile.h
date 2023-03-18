@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_PROFILE_H
 #define ELEKTRA_PLUGIN_PROFILE_H
 
-#include <kdbplugin.h>
+#include <elektra/plugin/plugin.h>
 
 
 int elektraProfileOpen (Plugin * handle, Key * errorKey);

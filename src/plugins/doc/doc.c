@@ -9,19 +9,19 @@
 #include "doc.h"
 
 //! [plugin include]
-#include <kdbplugin.h>
+#include <elektra/plugin/plugin.h>
 //! [plugin include]
 //
 //! [plugin errors include]
 // using namespace ckdb; // for C++
-#include <kdberrors.h>
+#include <elektra/kdb/errors.h>
 //! [plugin errors include]
 
 #include <stdio.h>
 #include <stdlib.h>
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 
 

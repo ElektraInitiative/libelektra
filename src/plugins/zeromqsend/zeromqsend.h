@@ -10,8 +10,8 @@
 #ifndef ELEKTRA_PLUGIN_ZEROMQSEND_H
 #define ELEKTRA_PLUGIN_ZEROMQSEND_H
 
-#include <kdbassert.h>
-#include <kdbplugin.h>
+#include <internal/utility/assert.h>
+#include <elektra/plugin/plugin.h>
 
 #include <time.h> // struct timespec
 

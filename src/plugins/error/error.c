@@ -9,7 +9,7 @@
 #include "error.h"
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 
 #include <stdlib.h>

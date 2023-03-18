@@ -18,8 +18,8 @@
 #include <tests.h>
 
 #include "test.h"
-#include <kdbio.h>
-#include <kdbiotest.h>
+#include <elektra/io/api.h>
+#include <internal/io/test.h>
 
 #define FD_CONTROL_INTERVAL 200
 

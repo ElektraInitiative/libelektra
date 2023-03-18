@@ -10,9 +10,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdbprivate.h>
+#include <internal/kdbprivate.h>
 
-#include <kdbconfig.h>
+#include <internal/kdb/config.h>
 
 #include <tests_plugin.h>
 

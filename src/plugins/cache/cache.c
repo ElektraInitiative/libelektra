@@ -11,15 +11,15 @@
 #include "cache.h"
 
 #ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 
-#include <kdbassert.h>
-#include <kdberrors.h>
-#include <kdbhelper.h>
-#include <kdblogger.h>
-#include <kdbmodule.h>
-#include <kdbprivate.h>
+#include <internal/utility/assert.h>
+#include <elektra/kdb/errors.h>
+#include <internal/utility/old_helper.h>
+#include <internal/utility/logger.h>
+#include <internal/pluginload/module.h>
+#include <internal/kdbprivate.h>
 
 #include <fcntl.h>     // access()
 #include <ftw.h>       // nftw()

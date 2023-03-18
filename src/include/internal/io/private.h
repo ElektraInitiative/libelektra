@@ -8,7 +8,7 @@
 #ifndef KDB_IO_PRIVATE_H_
 #define KDB_IO_PRIVATE_H_
 
-#include "kdbio.h"
+#include <elektra/io/api.h>
 
 #ifdef __cplusplus
 namespace ckdb

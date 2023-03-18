@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_PROCESS_H
 #define ELEKTRA_PLUGIN_PROCESS_H
 
-#include <kdbplugin.h>
+#include <elektra/plugin/plugin.h>
 
 
 int elektraProcessOpen (Plugin * handle, Key * errorKey);

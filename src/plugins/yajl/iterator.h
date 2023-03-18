@@ -9,7 +9,7 @@
 #ifndef ELEKTRA_PLUGIN_YAJL_ITERATOR_H
 #define ELEKTRA_PLUGIN_YAJL_ITERATOR_H
 
-#include "kdb.h"
+#include <elektra/kdb.h>
 
 typedef struct _keyNameReverseIterator
 {

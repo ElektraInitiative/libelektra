@@ -15,10 +15,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdbhelper.h>
+#include <internal/utility/old_helper.h>
 
-#include <kdbease.h>
-#include <kdberrors.h>
+#include <elektra/ease/old_ease.h>
+#include <elektra/kdb/errors.h>
 
 #define CHECK_TYPE(key, var, toValue)                                                                                                      \
 	{                                                                                                                                  \

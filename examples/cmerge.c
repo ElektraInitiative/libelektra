@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdb.h>
-#include <kdbmerge.h>
+#include <elektra/kdb.h>
+#include <elektra/merge.h>
 #include <stdio.h>
 
 static void print_results (KeySet * result, Key * resultRoot, Key * informationKey)

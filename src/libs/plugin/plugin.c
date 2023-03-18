@@ -7,13 +7,19 @@
  */
 
 #ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 
-#include <kdbassert.h>
-#include <kdbinternal.h>
-
-
+#include <internal/utility/assert.h>
+#include <elektra/kdb.h>
+#include <internal/kdb/config.h>
+#include <elektra/kdb/errors.h>
+#include <elektra/ease/old_ease.h>
+#include <elektra/ease/meta.h>
+#include <internal/utility/logger.h>
+#include <internal/pluginload/module.h>
+#include <elektra/plugin/plugin.h>
+#include <internal/kdbprivate.h>
 /**
  * @brief Allows one to Export Methods for a Plugin.
  *

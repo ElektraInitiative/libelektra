@@ -13,9 +13,9 @@
 #ifndef KDB_NOTIFICATION_PLUGIN_H_
 #define KDB_NOTIFICATION_PLUGIN_H_
 
-#include "kdb.h"
-#include "kdbnotification.h"
-#include "kdbplugin.h"
+#include <elektra/kdb.h>
+#include <elektra/notifications.h>
+#include <elektra/plugin/plugin.h>
 
 #ifdef __cplusplus
 namespace ckdb

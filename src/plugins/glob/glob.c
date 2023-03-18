@@ -10,11 +10,11 @@
 #include "glob.h"
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 
 #include <fnmatch.h>
-#include <kdbhelper.h>
+#include <internal/utility/old_helper.h>
 
 struct GlobFlagMap
 {

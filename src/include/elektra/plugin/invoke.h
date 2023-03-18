@@ -1,8 +1,8 @@
 #ifndef KDBINVOKE_H
 #define KDBINVOKE_H
 
-#include <kdb.h>
-#include <kdbplugin.h>
+#include <elektra/kdb.h>
+#include <elektra/plugin/plugin.h>
 
 #ifdef __cplusplus
 namespace ckdb

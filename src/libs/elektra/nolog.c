@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdblogger.h>
+#include <internal/utility/logger.h>
 
 #include <stdarg.h>
 #include <stdio.h>

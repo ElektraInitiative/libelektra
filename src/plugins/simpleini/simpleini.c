@@ -8,17 +8,17 @@
 
 #define _GNU_SOURCE
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 
 #include "simpleini.h"
 #include <errno.h>
 
-#include <kdbassert.h>
-#include <kdbease.h>
-#include <kdberrors.h>
-#include <kdblogger.h>
-#include <kdbutility.h>
+#include <internal/utility/assert.h>
+#include <elektra/ease/old_ease.h>
+#include <elektra/kdb/errors.h>
+#include <internal/utility/logger.h>
+#include <internal/utility/old_utility.h>
 
 #include <stdio.h>
 #include <stdlib.h>

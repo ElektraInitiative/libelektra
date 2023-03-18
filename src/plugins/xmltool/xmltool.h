@@ -9,7 +9,7 @@
 #ifndef ELEKTRA_PLUGIN_XMLTOOL_H
 #define ELEKTRA_PLUGIN_XMLTOOL_H
 
-#include <kdbplugin.h>
+#include <elektra/plugin/plugin.h>
 #include <stdio.h>
 
 

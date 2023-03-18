@@ -9,8 +9,8 @@
 
 #include "passwd.h"
 
-#include <kdberrors.h>
-#include <kdbhelper.h>
+#include <elektra/kdb/errors.h>
+#include <internal/utility/old_helper.h>
 
 #include <pwd.h>
 #include <stdio.h>

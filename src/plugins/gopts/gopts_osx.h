@@ -13,7 +13,7 @@
 #include <crt_externs.h>
 #include <string.h>
 
-#include <kdbhelper.h>
+#include <internal/utility/old_helper.h>
 
 extern char ** environ;
 

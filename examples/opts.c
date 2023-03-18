@@ -7,9 +7,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdbease.h>
-#include <kdbhelper.h>
-#include <kdbopts.h>
+#include <elektra/ease/old_ease.h>
+#include <internal/utility/old_helper.h>
+#include <elektra/opts.h>
 
 #include <stdio.h>
 #include <stdlib.h>

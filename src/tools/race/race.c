@@ -6,9 +6,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdb.h>
-#include <kdbhelper.h>
-#include <kdbmacros.h>
+#include <elektra/kdb.h>
+#include <internal/utility/old_helper.h>
+#include <internal/macros/utils.h>
 
 #include <fcntl.h>
 #include <pthread.h>

@@ -10,11 +10,11 @@
 #include "hosts.h"
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 
-#include <kdbextension.h>
-
+#include <elektra/ease/old_ease.h>
+#include <elektra/ease/meta.h>
 static int keyCmpOrderWrapper (const void * a, const void * b)
 {
 	return elektraKeyCmpOrder (*((const Key **) a), *((const Key **) b));

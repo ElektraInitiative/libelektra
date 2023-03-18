@@ -9,10 +9,10 @@
 #include "fstab.h"
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 
-#include <kdblogger.h>
+#include <internal/utility/logger.h>
 
 #define MAX_NUMBER_SIZE 10
 

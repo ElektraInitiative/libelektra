@@ -15,9 +15,9 @@
 
 #include <errno.h>
 #include <gcrypt.h>
-#include <kdbassert.h>
-#include <kdberrors.h>
-#include <kdbtypes.h>
+#include <internal/utility/assert.h>
+#include <elektra/kdb/errors.h>
+#include <elektra/type/types.h>
 #include <pthread.h>
 #include <stdlib.h>
 

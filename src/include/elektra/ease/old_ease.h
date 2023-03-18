@@ -1,8 +1,8 @@
 #ifndef KDBEASE_H
 #define KDBEASE_H
 
-#include <kdb.h>
-#include <kdbtypes.h>
+#include <elektra/kdb.h>
+#include <elektra/type/types.h>
 
 #ifdef __cplusplus
 namespace ckdb

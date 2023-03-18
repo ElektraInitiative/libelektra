@@ -14,8 +14,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <kdberrors.h>
-#include <kdbmacros.h>
+#include <elektra/kdb/errors.h>
+#include <internal/macros/utils.h>
 
 #include <yajl/yajl_gen.h>
 

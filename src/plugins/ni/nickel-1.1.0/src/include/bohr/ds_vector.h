@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdbhelper.h>
+#include <internal/utility/old_helper.h>
 
 
 // Controls inlining of this library's functions.

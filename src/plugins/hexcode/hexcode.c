@@ -9,10 +9,10 @@
 #include "hexcode.h"
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 
-#include <kdbhelper.h>
+#include <internal/utility/old_helper.h>
 
 #include <stdlib.h>
 #include <string.h>

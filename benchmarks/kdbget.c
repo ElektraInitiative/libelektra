@@ -9,7 +9,7 @@
 #include <stdio.h>
 
 #include <benchmarks.h>
-#include <kdb.h>
+#include <elektra/kdb.h>
 
 #define CSV_STR_FMT "%s;%s;%d\n"
 

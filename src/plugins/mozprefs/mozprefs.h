@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_PREFS_H
 #define ELEKTRA_PLUGIN_PREFS_H
 
-#include <kdbplugin.h>
+#include <elektra/plugin/plugin.h>
 
 
 int elektraMozprefsGet (Plugin * handle, KeySet * ks, Key * parentKey);

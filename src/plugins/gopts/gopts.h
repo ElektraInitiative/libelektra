@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_OPTS_H
 #define ELEKTRA_PLUGIN_OPTS_H
 
-#include <kdbplugin.h>
+#include <elektra/plugin/plugin.h>
 
 int elektraGOptsGet (Plugin * handle, KeySet * ks, Key * parentKey);
 

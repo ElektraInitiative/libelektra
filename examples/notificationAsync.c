@@ -17,11 +17,11 @@
  *
  */
 
-#include <kdb.h>
-#include <kdbhelper.h>	     // elektraFree
-#include <kdbio.h>	     // I/O binding functions (elektraIo*)
-#include <kdbio/uv.h>	     // I/O binding constructor for uv (elektraIoUvNew)
-#include <kdbnotification.h> // notification functions
+#include <elektra/kdb.h>
+#include <internal/utility/old_helper.h>	     // elektraFree
+#include <elektra/io/api.h>	     // I/O binding functions (elektraIo*)
+#include <elektra/io/uv.h>	     // I/O binding constructor for uv (elektraIoUvNew)
+#include <elektra/notifications.h> // notification functions
 
 #include <uv.h> // uv functions
 
