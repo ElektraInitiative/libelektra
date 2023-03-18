@@ -20,7 +20,6 @@ Further important concepts are explained in:
 
 - [bootstrapping](/doc/help/elektra-bootstrapping.md)
 - [granularity](/doc/help/elektra-granularity.md)
-- [sync-flag](/doc/help/elektra-sync-flag.md)
 
 ## Outdated
 

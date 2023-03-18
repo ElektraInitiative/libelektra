@@ -128,14 +128,10 @@ interface Elektra extends Library {
    *     #kdbSet(Pointer, Pointer, Pointer) kdbSet()}: initially (after {@link #kdbOpen(Pointer,
    *     Pointer) kdbOpen()}) and also after conflict errors in {@link #kdbSet(Pointer, Pointer,
    *     Pointer) kdbSet()}.
-   * @implNote Optimization: Each key is checked using the native function underlying {@link
-   *     #keyNeedSync(Pointer) keyNeedSync()} before being actually committed. If no key of a
-   *     backend needs to be synced any affairs to backends are omitted and {@code 0} is returned.
    *     <br>
    *     It is your responsibility to save the original keyset if you need it afterwards.<br>
    *     If you want to be sure to get a fresh keyset again, you need to open a second handle to the
    *     key database using kdbOpen().
-   * @see #keyNeedSync(Pointer) keyNeedSync()
    * @see #kdbOpen(Pointer, Pointer) kdbopen() and
    * @see #kdbGet(Pointer, Pointer, Pointer) kdbGet() must be called first
    * @see #kdbClose(Pointer, Pointer) kdbClose() must be called afterwards
@@ -251,8 +247,6 @@ interface Elektra extends Library {
   /* Methods for Making Tests */
 
   int keyCmp(Pointer k1, Pointer k2);
-
-  int keyNeedSync(Pointer key);
 
   int keyIsBelow(Pointer key, Pointer check);
 

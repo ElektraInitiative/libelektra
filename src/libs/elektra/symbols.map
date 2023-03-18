@@ -67,7 +67,6 @@ libelektra_0.8 {
 	keyIsDirectlyBelow;
 	keyIsString;
 	keyName;
-	keyNeedSync;
 	keyNew;
 	keyNextMeta;
 	keySetBaseName;

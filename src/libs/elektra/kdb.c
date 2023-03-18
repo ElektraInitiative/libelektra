@@ -2289,7 +2289,7 @@ static bool runSetPhase (KeySet * backends, Key * parentKey, ElektraKdbPhase pha
  *
  * @par Optimization
  * Only backends that
- * - contain at least changed key according to keyNeedSync(),
+ * - contain at least changed key according to elektraDiffCalculate(),
  * - contain fewer keys than at the end of kdbGet()
  * will be called.
  * There won't be an unnecessary write for unchanged keys.
