@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <iostream>
 
-#include <kdbconfig.h>
+#include <internal/kdb/config.h>
 #include <plugindatabase.hpp>
 
 #include <gtest/gtest.h>

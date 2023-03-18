@@ -11,7 +11,7 @@
 #include <errors/errorTypes.hpp>
 #include <errors/warningTypes.hpp>
 #include <gtest/gtest.h>
-#include <kdberrors.h> // for code and description constants
+#include <elektra/kdb/errors.h> // for code and description constants
 
 TEST (Error, TestWarnings)
 {

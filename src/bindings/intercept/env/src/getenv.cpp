@@ -16,13 +16,13 @@
 #define _GNU_SOURCE // for RTLD_NEXT (except BSDI)
 #endif
 
-#include <kdbconfig.h>
+#include <internal/kdb/config.h>
 #include <kdbgetenv.h>
-#include <kdbmacros.h>
+#include <internal/macros/utils.h>
 
 #include <kdbcontext.hpp>
 
-#include <kdbhelper.h>
+#include <internal/utility/old_helper.h>
 
 #include <dlfcn.h>
 #include <libgen.h>

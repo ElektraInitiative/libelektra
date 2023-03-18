@@ -23,7 +23,7 @@ typedef Delegator<elektra::YourPluginClass> YPC;
 #ifndef KDBPLUGIN_HPP
 #define KDBPLUGIN_HPP
 
-#include <kdbplugin.h>
+#include <elektra/plugin/plugin.h>
 #include <key.hpp>
 #include <keyset.hpp>
 

@@ -18,7 +18,7 @@
 #include <unordered_set>
 
 #include <kdb.hpp>
-#include <kdbmacros.h>
+#include <internal/macros/utils.h>
 
 class EmptyGenTemplate;
 

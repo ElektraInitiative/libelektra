@@ -15,8 +15,8 @@
 #include "write.hpp"
 
 #include <kdb.hpp>
-#include <kdberrors.h>
-#include <kdblogger.h>
+#include <elektra/kdb/errors.h>
+#include <internal/utility/logger.h>
 
 #include "yaml-cpp/yaml.h"
 

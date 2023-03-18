@@ -12,8 +12,8 @@
 #endif
 
 #include "lua.hpp"
-#include <kdbhelper.h>
-#include <kdbmacros.h>
+#include <internal/utility/old_helper.h>
+#include <internal/macros/utils.h>
 
 #include <key.hpp>
 #include <keyset.hpp>
@@ -25,7 +25,7 @@ extern "C" {
 }
 #include "runtime.h"
 
-#include <kdberrors.h>
+#include <elektra/kdb/errors.h>
 using namespace ckdb;
 
 #ifndef LUA_OK

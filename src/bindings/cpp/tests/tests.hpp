@@ -10,7 +10,7 @@
 #define KDB_TESTS_HPP
 
 #include <kdb.hpp>
-#include <kdbmacros.h>
+#include <internal/macros/utils.h>
 #include <key.hpp>
 #include <keyset.hpp>
 

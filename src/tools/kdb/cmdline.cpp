@@ -10,7 +10,7 @@
 
 #include <backendparser.hpp>
 #include <kdb.hpp>
-#include <kdbconfig.h>
+#include <internal/kdb/config.h>
 #include <keysetget.hpp>
 #include <keysetio.hpp>
 #include <mergehelper.hpp>
