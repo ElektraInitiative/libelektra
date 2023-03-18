@@ -49,11 +49,6 @@ static void test_getWithLogGetSet (void)
 	Key * parentKey = keyNew ("system:/test", KEY_END);
 	KeySet * ksOriginal = ksNew (1, keyNew ("system:/test/modifyme", KEY_VALUE, "xyz", KEY_END), KS_END);
 
-	for (elektraCursor i = 0; i < ksGetSize (ksOriginal); i++)
-	{
-		keyClearSync (ksAtCursor (ksOriginal, i));
-	}
-
 	const char * expectedOutput = "loading configuration: system:/test\n";
 
 	char * buffer;
@@ -101,11 +96,6 @@ static void test_changeTracking (void)
 				     keyNew ("system:/test/modifyme", KEY_VALUE, "xyz", KEY_END),
 				     keyNew ("system:/test/willbegone", KEY_VALUE, "123", KEY_END),
 				     keyNew ("system:/test/onlymeta", KEY_VALUE, "999", KEY_META, "meta:/test", "123", KEY_END), KS_END);
-
-	for (elektraCursor i = 0; i < ksGetSize (ksOriginal); i++)
-	{
-		keyClearSync (ksAtCursor (ksOriginal, i));
-	}
 
 	KeySet * ksModified = ksDeepDup (ksOriginal);
 	keyDel (ksLookupByName (ksModified, "system:/test/willbegone", KDB_O_POP));

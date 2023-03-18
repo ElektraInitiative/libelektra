@@ -51,18 +51,6 @@
 #define KDB_GET_PHASE_POST_STORAGE_NONSPEC (KDB_GET_PHASE_POST_STORAGE "/nonspec")
 
 /**
- * removes the SYNC flag on all keys of the provided KeySet
- * @param ks the KeySet
- */
-static void clearAllSync (KeySet * ks)
-{
-	for (elektraCursor i = 0; i < ksGetSize (ks); i++)
-	{
-		keyClearSync (ksAtCursor (ks, i));
-	}
-}
-
-/**
  * @internal
  *
  * @brief appends duplicated keys from @p toAppend to @p ks
@@ -1969,7 +1957,6 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	KeySet * keysFromBackends = ksNew (0, KS_END);
 	backendsMerge (backends, keysFromBackends);
 	ksAppend (ks, keysFromBackends);
-	clearAllSync (ks);
 
 	// TODO (atmaxinger): should we have a default:/ backend?
 	ksAppend (ks, defaults);
@@ -2562,8 +2549,6 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 
 		sendNotificationHook = sendNotificationHook->next;
 	}
-
-	clearAllSync (ks);
 
 	keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 	keyDel (initialParent);

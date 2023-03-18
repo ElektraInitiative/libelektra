@@ -30,7 +30,6 @@ TEST (kdb, get_set)
 		kdb.get (ks, "user:/tests/key3");
 		exit_if_fail (ks.lookup ("user:/tests/key3/3"), "could not find previously written key");
 		succeed_if (ks.lookup ("user:/tests/key3/3").get<std::string> () == "value", "could not get value");
-		succeed_if (!ks.lookup ("user:/tests/key3/3").needSync (), "should not need sync");
 	}
 
 	// now remove keys (cleanup)

@@ -414,10 +414,7 @@ KeySet * ksDeepDup (const KeySet * source)
 	{
 		Key * k = source->data->array[i];
 		Key * d = keyDup (k, KEY_CP_ALL);
-		if (!k->needsSync)
-		{
-			keyClearSync (d);
-		}
+
 		if (ksAppendKey (keyset, d) == -1)
 		{
 			ksDel (keyset);

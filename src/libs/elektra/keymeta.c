@@ -475,7 +475,6 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
 		{
 			/*It was already there, so lets drop that one*/
 			keyDel (ret);
-			key->needsSync = true;
 		}
 	}
 
@@ -508,7 +507,6 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
 	toSet->hasReadOnlyMeta = true;
 
 	ksAppendKey (key->meta, toSet);
-	key->needsSync = true;
 	return metaStringSize;
 }
 

@@ -273,13 +273,6 @@ struct _Key
 	bool isInMmap : 1;
 
 	/**
-	 * Key need sync.
-	 * If name, value or metadata are changed this flag will be set,
-	 * so that the backend will sync the key to database.
-	 */
-	bool needsSync : 1;
-
-	/**
 	 * Read only flag for name.
 	 * Key name is read only and not allowed to be changed.
 	 * All attempts to change the name will lead to an error.
@@ -595,7 +588,6 @@ Plugin * elektraFindInternalNotificationPlugin (KDB * kdb);
 /*Private helper for key*/
 ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize);
 void keyInit (Key * key);
-void keyClearSync (Key * key);
 int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix);
 
 /*Private helper for keyset*/
