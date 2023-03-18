@@ -12,7 +12,7 @@
 
 #include <vector>
 
-#include <kdblogger.h>
+#include <internal/utility/logger.h>
 
 #include <keyset.hpp>
 

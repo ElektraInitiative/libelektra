@@ -14,10 +14,10 @@
 #include <ruby.h>
 
 #ifndef HAVE_KDBCONFIG
-#include <kdbconfig.h>
+#include <internal/kdb/config.h>
 #endif
 
-#include <kdbmacros.h>
+#include <internal/macros/utils.h>
 
 #include SWIG_RUNTIME
 #include "ruby.hpp"
@@ -28,9 +28,9 @@
 /* for global variable access */
 #include <mutex>
 
-#include <kdbassert.h>
-#include <kdberrors.h>
-#include <kdblogger.h>
+#include <internal/utility/assert.h>
+#include <elektra/kdb/errors.h>
+#include <internal/utility/logger.h>
 
 #include <stdarg.h>
 

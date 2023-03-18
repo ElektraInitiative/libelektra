@@ -1,7 +1,7 @@
 
 #include "errors/baseNotification.hpp"
 #include <iostream>
-#include <kdbprivate.h>
+#include <internal/kdbprivate.h>
 #include <utility>
 
 namespace kdb

@@ -10,7 +10,7 @@
 
 #include <cmdline.hpp>
 #include <kdb.hpp>
-#include <kdblogger.h>
+#include <internal/utility/logger.h>
 
 #include <iostream>
 

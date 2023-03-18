@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_CPP_KCONFIG_DELEGATE_HPP
 #define ELEKTRA_CPP_KCONFIG_DELEGATE_HPP
 
-#include <kdberrors.h>
+#include <elektra/kdb/errors.h>
 #include <kdbplugin.hpp>
 
 namespace elektra

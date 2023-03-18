@@ -9,8 +9,8 @@
 #include "enums.hpp"
 #include "common.hpp"
 #include <command.hpp>
-#include <kdbease.h>
-#include <kdbhelper.h>
+#include <elektra/ease/old_ease.h>
+#include <internal/utility/old_helper.h>
 
 kainjow::mustache::list EnumProcessor::getValues (const std::string & prefix, const kdb::Key & key, std::string & fromStringSwitch,
 						  std::string & valuesString, size_t & trieDepth)

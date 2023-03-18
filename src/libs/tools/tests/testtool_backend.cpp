@@ -14,7 +14,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include <kdb.hpp>
-#include <kdbconfig.h>
+#include <internal/kdb/config.h>
 #include <string>
 
 // FIXME [new_backend]: tests disabled, mount tooling will be rewritten in C

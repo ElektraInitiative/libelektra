@@ -16,8 +16,8 @@
 
 #include <unistd.h>
 
-#include <kdberrors.h>
-#include <kdblogger.h>
+#include <elektra/kdb/errors.h>
+#include <internal/utility/logger.h>
 
 using namespace ckdb;
 

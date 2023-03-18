@@ -20,13 +20,13 @@
 
 #include <gtest/gtest.h>
 #include <kdb.hpp>
-#include <kdbconfig.h>
+#include <internal/kdb/config.h>
 
 #ifdef ENABLE_ASAN
 #include <sanitizer/lsan_interface.h>
 #endif
 
-#include <kdbmacros.h>
+#include <internal/macros/utils.h>
 
 ELEKTRA_UNUSED static bool isRunningWithValgrind (void)
 {

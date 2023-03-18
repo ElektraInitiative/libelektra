@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_YAMLCPP_H
 #define ELEKTRA_PLUGIN_YAMLCPP_H
 
-#include <kdbplugin.h>
+#include <elektra/plugin/plugin.h>
 
 extern "C" {
 

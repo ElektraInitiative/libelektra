@@ -9,8 +9,8 @@
 #include "treeviewmodel.hpp"
 
 #include <backends.hpp>
-#include <kdbconfig.h> // for DEBUG and VERBOSE
-#include <kdbease.h>
+#include <internal/kdb/config.h> // for DEBUG and VERBOSE
+#include <elektra/ease/old_ease.h>
 #include <modules.hpp>
 #include <plugin.hpp>
 #include <plugins.hpp>
@@ -20,7 +20,7 @@
 #include <QtDBus/QtDBus>
 #endif
 
-#include "kdblogger.h"
+#include <internal/utility/logger.h>
 #include <merging/automergeconfiguration.hpp>
 #include <merging/automergestrategy.hpp>
 #include <merging/mergeconflictstrategy.hpp>

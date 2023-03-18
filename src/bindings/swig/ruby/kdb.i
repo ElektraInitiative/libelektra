@@ -46,8 +46,8 @@ namespace std {
 
 %{
   extern "C" {
-    #include "kdbconfig.h"
-    #include "kdb.h"
+    #include <internal/kdb/config.h>
+    #include <elektra/kdb.h>
   }
 
   #include "keyexcept.hpp"

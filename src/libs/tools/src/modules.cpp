@@ -11,8 +11,8 @@
 #include <keyset.hpp>
 #include <modules.hpp>
 
-#include <kdbmodule.h>
-#include <kdbplugin.h>
+#include <internal/pluginload/module.h>
+#include <elektra/plugin/plugin.h>
 
 using namespace std;
 

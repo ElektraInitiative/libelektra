@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_CPPTEMPLATE_HPP
 #define ELEKTRA_PLUGIN_CPPTEMPLATE_HPP
 
-#include <kdbplugin.h>
+#include <elektra/plugin/plugin.h>
 
 using ckdb::Key;
 using ckdb::KeySet;

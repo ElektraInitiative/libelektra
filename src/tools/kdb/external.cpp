@@ -6,9 +6,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #include <external.hpp>
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdb.hpp>
 
 #include <iostream>

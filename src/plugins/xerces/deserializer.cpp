@@ -21,8 +21,8 @@
 #include <locale>
 #include <map>
 
-#include <kdbease.h>
-#include <kdblogger.h>
+#include <elektra/ease/old_ease.h>
+#include <internal/utility/logger.h>
 #include <key.hpp>
 
 XERCES_CPP_NAMESPACE_USE

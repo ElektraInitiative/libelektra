@@ -11,7 +11,7 @@
 #include <helper/keyhelper.hpp>
 #include <plugins.hpp>
 
-#include <kdbprivate.h>
+#include <internal/kdbprivate.h>
 
 #include <algorithm>
 #include <iterator>
