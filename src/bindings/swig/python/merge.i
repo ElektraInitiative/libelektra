@@ -9,7 +9,7 @@
 %import "kdb.i"
 
 %{
-#include "kdbmerge.h"
+#include <elektra/merge.h>
 %}
 
 ckdb::KeySet * elektraMerge (ckdb::KeySet * our, ckdb::Key * ourRoot, ckdb::KeySet * their, ckdb::Key * theirRoot, ckdb::KeySet * base, ckdb::Key * baseRoot, ckdb::Key * resultKey,

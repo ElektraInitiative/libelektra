@@ -16,12 +16,12 @@
 #include <modules.hpp>
 
 #include <coloredkdbio.hpp>
-#include <kdb.h>
-#include <kdbease.h>
-#include <kdbhelper.h>
-#include <kdbopts.h>
-#include <kdbplugin.h>
-#include <kdbtypes.h>
+#include <elektra/ease/old_ease.h>
+#include <elektra/kdb.h>
+#include <elektra/opts.h>
+#include <elektra/plugin/plugin.h>
+#include <elektra/type/types.h>
+#include <internal/utility/old_helper.h>
 
 #include <fstream>
 #include <key.hpp>

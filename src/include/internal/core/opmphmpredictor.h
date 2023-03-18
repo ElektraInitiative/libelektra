@@ -9,6 +9,7 @@
 #define OPMPHM_PREDICTOR_H
 
 #include <stdint.h>
+#include <stdlib.h>
 
 /**
  * Order Preserving Minimal Perfect Hash Map Predictor

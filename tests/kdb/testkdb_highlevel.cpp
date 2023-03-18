@@ -6,11 +6,11 @@
  * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  */
 
-#include <elektra.h>
-#include <elektra/conversion.h>
+#include <elektra/highlevel.h>
+#include <elektra/type/conversion.h>
 
 #include <gtest/gtest-elektra.h>
-#include <kdbhelper.h>
+#include <internal/utility/old_helper.h>
 
 #define EXPECT_KEYVALUE(Key, Value) EXPECT_PRED2 (keyHasValue, Key, Value)
 #define EXPECT_KEYMETA(Key, Meta, Value) EXPECT_PRED3 (keyHasMetaValue, Key, Meta, Value)

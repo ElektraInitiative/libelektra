@@ -9,8 +9,8 @@
 #ifndef ELEKTRA_PLUGIN_YAMLCPP_LOG_HPP
 #define ELEKTRA_PLUGIN_YAMLCPP_LOG_HPP
 
+#include <internal/utility/logger.h>
 #include <kdb.hpp>
-#include <kdblogger.h>
 
 #ifdef HAVE_LOGGER
 

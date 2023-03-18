@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdbhelper.h>
+#include <internal/utility/old_helper.h>
 #include "error.h"
 #include "scalar.h"
 #include "driver.h"

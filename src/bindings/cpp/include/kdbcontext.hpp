@@ -9,7 +9,7 @@
 #ifndef ELEKTRA_KDBCONTEXT_HPP
 #define ELEKTRA_KDBCONTEXT_HPP
 
-#include <kdbmeta.h>
+#include <elektra/ease/meta.h>
 #include <kdbvalue.hpp>
 
 #include <cassert>

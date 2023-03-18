@@ -6,6 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+%define ELEKTRA_SENTINEL %enddef
+
 %include <attribute.i>
 %include <std_string.i>
 %include <stdint.i>
@@ -48,7 +50,6 @@
 %constant const short VERSION_PATCH = KDB_VERSION_PATCH;
 // we only care about the enums. ignore the c functions
 %ignore ckdb;
-%include "kdb.h"
 
 
 /* handle exceptions */
