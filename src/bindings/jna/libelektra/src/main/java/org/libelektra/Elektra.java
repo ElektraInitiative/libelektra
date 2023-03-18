@@ -127,8 +127,7 @@ interface Elektra extends Library {
    * @apiNote {@link #kdbGet(Pointer, Pointer, Pointer) kdbGet()} must be called before {@link
    *     #kdbSet(Pointer, Pointer, Pointer) kdbSet()}: initially (after {@link #kdbOpen(Pointer,
    *     Pointer) kdbOpen()}) and also after conflict errors in {@link #kdbSet(Pointer, Pointer,
-   *     Pointer) kdbSet()}.
-   *     <br>
+   *     Pointer) kdbSet()}. <br>
    *     It is your responsibility to save the original keyset if you need it afterwards.<br>
    *     If you want to be sure to get a fresh keyset again, you need to open a second handle to the
    *     key database using kdbOpen().
