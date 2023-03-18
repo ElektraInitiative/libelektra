@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <internal/utility/rand.h>
 #include <internal/utility/assert.h>
+#include <internal/utility/rand.h>
 #include <time.h>
 
 /**

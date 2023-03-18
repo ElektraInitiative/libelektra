@@ -10,10 +10,10 @@
 
 #include <uv.h>
 
-#include <internal/utility/assert.h>
-#include <internal/utility/old_helper.h>
 #include <elektra/io/api.h>
+#include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
+#include <internal/utility/old_helper.h>
 
 /**
  * Container for required additional information for

@@ -11,9 +11,9 @@
 
 #include <curl/curl.h>
 #include <curl/easy.h>
+#include <elektra/kdb/errors.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <elektra/kdb/errors.h>
 #include <internal/utility/old_helper.h>
 #include <libgen.h>
 #include <openssl/md5.h>

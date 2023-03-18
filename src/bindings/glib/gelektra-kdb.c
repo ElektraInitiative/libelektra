@@ -1,6 +1,6 @@
 #include "gelektra-kdb.h"
-#include <elektra/ease/old_ease.h>
 #include <elektra/ease/meta.h>
+#include <elektra/ease/old_ease.h>
 #include <string.h>
 
 G_DEFINE_TYPE (GElektraKdb, gelektra_kdb, G_TYPE_OBJECT)

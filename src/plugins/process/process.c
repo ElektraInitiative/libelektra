@@ -10,9 +10,9 @@
 #include "process.h"
 
 #include <elektra/kdb/errors.h>
-#include <internal/utility/old_helper.h>
 #include <elektra/plugin/invoke.h>
 #include <internal/kdbprivate.h>
+#include <internal/utility/old_helper.h>
 
 #include <signal.h>
 #include <stdio.h>

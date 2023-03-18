@@ -10,9 +10,9 @@
 #include "helper.h"
 #include "crypto.h"
 #include "gpg.h"
-#include <internal/utility/assert.h>
 #include <elektra/kdb/errors.h>
 #include <elektra/plugin/invoke.h>
+#include <internal/utility/assert.h>
 #include <stdlib.h>
 
 /**

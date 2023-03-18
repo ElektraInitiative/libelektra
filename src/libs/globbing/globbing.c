@@ -6,9 +6,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <elektra/kdb.h>
-#include <elektra/ease/old_ease.h>
 #include <elektra/ease/globbing.h>
+#include <elektra/ease/old_ease.h>
+#include <elektra/kdb.h>
 #include <internal/utility/old_helper.h>
 
 #include <ctype.h>

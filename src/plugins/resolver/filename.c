@@ -8,9 +8,9 @@
 
 #include "resolver.h"
 
+#include <elektra/type/types.h>
 #include <errno.h>
 #include <internal/utility/old_helper.h>
-#include <elektra/type/types.h>
 #include <libgen.h>
 #include <pwd.h>
 #include <stdbool.h>

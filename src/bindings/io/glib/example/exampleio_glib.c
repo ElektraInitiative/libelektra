@@ -23,10 +23,10 @@
 #include <string.h> // memset & memcpy
 #include <unistd.h> // file descriptor numbers (STDIN_FILENO)
 
-#include <internal/utility/assert.h>	// assertions (ELEKTRA_NOT_NULL)
-#include <internal/utility/old_helper.h>	// malloc & free
-#include <elektra/io/api.h>	// I/O binding functions (elektraIo*)
-#include <elektra/io/glib.h> // I/O binding constructor for glib (elektraIoGlibNew)
+#include <elektra/io/api.h>		 // I/O binding functions (elektraIo*)
+#include <elektra/io/glib.h>		 // I/O binding constructor for glib (elektraIoGlibNew)
+#include <internal/utility/assert.h>	 // assertions (ELEKTRA_NOT_NULL)
+#include <internal/utility/old_helper.h> // malloc & free
 
 #include <glib.h> // glib functions
 

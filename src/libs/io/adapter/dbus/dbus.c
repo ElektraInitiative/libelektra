@@ -5,9 +5,9 @@
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
-#include <internal/utility/old_helper.h>
 #include <elektra/io/adapters/dbus.h>
 #include <internal/utility/logger.h>
+#include <internal/utility/old_helper.h>
 
 #include <stdlib.h>
 #include <string.h>

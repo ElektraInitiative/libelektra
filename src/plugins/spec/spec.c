@@ -9,14 +9,14 @@
 
 #include "spec.h"
 
-#include <internal/utility/assert.h>
+#include <elektra/ease/globbing.h>
+#include <elektra/ease/meta.h>
 #include <elektra/ease/old_ease.h>
 #include <elektra/kdb/errors.h>
-#include <elektra/ease/globbing.h>
-#include <internal/utility/old_helper.h>
-#include <internal/utility/logger.h>
-#include <elektra/ease/meta.h>
 #include <elektra/type/types.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/logger.h>
+#include <internal/utility/old_helper.h>
 
 #ifndef __MINGW32__
 #include <fnmatch.h>

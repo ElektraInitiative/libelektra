@@ -11,8 +11,8 @@
 
 #include <errno.h>
 
-#include <internal/kdb/config.h>
 #include <elektra/kdb/errors.h>
+#include <internal/kdb/config.h>
 
 #include <stdio.h>
 #include <string.h>

@@ -10,8 +10,8 @@
 
 #include <stdio.h> // printf() & co
 
-#include <elektra/io/uv.h>
 #include <elektra/io/plugin.h>
+#include <elektra/io/uv.h>
 
 #include <uv.h>
 

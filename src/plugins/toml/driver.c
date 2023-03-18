@@ -17,8 +17,8 @@
 #include <string.h>
 
 #include <elektra/kdb.h>
-#include <internal/utility/assert.h>
 #include <elektra/kdb/errors.h>
+#include <internal/utility/assert.h>
 #include <internal/utility/old_helper.h>
 
 #include "driver.h"

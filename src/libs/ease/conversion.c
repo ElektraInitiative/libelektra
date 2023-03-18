@@ -6,10 +6,10 @@
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
-#include <elektra/ease/old_ease.h>
-#include <internal/utility/old_helper.h>
 #include <ctype.h>
+#include <elektra/ease/old_ease.h>
 #include <errno.h>
+#include <internal/utility/old_helper.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>

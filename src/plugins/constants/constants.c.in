@@ -7,9 +7,9 @@
  */
 
 #include <elektra/kdb.h>
+#include <elektra/plugin/plugin.h>
 #include <internal/kdb/config.h>
 #include <internal/macros/utils.h>
-#include <elektra/plugin/plugin.h>
 
 #include <string.h>
 

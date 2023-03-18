@@ -7,12 +7,12 @@
  */
 
 #include <elektra/highlevel.h>
-#include <elektra/type/conversion.h>
 #include <elektra/highlevel/types.h>
 #include <elektra/kdb/errors.h>
-#include <internal/utility/old_helper.h>
-#include <internal/utility/logger.h>
+#include <elektra/type/conversion.h>
 #include <internal/kdbprivate.h>
+#include <internal/utility/logger.h>
+#include <internal/utility/old_helper.h>
 #include <stdlib.h>
 
 #ifdef __cplusplus

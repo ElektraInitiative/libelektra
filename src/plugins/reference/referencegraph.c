@@ -1,6 +1,6 @@
 #include "referencegraph.h"
-#include <elektra/kdb.h>
 #include <elektra/ease/old_ease.h>
+#include <elektra/kdb.h>
 #include <internal/utility/old_helper.h>
 #include <stdlib.h>
 

@@ -9,8 +9,8 @@
 #include <elektra/kdb.h>
 
 // for keySetComment
-#include <elektra/ease/old_ease.h>
 #include <elektra/ease/meta.h>
+#include <elektra/ease/old_ease.h>
 #include <stdlib.h>
 
 /* TODO: With an external iterator, ksCurrent() to get the position where execution stopped is no longer available.

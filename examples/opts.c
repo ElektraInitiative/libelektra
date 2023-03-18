@@ -8,8 +8,8 @@
  */
 
 #include <elektra/ease/old_ease.h>
-#include <internal/utility/old_helper.h>
 #include <elektra/opts.h>
+#include <internal/utility/old_helper.h>
 
 #include <stdio.h>
 #include <stdlib.h>

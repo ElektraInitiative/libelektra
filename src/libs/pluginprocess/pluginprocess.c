@@ -48,11 +48,11 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <internal/pluginprocess.h>
 #include <elektra/kdb/errors.h>
 #include <elektra/plugin/invoke.h>
-#include <internal/utility/logger.h>
 #include <internal/kdbprivate.h> // To access the plugin function pointers
+#include <internal/pluginprocess.h>
+#include <internal/utility/logger.h>
 
 #include <errno.h>
 #include <limits.h>
