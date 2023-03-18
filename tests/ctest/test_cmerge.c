@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdbmerge.h>
+#include <elektra/merge.h>
 #include <tests.h>
 
 #define default_result_size 30 // Enough space for possible strange results

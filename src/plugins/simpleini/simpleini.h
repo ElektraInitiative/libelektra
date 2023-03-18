@@ -9,7 +9,7 @@
 #ifndef ELEKTRA_PLUGIN_SIMPLEINI_H
 #define ELEKTRA_PLUGIN_SIMPLEINI_H
 
-#include <kdbplugin.h>
+#include <elektra/plugin/plugin.h>
 
 
 int elektraSimpleiniOpen (Plugin * handle, Key * errorKey);

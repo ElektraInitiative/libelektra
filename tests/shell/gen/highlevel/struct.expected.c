@@ -32,12 +32,12 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <kdbhelper.h>
-#include <kdbinvoke.h>
-#include <kdbopts.h>
-#include <kdbgopts.h>
+#include <internal/utility/old_helper.h>
+#include <elektra/plugin/invoke.h>
+#include <elektra/opts.h>
+#include <elektra/kdb/contracts/gopts.h>
 
-#include <elektra/conversion.h>
+#include <elektra/type/conversion.h>
 
 static KeySet * embeddedSpec (void)
 {

@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_TEMPLATE_H
 #define ELEKTRA_PLUGIN_TEMPLATE_H
 
-#include <kdbplugin.h>
+#include <elektra/plugin/plugin.h>
 
 
 int elektraTemplateOpen (Plugin * handle, Key * errorKey);

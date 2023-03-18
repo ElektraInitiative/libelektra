@@ -32,9 +32,9 @@
 extern "C" {
 #endif
 
-#include <elektra.h>
+#include <elektra/highlevel.h>
 
-#include <kdbhelper.h>
+#include <internal/utility/old_helper.h>
 #include <string.h>
 
 #include "colors.h"

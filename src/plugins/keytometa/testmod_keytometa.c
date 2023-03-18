@@ -8,7 +8,7 @@
  */
 
 #ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 
 /* used for asprintf */

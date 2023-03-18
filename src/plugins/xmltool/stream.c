@@ -9,7 +9,7 @@
 #include "xmltool.h"
 
 #ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 
 #include <stdio.h>
@@ -19,9 +19,15 @@
 #include <unistd.h>
 
 #include "kdbtools.h"
-#include <kdbinternal.h>
-
-
+#include <elektra/kdb.h>
+#include <internal/kdb/config.h>
+#include <elektra/kdb/errors.h>
+#include <elektra/ease/old_ease.h>
+#include <elektra/ease/meta.h>
+#include <internal/utility/logger.h>
+#include <internal/pluginload/module.h>
+#include <elektra/plugin/plugin.h>
+#include <internal/kdbprivate.h>
 /**
  * @brief Methods to output, generate and toXML Keys and Keysets.
  *

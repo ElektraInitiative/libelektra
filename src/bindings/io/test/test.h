@@ -8,8 +8,8 @@
 #ifndef KDB_IOWRAPPER_TESTSUITE_H_
 #define KDB_IOWRAPPER_TESTSUITE_H_
 
-#include <kdbio.h>
-#include <kdbiotest.h>
+#include <elektra/io/api.h>
+#include <internal/io/test.h>
 #include <time.h>
 
 unsigned int elektraIoTestSuiteUtilGetCurrentTime (struct timespec * ts);

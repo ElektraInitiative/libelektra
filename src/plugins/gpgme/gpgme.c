@@ -8,14 +8,14 @@
  */
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 #include "gpgme.h"
 #include "keylist.h"
 #include <gpgme.h>
-#include <kdb.h>
-#include <kdberrors.h>
-#include <kdbtypes.h>
+#include <elektra/kdb.h>
+#include <elektra/kdb/errors.h>
+#include <elektra/type/types.h>
 #include <locale.h>
 #include <stdlib.h>
 #include <string.h>

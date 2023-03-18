@@ -10,7 +10,7 @@
 #include "keytometa.h"
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 
 

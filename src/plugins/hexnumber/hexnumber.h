@@ -11,7 +11,7 @@
 #ifndef ELEKTRA_HEXNUMBER_H
 #define ELEKTRA_HEXNUMBER_H
 
-#include <kdbplugin.h>
+#include <elektra/plugin/plugin.h>
 
 #define ELEKTRA_HEXNUMBER_PLUGIN_NAME "hexnumber"
 #define ELEKTRA_HEXNUMBER_META_KEY "internal/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/ishex"

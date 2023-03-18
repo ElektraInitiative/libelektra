@@ -7,9 +7,9 @@
  */
 
 
-#include "kdblogger.h"
+#include <internal/utility/logger.h>
 #ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 
 #include <stdio.h>
@@ -26,9 +26,9 @@
 #include <stdlib.h>
 #endif
 
-#include "kdb.h"
-#include "kdbprivate.h"
-#include <kdbassert.h>
+#include <elektra/kdb.h>
+#include <internal/kdbprivate.h>
+#include <internal/utility/assert.h>
 
 /**
  * @defgroup key Key

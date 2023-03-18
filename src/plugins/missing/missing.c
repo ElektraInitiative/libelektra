@@ -8,9 +8,9 @@
  */
 
 #include "missing.h"
-#include <kdberrors.h>
-#include <kdbhelper.h>
-#include <kdbplugin.h>
+#include <elektra/kdb/errors.h>
+#include <internal/utility/old_helper.h>
+#include <elektra/plugin/plugin.h>
 
 
 int elektraMissingGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)

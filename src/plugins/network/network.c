@@ -9,7 +9,7 @@
 #include "network.h"
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 
 /* Obtain address(es) matching host/port */

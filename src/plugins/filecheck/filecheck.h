@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_FILECHECK_H
 #define ELEKTRA_PLUGIN_FILECHECK_H
 
-#include <kdbplugin.h>
+#include <elektra/plugin/plugin.h>
 
 
 #define LF_BYTE 0x0A

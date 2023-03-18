@@ -14,9 +14,9 @@
 
 #include <tests.h>
 
-#include <kdbhelper.h>
-#include <kdbio.h>
-#include <kdbiotest.h>
+#include <internal/utility/old_helper.h>
+#include <elektra/io/api.h>
+#include <internal/io/test.h>
 
 /**
  * Get current time.

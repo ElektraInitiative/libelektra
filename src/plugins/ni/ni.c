@@ -9,11 +9,11 @@
 #include "ni.h"
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 
-#include <kdbease.h>
-#include <kdberrors.h>
+#include <elektra/ease/old_ease.h>
+#include <elektra/kdb/errors.h>
 
 #include <errno.h>
 #include <string.h>

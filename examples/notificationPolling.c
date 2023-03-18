@@ -13,9 +13,9 @@
  *
  */
 
-#include <kdb.h>
-#include <kdbhelper.h> // ELEKTRA_UNUSED
-#include <kdbnotification.h>
+#include <elektra/kdb.h>
+#include <internal/utility/old_helper.h> // ELEKTRA_UNUSED
+#include <elektra/notifications.h>
 
 #include <signal.h>
 #include <stdio.h>

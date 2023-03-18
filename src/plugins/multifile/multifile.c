@@ -13,12 +13,20 @@
 #include <errno.h>
 #include <fnmatch.h>
 #include <glob.h>
-#include <kdbconfig.h>
-#include <kdbhelper.h>
-#include <kdbinternal.h>
-#include <kdbmacros.h>
-#include <kdbmodule.h>
-#include <kdbplugin.h>
+#include <internal/kdb/config.h>
+#include <internal/utility/old_helper.h>
+#include <elektra/kdb.h>
+#include <internal/kdb/config.h>
+#include <elektra/kdb/errors.h>
+#include <elektra/ease/old_ease.h>
+#include <elektra/ease/meta.h>
+#include <internal/utility/logger.h>
+#include <internal/pluginload/module.h>
+#include <elektra/plugin/plugin.h>
+#include <internal/kdbprivate.h>
+#include <internal/macros/utils.h>
+#include <internal/pluginload/module.h>
+#include <elektra/plugin/plugin.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,7 +35,7 @@
 #include <unistd.h>
 
 #include "../resolver/shared.h"
-#include <kdbinvoke.h>
+#include <elektra/plugin/invoke.h>
 
 #define DEFAULT_RESOLVER "resolver"
 #define DEFAULT_PATTERN "*"

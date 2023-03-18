@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_CSVSTORAGE_H
 #define ELEKTRA_PLUGIN_CSVSTORAGE_H
 
-#include <kdbplugin.h>
+#include <elektra/plugin/plugin.h>
 
 
 int elektraCsvstorageGet (Plugin * handle, KeySet * ks, Key * parentKey);

@@ -11,7 +11,7 @@
 #ifndef ELEKTRA_PLUGIN_TOML_NODE_H
 #define ELEKTRA_PLUGIN_TOML_NODE_H
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <stdbool.h>
 
 typedef enum

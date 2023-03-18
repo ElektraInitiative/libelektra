@@ -8,16 +8,16 @@
  */
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 #include "crypto.h"
 #include "crypto_kdb_functions.h"
 #include "gcrypt_operations.h"
 #include "gpg.h"
 #include "helper.h"
-#include <kdb.h>
-#include <kdberrors.h>
-#include <kdbtypes.h>
+#include <elektra/kdb.h>
+#include <elektra/kdb/errors.h>
+#include <elektra/type/types.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>

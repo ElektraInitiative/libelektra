@@ -7,12 +7,12 @@
  */
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 
 
-#include <kdbassert.h>
-#include <kdberrors.h>
+#include <internal/utility/assert.h>
+#include <elektra/kdb/errors.h>
 
 #include <string.h>
 

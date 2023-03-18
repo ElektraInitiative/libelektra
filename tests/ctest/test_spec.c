@@ -8,7 +8,7 @@
 
 #include <tests.h>
 
-#include <kdbprivate.h>
+#include <internal/kdbprivate.h>
 
 static void test_lookupSingle (void)
 {

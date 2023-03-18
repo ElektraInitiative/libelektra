@@ -6,8 +6,8 @@
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
-#include "kdbease.h"
-#include "kdbhelper.h"
+#include <elektra/ease/old_ease.h>
+#include <internal/utility/old_helper.h>
 #include <ctype.h>
 #include <errno.h>
 #include <stdint.h>
@@ -46,7 +46,7 @@ int elektraKeyToString (const Key * key ELEKTRA_UNUSED, const char ** variable E
 #define VARIABLE_PARAM_NAME variable
 #define CODE_ONLY 1
 
-#include "macros/type_create_to_value.h"
+#include <internal/macros/type_create_to_value.h>
 
 #undef KDB_TYPE
 }
@@ -78,7 +78,7 @@ int elektraKeyToBoolean (const Key * key ELEKTRA_UNUSED, kdb_boolean_t * variabl
 #define KEY_PARAM_NAME key
 #define VARIABLE_PARAM_NAME variable
 
-#include "macros/type_create_to_value.h"
+#include <internal/macros/type_create_to_value.h>
 
 #undef KDB_TYPE
 }
@@ -108,7 +108,7 @@ int elektraKeyToChar (const Key * key ELEKTRA_UNUSED, kdb_char_t * variable ELEK
 #define KEY_PARAM_NAME key
 #define VARIABLE_PARAM_NAME variable
 
-#include "macros/type_create_to_value.h"
+#include <internal/macros/type_create_to_value.h>
 
 #undef KDB_TYPE
 }
@@ -142,7 +142,7 @@ int elektraKeyToOctet (const Key * key ELEKTRA_UNUSED, kdb_octet_t * variable EL
 #define KEY_PARAM_NAME key
 #define VARIABLE_PARAM_NAME variable
 
-#include "macros/type_create_to_value.h"
+#include <internal/macros/type_create_to_value.h>
 
 #undef KDB_TYPE
 }
@@ -174,7 +174,7 @@ int elektraKeyToShort (const Key * key ELEKTRA_UNUSED, kdb_short_t * variable EL
 #define KEY_PARAM_NAME key
 #define VARIABLE_PARAM_NAME variable
 
-#include "macros/type_create_to_value.h"
+#include <internal/macros/type_create_to_value.h>
 
 #undef KDB_TYPE
 }
@@ -208,7 +208,7 @@ int elektraKeyToUnsignedShort (const Key * key ELEKTRA_UNUSED, kdb_unsigned_shor
 #define KEY_PARAM_NAME key
 #define VARIABLE_PARAM_NAME variable
 
-#include "macros/type_create_to_value.h"
+#include <internal/macros/type_create_to_value.h>
 
 #undef KDB_TYPE
 }
@@ -240,7 +240,7 @@ int elektraKeyToLong (const Key * key ELEKTRA_UNUSED, kdb_long_t * variable ELEK
 #define KEY_PARAM_NAME key
 #define VARIABLE_PARAM_NAME variable
 
-#include "macros/type_create_to_value.h"
+#include <internal/macros/type_create_to_value.h>
 
 #undef KDB_TYPE
 }
@@ -274,7 +274,7 @@ int elektraKeyToUnsignedLong (const Key * key ELEKTRA_UNUSED, kdb_unsigned_long_
 #define KEY_PARAM_NAME key
 #define VARIABLE_PARAM_NAME variable
 
-#include "macros/type_create_to_value.h"
+#include <internal/macros/type_create_to_value.h>
 
 #undef KDB_TYPE
 }
@@ -306,7 +306,7 @@ int elektraKeyToLongLong (const Key * key ELEKTRA_UNUSED, kdb_long_long_t * vari
 #define KEY_PARAM_NAME key
 #define VARIABLE_PARAM_NAME variable
 
-#include "macros/type_create_to_value.h"
+#include <internal/macros/type_create_to_value.h>
 
 #undef KDB_TYPE
 }
@@ -340,7 +340,7 @@ int elektraKeyToUnsignedLongLong (const Key * key ELEKTRA_UNUSED, kdb_unsigned_l
 #define KEY_PARAM_NAME key
 #define VARIABLE_PARAM_NAME variable
 
-#include "macros/type_create_to_value.h"
+#include <internal/macros/type_create_to_value.h>
 
 #undef KDB_TYPE
 }
@@ -371,7 +371,7 @@ int elektraKeyToFloat (const Key * key ELEKTRA_UNUSED, kdb_float_t * variable EL
 #define KEY_PARAM_NAME key
 #define VARIABLE_PARAM_NAME variable
 
-#include "macros/type_create_to_value.h"
+#include <internal/macros/type_create_to_value.h>
 
 #undef KDB_TYPE
 }
@@ -402,7 +402,7 @@ int elektraKeyToDouble (const Key * key ELEKTRA_UNUSED, kdb_double_t * variable 
 #define KEY_PARAM_NAME key
 #define VARIABLE_PARAM_NAME variable
 
-#include "macros/type_create_to_value.h"
+#include <internal/macros/type_create_to_value.h>
 
 #undef KDB_TYPE
 }
@@ -435,7 +435,7 @@ int elektraKeyToLongDouble (const Key * key ELEKTRA_UNUSED, kdb_long_double_t * 
 #define KEY_PARAM_NAME key
 #define VARIABLE_PARAM_NAME variable
 
-#include "macros/type_create_to_value.h"
+#include <internal/macros/type_create_to_value.h>
 
 #undef KDB_TYPE
 }

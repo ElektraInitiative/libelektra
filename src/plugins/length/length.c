@@ -8,8 +8,8 @@
  */
 
 #include "length.h"
-#include <kdbease.h>
-#include <kdberrors.h>
+#include <elektra/ease/old_ease.h>
+#include <elektra/kdb/errors.h>
 #include <stdlib.h>
 
 

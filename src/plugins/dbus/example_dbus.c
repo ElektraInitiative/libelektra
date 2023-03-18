@@ -9,10 +9,10 @@
 #include "dbus.h"
 
 #ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 
-#include <kdbhelper.h>
+#include <internal/utility/old_helper.h>
 
 #include <stdio.h>
 

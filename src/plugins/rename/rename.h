@@ -11,9 +11,10 @@
 #ifndef ELEKTRA_PLUGIN_RENAME_H
 #define ELEKTRA_PLUGIN_RENAME_H
 
-#include <kdberrors.h>
-#include <kdbextension.h>
-#include <kdbplugin.h>
+#include <elektra/kdb/errors.h>
+#include <elektra/ease/old_ease.h>
+#include <elektra/ease/meta.h>
+#include <elektra/plugin/plugin.h>
 
 #define ELEKTRA_ORIGINAL_NAME_META "origname"
 

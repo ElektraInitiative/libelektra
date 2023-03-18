@@ -8,8 +8,8 @@
 
 #include "zeromqrecv.h"
 
-#include <kdbhelper.h>
-#include <kdblogger.h>
+#include <internal/utility/old_helper.h>
+#include <internal/utility/logger.h>
 
 static int setupNotificationCallback (Plugin * handle)
 {

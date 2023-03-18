@@ -13,8 +13,8 @@
 #include <curl/easy.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <kdberrors.h>
-#include <kdbhelper.h>
+#include <elektra/kdb/errors.h>
+#include <internal/utility/old_helper.h>
 #include <libgen.h>
 #include <openssl/md5.h>
 #include <stdio.h>
@@ -27,7 +27,7 @@
 #include <unistd.h>
 
 #include "../resolver/shared.h"
-#include <kdbinvoke.h>
+#include <elektra/plugin/invoke.h>
 
 #define TMP_NAME "/tmp/elektraCurlTempXXXXXX"
 

@@ -10,8 +10,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdb.h>
-#include <kdbconfig.h>
+#include <elektra/kdb.h>
+#include <internal/kdb/config.h>
 
 #include <tests_plugin.h>
 

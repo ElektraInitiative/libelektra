@@ -9,16 +9,16 @@
 #include "uname.h"
 
 #include <errno.h>
-#include <kdblogger.h>
+#include <internal/utility/logger.h>
 #include <string.h>
 #include <sys/utsname.h>
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 
-#include <kdberrors.h>
-#include <kdbmacros.h>
+#include <elektra/kdb/errors.h>
+#include <internal/macros/utils.h>
 
 static int elektraAddUname (KeySet * returned, Key * parentKey)
 {

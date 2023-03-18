@@ -16,7 +16,7 @@
 #include <sys/sysctl.h>
 #include <unistd.h>
 
-#include <kdbhelper.h>
+#include <internal/utility/old_helper.h>
 
 extern char ** environ;
 

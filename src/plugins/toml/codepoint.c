@@ -9,7 +9,7 @@
 
 #include "codepoint.h"
 
-#include <kdbassert.h>
+#include <internal/utility/assert.h>
 #include <stdint.h>
 #include <stdio.h>
 

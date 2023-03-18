@@ -20,8 +20,8 @@
 #include <sys/wait.h>  // waitpit()
 #include <unistd.h>    // ftruncate(), pipe(), fork()
 
-#include <kdbconfig.h>
-#include <kdbprivate.h>
+#include <internal/kdb/config.h>
+#include <internal/kdbprivate.h>
 
 #include <tests_plugin.h>
 

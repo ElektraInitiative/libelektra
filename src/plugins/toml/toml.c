@@ -8,10 +8,10 @@
  */
 
 
-#include <kdb.h>
-#include <kdberrors.h>
-#include <kdblogger.h>
-#include <kdbmacros.h>
+#include <elektra/kdb.h>
+#include <elektra/kdb/errors.h>
+#include <internal/utility/logger.h>
+#include <internal/macros/utils.h>
 
 #include "driver.h"
 #include "toml.h"

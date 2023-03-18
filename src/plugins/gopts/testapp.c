@@ -10,9 +10,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <kdb.h>
-#include <kdbopts.h>
-#include <kdbplugin.h>
+#include <elektra/kdb.h>
+#include <elektra/opts.h>
+#include <elektra/plugin/plugin.h>
 
 #include <tests_plugin.h>
 

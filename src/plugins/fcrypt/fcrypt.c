@@ -8,7 +8,7 @@
  */
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 
 #include "fcrypt.h"
@@ -25,10 +25,10 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include <kdb.h>
-#include <kdberrors.h>
-#include <kdbmacros.h>
-#include <kdbtypes.h>
+#include <elektra/kdb.h>
+#include <elektra/kdb/errors.h>
+#include <internal/macros/utils.h>
+#include <elektra/type/types.h>
 
 /**
  * @brief Defines the plugin state during the <code>kdb get</code> phase.

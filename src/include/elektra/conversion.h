@@ -9,6 +9,6 @@
 #ifndef ELEKTRA_CONVERSION_H
 #define ELEKTRA_CONVERSION_H
 
-#include "kdbease.h" // moved to ease library
+#include <elektra/ease/old_ease.h> // moved to ease library
 
 #endif // ELEKTRA_CONVERSION_H

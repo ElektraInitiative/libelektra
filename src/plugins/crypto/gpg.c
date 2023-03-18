@@ -10,8 +10,8 @@
 #include "gpg.h"
 #include <assert.h>
 #include <errno.h>
-#include <kdberrors.h>
-#include <kdbhelper.h>
+#include <elektra/kdb/errors.h>
+#include <internal/utility/old_helper.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

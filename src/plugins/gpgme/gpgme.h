@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_GPGME_H
 #define ELEKTRA_PLUGIN_GPGME_H
 
-#include <kdbplugin.h>
+#include <elektra/plugin/plugin.h>
 
 // meta-keys
 #define ELEKTRA_GPGME_META_ENCRYPT "crypto/encrypt"

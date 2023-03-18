@@ -1,5 +1,5 @@
 
-#include <kdbhelper.h>
+#include <internal/utility/old_helper.h>
 #include <limits.h>
 
 #include "integer.h"

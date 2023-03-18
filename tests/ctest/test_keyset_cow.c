@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "kdbprivate.h"
+#include <internal/kdbprivate.h>
 #include <tests_internal.h>
 
 static void ksBelow_root_in_keyset_should_work (void)

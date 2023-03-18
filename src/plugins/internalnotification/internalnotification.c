@@ -9,11 +9,11 @@
 
 #include "internalnotification.h"
 
-#include <kdb.h>
-#include <kdbassert.h>
-#include <kdbhelper.h>
-#include <kdblogger.h>
-#include <kdbnotificationinternal.h>
+#include <elektra/kdb.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/old_helper.h>
+#include <internal/utility/logger.h>
+#include <internal/notifications.h>
 
 #include <ctype.h>  // isspace()
 #include <errno.h>  // errno

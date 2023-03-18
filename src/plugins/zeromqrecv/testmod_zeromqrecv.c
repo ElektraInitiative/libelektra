@@ -12,8 +12,8 @@
 #include <time.h>   // time()
 #include <unistd.h> // usleep()
 
-#include <kdbio/uv.h>	 // elektraIoUvNew()
-#include <kdbioplugin.h> // ElektraIoPluginSetBinding
+#include <elektra/io/uv.h>	 // elektraIoUvNew()
+#include <elektra/io/plugin.h> // ElektraIoPluginSetBinding
 
 #include <tests.h>
 #include <tests_plugin.h>

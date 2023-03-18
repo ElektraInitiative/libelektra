@@ -13,10 +13,10 @@
 #include <stdlib.h>  // for getenv
 #include <strings.h> // for strcasecmp
 
-#include <kdberrors.h>
-#include <kdbhelper.h>
-#include <kdblogger.h>
-#include <kdbmacros.h>
+#include <elektra/kdb/errors.h>
+#include <internal/utility/old_helper.h>
+#include <internal/utility/logger.h>
+#include <internal/macros/utils.h>
 
 
 int elektraDesktopGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)

@@ -8,7 +8,7 @@
 
 #include "table_array.h"
 
-#include <kdbhelper.h>
+#include <internal/utility/old_helper.h>
 #include <stdio.h>
 #include <string.h>
 

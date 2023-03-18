@@ -11,7 +11,7 @@
 #define ELEKTRA_PLUGIN_RANGE_H
 
 #define RANGE_ERROR_MESSAGE "Value '%s' of key '%s' not within range %s"
-#include <kdbplugin.h>
+#include <elektra/plugin/plugin.h>
 
 
 int elektraRangeGet (Plugin * handle, KeySet * ks, Key * parentKey);

@@ -10,13 +10,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <kdbio.h>
-#include <kdbiotest.h>
+#include <elektra/io/api.h>
+#include <internal/io/test.h>
 #include <tests.h>
 
 #include <ev.h>
 
-#include <kdbio/ev.h>
+#include <elektra/io/ev.h>
 
 static ElektraIoInterface * createBinding (void)
 {

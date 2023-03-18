@@ -9,8 +9,8 @@
 
 #include "blockresolver.h"
 
-#include <kdberrors.h>
-#include <kdbhelper.h>
+#include <elektra/kdb/errors.h>
+#include <internal/utility/old_helper.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,7 +21,7 @@
 
 
 #include "../resolver/shared.h"
-#include <kdbinvoke.h>
+#include <elektra/plugin/invoke.h>
 
 
 #define TV_MAX_DIGITS 26

@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "kdbhelper.h"
-#include "kdbprivate.h"
+#include <internal/utility/old_helper.h>
+#include <internal/kdbprivate.h>
 #include <tests_internal.h>
 
 static void test_elektraMalloc (void)

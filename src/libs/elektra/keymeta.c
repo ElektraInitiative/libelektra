@@ -99,9 +99,9 @@
  */
 
 
-#include <kdb.h>
-#include <kdbconfig.h>
-#include <kdbprivate.h>
+#include <elektra/kdb.h>
+#include <internal/kdb/config.h>
+#include <internal/kdbprivate.h>
 
 #ifdef HAVE_STDIO_H
 #include <stdio.h>

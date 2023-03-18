@@ -10,10 +10,10 @@
 #include "dbus.h"
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 
-#include <kdblogger.h>
+#include <internal/utility/logger.h>
 
 /**
  * @internal

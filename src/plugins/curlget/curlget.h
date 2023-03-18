@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_CURLGET_H
 #define ELEKTRA_PLUGIN_CURLGET_H
 
-#include <kdbplugin.h>
+#include <elektra/plugin/plugin.h>
 
 
 int elektraCurlgetGet (Plugin * handle, KeySet * ks, Key * parentKey);

@@ -7,7 +7,7 @@
  */
 
 #include <assert.h>
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <stdio.h>
 
 void f (const Key * source)

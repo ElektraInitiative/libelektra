@@ -10,10 +10,10 @@
 #include "reference.h"
 #include "referencegraph.h"
 
-#include <kdbease.h>
-#include <kdberrors.h>
-#include <kdbglobbing.h>
-#include <kdbhelper.h>
+#include <elektra/ease/old_ease.h>
+#include <elektra/kdb/errors.h>
+#include <elektra/ease/globbing.h>
+#include <internal/utility/old_helper.h>
 #include <stdbool.h>
 
 int elektraReferenceGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)

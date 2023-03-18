@@ -8,12 +8,12 @@
  */
 
 #include "xfconf.h"
-#include "kdberrors.h"
+#include <elektra/kdb/errors.h>
 
-#include <kdb.h>
-#include <kdbease.h>
-#include <kdbhelper.h>
-#include <kdblogger.h>
+#include <elektra/kdb.h>
+#include <elektra/ease/old_ease.h>
+#include <internal/utility/old_helper.h>
+#include <internal/utility/logger.h>
 #include <xfconf/xfconf.h>
 
 int elektraXfconfInit (Key * errorKey, int xfconfCode, int xfconfShutdown)

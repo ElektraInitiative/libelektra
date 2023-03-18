@@ -5,10 +5,10 @@
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
-#include <kdbassert.h>
-#include <kdbinvoke.h>
-#include <kdbmodule.h>
-#include <kdbprivate.h> // for elektraPluginOpen/Close
+#include <internal/utility/assert.h>
+#include <elektra/plugin/invoke.h>
+#include <internal/pluginload/module.h>
+#include <internal/kdbprivate.h> // for elektraPluginOpen/Close
 
 #include <stdio.h>
 

@@ -9,12 +9,12 @@
 
 #include "gopts.h"
 
-#include <kdbassert.h>
-#include <kdbease.h>
-#include <kdberrors.h>
-#include <kdbhelper.h>
-#include <kdbmacros.h>
-#include <kdbopts.h>
+#include <internal/utility/assert.h>
+#include <elektra/ease/old_ease.h>
+#include <elektra/kdb/errors.h>
+#include <internal/utility/old_helper.h>
+#include <internal/macros/utils.h>
+#include <elektra/opts.h>
 
 static int loadArgs (char *** argvp);
 static char ** loadEnvp (void);

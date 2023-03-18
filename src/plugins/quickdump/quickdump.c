@@ -9,10 +9,10 @@
 
 #include "quickdump.h"
 
-#include <kdbendian.h>
-#include <kdbhelper.h>
+#include <internal/utility/endian.h>
+#include <internal/utility/old_helper.h>
 
-#include <kdberrors.h>
+#include <elektra/kdb/errors.h>
 #include <stdio.h>
 
 #define MAGIC_NUMBER_BASE (0x454b444200000000UL) // EKDB (in ASCII) + Version placeholder

@@ -9,12 +9,12 @@
 
 #include "specload.h"
 
-#include <kdberrors.h>
-#include <kdbhelper.h>
+#include <elektra/kdb/errors.h>
+#include <internal/utility/old_helper.h>
 
-#include <kdbease.h>
-#include <kdbinvoke.h>
-#include <kdbmodule.h>
+#include <elektra/ease/old_ease.h>
+#include <elektra/plugin/invoke.h>
+#include <internal/pluginload/module.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

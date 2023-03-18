@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_CRYPTO_KDB_FUNCTIONS_H
 #define ELEKTRA_PLUGIN_CRYPTO_KDB_FUNCTIONS_H
 
-#include <kdbplugin.h>
+#include <elektra/plugin/plugin.h>
 
 // kdb functions
 int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey);

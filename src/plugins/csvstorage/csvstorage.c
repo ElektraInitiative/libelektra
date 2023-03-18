@@ -9,16 +9,16 @@
 
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/kdb/config.h>
 #endif
 
 #include "csvstorage.h"
 #include <errno.h>
-#include <kdbassert.h>
-#include <kdbease.h>
-#include <kdberrors.h>
-#include <kdbhelper.h>
-#include <kdbprivate.h> // for ksRenameKeys
+#include <internal/utility/assert.h>
+#include <elektra/ease/old_ease.h>
+#include <elektra/kdb/errors.h>
+#include <internal/utility/old_helper.h>
+#include <internal/kdbprivate.h> // for ksRenameKeys
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

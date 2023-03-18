@@ -8,8 +8,8 @@
  */
 
 #include "base64.h"
-#include <kdb.h>
-#include <kdberrors.h>
+#include <elektra/kdb.h>
+#include <elektra/kdb/errors.h>
 #include <stdbool.h>
 #include <string.h>
 

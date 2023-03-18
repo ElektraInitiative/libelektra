@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdbconfig.h>
+#include <internal/kdb/config.h>
 
 #include <tests_plugin.h>
 
