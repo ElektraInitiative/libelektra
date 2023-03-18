@@ -79,12 +79,11 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 ### logchange
 
 - Utilize new changetracking API _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-
-### <<Plugin>>
-
-- <<TODO>>
 - Add Maximilian Irlinger as maintainer _(Maximilian Irlinger @atmaxinger)_
+
+### multifile
+
+- Remove multifile plugin as it is unmaintained and conflicts with the new backend architecture _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 
