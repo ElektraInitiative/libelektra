@@ -68,7 +68,7 @@ int main (void)
 	keySetString (key, "NULLTestValue");		   // == 14
 	keySetMeta (key, "comment/#0", "NULLTestComment"); // == 16
 	ksAppendKey (ks, key);				   // == 1
-	kdbSet (kdb_handle, ks, top); // == -1
+	kdbSet (kdb_handle, ks, top);			   // == -1
 	print_warnings (top);
 	keyDel (top);
 	ksDel (ks);
