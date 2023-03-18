@@ -31,6 +31,8 @@ extern "C" {
 #include <internal/macros/old_os.h>
 #include <stdint.h>
 
+#include <elektra/config.h>
+
 #ifdef __cplusplus
 }
 #endif

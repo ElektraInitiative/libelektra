@@ -10,8 +10,8 @@
 #include "log.hpp"
 #include "yaml-cpp/yaml.h"
 
+#include <internal/utility/logger.h>
 #include <kdb.hpp>
-#include <kdblogger.h>
 
 #include <sstream>
 

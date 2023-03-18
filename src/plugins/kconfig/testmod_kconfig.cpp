@@ -10,8 +10,8 @@
 #include "kconfig.hpp"
 
 #include <fstream>
-#include <kdbmodule.h>
-#include <kdbprivate.h>
+#include <internal/kdbprivate.h>
+#include <internal/pluginload/module.h>
 
 #include <tests.h>
 #include <tests.hpp>

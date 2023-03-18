@@ -8,6 +8,8 @@
  */
 
 
+#include "./version.h"
+
 #include <stdlib.h>
 #include <string.h>
 

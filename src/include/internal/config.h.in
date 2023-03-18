@@ -13,10 +13,6 @@
 #ifndef KDBCONFIG_H
 #define KDBCONFIG_H
 
-#define ELEKTRA_SENTINEL // needed for SWIG
-
-#cmakedefine ELEKTRA_ENABLE_OPTIMIZATIONS
-
 /**Below this directory the system configuration (system:/) will be searched.*/
 #define KDB_DB_SYSTEM            "@KDB_DB_SYSTEM@"
 

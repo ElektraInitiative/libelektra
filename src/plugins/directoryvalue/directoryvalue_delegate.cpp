@@ -9,10 +9,10 @@
 
 #include <numeric>
 
-#include <kdbassert.h>
-#include <kdbease.h>
-#include <kdberrors.h>
-#include <kdblogger.h>
+#include <elektra/ease/old_ease.h>
+#include <elektra/kdb/errors.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/logger.h>
 
 #include <kdbplugin.hpp>
 

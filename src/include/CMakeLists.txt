@@ -165,7 +165,8 @@ endif (ENABLE_OPTIMIZATIONS)
 
 test_big_endian (ELEKTRA_BIG_ENDIAN)
 
-configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/internal/kdb/config.h.in" "${CMAKE_CURRENT_BINARY_DIR}/internal/kdb/config.h")
+configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektra/config.h.in" "${CMAKE_CURRENT_BINARY_DIR}/elektra/config.h")
+configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/internal/config.h.in" "${CMAKE_CURRENT_BINARY_DIR}/internal/config.h")
 
 # DO NOT install kdbconfig.h it may cause conflicts with applications own config.h files
 install (
@@ -182,4 +183,7 @@ install (
 	FILES_MATCHING
 	PATTERN "*.h")
 
-add_custom_target (elektra_config_headers ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/internal/kdb/config.h")
+add_custom_target (
+	elektra_config_headers ALL
+	DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/elektra/config.h" "${CMAKE_CURRENT_BINARY_DIR}/elektra/type/types.h"
+		"${CMAKE_CURRENT_BINARY_DIR}/internal/config.h")
