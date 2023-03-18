@@ -9,9 +9,9 @@
 
 #include "range.h"
 #include <ctype.h>
+#include <elektra/kdb/errors.h>
 #include <errno.h>
 #include <internal/utility/assert.h>
-#include <elektra/kdb/errors.h>
 #include <internal/utility/old_helper.h>
 #include <limits.h>
 #include <math.h>

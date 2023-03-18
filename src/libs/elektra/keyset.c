@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <internal/kdbprivate.h>
 #include <elektra/kdb.h>
+#include <internal/kdbprivate.h>
 #ifdef HAVE_KDBCONFIG_H
 #include <internal/kdb/config.h>
 #endif
@@ -28,16 +28,16 @@
 
 #include <elektra/type/types.h>
 
-#include <elektra/kdb.h>
-#include <internal/kdb/config.h>
-#include <elektra/kdb/errors.h>
-#include <elektra/ease/old_ease.h>
 #include <elektra/ease/meta.h>
-#include <internal/utility/logger.h>
-#include <internal/pluginload/module.h>
+#include <elektra/ease/old_ease.h>
+#include <elektra/kdb.h>
+#include <elektra/kdb/errors.h>
 #include <elektra/plugin/plugin.h>
+#include <internal/kdb/config.h>
 #include <internal/kdbprivate.h>
+#include <internal/pluginload/module.h>
 #include <internal/utility/assert.h>
+#include <internal/utility/logger.h>
 #include <internal/utility/rand.h>
 
 

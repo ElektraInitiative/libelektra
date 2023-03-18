@@ -24,8 +24,8 @@
 
 
 #include <elektra/kdb.h>
-#include <internal/kdbprivate.h>
 #include <elektra/type/types.h>
+#include <internal/kdbprivate.h>
 
 /**
  * @internal

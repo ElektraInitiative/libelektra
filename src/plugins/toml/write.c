@@ -7,12 +7,12 @@
  */
 
 
-#include <elektra/kdb.h>
-#include <internal/utility/assert.h>
-#include <elektra/ease/old_ease.h>
-#include <elektra/kdb/errors.h>
-#include <internal/utility/old_helper.h>
 #include <elektra/ease/meta.h>
+#include <elektra/ease/old_ease.h>
+#include <elektra/kdb.h>
+#include <elektra/kdb/errors.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/old_helper.h>
 #include <regex.h>
 #include <stdbool.h>
 #include <stdio.h>

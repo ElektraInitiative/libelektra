@@ -11,10 +11,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <elektra/type/types.h>
 #include <internal/kdb/config.h>
 #include <internal/macros/utils.h>
 #include <internal/notifications.h>
-#include <elektra/type/types.h>
 
 #include <tests.h>
 #include <tests_plugin.h>

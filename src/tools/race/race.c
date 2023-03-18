@@ -7,8 +7,8 @@
  */
 
 #include <elektra/kdb.h>
-#include <internal/utility/old_helper.h>
 #include <internal/macros/utils.h>
+#include <internal/utility/old_helper.h>
 
 #include <fcntl.h>
 #include <pthread.h>

@@ -8,16 +8,16 @@
  *
  */
 
-#include <internal/utility/assert.h>
 #include <elektra/ease/old_ease.h>
-#include <internal/utility/old_helper.h>
-#include <elektra/plugin/invoke.h>
-#include <internal/io/private.h>
-#include <internal/utility/logger.h>
 #include <elektra/notifications.h>
-#include <internal/notifications.h>
+#include <elektra/plugin/invoke.h>
 #include <elektra/plugin/plugin.h>
+#include <internal/io/private.h>
 #include <internal/kdbprivate.h> // for elektraGetPluginFunction, elektraPluginFindGlobal, kdb->globalPlugins and plugin->config
+#include <internal/notifications.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/logger.h>
+#include <internal/utility/old_helper.h>
 
 #include <stdio.h>
 

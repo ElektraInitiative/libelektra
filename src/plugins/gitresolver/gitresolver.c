@@ -8,9 +8,9 @@
  */
 
 
+#include <elektra/kdb/errors.h>
 #include <fcntl.h>
 #include <git2.h>
-#include <elektra/kdb/errors.h>
 #include <internal/utility/old_helper.h>
 #include <libgen.h>
 #include <openssl/md5.h>

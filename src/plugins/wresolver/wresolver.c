@@ -11,8 +11,8 @@
 #endif
 
 
-#include <internal/utility/assert.h>
 #include <elektra/kdb/errors.h>
+#include <internal/utility/assert.h>
 
 #include <string.h>
 

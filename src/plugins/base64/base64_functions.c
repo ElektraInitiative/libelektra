@@ -1,6 +1,6 @@
 #include "base64_functions.h"
-#include <internal/utility/assert.h>
 #include <elektra/kdb/errors.h>
+#include <internal/utility/assert.h>
 
 static const char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 #define ALPHABET_LENGTH (sizeof (alphabet) - 1)

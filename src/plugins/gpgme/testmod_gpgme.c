@@ -8,16 +8,16 @@
  *
  */
 
-#include <gpgme.h>
-#include <elektra/kdb.h>
-#include <internal/kdb/config.h>
-#include <elektra/kdb/errors.h>
-#include <elektra/ease/old_ease.h>
 #include <elektra/ease/meta.h>
-#include <internal/utility/logger.h>
-#include <internal/pluginload/module.h>
+#include <elektra/ease/old_ease.h>
+#include <elektra/kdb.h>
+#include <elektra/kdb/errors.h>
 #include <elektra/plugin/plugin.h>
+#include <gpgme.h>
+#include <internal/kdb/config.h>
 #include <internal/kdbprivate.h>
+#include <internal/pluginload/module.h>
+#include <internal/utility/logger.h>
 #include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -13,11 +13,11 @@
 #include "gpg.h"
 #include "helper.h"
 
+#include <elektra/kdb/errors.h>
+#include <elektra/type/types.h>
 #include <errno.h>
 #include <gcrypt.h>
 #include <internal/utility/assert.h>
-#include <elektra/kdb/errors.h>
-#include <elektra/type/types.h>
 #include <pthread.h>
 #include <stdlib.h>
 

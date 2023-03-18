@@ -10,10 +10,10 @@
 #ifndef ELEKTRA_PLUGIN_DBUS_H
 #define ELEKTRA_PLUGIN_DBUS_H
 
-#include <internal/utility/assert.h>
 #include <elektra/io/plugin.h>
-#include <internal/notifications.h>
 #include <elektra/plugin/plugin.h>
+#include <internal/notifications.h>
+#include <internal/utility/assert.h>
 
 #include <dbus/dbus.h>
 #include <string.h>

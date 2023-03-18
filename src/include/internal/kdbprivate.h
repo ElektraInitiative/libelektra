@@ -9,17 +9,17 @@
 #ifndef KDBPRIVATE_H
 #define KDBPRIVATE_H
 
+#include <elektra/ease/meta.h>
+#include <elektra/ease/old_ease.h>
 #include <elektra/highlevel.h>
 #include <elektra/highlevel/errors.h>
-#include <elektra/kdb.h>
-#include <elektra/ease/old_ease.h>
-#include <elektra/ease/meta.h>
-#include <internal/utility/old_helper.h>
 #include <elektra/io/api.h>
-#include <internal/macros/utils.h>
-#include <internal/notifications.h>
+#include <elektra/kdb.h>
 #include <elektra/plugin/plugin.h>
 #include <elektra/type/types.h>
+#include <internal/macros/utils.h>
+#include <internal/notifications.h>
+#include <internal/utility/old_helper.h>
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 #include <internal/core/opmphm.h>
 #include <internal/core/opmphmpredictor.h>

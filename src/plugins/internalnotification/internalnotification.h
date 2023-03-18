@@ -11,8 +11,8 @@
 #define ELEKTRA_PLUGIN_INTERNALNOTIFICATION_H
 
 #include <elektra/notifications.h>
-#include <internal/notifications.h>
 #include <elektra/plugin/plugin.h>
+#include <internal/notifications.h>
 
 int elektraInternalnotificationGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraInternalnotificationCommit (Plugin * handle, KeySet * ks, Key * parentKey);

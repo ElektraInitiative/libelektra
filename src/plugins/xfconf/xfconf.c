@@ -10,10 +10,10 @@
 #include "xfconf.h"
 #include <elektra/kdb/errors.h>
 
-#include <elektra/kdb.h>
 #include <elektra/ease/old_ease.h>
-#include <internal/utility/old_helper.h>
+#include <elektra/kdb.h>
 #include <internal/utility/logger.h>
+#include <internal/utility/old_helper.h>
 #include <xfconf/xfconf.h>
 
 int elektraXfconfInit (Key * errorKey, int xfconfCode, int xfconfShutdown)

@@ -10,9 +10,9 @@
 #define KDBERRORS_H
 
 #include <elektra/kdb.h>
-#include <internal/utility/old_helper.h>
-#include <internal/utility/logger.h>
 #include <internal/macros/utils.h>
+#include <internal/utility/logger.h>
+#include <internal/utility/old_helper.h>
 
 #ifdef __cplusplus
 extern "C" {

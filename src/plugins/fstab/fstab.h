@@ -22,9 +22,9 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <elektra/kdb/errors.h>
-#include <elektra/ease/old_ease.h>
 #include <elektra/ease/meta.h>
+#include <elektra/ease/old_ease.h>
+#include <elektra/kdb/errors.h>
 #include <elektra/plugin/plugin.h>
 
 

@@ -7,8 +7,8 @@
  *
  */
 
-#include <internal/pluginload/module.h>
 #include <elektra/plugin/plugin.h>
+#include <internal/pluginload/module.h>
 #include <tests_plugin.h>
 
 

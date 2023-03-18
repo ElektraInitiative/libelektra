@@ -8,8 +8,8 @@
 #ifndef KDB_IOWRAPPER_GLIB_H_
 #define KDB_IOWRAPPER_GLIB_H_
 
-#include <glib.h>
 #include <elektra/io/api.h>
+#include <glib.h>
 
 /**
  * Create and initialize a new I/O binding.

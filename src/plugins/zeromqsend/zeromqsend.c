@@ -15,8 +15,8 @@
 
 #include "zeromqsend.h"
 
-#include <internal/utility/old_helper.h>
 #include <internal/utility/logger.h>
+#include <internal/utility/old_helper.h>
 
 #include <errno.h>  // errno
 #include <stdlib.h> // strtol()

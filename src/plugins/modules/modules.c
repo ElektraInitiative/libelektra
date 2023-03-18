@@ -10,8 +10,8 @@
 #include "modules.h"
 
 #include <elektra/kdb/errors.h>
-#include <internal/utility/old_helper.h>
 #include <internal/kdbprivate.h> // for struct _Plugin internals
+#include <internal/utility/old_helper.h>
 
 /**
  * The modules backend is automatically configured by libelektra-kdb.

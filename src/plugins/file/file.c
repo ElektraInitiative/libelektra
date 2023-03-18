@@ -8,8 +8,8 @@
  */
 
 #include "file.h"
-#include <fcntl.h>
 #include <elektra/kdb/errors.h>
+#include <fcntl.h>
 #include <internal/utility/old_helper.h>
 #include <stdio.h>
 #include <stdlib.h>

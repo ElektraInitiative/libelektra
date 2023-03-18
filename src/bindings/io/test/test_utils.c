@@ -14,9 +14,9 @@
 
 #include <tests.h>
 
-#include <internal/utility/old_helper.h>
 #include <elektra/io/api.h>
 #include <internal/io/test.h>
+#include <internal/utility/old_helper.h>
 
 /**
  * Get current time.
