@@ -1,6 +1,6 @@
 
-#include <errors/errorTypes.hpp>
 #include <elektra/kdb/errors.h> // for code and description constants
+#include <errors/errorTypes.hpp>
 
 namespace kdb
 {

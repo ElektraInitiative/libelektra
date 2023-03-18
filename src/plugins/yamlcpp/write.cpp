@@ -9,9 +9,9 @@
 #include "write.hpp"
 #include "yaml-cpp/yaml.h"
 
-#include <kdb.hpp>
 #include <elektra/ease/old_ease.h>
 #include <internal/utility/logger.h>
+#include <kdb.hpp>
 
 #include <fstream>
 #include <stack>

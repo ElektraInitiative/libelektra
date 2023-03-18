@@ -9,8 +9,8 @@
 #include "treeviewmodel.hpp"
 
 #include <backends.hpp>
-#include <internal/kdb/config.h> // for DEBUG and VERBOSE
 #include <elektra/ease/old_ease.h>
+#include <internal/kdb/config.h> // for DEBUG and VERBOSE
 #include <modules.hpp>
 #include <plugin.hpp>
 #include <plugins.hpp>

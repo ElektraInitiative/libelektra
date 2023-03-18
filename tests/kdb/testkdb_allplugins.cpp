@@ -19,8 +19,8 @@
 #include <unordered_map>
 
 #include <gtest/gtest.h>
-#include <kdb.hpp>
 #include <internal/kdb/config.h>
+#include <kdb.hpp>
 
 #ifdef ENABLE_ASAN
 #include <sanitizer/lsan_interface.h>

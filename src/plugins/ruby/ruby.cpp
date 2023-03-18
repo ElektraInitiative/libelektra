@@ -28,8 +28,8 @@
 /* for global variable access */
 #include <mutex>
 
-#include <internal/utility/assert.h>
 #include <elektra/kdb/errors.h>
+#include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
 
 #include <stdarg.h>

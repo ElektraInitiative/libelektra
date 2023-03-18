@@ -16,8 +16,8 @@
 #include <algorithm>
 #include <helper/keyhelper.hpp>
 #include <internal/kdb/config.h>
-#include <internal/utility/logger.h>
 #include <internal/macros/utils.h>
+#include <internal/utility/logger.h>
 
 #ifdef HAVE_GLOB
 #include <glob.h>

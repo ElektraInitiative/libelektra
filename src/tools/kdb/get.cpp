@@ -11,8 +11,8 @@
 #include <cmdline.hpp>
 #include <kdb.hpp>
 
-#include <internal/utility/old_helper.h>
 #include <internal/macros/utils.h>
+#include <internal/utility/old_helper.h>
 
 #include <iostream>
 

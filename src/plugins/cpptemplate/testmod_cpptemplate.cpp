@@ -9,8 +9,8 @@
 
 #include "cpptemplate.hpp"
 
-#include <internal/pluginload/module.h>
 #include <internal/kdbprivate.h>
+#include <internal/pluginload/module.h>
 
 #include <tests.hpp>
 
