@@ -12,8 +12,8 @@
 #endif
 
 #include "lua.hpp"
-#include <internal/utility/old_helper.h>
 #include <internal/macros/utils.h>
+#include <internal/utility/old_helper.h>
 
 #include <key.hpp>
 #include <keyset.hpp>

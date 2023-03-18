@@ -17,8 +17,8 @@
 #endif
 
 #include <internal/kdb/config.h>
-#include <kdbgetenv.h>
 #include <internal/macros/utils.h>
+#include <kdbgetenv.h>
 
 #include <kdbcontext.hpp>
 

@@ -8,8 +8,8 @@
  */
 
 #include <gtest/gtest.h>
-#include <iostream>
 #include <internal/kdbprivate.h>
+#include <iostream>
 #include <keysetio.hpp>
 #include <merging/threewaymerge.hpp>
 

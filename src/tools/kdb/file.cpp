@@ -9,8 +9,8 @@
 #include <file.hpp>
 
 #include <cmdline.hpp>
-#include <kdb.hpp>
 #include <internal/utility/logger.h>
+#include <kdb.hpp>
 
 #include <iostream>
 

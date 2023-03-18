@@ -11,8 +11,8 @@
 
 #include "yamlcpp.hpp"
 
-#include <internal/pluginload/module.h>
 #include <internal/kdbprivate.h>
+#include <internal/pluginload/module.h>
 
 using ckdb::Key;
 using ckdb::KeySet;

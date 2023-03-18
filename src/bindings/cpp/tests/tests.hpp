@@ -9,8 +9,8 @@
 #ifndef KDB_TESTS_HPP
 #define KDB_TESTS_HPP
 
-#include <kdb.hpp>
 #include <internal/macros/utils.h>
+#include <kdb.hpp>
 #include <key.hpp>
 #include <keyset.hpp>
 

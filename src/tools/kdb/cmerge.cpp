@@ -7,10 +7,10 @@
  */
 
 #include "cmerge.hpp"
-#include <internal/macros/utils.h>
-#include <elektra/merge.h>
 #include "keyset.hpp"
 #include <cmdline.hpp>
+#include <elektra/merge.h>
+#include <internal/macros/utils.h>
 #include <iostream>
 #include <keysetio.hpp>
 #include <string>
