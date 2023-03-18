@@ -20,6 +20,7 @@
 #include <internal/macros/utils.h>
 #include <internal/notifications.h>
 #include <internal/utility/old_helper.h>
+
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 #include <internal/core/opmphm.h>
 #include <internal/core/opmphmpredictor.h>

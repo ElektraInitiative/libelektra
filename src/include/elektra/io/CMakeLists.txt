@@ -1,3 +1,5 @@
+# TODO: move to src/include/CMakeLists.txt ?
+
 check_binding_included ("io_uv" IO_UV_INCLUDED SUBDIRECTORY "io/uv" SILENT)
 if (IO_UV_INCLUDED)
 	install (
