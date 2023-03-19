@@ -9,6 +9,7 @@
 #ifndef ELEKTRA_PLUGIN_SYNC_H
 #define ELEKTRA_PLUGIN_SYNC_H
 
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 
 

@@ -10,6 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_JOURNALD_H
 #define ELEKTRA_PLUGIN_JOURNALD_H
 
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 
 int elektraJournaldGet (Plugin * handle, KeySet * ks, Key * parentKey);

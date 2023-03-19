@@ -1,6 +1,7 @@
 #ifndef ELEKTRA_PLUGIN_BASE64_FUNC_H
 #define ELEKTRA_PLUGIN_BASE64_FUNC_H
 
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 #include <elektra/type/types.h>
 #include <stdio.h>

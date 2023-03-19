@@ -10,6 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_DPKG_H
 #define ELEKTRA_PLUGIN_DPKG_H
 
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 
 

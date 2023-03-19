@@ -6,6 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 
 extern "C" {

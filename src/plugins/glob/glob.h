@@ -9,6 +9,7 @@
 #ifndef ELEKTRA_PLUGIN_GLOB_H
 #define ELEKTRA_PLUGIN_GLOB_H
 
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 
 #include <stdlib.h>

@@ -10,6 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_IPADDR_H
 #define ELEKTRA_PLUGIN_IPADDR_H
 
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 
 int elektraIpaddrGet (Plugin * handle, KeySet * ks, Key * parentKey);

@@ -10,6 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_REFERENCE_H
 #define ELEKTRA_PLUGIN_REFERENCE_H
 
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 
 #define CHECK_REFERENCE_KEYNAME ("check/reference")

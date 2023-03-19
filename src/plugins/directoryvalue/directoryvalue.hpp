@@ -10,6 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_DIRECTORY_VALUE_HPP
 #define ELEKTRA_PLUGIN_DIRECTORY_VALUE_HPP
 
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 
 extern "C" {

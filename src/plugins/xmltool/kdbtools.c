@@ -14,6 +14,7 @@
 #include <libxml/xmlschemas.h>
 
 #include "kdbtools.h"
+#include <elektra/core.h>
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 #include <elektra/ease/meta.h>

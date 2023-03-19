@@ -13,6 +13,7 @@
 #define PYTHON_PLUGIN_EXPORT(module) ELEKTRA_PLUGIN_EXPORT
 
 extern "C" {
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 
 int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey);

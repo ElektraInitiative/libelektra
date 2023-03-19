@@ -11,6 +11,7 @@
 #define ELEKTRA_PLUGIN_RANGE_H
 
 #define RANGE_ERROR_MESSAGE "Value '%s' of key '%s' not within range %s"
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 
 

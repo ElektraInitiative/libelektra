@@ -10,6 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_MACADDR_H
 #define ELEKTRA_PLUGIN_MACADDR_H
 
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 
 int elektraMacaddrGet (Plugin * handle, KeySet * ks, Key * parentKey);

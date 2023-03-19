@@ -9,6 +9,7 @@
 #ifndef ELEKTRA_PLUGIN_CCODE_H
 #define ELEKTRA_PLUGIN_CCODE_H
 
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 
 using ckdb::Key;

@@ -10,6 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_TOML_H
 #define ELEKTRA_PLUGIN_TOML_H
 
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 
 int elektraTomlGet (Plugin * handle, KeySet * returned, Key * parentKey);
