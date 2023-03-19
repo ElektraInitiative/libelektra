@@ -36,13 +36,6 @@
 #error you attempted to include kdbos.h outside from kdb.h, please include kdb.h instead
 #endif
 
-#ifdef __cplusplus
-#define KS_END (static_cast<ckdb::Key *> (0))
-#else
-#define KS_END ((Key *) 0)
-#endif
-
-
 #ifdef __GNUC__
 #undef ELEKTRA_SENTINEL
 #define ELEKTRA_SENTINEL __attribute__ ((sentinel))
