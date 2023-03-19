@@ -9,8 +9,8 @@
 #ifndef ELEKTRA_KDBGOPTS_H
 #define ELEKTRA_KDBGOPTS_H
 
-#include <elektra/core/keyset.h>
 #include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
 #ifdef __cplusplus
 namespace ckdb
 {

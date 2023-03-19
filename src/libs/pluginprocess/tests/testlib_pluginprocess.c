@@ -11,8 +11,8 @@
 
 #include <internal/pluginprocess.h>
 
-#include <elektra/core/keyset.h>
 #include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
 #include <elektra/plugin/plugin.h>
 #include <internal/kdbprivate.h>
 #include <stdlib.h>

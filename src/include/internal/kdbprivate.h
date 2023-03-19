@@ -9,14 +9,14 @@
 #ifndef KDBPRIVATE_H
 #define KDBPRIVATE_H
 
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/core/namespace.h>
 #include <elektra/ease/meta.h>
 #include <elektra/ease/old_ease.h>
 #include <elektra/highlevel.h>
 #include <elektra/highlevel/errors.h>
 #include <elektra/io/api.h>
-#include <elektra/core/namespace.h>
-#include <elektra/core/keyset.h>
-#include <elektra/core/key.h>
 #include <elektra/kdb/kdb.h>
 #include <elektra/plugin/plugin.h>
 #include <elektra/type/types.h>

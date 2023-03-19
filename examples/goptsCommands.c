@@ -6,10 +6,10 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
 #include <elektra/ease/old_ease.h>
 #include <elektra/kdb/contracts/gopts.h>
-#include <elektra/core/keyset.h>
-#include <elektra/core/key.h>
 #include <elektra/kdb/kdb.h>
 #include <internal/utility/old_helper.h>
 

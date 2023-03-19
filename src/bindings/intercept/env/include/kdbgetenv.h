@@ -11,8 +11,8 @@
 #ifndef KDBGETENV_H
 #define KDBGETENV_H
 
-#include <elektra/core/keyset.h>
 #include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
 #include <elektra/kdb/kdb.h>
 #define KDB_GETENV_VERSION "0"
 
