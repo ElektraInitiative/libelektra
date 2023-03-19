@@ -37,6 +37,7 @@
 #include <elektra/plugin/plugin.h>
 #include <internal/kdb/config.h>
 #include <internal/kdbprivate.h>
+#include <internal/macros/os.h>
 #include <internal/pluginload/module.h>
 #include <internal/utility/logger.h>
 

@@ -8,6 +8,7 @@
 
 #include "xmltool.h"
 
+#include <internal/macros/os.h>
 #include <stdlib.h>
 #include <string.h>
 

@@ -13,8 +13,6 @@
 #include <internal/utility/assert.h>
 #include <internal/utility/old_helper.h> // elektraStrDup
 
-#include <internal/macros/old_os.h>
-
 #include <stdlib.h>
 
 #ifdef HAVE_CTYPE_H
@@ -52,6 +50,16 @@ static unsigned char elektraResolverMutexInitialized = 0;
 #define ELEKTRA_RESOLVER_RECURSIVE_MUTEX_INITIALIZATION
 #endif
 #endif
+
+/**Default Mode.
+ * This mode will be used for new files*/
+#define KDB_FILE_MODE 0600
+
+/**Default directory mode.
+ * This mode will be used for new directories.
+ * Will be ORed together with KDB_FILE_MODE
+ * to get the permissions of an directory.*/
+#define KDB_DIR_MODE 0100
 
 static void resolverInit (resolverHandle * p, const char * path)
 {

@@ -24,6 +24,7 @@
 #endif
 
 #include <internal/kdbprivate.h>
+#include <internal/macros/os.h>
 
 
 /**

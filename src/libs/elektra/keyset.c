@@ -30,11 +30,11 @@
 
 #include <elektra/type/types.h>
 
-#include <elektra/ease/meta.ace.h>
-h >
-#include <elektra/ease/old_ease.h#include <elektra/core/keyset.h>
-	>
-#include <elektra/kdb/errors.h>#include <elektra/core/key.h>
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/ease/meta.h>
+#include <elektra/ease/old_ease.h>
+#include <elektra/kdb/errors.h>
 
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
@@ -51,7 +51,7 @@ h >
 #define ELEKTRA_MAX_PREFIX_SIZE sizeof ("namespace/")
 #define ELEKTRA_MAX_NAMESPACE_SIZE sizeof ("system")
 
-	static void elektraOpmphmCopy (struct _KeySetData * dest ELEKTRA_UNUSED, const struct _KeySetData * source ELEKTRA_UNUSED);
+static void elektraOpmphmCopy (struct _KeySetData * dest ELEKTRA_UNUSED, const struct _KeySetData * source ELEKTRA_UNUSED);
 
 /**
  * @internal

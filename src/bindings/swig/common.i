@@ -17,7 +17,8 @@
   extern "C" {
     #include <internal/kdb/config.h>
     #include <elektra/core/keyset.h>
-#include <elektra/core/key.h>
+    #include <elektra/core/key.h>
+    #include <elektra/config.h>
   }
 
   #include "keyexcept.hpp"

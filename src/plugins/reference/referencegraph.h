@@ -2,6 +2,7 @@
 #define ELEKTRA_REFERENCEGRAPH_H
 
 #include <stdbool.h>
+#include <stdlib.h>
 
 typedef struct _RefGraph RefGraph;
 

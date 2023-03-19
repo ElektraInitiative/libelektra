@@ -17,7 +17,7 @@ static char * keyNameGetOneLevel (const char * name, size_t * size)
 	int escapeCount = 0; // counter to check if / was escaped
 
 	/* skip all repeating '/' in the beginning */
-	while (*real && *real == KDB_PATH_SEPARATOR)
+	while (*real && *real == '/')
 	{
 		++real;
 	}
@@ -27,10 +27,10 @@ static char * keyNameGetOneLevel (const char * name, size_t * size)
 	{
 		switch (real[cursor])
 		{
-		case KDB_PATH_ESCAPE:
+		case '\\':
 			++escapeCount;
 			break;
-		case KDB_PATH_SEPARATOR:
+		case '/':
 			if (!(escapeCount % 2))
 			{
 				end = 1;
