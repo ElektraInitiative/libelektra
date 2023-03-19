@@ -9,10 +9,10 @@
 #ifndef ELEKTRA_H
 #define ELEKTRA_H
 
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
 #include <elektra/highlevel/errors.h>
 #include <elektra/highlevel/types.h>
-#include <elektra/core/keyset.h>
-#include <elektra/core/key.h>
 #include <elektra/type/types.h>
 #include <internal/macros/utils.h>
 

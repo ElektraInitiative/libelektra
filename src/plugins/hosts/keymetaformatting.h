@@ -11,8 +11,8 @@
 #ifndef KEYMETAFORMATTING_H_
 #define KEYMETAFORMATTING_H_
 
-#include <elektra/core/keyset.h>
 #include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
 void elektraAddLineComment (KeySet * comments, size_t spaces, const char * commentStart, const char * comment);
 void elektraAddInlineComment (KeySet * comments, size_t spaces, const char * commentStart, const char * comment);
 size_t elektraCountStartSpaces (const char * line);

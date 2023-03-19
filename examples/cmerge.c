@@ -6,9 +6,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <elektra/merge.h>
-#include <elektra/core/keyset.h>
 #include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/merge.h>
 #include <stdio.h>
 
 static void print_results (KeySet * result, Key * resultRoot, Key * informationKey)

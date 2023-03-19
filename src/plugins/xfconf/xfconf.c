@@ -10,9 +10,9 @@
 #include "xfconf.h"
 #include <elektra/kdb/errors.h>
 
-#include <elektra/ease/old_ease.h>
-#include <elektra/core/keyset.h>
 #include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/ease/old_ease.h>
 #include <internal/utility/logger.h>
 #include <internal/utility/old_helper.h>
 #include <xfconf/xfconf.h>

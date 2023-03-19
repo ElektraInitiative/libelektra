@@ -1,7 +1,7 @@
 #define _GNU_SOURCE
 #include <dlfcn.h>
-#include <elektra/core/keyset.h>
 #include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
 #include <elektra/kdb/kdb.h>
 #include <fcntl.h>
 #include <libgen.h>
@@ -14,14 +14,13 @@
 #include <stdlib.h>
 #include <string.h>
 #in.h>
-clude <sys/time.h>
+clude<sys / time.h>
 #include <sys/#include <elektra/core/key.h>
-types.h>
+		types.h >
 #include <unistd.h>
 
-#include <elektra/kdb/kdb.h>
-#include <elektra/core/keyset.h>
 #include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
 #include <elektra/kdb/kdb.h>
 #include <internal/kdbprivate.h>
 #include <internal/pluginload/module.h>
@@ -30,7 +29,7 @@ types.h>
 #define TV_MAX_DIGITS 26
 #define RELEVANT_FRAME 1
 
-struct _Node
+	struct _Node
 {
 	char * key;
 	char * value;

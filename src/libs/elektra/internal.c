@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <elektra/core/namespace.h>
 #include <elektra/core/key.h>
+#include <elektra/core/namespace.h>
 #include <internal/kdbprivate.h>
 #ifdef HAVE_KDBCONFIG_H
 #include <internal/kdb/config.h>
@@ -43,11 +43,11 @@
 
 #include <elektra/ease/meta.h>
 #include <elektra/ease/old_easace.h>
-e.h>
+e.h >
 #include <elektra/kdb/errors.h>#include <elektra/core/key.h>
 
-#include <elektra/core/namespace.h>
 #include <elektra/core/key.h>
+#include <elektra/core/namespace.h>
 #include <elektra/plugin/plugin.h>
 #include <internal/kdb/config.h>
 #include <internal/kdbprivate.h>
@@ -55,35 +55,35 @@ e.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
 
-/**
- * @brief Internal Methods for Elektra
- *
- * To use them:
- * @code
- * #include <kdbinternal.h>
- * @endcode
- *
- * There are some areas where libraries have to reimplement
- * some basic functions to archive support for non-standard
- * systems, for testing purposes or to provide a little more
- * convenience.
- *
- */
+	/**
+	 * @brief Internal Methods for Elektra
+	 *
+	 * To use them:
+	 * @code
+	 * #include <kdbinternal.h>
+	 * @endcode
+	 *
+	 * There are some areas where libraries have to reimplement
+	 * some basic functions to archive support for non-standard
+	 * systems, for testing purposes or to provide a little more
+	 * convenience.
+	 *
+	 */
 
-/**
- * Copies the key array2 into where array1 points.
- * It copies size elements.
- *
- * Overlapping is prohibited, use elektraMemmove() instead.
- *
- * @param array1 the destination
- * @param array2 the source
- * @param size how many pointer to Keys to copy
- * @retval -1 on null pointers
- * @retval 0 if nothing was done
- * @return size how many keys were copied
- */
-ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size)
+	/**
+	 * Copies the key array2 into where array1 points.
+	 * It copies size elements.
+	 *
+	 * Overlapping is prohibited, use elektraMemmove() instead.
+	 *
+	 * @param array1 the destination
+	 * @param array2 the source
+	 * @param size how many pointer to Keys to copy
+	 * @retval -1 on null pointers
+	 * @retval 0 if nothing was done
+	 * @return size how many keys were copied
+	 */
+	ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size)
 {
 	if (!array1) return -1;
 	if (!array2) return -1;

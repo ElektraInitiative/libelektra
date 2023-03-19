@@ -1,8 +1,8 @@
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
 #include <elektra/ease/old_ease.h>
 #include <elektra/kdb/errors.h>
 #include <elektra/merge.h>
-#include <elektra/core/keyset.h>
-#include <elektra/core/key.h>
 #include <internal/kdbprivate.h> // for ksFindHierarchy
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>

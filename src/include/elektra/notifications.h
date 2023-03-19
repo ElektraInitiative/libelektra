@@ -12,8 +12,8 @@
 #ifndef KDB_NOTIFICATION_H_
 #define KDB_NOTIFICATION_H_
 
-#include <elektra/core/keyset.h>
 #include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
 #include <elektra/kdb/kdb.h>
 #include <elektra/type/types.h>
 

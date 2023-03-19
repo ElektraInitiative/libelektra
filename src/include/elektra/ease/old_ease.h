@@ -1,8 +1,8 @@
 #ifndef KDBEASE_H
 #define KDBEASE_H
 
-#include <elektra/core/keyset.h>
 #include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
 #include <elektra/type/types.h>
 
 #ifdef __cplusplus

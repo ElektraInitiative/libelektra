@@ -9,8 +9,8 @@
 #ifndef ELEKTRA_PLUGIN_TOML_WRITE_H
 #define ELEKTRA_PLUGIN_TOML_WRITE_H
 
-#include <elektra/core/keyset.h>
 #include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
 #include <stdlib.h>
 
 /*
