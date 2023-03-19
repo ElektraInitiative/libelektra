@@ -17,9 +17,9 @@
 #include <keyset.hpp>
 
 #include <elektra/kdb/contracts/gopts.h>
-#include <elektra/old_kdb.h>
-
-
+#include <elektra/core/keyset.h>
+#include <elektra/core/key.h>
+#include <elektra/kdb/kdb.h>
 /**
  * @brief This is the main namespace for the C++ binding and libraries.
  *

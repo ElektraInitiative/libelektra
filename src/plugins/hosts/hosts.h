@@ -14,7 +14,8 @@
 #include <string.h>
 
 #include <elektra/kdb/errors.h>
-#include <elektra/old_kdb.h>
+#include <elektra/core/keyset.h>
+#include <elektra/core/key.h>
 #include <elektra/plugin/plugin.h>
 
 #include <stdlib.h>

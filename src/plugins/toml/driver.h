@@ -12,7 +12,8 @@
 #ifndef ELEKTRA_PLUGIN_TOML_DRIVER_H
 #define ELEKTRA_PLUGIN_TOML_DRIVER_H
 
-#include <elektra/old_kdb.h>
+#include <elektra/core/keyset.h>
+#include <elektra/core/key.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stddef.h>

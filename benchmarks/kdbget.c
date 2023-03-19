@@ -9,8 +9,9 @@
 #include <stdio.h>
 
 #include <benchmarks.h>
-#include <elektra/old_kdb.h>
-
+#include <elektra/core/keyset.h>
+#include <elektra/core/key.h>
+#include <elektra/kdb/kdb.h>
 #define CSV_STR_FMT "%s;%s;%d\n"
 
 

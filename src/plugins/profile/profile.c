@@ -12,7 +12,9 @@
 #include <internal/utility/old_helper.h>
 
 #include <elektra/ease/old_ease.h>  //elektraKeyGetRelativeName
-#include <elektra/old_kdb.h>	    //actual namespaces
+#include <elektra/core/namespace.h>
+#include <elektra/core/keyset.h>
+#include <elektra/core/key.h>
 #include <internal/macros/old_os.h> //elektraNamespace
 #include <stdio.h>
 #include <string.h>

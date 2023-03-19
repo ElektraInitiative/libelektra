@@ -16,7 +16,9 @@
 #include "gpg.h"
 #include "helper.h"
 #include <elektra/kdb/errors.h>
-#include <elektra/old_kdb.h>
+#include <elektra/core/namespace.h>
+#include <elektra/core/keyset.h>
+#include <elektra/core/key.h>
 #include <elektra/type/types.h>
 #include <pthread.h>
 #include <stdlib.h>

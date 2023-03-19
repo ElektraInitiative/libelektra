@@ -11,7 +11,8 @@
 
 #include <elektra/highlevel/errors.h>
 #include <elektra/highlevel/types.h>
-#include <elektra/old_kdb.h>
+#include <elektra/core/keyset.h>
+#include <elektra/core/key.h>
 #include <elektra/type/types.h>
 #include <internal/macros/utils.h>
 

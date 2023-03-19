@@ -11,7 +11,8 @@
 #ifndef ELEKTRA_PLUGIN_TOML_PREPARE_H
 #define ELEKTRA_PLUGIN_TOML_PREPARE_H
 
-#include <elektra/old_kdb.h>
+#include <elektra/core/keyset.h>
+#include <elektra/core/key.h>
 #include <stdbool.h>
 
 /* @brief Prepares a keyset for writing.

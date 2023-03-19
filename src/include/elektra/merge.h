@@ -9,7 +9,8 @@
 #ifndef KDBMERGE_H_
 #define KDBMERGE_H_
 
-#include <elektra/old_kdb.h>
+#include <elektra/core/keyset.h>
+#include <elektra/core/key.h>
 #include <elektra/type/types.h>
 
 #ifdef __cplusplus

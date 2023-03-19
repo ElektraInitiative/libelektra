@@ -9,8 +9,7 @@
 #ifndef KDBPLUGIN_H
 #define KDBPLUGIN_H
 
-#include <elektra/old_kdb.h>
-
+#include <elektra/core/keyset.h>
 #include <errno.h>
 #include <internal/macros/utils.h>
 #include <string.h>

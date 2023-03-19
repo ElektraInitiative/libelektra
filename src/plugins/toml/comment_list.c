@@ -9,7 +9,7 @@
 
 #include "comment_list.h"
 
-#include <elektra/old_kdb.h>
+#include <elektra/core/key.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/old_helper.h>
 #include <stdio.h>

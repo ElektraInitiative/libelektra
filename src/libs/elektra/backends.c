@@ -6,7 +6,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <elektra/old_kdb.h>
+#include <elektra/core/namespace.h>
+#include <elektra/core/keyset.h>
+#include <elektra/core/key.h>
 #include <internal/kdbprivate.h>
 #include <stdlib.h>
 

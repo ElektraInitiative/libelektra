@@ -9,7 +9,8 @@
 
 #include "base64.h"
 #include <elektra/kdb/errors.h>
-#include <elektra/old_kdb.h>
+#include <elektra/core/keyset.h>
+#include <elektra/core/key.h>
 #include <stdbool.h>
 #include <string.h>
 

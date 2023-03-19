@@ -9,7 +9,8 @@
 #ifndef KDBMODULE_H
 #define KDBMODULE_H
 
-#include <elektra/old_kdb.h>
+#include <elektra/core/keyset.h>
+#include <elektra/core/key.h>
 #include <elektra/plugin/plugin.h>
 
 #ifdef __cplusplus

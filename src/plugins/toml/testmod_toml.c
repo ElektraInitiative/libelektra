@@ -7,7 +7,8 @@
  *
  */
 
-#include <elektra/old_kdb.h>
+#include <elektra/core/keyset.h>
+#include <elektra/core/key.h>
 #include <internal/kdbprivate.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
