@@ -19,7 +19,14 @@ maintainer, development of the cache and mmapstorage plugins
 
 ## Klemens Böswirth
 
-a bit of everything
+a bit of everything, including:
+
+- current implementation for `libelektra-kdb`, including new concept of backend plugins
+- created `libelektra-highlevel`
+- extended `spec` plugin for use with `libelektra-highlevel`
+- created `quickdump` and `specload` plugins
+- created `kdb gen` code generator
+- many, many bugfixes
 
 - email: k.boeswirth+git@gmail.com
 - GitHub user: [kodebach](https://github.com/kodebach)

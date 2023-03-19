@@ -262,7 +262,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Update AUTHORS.md info _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
