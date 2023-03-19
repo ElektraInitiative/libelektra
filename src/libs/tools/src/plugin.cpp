@@ -10,7 +10,8 @@
 
 #include <kdb.hpp>
 
-#include <elektra/old_kdb.h>
+#include <elektra/core/keyset.h>
+#include <elektra/core/key.h>
 #include <elektra/plugin/plugin.h>
 #include <helper/keyhelper.hpp>
 #include <internal/kdbprivate.h> // currently needed for plugin handling (struct _Plugin)

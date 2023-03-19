@@ -1,7 +1,7 @@
 #ifndef G_ELEKTRA_KEY_H
 #define G_ELEKTRA_KEY_H
 
-#include <elektra/old_kdb.h>
+#include <elektra/core/key.h>
 #include <glib-object.h>
 
 G_BEGIN_DECLS

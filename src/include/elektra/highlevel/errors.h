@@ -10,7 +10,6 @@
 #define ELEKTRA_ERROR_H
 
 #include "types.h"
-#include <elektra/old_kdb.h>
 #include <stdbool.h>
 
 #ifdef __cplusplus

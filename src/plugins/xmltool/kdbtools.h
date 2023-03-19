@@ -10,8 +10,8 @@
 #define KDBTOOLS_H
 
 
-#include <elektra/old_kdb.h>
-
+#include <elektra/core/keyset.h>
+#include <elektra/core/key.h>
 #include <stdio.h>
 
 

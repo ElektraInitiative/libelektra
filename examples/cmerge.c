@@ -7,7 +7,8 @@
  */
 
 #include <elektra/merge.h>
-#include <elektra/old_kdb.h>
+#include <elektra/core/keyset.h>
+#include <elektra/core/key.h>
 #include <stdio.h>
 
 static void print_results (KeySet * result, Key * resultRoot, Key * informationKey)

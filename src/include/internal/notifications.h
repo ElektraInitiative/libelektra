@@ -14,7 +14,8 @@
 #define KDB_NOTIFICATION_PLUGIN_H_
 
 #include <elektra/notifications.h>
-#include <elektra/old_kdb.h>
+#include <elektra/core/key.h>
+#include <elektra/kdb/kdb.h>
 #include <elektra/plugin/plugin.h>
 
 #ifdef __cplusplus

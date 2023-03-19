@@ -46,7 +46,10 @@
 #include <elektra/ease/meta.h>
 #include <elektra/ease/old_ease.h>
 #include <elektra/kdb/errors.h>
-#include <elektra/old_kdb.h>
+#include <elektra/core/namespace.h>
+#include <elektra/core/keyset.h>
+#include <elektra/core/key.h>
+#include <elektra/kdb/kdb.h>
 #include <elektra/plugin/plugin.h>
 #include <internal/kdb/config.h>
 #include <internal/kdbprivate.h>

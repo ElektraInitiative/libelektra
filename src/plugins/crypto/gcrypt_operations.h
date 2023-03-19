@@ -10,7 +10,8 @@
 #ifndef ELEKTRA_PLUGIN_GCRYPT_OPERATIONS_H
 #define ELEKTRA_PLUGIN_GCRYPT_OPERATIONS_H
 
-#include <elektra/old_kdb.h>
+#include <elektra/core/keyset.h>
+#include <elektra/core/key.h>
 #include <elektra/type/types.h>
 
 // gcrypt specific declarations
