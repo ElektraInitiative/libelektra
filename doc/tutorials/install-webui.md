@@ -1,3 +1,5 @@
+- infos/maintainer = Tomislav Makar <tmakar23@gmail.com>
+
 # elektra-web
 
 _an API and web user interface to remotely manage Elektra instances_
