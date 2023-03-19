@@ -10,6 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_MULTIFILE_H
 #define ELEKTRA_PLUGIN_MULTIFILE_H
 
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 
 

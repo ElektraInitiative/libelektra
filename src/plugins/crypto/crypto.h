@@ -10,6 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_CRYPTO_H
 #define ELEKTRA_PLUGIN_CRYPTO_H
 
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 #include <stdio.h>
 

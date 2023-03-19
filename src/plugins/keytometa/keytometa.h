@@ -11,6 +11,7 @@
 #ifndef ELEKTRA_PLUGIN_KEYTOMETA_H
 #define ELEKTRA_PLUGIN_KEYTOMETA_H
 
+#include <elektra/core.h>
 #include <elektra/ease/meta.h>
 #include <elektra/ease/old_ease.h>
 #include <elektra/kdb/errors.h>

@@ -10,6 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_INTERNALNOTIFICATION_H
 #define ELEKTRA_PLUGIN_INTERNALNOTIFICATION_H
 
+#include <elektra/core.h>
 #include <elektra/notifications.h>
 #include <elektra/plugin/plugin.h>
 #include <internal/notifications.h>

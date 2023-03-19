@@ -15,6 +15,7 @@
 #define RUBY_PLUGIN_FUNCTION(func) ELEKTRA_PLUGIN_FUNCTION (func)
 
 extern "C" {
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 
 int RUBY_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey);

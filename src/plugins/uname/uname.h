@@ -9,6 +9,7 @@
 #ifndef UNAME_H
 #define UNAME_H
 
+#include <elektra/core.h>
 #include <elektra/ease/meta.h>
 #include <elektra/ease/old_ease.h>
 #include <elektra/plugin/plugin.h>

@@ -9,6 +9,7 @@
 #ifndef ELEKTRA_PLUGIN_LINE_H
 #define ELEKTRA_PLUGIN_LINE_H
 
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 
 

@@ -12,6 +12,7 @@
 #include <regex.h>
 #include <sys/types.h>
 
+#include <elektra/core.h>
 #include <elektra/kdb/errors.h>
 #include <elektra/plugin/plugin.h>
 

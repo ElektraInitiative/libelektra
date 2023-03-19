@@ -10,6 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_SPEC_H
 #define ELEKTRA_PLUGIN_SPEC_H
 
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 #include <elektra/type/types.h> /* for bool */
 

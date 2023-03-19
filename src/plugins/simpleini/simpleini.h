@@ -9,6 +9,7 @@
 #ifndef ELEKTRA_PLUGIN_SIMPLEINI_H
 #define ELEKTRA_PLUGIN_SIMPLEINI_H
 
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 
 

@@ -9,6 +9,7 @@
 #ifndef ELEKTRA_PLUGIN_LUA_H
 
 extern "C" {
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 
 int elektraLuaOpen (ckdb::Plugin * handle, ckdb::Key * errorKey);

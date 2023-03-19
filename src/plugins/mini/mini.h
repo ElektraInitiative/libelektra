@@ -10,6 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_MINI_H
 #define ELEKTRA_PLUGIN_MINI_H
 
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 
 

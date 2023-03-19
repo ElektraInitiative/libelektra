@@ -10,6 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_DATE_H
 #define ELEKTRA_PLUGIN_DATE_H
 
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 
 

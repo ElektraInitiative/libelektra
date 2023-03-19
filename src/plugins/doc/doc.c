@@ -9,6 +9,7 @@
 #include "doc.h"
 
 //! [plugin include]
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 //! [plugin include]
 //

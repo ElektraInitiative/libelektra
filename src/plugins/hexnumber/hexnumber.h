@@ -11,6 +11,7 @@
 #ifndef ELEKTRA_HEXNUMBER_H
 #define ELEKTRA_HEXNUMBER_H
 
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 
 #define ELEKTRA_HEXNUMBER_PLUGIN_NAME "hexnumber"

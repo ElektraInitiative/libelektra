@@ -9,6 +9,7 @@
 #ifndef ELEKTRA_PLUGIN_HEXCODE_H
 #define ELEKTRA_PLUGIN_HEXCODE_H
 
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 
 typedef struct

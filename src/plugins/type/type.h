@@ -13,6 +13,7 @@
 
 #include <stdbool.h>
 
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 #include <elektra/type/types.h>
 

@@ -10,6 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_MMAPSTORAGE_H
 #define ELEKTRA_PLUGIN_MMAPSTORAGE_H
 
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 
 int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey);

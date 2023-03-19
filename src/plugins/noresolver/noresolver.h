@@ -9,6 +9,7 @@
 #ifndef ELEKTRA_PLUGIN_NORESOLVER_H
 #define ELEKTRA_PLUGIN_NORESOLVER_H
 
+#include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 
 #define ELEKTRA_PLUGIN_NAME "noresolver"
