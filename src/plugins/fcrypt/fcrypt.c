@@ -25,8 +25,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include <elektra/old_kdb.h>
 #include <elektra/kdb/errors.h>
+#include <elektra/old_kdb.h>
 #include <elektra/type/types.h>
 #include <internal/macros/utils.h>
 
