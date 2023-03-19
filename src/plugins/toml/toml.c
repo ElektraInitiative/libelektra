@@ -8,8 +8,8 @@
  */
 
 
-#include <elektra/old_kdb.h>
 #include <elektra/kdb/errors.h>
+#include <elektra/old_kdb.h>
 #include <internal/macros/utils.h>
 #include <internal/utility/logger.h>
 

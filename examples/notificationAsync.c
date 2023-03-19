@@ -17,10 +17,10 @@
  *
  */
 
-#include <elektra/io/api.h> // I/O binding functions (elektraIo*)
-#include <elektra/io/uv.h>  // I/O binding constructor for uv (elektraIoUvNew)
+#include <elektra/io/api.h>	   // I/O binding functions (elektraIo*)
+#include <elektra/io/uv.h>	   // I/O binding constructor for uv (elektraIoUvNew)
+#include <elektra/notifications.h> // notification functions
 #include <elektra/old_kdb.h>
-#include <elektra/notifications.h>	 // notification functions
 #include <internal/utility/old_helper.h> // elektraFree
 
 #include <uv.h> // uv functions

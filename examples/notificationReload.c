@@ -18,10 +18,10 @@
  *
  */
 
-#include <elektra/io/api.h>  // I/O binding functions (elektraIo*)
-#include <elektra/io/glib.h> // I/O binding constructor for glib (elektraIoGlibNew)
+#include <elektra/io/api.h>	   // I/O binding functions (elektraIo*)
+#include <elektra/io/glib.h>	   // I/O binding constructor for glib (elektraIoGlibNew)
+#include <elektra/notifications.h> // notification functions
 #include <elektra/old_kdb.h>
-#include <elektra/notifications.h>	 // notification functions
 #include <internal/utility/old_helper.h> // elektraFree
 
 #include <glib-unix.h> // g_unix_signal_add()

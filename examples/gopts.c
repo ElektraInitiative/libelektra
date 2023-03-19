@@ -7,8 +7,8 @@
  */
 
 #include <elektra/ease/old_ease.h>
-#include <elektra/old_kdb.h>
 #include <elektra/kdb/contracts/gopts.h>
+#include <elektra/old_kdb.h>
 #include <internal/utility/old_helper.h>
 
 #include <stdio.h>

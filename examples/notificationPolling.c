@@ -13,8 +13,8 @@
  *
  */
 
-#include <elektra/old_kdb.h>
 #include <elektra/notifications.h>
+#include <elektra/old_kdb.h>
 #include <internal/utility/old_helper.h> // ELEKTRA_UNUSED
 
 #include <signal.h>

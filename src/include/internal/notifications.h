@@ -13,8 +13,8 @@
 #ifndef KDB_NOTIFICATION_PLUGIN_H_
 #define KDB_NOTIFICATION_PLUGIN_H_
 
-#include <elektra/old_kdb.h>
 #include <elektra/notifications.h>
+#include <elektra/old_kdb.h>
 #include <elektra/plugin/plugin.h>
 
 #ifdef __cplusplus
