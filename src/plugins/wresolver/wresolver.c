@@ -12,6 +12,7 @@
 
 
 #include <elektra/kdb/errors.h>
+#include <internal/macros/os.h>
 #include <internal/utility/assert.h>
 
 #include <string.h>

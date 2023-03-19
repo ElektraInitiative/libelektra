@@ -13,13 +13,15 @@
 #include <elektra/core/keyset.h>
 #include <elektra/core/namespace.h>
 #include <elektra/kdb/kdb.h>
+#include <elektra/type/types.h>
 #include <internal/notifications.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
 #include <internal/utility/old_helper.h>
 
-#include <ctype.h>  // isspace()
-#include <errno.h>  // errno
+#include <ctype.h> // isspace()
+#include <errno.h> // errno
+#include <limits.h>
 #include <stdlib.h> // strto* functions
 
 /**

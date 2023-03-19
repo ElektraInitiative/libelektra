@@ -13,6 +13,8 @@
 #include <elektra/type/types.h>
 #include <internal/kdb/config.h>
 #include <internal/kdbprivate.h>
+#include <internal/macros/os.h>
+
 #ifdef HAVE_STDIO_H
 #include <stdio.h>
 #endif

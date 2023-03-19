@@ -9,9 +9,13 @@
 #ifndef ELEKTRA_CORE_KEYSET_H
 #define ELEKTRA_CORE_KEYSET_H
 
+#include <elektra/core/types.h>
 #include <elektra/macros/attributes.h>
 
+#include <stdarg.h>
+#include <stdint.h>
 #include <stdlib.h>
+#include <sys/types.h>
 
 enum
 {
@@ -36,8 +40,6 @@ namespace ckdb
 {
 extern "C" {
 #endif
-
-typedef struct _KeySet KeySet;
 
 KeySet * ksNew (size_t alloc, ...) ELEKTRA_SENTINEL;
 KeySet * ksVNew (size_t alloc, va_list ap);

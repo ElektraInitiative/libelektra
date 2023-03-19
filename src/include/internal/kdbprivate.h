@@ -9,6 +9,7 @@
 #ifndef KDBPRIVATE_H
 #define KDBPRIVATE_H
 
+#include <elektra/config.h>
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 #include <elektra/core/namespace.h>

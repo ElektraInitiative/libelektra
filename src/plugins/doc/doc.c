@@ -205,7 +205,8 @@ int elektraDocCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	return 0;
 }
 
-static Plugin * findPlugin (KDB * handle ELEKTRA_UNUSED)
+// Note: uses void so the include can be in the example section below
+static Plugin * findPlugin (void * handle ELEKTRA_UNUSED)
 {
 	return 0;
 }
@@ -228,6 +229,8 @@ int elektraDocCheckConf (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UN
 //![validate configuration]
 
 //![set full]
+#include <elektra/kdb/kdb.h>
+
 static void usercode (KDB * handle, KeySet * keyset, Key * key)
 {
 	// some more user code

@@ -9,9 +9,14 @@
 #ifndef ELEKTRA_CORE_KEY_H
 #define ELEKTRA_CORE_KEY_H
 
+#include <elektra/core/namespace.h>
+#include <elektra/core/types.h>
 #include <elektra/macros/attributes.h>
 
+#include <stdarg.h>
+#include <stdint.h>
 #include <stdlib.h>
+#include <sys/types.h>
 
 enum
 {
@@ -47,14 +52,24 @@ typedef unsigned int elektraCopyFlags;
 #define KEY_END ((void *) 0)
 #endif
 
+/** The buffer size needed for an array name
+ *
+ * The size of the buffer so that the buffer can contain:
+ * - (1) a # in the beginning
+ * - (9) up to 19 underscores are needed as prefix
+ * - (20) a 64bit number has a maximum of 20 digits
+ * - (1) one byte for null termination
+ *
+ * E.g. \#___________________18446744073709551615\\0
+ */
+#define ELEKTRA_MAX_ARRAY_SIZE (1 + 19 + 20 + 1)
+
 #ifdef __cplusplus
 // TODO: get rid of this
 namespace ckdb
 {
 extern "C" {
 #endif
-
-typedef struct _Key Key;
 
 /* Basic Methods */
 Key * keyNew (const char * keyname, ...) ELEKTRA_SENTINEL;

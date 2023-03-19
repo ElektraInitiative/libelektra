@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "gelektra-kdb.h"
+#include <elektra/glib/gelektra-kdb.h>
 #include <glib-object.h>
 #include <tests.h>
 

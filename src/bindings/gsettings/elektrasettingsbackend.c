@@ -3,9 +3,9 @@
 #include <gio/gsettingsbackend.h>
 #include <glib.h>
 
-#include <elektra/gelektra-kdb.h>
-#include <elektra/gelektra-key.h>
-#include <elektra/gelektra-keyset.h>
+#include <elektra/glib/gelektra-kdb.h>
+#include <elektra/glib/gelektra-key.h>
+#include <elektra/glib/gelektra-keyset.h>
 
 #undef G_LOG_DOMAIN
 #define G_LOG_DOMAIN "ElektraSettings"

@@ -39,8 +39,8 @@ struct _GElektraKeySetClass
 /* used by GELEKTRA_TYPE_KEYSET */
 GType gelektra_keyset_get_type (void);
 
-#include "gelektra-kdb.h"
-#include "gelektra-key.h"
+#include <elektra/glib/gelektra-kdb.h>
+#include <elektra/glib/gelektra-key.h>
 
 /*
  * Method definitions.

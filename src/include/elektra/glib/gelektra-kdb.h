@@ -59,8 +59,8 @@ struct _GElektraKdbClass
 /* used by GELEKTRA_TYPE_KDB */
 GType gelektra_kdb_get_type(void);
 
-#include "gelektra-key.h"
-#include "gelektra-keyset.h"
+#include <elektra/glib/gelektra-key.h>
+#include <elektra/glib/gelektra-keyset.h>
 
 /*
  * Method definitions.

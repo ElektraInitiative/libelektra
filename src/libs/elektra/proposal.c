@@ -10,6 +10,7 @@
 #include <string.h>
 
 #include <internal/kdbprivate.h>
+#include <internal/macros/os.h>
 
 /**
  * @brief Pop key at given cursor position

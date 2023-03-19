@@ -28,8 +28,10 @@
 #include <elektra/plugin/plugin.h>
 #include <internal/kdb/config.h>
 #include <internal/kdbprivate.h>
+#include <internal/macros/os.h>
 #include <internal/pluginload/module.h>
 #include <internal/utility/logger.h>
+
 /**
  * @brief Methods to output, generate and toXML Keys and Keysets.
  *
@@ -169,7 +171,7 @@ ssize_t keyToStreamBasename (const Key * key, FILE * stream, const char * parent
 		found = memcmp (parent, keyName (key), skip);
 		if (found == 0)
 		{
-			while (*(keyName (key) + skip) == KDB_PATH_SEPARATOR)
+			while (*(keyName (key) + skip) == '/')
 				++skip;
 
 			if (*(keyName (key) + skip) != 0) /* we don't want a null basename */

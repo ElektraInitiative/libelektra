@@ -13,23 +13,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#in.h>
-clude<sys / time.h>
-#include <sys/#include <elektra/core/key.h>
-		types.h >
+#include <sys/time.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 #include <elektra/kdb/kdb.h>
 #include <internal/kdbprivate.h>
+#include <internal/macros/os.h>
 #include <internal/pluginload/module.h>
 
 #define PRELOAD_PATH "/elektra/intercept/open"
 #define TV_MAX_DIGITS 26
 #define RELEVANT_FRAME 1
 
-	struct _Node
+struct _Node
 {
 	char * key;
 	char * value;

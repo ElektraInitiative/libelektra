@@ -12,6 +12,7 @@
 #include <internal/kdb/config.h>
 #endif
 
+#include <internal/macros/os.h>
 #include <internal/utility/logger.h>
 
 #define MAX_NUMBER_SIZE 10

@@ -8,6 +8,7 @@
 
 #include "complete.hpp"
 
+#include <climits>
 #include <functional>
 #include <iostream>
 #include <limits>

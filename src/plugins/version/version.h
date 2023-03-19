@@ -10,6 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_VERSION_H
 #define ELEKTRA_PLUGIN_VERSION_H
 
+#include <elektra/config.h>
 #include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
 

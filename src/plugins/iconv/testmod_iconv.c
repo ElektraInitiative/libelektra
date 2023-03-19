@@ -22,6 +22,7 @@
 
 #include <langinfo.h>
 
+#include <internal/macros/os.h>
 #include <tests_internal.h>
 
 #define NR_KEYS 1

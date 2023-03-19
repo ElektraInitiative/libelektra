@@ -52,7 +52,7 @@ struct _GElektraKeyClass
 /* used by GELEKTRA_TYPE_KEY */
 GType gelektra_key_get_type (void);
 
-#include "gelektra-keyset.h"
+#include <elektra/glib/gelektra-keyset.h>
 
 /*
  * Method definitions.
