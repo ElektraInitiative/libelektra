@@ -23,7 +23,7 @@
 #endif
 
 
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 #include <elektra/type/types.h>
 #include <internal/kdbprivate.h>
 

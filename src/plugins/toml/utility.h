@@ -9,7 +9,7 @@
 #ifndef ELEKTRA_PLUGIN_TOML_UTILITY_H
 #define ELEKTRA_PLUGIN_TOML_UTILITY_H
 
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 #include <stdbool.h>
 #include <stddef.h>
 

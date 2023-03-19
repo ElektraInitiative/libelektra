@@ -29,7 +29,7 @@
 
 #include <keyexcept.hpp>
 
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 
 namespace kdb
 {

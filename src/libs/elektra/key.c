@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #endif
 
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 #include <internal/kdbprivate.h>
 #include <internal/utility/assert.h>
 

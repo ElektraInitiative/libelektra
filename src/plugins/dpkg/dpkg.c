@@ -8,7 +8,7 @@
  */
 
 #include "dpkg.h"
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 #include <internal/utility/old_helper.h>
 #include <stdio.h>
 #include <stdlib.h>

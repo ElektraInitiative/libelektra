@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_TOML_COMMENT_LIST_H
 #define ELEKTRA_PLUGIN_TOML_COMMENT_LIST_H
 
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 #include <stddef.h>
 
 typedef struct _CommentList

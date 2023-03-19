@@ -17,7 +17,7 @@
 
 #include <coloredkdbio.hpp>
 #include <elektra/ease/old_ease.h>
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 #include <elektra/opts.h>
 #include <elektra/plugin/plugin.h>
 #include <elektra/type/types.h>

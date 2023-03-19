@@ -16,7 +16,7 @@
 #include <key.hpp>
 #include <keyset.hpp>
 
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 #include <elektra/kdb/contracts/gopts.h>
 
 

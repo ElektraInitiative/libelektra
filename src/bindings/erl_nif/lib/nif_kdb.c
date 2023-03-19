@@ -1,4 +1,4 @@
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 
 #include <stdio.h>
 #include <string.h>

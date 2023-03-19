@@ -8,7 +8,7 @@
  */
 
 #include <elektra/ease/old_ease.h>
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 #include <elektra/opts.h>
 #include <internal/utility/old_helper.h>
 

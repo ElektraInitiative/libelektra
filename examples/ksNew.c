@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 #include <stdio.h>
 
 // clang-format off

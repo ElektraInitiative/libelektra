@@ -99,7 +99,7 @@
  */
 
 
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 #include <internal/kdb/config.h>
 #include <internal/kdbprivate.h>
 

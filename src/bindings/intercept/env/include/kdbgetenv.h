@@ -11,7 +11,7 @@
 #ifndef KDBGETENV_H
 #define KDBGETENV_H
 
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 
 
 #define KDB_GETENV_VERSION "0"

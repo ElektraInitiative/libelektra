@@ -1,7 +1,7 @@
 #ifndef G_ELEKTRA_CONSTANTS_H
 #define G_ELEKTRA_CONSTANTS_H
 
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 
 // clang-format off
 

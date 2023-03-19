@@ -8,7 +8,7 @@
 
 #define __STDC_FORMAT_MACROS
 
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 
 #include <errno.h>
 #include <limits.h>
