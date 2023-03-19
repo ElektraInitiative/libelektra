@@ -10,7 +10,7 @@
 #ifndef KDB_IO_H_
 #define KDB_IO_H_
 
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 
 #ifdef __cplusplus
 namespace ckdb

@@ -10,7 +10,7 @@
 #ifndef MERGETASK_HPP_
 #define MERGETASK_HPP_
 
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 
 
 namespace kdb

@@ -1,7 +1,7 @@
 #ifndef ELEKTRA_KDBGLOB_H
 #define ELEKTRA_KDBGLOB_H
 
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 
 #ifdef __cplusplus
 namespace ckdb

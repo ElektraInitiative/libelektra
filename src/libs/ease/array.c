@@ -9,7 +9,7 @@
 #define __STDC_FORMAT_MACROS
 
 #include <elektra/ease/old_ease.h>
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 #include <elektra/type/types.h>
 #include <internal/kdbprivate.h> // for elektraIsArrayPart
 #include <internal/utility/old_helper.h>

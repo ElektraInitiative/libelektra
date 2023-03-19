@@ -8,7 +8,7 @@
 
 // clang-format off
 
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 #include <stdio.h>
 
 static void shortExamples(void)

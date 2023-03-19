@@ -12,7 +12,7 @@
 #ifndef KDB_NOTIFICATION_H_
 #define KDB_NOTIFICATION_H_
 
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 #include <elektra/type/types.h>
 
 /**

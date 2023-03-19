@@ -1,6 +1,6 @@
 #define _GNU_SOURCE
 #include <dlfcn.h>
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 #include <fcntl.h>
 #include <libgen.h>
 #include <limits.h>
@@ -15,7 +15,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 #include <internal/kdbprivate.h>
 #include <internal/pluginload/module.h>
 

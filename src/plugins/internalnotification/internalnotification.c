@@ -9,7 +9,7 @@
 
 #include "internalnotification.h"
 
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 #include <internal/notifications.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>

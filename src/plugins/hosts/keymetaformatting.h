@@ -11,7 +11,7 @@
 #ifndef KEYMETAFORMATTING_H_
 #define KEYMETAFORMATTING_H_
 
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 
 void elektraAddLineComment (KeySet * comments, size_t spaces, const char * commentStart, const char * comment);
 void elektraAddInlineComment (KeySet * comments, size_t spaces, const char * commentStart, const char * comment);

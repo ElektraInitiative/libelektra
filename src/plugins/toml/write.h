@@ -9,7 +9,7 @@
 #ifndef ELEKTRA_PLUGIN_TOML_WRITE_H
 #define ELEKTRA_PLUGIN_TOML_WRITE_H
 
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 #include <stdlib.h>
 
 /*

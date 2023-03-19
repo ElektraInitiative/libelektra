@@ -11,7 +11,7 @@
 #define ELEKTRA_PLUGIN_CRYPTO_GPG_H
 
 #include "crypto.h"
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 #include <elektra/type/types.h>
 
 #define ELEKTRA_SIGNATURE_KEY "/sign/key"

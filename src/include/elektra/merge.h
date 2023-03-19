@@ -9,7 +9,7 @@
 #ifndef KDBMERGE_H_
 #define KDBMERGE_H_
 
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 #include <elektra/type/types.h>
 
 #ifdef __cplusplus

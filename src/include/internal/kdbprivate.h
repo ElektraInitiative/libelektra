@@ -14,7 +14,7 @@
 #include <elektra/highlevel.h>
 #include <elektra/highlevel/errors.h>
 #include <elektra/io/api.h>
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 #include <elektra/plugin/plugin.h>
 #include <elektra/type/types.h>
 #include <internal/macros/utils.h>

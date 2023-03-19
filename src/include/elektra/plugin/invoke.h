@@ -1,7 +1,7 @@
 #ifndef KDBINVOKE_H
 #define KDBINVOKE_H
 
-#include <elektra/kdb.h>
+#include <elektra/old_kdb.h>
 #include <elektra/plugin/plugin.h>
 
 #ifdef __cplusplus
