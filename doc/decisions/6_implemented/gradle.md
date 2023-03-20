@@ -15,7 +15,6 @@ When it came time to modernize and improve Elekta's Java bindings, the question 
 - Ease of use, community support, and flexibility were the most important factors to consider.
 - The fact that Maven does not provide native support for Kotlin, which is becoming increasingly popular with developers, was also an important factor to consider.
 
-
 ## Assumptions
 
 The development team either has the necessary expertise and resources for a successful transition, including knowledge of the new build system and familiarity with its syntax and conventions, or the new build system should be easy and intuitive for the development team to use, especially if the team is not already familiar with the new system.
