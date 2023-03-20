@@ -150,8 +150,9 @@ int execMount (KeySet * options, Key * errorKey)
 		printf ("PLUGIN ->  %s\n", keyString (ksAtCursor (plugins, it)));
 	}
 
-
+	// 1. C++: void MountBaseCommand::readMountConf
 	KDB * const kdbHandle = kdbOpen (0, errorKey);
+	// C++: mountConf is protected member variable of class 'MountBaseCommand'
 	KeySet * const mountConf = getMountConfig (kdbHandle, errorKey, NULL);
 
 	if (!kdbHandle || !mountConf)
@@ -165,9 +166,15 @@ int execMount (KeySet * options, Key * errorKey)
 		return -1;
 	}
 
+	// 2. C++: MountCommand::processArguments --> done above
+	// 3. C++: MountBaseCommand::getMountpoint --> result already in argMountpoint
+	// 4: C++: MountCommand::buildBackend
 	/* TODO: give full plugins config */
 	cBuildBackend (mountConf, argMountpoint, 0, optForce, mergeStrategy, optInteractive, NULL, argPath, plugins, optWithRecommends);
 	ksDel (plugins);
+
+
+
 
 
 	/* TODO: Not yet implemented function calls in CPP:

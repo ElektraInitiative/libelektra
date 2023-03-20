@@ -28,10 +28,9 @@ void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, cha
 
 /* Backend related stuff */
 bool isValidMountPoint (Key * mountPoint, KeySet * mountConf);
-KeySet * getBackendInfo (KeySet * mountConf);
 
 /* TODO: from backendparser.cpp */
-const KeySet * cParsePluginArguments (char * const pluginArguments, const char * const basepath);
+KeySet * cParsePluginArguments (char * pluginArguments, const char * basepath);
 
 
 /* Helper functions, TODO: refactor */
