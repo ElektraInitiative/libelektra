@@ -1881,6 +1881,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	// Step 12: merge data from all backends
 	KeySet * dataKs = ksNew (ksGetSize (ks), KS_END);
 	backendsMerge (backends, dataKs);
+	size_t keysLoadedCount = ksGetSize (dataKs);
 
 	SendNotificationHook * sendNotificationHook = handle->hooks.sendNotification;
 	while (sendNotificationHook != NULL)
@@ -1954,7 +1955,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	// Step 18: merge data into ks and return
-	KeySet * keysFromBackends = ksNew (0, KS_END);
+	KeySet * keysFromBackends = ksNew (keysLoadedCount, KS_END);
 	backendsMerge (backends, keysFromBackends);
 	ksAppend (ks, keysFromBackends);
 
@@ -1987,6 +1988,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	if (handle->allKeys != NULL)
 	{
+		ksDel (ksCut (handle->allKeys, parentKey));
 		ksAppendDup (handle->allKeys, keysFromBackends);
 	}
 	ksDel (keysFromBackends);
@@ -2557,6 +2559,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	if (handle->allKeys != NULL)
 	{
+		ksDel (ksCut (handle->allKeys, parentKey));
 		ksAppendDup (handle->allKeys, ks);
 	}
 

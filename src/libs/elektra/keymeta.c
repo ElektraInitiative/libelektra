@@ -528,6 +528,7 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
  * @note You are not allowed to modify the name of KeySet's Keys or delete them.
  * @note You must not delete the returned KeySet.
  * @note Adding a key with metadata to the KeySet is an error.
+ * @note If the key has not metadata keyset, it will be allocated
  *
  * @post for the returned KeySet ks: keyGetMeta(key, metaName) ==
  * ksLookupByName(ks, metaName)
@@ -537,7 +538,6 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
  *
  * @return the KeySet holding the metadata
  * @retval 0 if the Key is 0
- * @retval 0 if the Key has no metadata
  *
  * @since 1.0.0
  * @ingroup keymeta
@@ -551,3 +551,4 @@ KeySet * keyMeta (Key * key)
 
 	return key->meta;
 }
+

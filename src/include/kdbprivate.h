@@ -590,6 +590,13 @@ ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize);
 void keyInit (Key * key);
 int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix);
 
+static inline KeySet * keyMetaNoAlloc (const Key * key)
+{
+	if (!key) return NULL;
+	return key->meta;
+}
+
+
 /*Private helper for keyset*/
 int ksInit (KeySet * ks);
 int ksClose (KeySet * ks);

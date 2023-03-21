@@ -155,11 +155,11 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 			{
 				// Check whether something in the meta keys has changed
 
-				KeySet * oldMeta = keyMeta (oldKey);
-				KeySet * newMeta = keyMeta (newKey);
+				KeySet * oldMeta = keyMetaNoAlloc (oldKey);
+				KeySet * newMeta = keyMetaNoAlloc (newKey);
 
-				ssize_t oldMetaSize = ksGetSize (oldMeta);
-				ssize_t newMetaSize = ksGetSize (newMeta);
+				ssize_t oldMetaSize = oldMeta ? ksGetSize (oldMeta) : 0;
+				ssize_t newMetaSize = newMeta ? ksGetSize (newMeta) : 0;
 
 				if (oldMetaSize != newMetaSize)
 				{

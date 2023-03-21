@@ -3,7 +3,7 @@
 #include <stdbool.h>
 
 size_t keys = 5000;
-char * keyNameFormat = "user:/test/key%zu";
+char * keyNameFormat = "user:/test/sw/org/myapp/#0/current/section/subsection/key%zu";
 char * keyValueFormat = "value%zu";
 char * keyValueModifiedFormat = "value-modified%zu";
 
