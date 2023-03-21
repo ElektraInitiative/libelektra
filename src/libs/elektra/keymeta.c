@@ -551,4 +551,3 @@ KeySet * keyMeta (Key * key)
 
 	return key->meta;
 }
-
