@@ -65,11 +65,7 @@
 #define ELEKTRA_NOINLINE
 #endif
 
-#ifdef __GNUC__
-#define ELEKTRA_WEAK __attribute__ ((weak))
-#endif
-
-#ifdef __clang__
+#if defined(__GNUC__) || defined(__clang__)
 #undef ELEKTRA_WEAK
 #define ELEKTRA_WEAK __attribute__ ((weak))
 #endif

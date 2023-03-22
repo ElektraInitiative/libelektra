@@ -376,7 +376,7 @@ KeySet * elektraDiffGetRemovedKeys (const ElektraDiff * ksd)
 
 /**
  * Get the modified keys.
- * This will return the old keys.
+ * This will return the old keys (pre modification).
  *
  * @param ksd the ElektraDiff
  * @return a new KeySet containing the modified keys OR @p NULL if @p ksd is @p NULL
