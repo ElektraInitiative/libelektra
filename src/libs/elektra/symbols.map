@@ -147,20 +147,16 @@ libelektra_1.0 {
 	# kdbchangetracking.h
 	elektraChangeTrackingGetContextFromKdb;
 	elektraChangeTrackingGetContextFromPlugin;
-	elektraChangeTrackingContextDel;
 	elektraChangeTrackingCalculateDiff;
-	elektraDiffCalculate;
 
+	# kdbdiff.h
+	elektraDiffCalculate;
 	elektraDiffIsEmpty;
 	elektraDiffGetParentKey;
-	elektraDiffNew;
-
 	elektraDiffDel;
-
 	elektraDiffIncRef;
 	elektraDiffDecRef;
 	elektraDiffGetRef;
-
 	elektraDiffGetAddedKeys;
 	elektraDiffGetRemovedKeys;
 	elektraDiffGetModifiedKeys;
@@ -170,7 +166,7 @@ libelektra_1.0 {
 	elektraDiffGetRemovedMetaKeys;
 	elektraDiffGetModifiedMetaKeys;
 
-	elektraChangeTrackingCreateContextForTesting;
+
 };
 
 libelektraprivate_1.0 {
@@ -207,6 +203,10 @@ libelektraprivate_1.0 {
 
 	# TODO [new_backend]: should be removed, tests should depend differently on this
 	backendsDivide;
+
+	elektraDiffNew;
+	elektraChangeTrackingCreateContextForTesting;
+	elektraChangeTrackingContextDel;
 
 	# kdblogger.h
 	elektraLog;

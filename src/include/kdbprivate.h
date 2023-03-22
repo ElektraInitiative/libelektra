@@ -434,10 +434,15 @@ struct _ElektraDiff
 	uint16_t refs;
 };
 
+struct _ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKey, Key * parentKey);
+
 struct _ChangeTrackingContext
 {
 	KeySet * oldKeys;
 };
+
+struct _ChangeTrackingContext * elektraChangeTrackingCreateContextForTesting (KeySet * oldKeys);
+void elektraChangeTrackingContextDel (struct _ChangeTrackingContext * context);
 
 /**
  * The access point to the key database.

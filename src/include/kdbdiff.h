@@ -13,7 +13,6 @@ extern "C" {
 typedef struct _ElektraDiff ElektraDiff;
 
 ElektraDiff * elektraDiffCalculate (KeySet * newKeys, KeySet * oldKeys, Key * parentKey);
-ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKey, Key * parentKey);
 
 void elektraDiffDel (ElektraDiff * ksd);
 

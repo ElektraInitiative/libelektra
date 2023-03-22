@@ -19,11 +19,6 @@ const ChangeTrackingContext * elektraChangeTrackingGetContextFromPlugin (Plugin 
 
 ElektraDiff * elektraChangeTrackingCalculateDiff (KeySet * newKeys, const ChangeTrackingContext * context, Key * parentKey);
 
-
-// For Testing
-ChangeTrackingContext * elektraChangeTrackingCreateContextForTesting (KeySet * oldKeys);
-void elektraChangeTrackingContextDel (ChangeTrackingContext * context);
-
 #ifdef __cplusplus
 }
 }
