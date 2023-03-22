@@ -88,17 +88,25 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### c
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Add Florian Lindner as maintainer _(Florian Lindner @flo91)_
 
-### <<Plugin>>
+### lineendings
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Add Florian Lindner as maintainer _(Florian Lindner @flo91)_
+
+### length
+
+- Add Florian Lindner as maintainer _(Florian Lindner @flo91)_
+
+### missing
+
+- Add Florian Lindner as maintainer _(Florian Lindner @flo91)_
+
+### unit
+
+- Add Florian Lindner as maintainer _(Florian Lindner @flo91)_
 
 ## Libraries
 
@@ -250,7 +258,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Added Tomislav Makar to `AUTHORS.md` _(Tomislav Makar @tmakar)_
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Added Florian Lindner to `AUTHORS.md` _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

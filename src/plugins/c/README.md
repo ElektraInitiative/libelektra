@@ -1,5 +1,6 @@
 - infos = Information about the c plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
+- infos/maintainer = Florian Lindner <florian.lindner@student.tuwien.ac.at>
 - infos/licence = BSD
 - infos/needs = ccode
 - infos/provides = storage/c
