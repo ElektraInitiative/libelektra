@@ -46,7 +46,7 @@ void freeStringList (struct StringNode * startNode)
 		{
 			elektraFree (startNode->str);
 		}
-		nextNode = startNode;
+		nextNode = startNode->next;
 		elektraFree (startNode);
 	}
 }
@@ -913,6 +913,7 @@ char * getPluginFullName (struct PluginSpec ps)
  *  @return newly created keyset with the information found in the string, make sure to ksDel() the returned KeySet.
  *  @return NULL if no '=' was found in pluginArguments
  */
+// C++: KeySet parsePluginArguments (std::string const & pluginArguments, std::string const & basepath) from backendparser.cpp[35-54]
 KeySet * cParsePluginArguments (char * pluginArguments, const char * basepath)
 {
 	KeySet * ks = NULL;
@@ -1035,6 +1036,8 @@ struct PluginSpecNode * processArgument (struct PluginSpecNode * psList, size_t 
 			}
 		}
 	}
+
+	return psList;
 }
 
 /**
@@ -1140,9 +1143,10 @@ void fixArguments (struct PluginSpecNode * psList)
  * @see parseArguments()
  * @return A KeySet with parsed PluginSpecs
  */
-struct PluginSpecNode * parseArguments (const KeySet * ksPlugins)
+
+struct PluginSpecNode * parseArguments (char * strPlugins)
 {
-	if (!ksPlugins)
+	if (!strPlugins)
 	{
 		return NULL;
 	}
@@ -1151,15 +1155,33 @@ struct PluginSpecNode * parseArguments (const KeySet * ksPlugins)
 	struct PluginSpecNode * resultList = NULL;
 
 	size_t counter = 0;
-	for (ssize_t i = 0; i < ksGetSize (ksPlugins); i++)
+	for (bool strEndReached = (*strPlugins) ? false : true; !strEndReached; strPlugins++)
 	{
-		if (!resultList)
+		if (*strPlugins == ' ' || !(*strPlugins))
 		{
-			resultList = processArgument (NULL, &counter, keyString (ksAtCursor (ksPlugins, i)));
-		}
-		else
-		{
-			processArgument (resultList,  &counter, keyString (ksAtCursor (ksPlugins, i)));
+			if (*strPlugins == ' ')
+			{
+				*strPlugins = '\0';
+			}
+			else
+			{
+				strEndReached = true;
+			}
+
+			if (!resultList)
+			{
+				resultList = processArgument (NULL, &counter, strPlugins);
+			}
+			else
+			{
+				processArgument (resultList, &counter, strPlugins);
+			}
+
+			if (!strEndReached)
+			{
+				/* restore space char */
+				*strPlugins = ' ';
+			}
 		}
 	}
 
@@ -1873,6 +1895,275 @@ struct PluginSpec lookupProvides (const char * pluginName, KeySet * ksModules)
 }
 
 
+
+
+/** @returns true if str1 starts with str2
+ */
+bool compareStrStart (const char * str1, const char * str2)
+{
+	if (!str2)
+	{
+		/* Every string starts with a NULL string */
+		return true;
+	}
+
+	for (; *str1 && *str2; str1++, str2++)
+	{
+		if (*str1 != *str2) return false;
+	}
+
+	return *str2 ? false : true;
+}
+
+
+
+
+
+
+/* Check if dependency is relevant (occurs in KeySet) */
+void checkDependencyRelevancy (const KeySet * deps, const char * order)
+{
+	for (ssize_t i = 0; i < ksGetSize (deps); i++)
+	{
+		Key * curKey = ksAtCursor (deps, i);
+		const size_t jumpSlash = 1;
+		const char * const name = keyName (curKey) + jumpSlash;
+
+		bool hasProvides = false;
+		/* The following commented out snippet was taken from the C++ Code in backendbuilder.cpp[132-144] */
+		/* TODO: should also take care of provides
+		 * implementation below would self-conflict on multiple same providers
+			std::string provides = pluginDatabase->lookupInfo (PluginSpec(name), "provides");
+			std::istringstream ss2 (provides);
+			std::string provide;
+			while (ss2 >> provide)
+			{
+				if (provide == name)
+				{
+					hasProvides = true;
+				}
+			}
+		*/
+
+		if ((elektraStrLen (name) >= elektraStrLen (order) && compareStrStart (name, order)) || hasProvides)
+		{
+			/* Is relevant, add this instance of dep to every other key
+			 * and reverse dep of every key to curKey */
+			for (ssize_t j = 0; j < ksGetSize (deps); j++)
+			{
+				Key * k = ksAtCursor (deps, i);
+				if (k != curKey)
+				{
+					elektraMetaArrayAdd (curKey, "dep", keyName (k));
+				}
+			}
+		}
+	}
+}
+
+
+
+/**
+ * @brief Makes sure that ordering constraints are fulfilled.
+ *
+ * @pre a sorted list except of the last element to be inserted
+ * @post the last element will be moved to a place where it does not produce an order violation
+ *
+ * @note its still possible that an order violation is present in the case
+ *       of order violation in the other direction (no cycle detection).
+ * @returns sorted list
+ */
+// C++: void BackendBuilder::sort () in backendbuilder.cpp[93-177]
+struct PluginSpecNode * sortPluginSpecList (struct PluginSpecNode * pluginSpecsToAdd, KeySet * ksModules)
+{
+	KeySet * deps = ksNew (0, KS_END);
+	size_t i = 0;
+
+	for (struct PluginSpecNode * curNode = pluginSpecsToAdd; curNode; curNode = curNode->next)
+	{
+		char * depkeyName = elektraMalloc (elektraStrLen (curNode->ps.name) + 1);
+		*depkeyName = '/';
+		strcpy(depkeyName + 1, curNode->ps.name);
+
+		Key * dep = keyNew (depkeyName, KEY_END);
+		elektraFree (depkeyName);
+
+		if (elektraStrCmp (curNode->ps.name, curNode->ps.refname) != 0)
+		{
+			keyAddBaseName (dep, curNode->ps.refname);
+		}
+
+		ksAppendKey (deps, dep);
+		char depStr[10];
+		if (snprintf (depStr, 10, "%zu", i) >= 10)
+		{
+			/* TODO: Handle overflow error */
+			ksDel (deps);
+			return NULL;
+		}
+
+		keySetString (dep, depStr);
+		keySetMeta (dep, "order", depStr);
+		i++;
+	}
+
+
+	/* points to first node of list */
+	struct StringNode * addedDeps = NULL;
+
+	/* points to last node of list */
+	struct StringNode * lastAddedDep = NULL;
+
+	for (struct PluginSpecNode * curNode = pluginSpecsToAdd; curNode; curNode = curNode->next)
+	{
+		const char * luInfo = modulesPluginDatabaseLookupInfo(curNode->ps, "ordering", ksModules);
+		struct StringNode * orderList = splitAndCopyStringToStringList(NULL, luInfo);
+
+		while (orderList)
+		{
+			bool alreadyInserted = false;
+			for (struct StringNode * curAddedDep = addedDeps; !alreadyInserted && curAddedDep; curAddedDep = curAddedDep->next)
+			{
+				if (elektraStrCmp(curAddedDep->str, orderList->str) == 0)
+				{
+					alreadyInserted = true;
+				}
+			}
+
+			/* remove (or move to addedDeps) first node from order list */
+			if (alreadyInserted)
+			{
+				struct StringNode * tmpNode = orderList;
+				orderList = orderList->next;
+				tmpNode->next = NULL;
+				freeStringList (tmpNode);
+			}
+			else
+			{
+				if (!addedDeps)
+				{
+					addedDeps = lastAddedDep = orderList;
+				}
+				else
+				{
+					lastAddedDep->next = orderList;
+
+					/* new last node */
+					lastAddedDep = lastAddedDep->next;
+				}
+
+				lastAddedDep->next = NULL;
+				orderList = orderList->next;
+
+				/* Check if dependency is relevant (occurs in KeySet) */
+				checkDependencyRelevancy (deps, lastAddedDep->str);
+			}
+		}
+	}
+
+
+	/* Now sort by the given topology */
+	Key ** keyArray = elektraMalloc (ksGetSize (deps) * sizeof (Key *));
+	int ret = elektraSortTopology (deps, keyArray);
+	if (ret == 0)
+	{
+		/* TODO: Handle error */
+		ksDel (deps);
+		elektraFree (keyArray);
+		fprintf (stderr, "CyclicOrderViolation\n");
+		return NULL;
+	}
+	else if (ret == -1)
+	{
+		/* TODO: Handle error */
+		ksDel (deps);
+		elektraFree (keyArray);
+		fprintf (stderr, "elektraSortTopology was used wrongly");
+		return NULL;
+	}
+
+
+	struct PluginSpecNode * sortedListStartNode = NULL;
+	struct PluginSpecNode * sortedListEndNode = NULL;
+
+	long * usedIndizes = elektraMalloc(ksGetSize(deps) * sizeof(long));
+	long numUsedIndizes = 0;
+
+	for (elektraCursor it = 0; it < ksGetSize(deps); it++)
+	{
+		Key * curKey = *(keyArray + it);
+		if (!curKey)
+		{
+			/* TODO: Handle error */
+			return NULL;
+		}
+
+		char * eptr;
+		long curIndex = strtol (keyString (curKey), &eptr, 10);
+
+		if (*eptr != '\0')
+		{
+			/* TODO: Handle error */
+			return NULL;
+		}
+
+		struct PluginSpecNode * curNode = pluginSpecsToAdd;
+		struct PluginSpecNode * prevNode = NULL;
+		for (long l = 0; l < curIndex; l++)
+		{
+			bool indexUsed = false;
+			for (long usedIndexIt = 0; usedIndexIt < numUsedIndizes; usedIndexIt++)
+			{
+				if (usedIndizes[usedIndexIt] == l)
+				{
+					indexUsed = true;
+					break;
+				}
+			}
+
+			if (indexUsed)
+			{
+				/* node with that index was already moved to result list */
+				continue;
+			}
+			else if (curNode->next == NULL)
+			{
+				/* TODO: Check if error */
+				fprintf (stderr, "Node for sorting was NULL!\n");
+				return NULL;
+			}
+			else
+			{
+				prevNode = curNode;
+				curNode = curNode->next;
+			}
+		}
+
+		usedIndizes[numUsedIndizes++] = curIndex;
+
+		/* move node to end of sorted result list */
+		if (!sortedListStartNode)
+		{
+			sortedListStartNode = sortedListEndNode = curNode;
+		}
+		else
+		{
+			sortedListEndNode->next = curNode;
+			sortedListEndNode = sortedListEndNode->next;
+			sortedListEndNode->next = NULL;
+		}
+
+		/* curNode was moved to result list */
+		prevNode->next = prevNode->next->next;
+	}
+
+	return sortedListStartNode;
+}
+
+
+
+
+
 // C++: backendbuilder.cpp[424-489]
 struct PluginSpec backendBuilderAddPlugin (const struct PluginSpecNode * existingSpecs, struct PluginSpec ps, KeySet ** ksBackendConf, KeySet * ksModules)
 {
@@ -1962,196 +2253,33 @@ struct PluginSpec backendBuilderAddPlugin (const struct PluginSpecNode * existin
 	// C++: sort()
 }
 
-/** @returns true if str1 starts with str2
- */
-bool compareStrStart (const char * str1, const char * str2)
+/* returns the sorted list with the new pluginSpec added (other nodes are taken from _existingSpecs_) */
+// new function, was part of backendBuilderAddPlugin in C++
+struct PluginSpecNode * backendBuilderAddAndInsertPlugin (struct PluginSpecNode * existingSpecs, struct PluginSpec ps, KeySet ** ksBackendConf, KeySet * ksModules)
 {
-	if (!str2)
+	struct PluginSpec psNew = backendBuilderAddPlugin(existingSpecs, ps, ksBackendConf, ksModules);
+
+	/* add new pluginSpec to end of list */
+	if (!existingSpecs)
 	{
-		/* Every string starts with a NULL string */
-		return true;
+		existingSpecs = elektraMalloc (sizeof (struct PluginSpecNode));
+		existingSpecs->next = NULL;
+		existingSpecs->ps = psNew;
+	}
+	else
+	{
+		struct PluginSpecNode * lastExistingSpec;
+		for (lastExistingSpec = existingSpecs; lastExistingSpec->next; lastExistingSpec = lastExistingSpec->next);
+		lastExistingSpec->next = elektraMalloc (sizeof (struct PluginSpecNode));
+		lastExistingSpec = lastExistingSpec->next;
+		lastExistingSpec->next = NULL;
+		lastExistingSpec->ps = psNew;
 	}
 
-	for (; *str1 && *str2; str1++, str2++)
-	{
-		if (*str1 != *str2) return false;
-	}
-
-	return *str2 ? false : true;
+	return sortPluginSpecList(existingSpecs, ksModules);
 }
 
-/* Check if dependency is relevant (occurs in KeySet) */
-void checkDependencyRelevancy (const KeySet * const deps, const char * const order)
-{
-	for (ssize_t i = 0; i < ksGetSize (deps); i++)
-	{
-		Key * curKey = ksAtCursor (deps, i);
-		const size_t jumpSlash = 1;
-		const char * const name = keyName (curKey) + jumpSlash;
 
-		bool hasProvides = false;
-		/* The following commented out snippet was taken from the C++ Code in backendbuilder.cpp[132-144] */
-		/* TODO: should also take care of provides
-		 * implementation below would self-conflict on multiple same providers
-			std::string provides = pluginDatabase->lookupInfo (PluginSpec(name), "provides");
-			std::istringstream ss2 (provides);
-			std::string provide;
-			while (ss2 >> provide)
-			{
-				if (provide == name)
-				{
-					hasProvides = true;
-				}
-			}
-		*/
-
-		if ((elektraStrLen (name) >= elektraStrLen (order) && compareStrStart (name, order)) || hasProvides)
-		{
-			/* Is relevant, add this instance of dep to every other key
-			 * and reverse dep of every key to curKey */
-			for (ssize_t j = 0; j < ksGetSize (deps); j++)
-			{
-				Key * k = ksAtCursor (deps, i);
-				if (k != curKey)
-				{
-					elektraMetaArrayAdd (curKey, "dep", keyName (k));
-				}
-			}
-		}
-	}
-}
-
-/**
- * @brief Makes sure that ordering constraints are fulfilled.
- *
- * @pre a sorted list except of the last element to be inserted
- * @post the last element will be moved to a place where it does not produce an order violation
- *
- * @note its still possible that an order violation is present in the case
- *       of order violation in the other direction (no cycle detection).
- */
-void sortPluginSpecArray (struct PluginSpec * pluginSpecsToAdd, size_t n, KeySet * ksInfo)
-{
-	KeySet * deps = ksNew (0, KS_END);
-
-	for (size_t i = 0; i < n; i++)
-	{
-		const struct PluginSpec curPs = *(pluginSpecsToAdd + i);
-		char * depkeyName = elektraMalloc (elektraStrLen (curPs.name) + 1);
-		*depkeyName = '/';
-		*(depkeyName + 1) = '\0';
-		strcat (depkeyName, curPs.name);
-
-		Key * dep = keyNew (depkeyName, KEY_END);
-		elektraFree (depkeyName);
-
-		if (elektraStrCmp (curPs.name, curPs.refname) != 0)
-		{
-			keyAddBaseName (dep, curPs.refname);
-		}
-
-		ksAppendKey (deps, dep);
-
-		char depStr[10];
-		if (snprintf (depStr, 10, "%zu", i) >= 10)
-		{
-			/* TODO: Handle overflow error */
-			ksDel (deps);
-			return;
-		}
-		keySetString (dep, depStr);
-		keySetMeta (dep, "order", depStr);
-	}
-
-
-	KeySet * addedDeps = ksNew (0, KS_END);
-	for (size_t i = 0; i < n; i++)
-	{
-		const struct PluginSpec curPs = *(pluginSpecsToAdd + i);
-		const char * curInfo = modulesPluginDatabaseLookupInfo (curPs, ksInfo, "ordering");
-		char * dupInfo = elektraStrDup (curInfo);
-
-		char * lastStartPos = dupInfo;
-		for (char * curChar = dupInfo; curChar && *curChar; curChar++)
-		{
-			if (isspace (*curChar))
-			{
-				*curChar = '\0';
-
-				if (!ksLookupByName (addedDeps, lastStartPos, KDB_O_NONE))
-				{
-					ksAppendKey (addedDeps, keyNew (lastStartPos, KEY_END));
-					checkDependencyRelevancy (deps, lastStartPos);
-				}
-				lastStartPos = curChar + 1;
-			}
-		}
-		/* add last string */
-		if (lastStartPos && *lastStartPos && !ksLookupByName (addedDeps, lastStartPos, KDB_O_NONE))
-		{
-			ksAppendKey (addedDeps, keyNew (lastStartPos, KEY_END));
-			checkDependencyRelevancy (deps, lastStartPos);
-		}
-		elektraFree (dupInfo);
-	}
-	ksDel (addedDeps);
-
-
-	/* Now sort by the given topology */
-	Key ** keyArray = elektraMalloc (ksGetSize (deps) * sizeof (Key *));
-	int ret = elektraSortTopology (deps, keyArray);
-	if (ret == 0)
-	{
-		/* TODO: Handle error */
-		ksDel (deps);
-		elektraFree (keyArray);
-		fprintf (stderr, "CyclicOrderViolation\n");
-		return;
-	}
-	else if (ret == -1)
-	{
-		/* TODO: Handle error */
-		ksDel (deps);
-		elektraFree (keyArray);
-		fprintf (stderr, "elektraSortTopology was used wrongly");
-		return;
-	}
-
-	struct PluginSpec * pluginSpecsToAddCopy = elektraMalloc (n * sizeof (struct PluginSpec));
-	for (size_t i = 0; i < n; i++)
-	{
-		*(pluginSpecsToAddCopy + i) = *(pluginSpecsToAdd + i);
-	}
-
-	/* Now swap everything in pluginSpecsToAdd as we have ordered indizes */
-	for (ssize_t i = 0; i < ksGetSize (deps); i++)
-	{
-		Key * curKey = *(keyArray + i);
-
-		if (!curKey)
-		{
-			/* TODO: Handle error */
-			elektraFree (pluginSpecsToAddCopy);
-			return;
-		}
-
-		char * eptr;
-		long curIndex = strtol (keyString (curKey), &eptr, 10);
-
-		if (*eptr != '\0')
-		{
-			/* TODO: Handle error */
-			elektraFree (pluginSpecsToAddCopy);
-			return;
-		}
-
-		*(pluginSpecsToAdd + i) = *(pluginSpecsToAddCopy + curIndex);
-	}
-
-	ksDel (deps);
-	elektraFree (keyArray);
-	elektraFree (pluginSpecsToAddCopy);
-}
 
 
 
@@ -2275,9 +2403,24 @@ void removeMetadata (const KeySet * ksToAdd, KeySet * ksNeedsMetadata, KeySet * 
  *
  * @see addPlugin()
  */
-KeySet * resolveNeeds (bool addRecommends, KeySet * ksToAdd, KeySet * ksMetadata, KeySet * ksInfo, KeySet * ksModules)
+// C++: std::vector<std::string> BackendBuilder::resolveNeeds (bool addRecommends) from backendbuilder.cpp[334]
+KeySet * resolveNeeds (bool addRecommends, const struct PluginSpecNode * psList, KeySet **backendConf, KeySet * ksModules)
 {
 	/* Load dependency-plugins immediately */
+	for (; psList; psList = psList->next)
+	{
+		const char * curInfo = modulesPluginDatabaseLookupInfo (psList->ps, "plugins", ksModules);
+
+		/* curInfo string gets temporarly modified inside function, when function returns, the old content is restored */
+		struct PluginSpecNode * psListParsed = parseArguments ((char *) curInfo);
+		for (struct PluginSpecNode * psParsedCur = psListParsed; psParsedCur; psParsedCur = psParsedCur->next)
+		{
+			struct PluginSpec newPs = backendBuilderAddPlugin(psList, psParsedCur->ps, backendConf, ksModules);
+
+		}
+	}
+
+
 	for (ssize_t it = 0; it < ksGetSize (ksToAdd); it++)
 	{
 		Key * keyToAdd = ksAtCursor (ksToAdd, it);
@@ -3265,7 +3408,7 @@ void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, cha
 	/* TODO: Check if basepath should be with or without '/' */
 	/* pluginsConfig is a cmd-line parameter (NULL if not provided) */
 	/* in C++: backend.setBackendConfig (cl.getPluginsConfig ("system:/")); */
-	const KeySet * ksBackendConfig = cParsePluginArguments (pluginsConfig, "system:/");
+	KeySet * ksBackendConfig = cParsePluginArguments (pluginsConfig, "system:/");
 
 	if (clDebug)
 	{
@@ -3290,12 +3433,12 @@ void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, cha
 
 	/* in C++: backend.addPlugin (PluginSpec (resolver));
 	 * -> moved to own function */
-	struct PluginSpec pluginToAdd = backendBuilderAddPlugin (ksBackendConfig, psResolver, ksModules);
+	struct PluginSpec pluginToAdd = backendBuilderAddPlugin (NULL, psResolver, &ksBackendConfig, ksModules);
 	/* C++ end of backend.addPlugin */
 
-	struct PluginSpecNode psnToAdd;
-	psnToAdd.ps = pluginToAdd;
-	psnToAdd.next = NULL;
+	struct PluginSpecNode * pluginSpecsToAdd = elektraMalloc (sizeof (struct PluginSpecNode));
+	pluginSpecsToAdd->ps = pluginToAdd;
+	pluginSpecsToAdd->next = NULL;
 
 	struct PluginNode pluginList;
 	pluginList.next = NULL;
@@ -3306,7 +3449,7 @@ void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, cha
 	KeySet * ksConfig = ksNew (0, KS_END);
 
 	/* C++: backend.useConfigFile (path) */
-	mountBackendBuilderUseConfigFile (path, &psnToAdd, &pluginList, &errorPlugins, &commitPlugins,
+	mountBackendBuilderUseConfigFile (path, pluginSpecsToAdd, &pluginList, &errorPlugins, &commitPlugins,
 	&getPlugins, &setPlugins, ksModules, ksConfig);
 
 	if (clDebug)
@@ -3323,11 +3466,36 @@ void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, cha
 	struct StringNode * neededPlugins = addStrAtEnd (NULL, "storage", false);
 	addStrAtEnd (neededPlugins, "sync", false);
 
+
+	/* Convert KeySet to String */
+	size_t pluginsStrLen = 0;
+	for (elektraCursor it = 0; it < ksGetSize (ksPlugins); it++)
+	{
+		/* Byte for '\0' is counted and needed for space in result string */
+		pluginsStrLen += keyGetValueSize(ksAtCursor(ksPlugins, it));
+	}
+
+	char * pluginsStr = elektraMalloc(pluginsStrLen);
+	char * pluginStrCurPos = pluginsStr;
+	for (elektraCursor it = 0; it < ksGetSize (ksPlugins); it++)
+	{
+		if (pluginStrCurPos > pluginsStr)
+		{
+			*pluginStrCurPos  = ' ';
+			pluginStrCurPos++;
+		}
+
+		pluginStrCurPos = stpcpy(pluginStrCurPos, keyString(ksAtCursor(ksPlugins, it)));
+	}
+
 	/* C++: backend.addPlugins (parseArguments (cl.plugins)); */
-	struct PluginSpecNode * pluginSpecList = parseArguments (ksPlugins);
+	struct PluginSpecNode * pluginSpecList = parseArguments (pluginsStr);
+	elektraFree (pluginsStr);
+
 	for (struct PluginSpecNode * curNode = pluginSpecList; curNode; curNode = curNode->next)
 	{
-		struct PluginSpec newSpec = backendBuilderAddPlugin (&psnToAdd, curNode->ps, ksModules);
+		/* add new plugin and sort list pluginSpecsToAdd */
+		pluginSpecsToAdd = backendBuilderAddAndInsertPlugin(pluginSpecsToAdd, curNode->ps, &ksBackendConfig, ksModules);
 	}
 
 	/* TODO: Only frees the nodes themselves,
@@ -3336,24 +3504,20 @@ void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, cha
 
 
 
-
-	for (ssize_t it = 0; it < ksGetSize (ksArguments); it++)
-	{
-		Key * keyArgument = ksAtCursor (ksArguments, it);
-		struct PluginSpec * psArgument = (struct PluginSpec *) keyValue (keyArgument);
-
-		/* TODO: Save return value */
-		backendBuilderAddPlugin (ksBackendConfig, *psArgument, ksModules);
-	}
-
 	/* TODO: Check if needed anymore (new handling of command arguments with gopts) */
 	/* C++: const size_t nonPlugins = 2;
 		backend.addPlugins (parseArguments (cl.arguments.begin () + nonPlugins, cl.arguments.end ())); */
 
+
 	/* Call it a day */
+
+
+
+
+
 	/* C++: outputMissingRecommends (backend.resolveNeeds (cl.withRecommends)); */
 	/* TODO: Add real parameters */
-	KeySet * ksMissingRecommends = resolveNeeds (withRecommends, NULL, NULL, NULL, NULL);
+	KeySet * ksMissingRecommends = resolveNeeds (withRecommends, psnToAdd, &ksBackendConfig, ksModules);
 
 	// C++: outputMissingRecommends (backend.resolveNeeds (cl.withRecommends));
 	/* Output missing recommends */
