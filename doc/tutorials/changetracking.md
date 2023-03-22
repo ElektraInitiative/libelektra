@@ -35,10 +35,10 @@ Then, use `elektraChangeTrackingCalculateDiff` to calculate the changes to the K
 ```c
 int myPluginSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	ChangeTrackingContext * ctx = elektraChangeTrackingGetContextFromPlugin (handle);
+	const ChangeTrackingContext * ctx = elektraChangeTrackingGetContextFromPlugin (handle);
 	ElektraDiff * diff = elektraChangeTrackingCalculateDiff (returned, ctx, parentKey);
 
-	// Extract useful information, see section 'Working with the diff'
+	// Don't be impatient, we will soon look into
 
 	elektraDiffDel (diff);
 	return 1;
@@ -52,11 +52,12 @@ Then, use `elektraChangeTrackingCalculateDiff` to calculate the changes to the K
 
 ```c
 KDB * kdb;
+KeySet * myKeySet;
 
-ChangeTrackingContext * ctx = elektraChangeTrackingGetContextFromPlugin (kdb);
-ElektraDiff * diff = elektraChangeTrackingCalculateDiff (returned, ctx, parentKey);
+const ChangeTrackingContext * ctx = elektraChangeTrackingGetContextFromKdb (kdb);
+ElektraDiff * diff = elektraChangeTrackingCalculateDiff (myKeySet, ctx, parentKey);
 
-// Extract useful information, see section 'Working with the diff'
+// Don't be impatient, we will soon look into
 
 elektraDiffDel (diff);
 ```
@@ -88,7 +89,7 @@ ksDel (modifiedKeys);
 Use these methods to get information about single keys:
 
 ```c
-Key * myKey;
+Key * myKey; // A key that we want to check. 
 
 // whether the value of myKey has been changed
 bool valueChanged = elektraDiffKeyValueChanged (diff, myKey);
