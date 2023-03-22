@@ -1881,7 +1881,6 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	// Step 12: merge data from all backends
 	KeySet * dataKs = ksNew (ksGetSize (ks), KS_END);
 	backendsMerge (backends, dataKs);
-	size_t keysLoadedCount = ksGetSize (dataKs);
 
 	SendNotificationHook * sendNotificationHook = handle->hooks.sendNotification;
 	while (sendNotificationHook != NULL)
@@ -1955,13 +1954,13 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	// Step 18: merge data into ks and return
-	KeySet * keysFromBackends = ksNew (keysLoadedCount, KS_END);
-	backendsMerge (backends, keysFromBackends);
-	ksAppend (ks, keysFromBackends);
+	ksClear (dataKs);
+	backendsMerge (backends, dataKs);
+	ksAppend (ks, dataKs);
 
 	// TODO (atmaxinger): should we have a default:/ backend?
 	ksAppend (ks, defaults);
-	ksAppend (keysFromBackends, defaults);
+	ksAppend (dataKs, defaults);
 	ksDel (defaults);
 	keyDel (defaultCutpoint);
 
@@ -1984,14 +1983,13 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	ksDel (backends);
 	ksDel (allBackends);
-	ksDel (dataKs);
 
 	if (handle->allKeys != NULL)
 	{
 		ksDel (ksCut (handle->allKeys, parentKey));
-		ksAppendDup (handle->allKeys, keysFromBackends);
+		ksAppendDup (handle->allKeys, dataKs);
 	}
-	ksDel (keysFromBackends);
+	ksDel (dataKs);
 
 	errno = errnosave;
 	return procOnly ? 2 : 1;
