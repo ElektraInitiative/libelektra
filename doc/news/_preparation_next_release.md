@@ -64,8 +64,8 @@ We ran some memory benchmarks and found a slightly increased memory usage on a s
 If you're using many plugins that do changetracking, the overhead will decrease.
 
 | Number of Keys | Old Implementation (bytes) | New Implementation (bytes) | Memory Increase (%) |
-|---------------:|---------------------------:|---------------------------:|--------------------:|
- |             50 |               225792 bytes |               229580 bytes |              1,68 % |
+| -------------: | -------------------------: | -------------------------: | ------------------: |
+|             50 |               225792 bytes |               229580 bytes |              1,68 % |
 |            500 |               383180 bytes |               411238 bytes |              7,32 % |
 |           5000 |              1992294 bytes |              2306867 bytes |             15,79 % |
 |          50000 |             18245222 bytes |             21181235 bytes |             16,09 % |
@@ -78,9 +78,9 @@ Alternatively, we have measured executed instructions.
 There seems to be about 10 % overhead, but we don't expect it to be noticeable in real-world workloads.
 
 | Number of Keys | Old Implementation (Instructions) | New Implementation (Instructions) | Performance Overhead (%) |
-|---------------:|----------------------------------:|----------------------------------:|-------------------------:|
- |             50 |                          18910449 |                          19583227 |                   3,56 % |
- |            500 |                          63001911 |                          68948096 |                   9,44 % |
+| -------------: | --------------------------------: | --------------------------------: | -----------------------: |
+|             50 |                          18910449 |                          19583227 |                   3,56 % |
+|            500 |                          63001911 |                          68948096 |                   9,44 % |
 |           5000 |                         526801917 |                         586344210 |                  11,30 % |
 |          50000 |                        5730261920 |                        6340292587 |                  10,65 % |
 |         500000 |                      104614374974 |                      110702166761 |                   5,82 % |
