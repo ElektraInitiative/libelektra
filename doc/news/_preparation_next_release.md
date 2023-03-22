@@ -44,11 +44,46 @@ docker run -it elektra/elektra
 
 ## Highlights
 
-- <<HIGHLIGHT>>
+- New Changetracking API
 - <<HIGHLIGHT>>
 - <<HIGHLIGHT>>
 
-### <<HIGHLIGHT>>
+### New Changetracking API
+
+We've created a new KeySet diffing and changetracking API for both internal and external use.
+Several plugins already had their own implementations to detect changed made to the key database.
+Unfortunately, every implementation did something different and results varied.
+With this new release every plugin now uses the same shared implementation!
+
+If you want to use the new API yourself, take a look at [the tutorial](../tutorials/changetracking.md)!
+
+Elektra's internal code now also uses this new API to detect which backends to execute.
+This can lead to better performance in I/O bound cases, where previously certain keys would have been detected as changed when they weren't.
+
+We ran some memory benchmarks and found a slightly increased memory usage on a stock instance of Elektra.
+If you're using many plugins that do changetracking, the overhead will decrease.
+
+| Number of Keys | Old Implementation (bytes) | New Implementation (bytes) | Memory Increase (%) |
+|---------------:|---------------------------:|---------------------------:|--------------------:|
+ |             50 |               225792 bytes |               229580 bytes |              1,68 % |
+|            500 |               383180 bytes |               411238 bytes |              7,32 % |
+|           5000 |              1992294 bytes |              2306867 bytes |             15,79 % |
+|          50000 |             18245222 bytes |             21181235 bytes |             16,09 % |
+|         500000 |            178782208 bytes |            207827763 bytes |             16,25 % |
+
+Apart from memory benchmark, we also ran some performance benchmarks.
+As the benchmark is heavy I/O bound, the biggest bottleneck is I/O performance of the system.
+We could not reliably detect a real, reliably reproducible performance impact measured in seconds.
+Alternatively, we have measured executed instructions.
+There seems to be about 10 % overhead, but we don't expect it to be noticeable in real-world workloads.
+
+| Number of Keys | Old Implementation (Instructions) | New Implementation (Instructions) | Performance Overhead (%) |
+|---------------:|----------------------------------:|----------------------------------:|-------------------------:|
+ |             50 |                          18910449 |                          19583227 |                   3,56 % |
+ |            500 |                          63001911 |                          68948096 |                   9,44 % |
+|           5000 |                         526801917 |                         586344210 |                  11,30 % |
+|          50000 |                        5730261920 |                        6340292587 |                  10,65 % |
+|         500000 |                      104614374974 |                      110702166761 |                   5,82 % |
 
 ### <<HIGHLIGHT>>
 
