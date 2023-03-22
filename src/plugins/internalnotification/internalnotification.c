@@ -247,7 +247,6 @@ void elektraInternalnotificationNotifyChangedKeys (Plugin * plugin, const Elektr
 	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
 
 	KeySet * modifiedKeys = elektraDiffGetModifiedKeys (diff);
-	// TODO: do we also consider added and removed keys as modified here?
 	KeySet * addedKeys = elektraDiffGetAddedKeys (diff);
 	KeySet * removedKeys = elektraDiffGetRemovedKeys (diff);
 
