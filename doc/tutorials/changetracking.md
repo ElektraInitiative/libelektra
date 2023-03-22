@@ -89,7 +89,7 @@ ksDel (modifiedKeys);
 Use these methods to get information about single keys:
 
 ```c
-Key * myKey; // A key that we want to check. 
+Key * myKey; // A key that we want to check.
 
 // whether the value of myKey has been changed
 bool valueChanged = elektraDiffKeyValueChanged (diff, myKey);

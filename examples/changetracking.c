@@ -1,14 +1,14 @@
 /**
-* @file
-*
-* @brief
-*
-* @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
-*/
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
 
-#include <stdio.h>
 #include <kdb.h>
 #include <kdbchangetracking.h>
+#include <stdio.h>
 
 int main (void)
 {
