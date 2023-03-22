@@ -1,7 +1,7 @@
 # Changetracking
 
 Elektra provides developers of applications and plugins a way to determine changes made to a `KeySet` relative to the last known state of the key database.
-This can be useful if you are writing a plugin that is only supposed to working with changed data.
+This can be useful if you are writing a plugin that works with changes of the configuration.
 
 ## Basics
 
