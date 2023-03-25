@@ -72,7 +72,7 @@ If you're using many plugins that do changetracking, the overhead will decrease.
 |         500000 |            178782208 bytes |            207827763 bytes |             16,25 % |
 
 Apart from memory benchmark, we also ran some performance benchmarks.
-As the benchmark is heavy I/O bound, the biggest bottleneck is I/O performance of the system.
+As the benchmark is heavily I/O bound, the biggest bottleneck is the I/O performance of the system.
 We could not reliably detect a real, reliably reproducible performance impact measured in seconds.
 Alternatively, we have measured executed instructions.
 There seems to be about 10 % overhead, but we don't expect it to be noticeable in real-world workloads.

@@ -2,7 +2,7 @@
 #include <kdbprivate.h>
 
 /**
- * Determines whether two keys have different value
+ * Determines whether two keys have a different value
  *
  * @param new new key
  * @param old old key
@@ -397,7 +397,7 @@ KeySet * elektraDiffGetModifiedKeys (const ElektraDiff * ksd)
  *
  * @param ksd
  * @param key
- * @return @p true if the value of the key was modified OR
+ * @return @p true if the value of the key has been modified OR
  *         @p false if it hasn't been OR
  *         @p ksd is @p NULL OR
  *         @p key is @p NULL OR
@@ -425,7 +425,7 @@ bool elektraDiffKeyValueChanged (const ElektraDiff * ksd, Key * key)
  *
  * @param ksd
  * @param key
- * @return @p true if the metadata of the key was modified OR
+ * @return @p true if the metadata of the key has been modified OR
  *         @p false if it hasn't been OR
  *         @p ksd is @p NULL OR
  *         @p key is @p NULL OR
@@ -571,7 +571,7 @@ uint16_t elektraDiffIncRef (ElektraDiff * ksd)
  * @brief Decrement the reference counter of a ElektraDiff object
  *
  * @post @p ksd's reference counter is >= 0
- * @post @p ksd's reference counter is < SSIZE_MAX
+ * @post @p ksd's reference counter is < UINT16_MAX - 1
  *
  * @param ksd the ElektraDiff object whose reference counter should get decreased
  *

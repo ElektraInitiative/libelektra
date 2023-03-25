@@ -25,7 +25,7 @@ removed with this commit.
 
 # changetracking
 
-The changetracking benchmark will evaluate the performance with changetracking enabled in KDB.
+The changetracking benchmark evaluates the performance with changetracking enabled in KDB.
 For it to work, you first have to load at least one plugin that utilizes changetracking.
 
 A very simple case would be the `dbus` plugin:
@@ -46,7 +46,7 @@ The time is measured in microseconds.
 This benchmark has several command-line options:
 
 - `--key-count <keys>`: how many keys should be generated (default 5000)
-- `--harmonize-names`: all keys values and names have the same length
+- `--harmonize-names`: all key-values and -names have the same length
 - `--verbose`: print how many keys have been generated and modified
 - `--binary-tree`: build a binary tree of keys instead of a linear list
 

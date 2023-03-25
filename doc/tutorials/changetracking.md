@@ -6,7 +6,7 @@ This can be useful if you are writing a plugin that works with changes of the co
 ## Basics
 
 The two headers you have to use are `kdbchangetracking.h` and `kdbdiff.h`.
-Those declare the `elektraChangeTracking*` and `elektraDiff*` methods.
+Those declare the `elektraChangeTracking*` and `elektraDiff*` functions.
 
 The two main data structures you will encounter are `ChangeTrackingContext` and `ElektraDiff`.
 

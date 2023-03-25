@@ -27,7 +27,6 @@
 struct _KeyRegistration
 {
 	char * name;
-	// char * lastValue;
 	int sameOrBelow;
 	int freeContext;
 	ElektraNotificationChangeCallback callback;
