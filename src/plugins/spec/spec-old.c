@@ -7,7 +7,7 @@
  *
  */
 
-#include "spec.h"
+#include "spec-new.h"
 
 #include <kdbassert.h>
 #include <kdbease.h>

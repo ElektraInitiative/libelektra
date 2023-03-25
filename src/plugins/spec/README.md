@@ -1,11 +1,10 @@
 - infos = Information about the spec plugin is in keys below
-- infos/author = Thomas Waser <thomas.waser@libelektra.org>, Klemens Böswirth <k.boeswirth+git@gmail.com>
-- infos/maintainer = Tomislav Makar <tmakar23@gmail.com>
+- infos/author = Tomislav Makar <tmakar23@gmail.com>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = check apply
 - infos/placements = hook
-- infos/status = recommended productive nodep configurable global unfinished
+- infos/status = recommended productive nodep configurable global
 - infos/description = allows to give specifications for keys
 
 ## Introduction
@@ -14,12 +13,8 @@ The spec plugin is a global plugin that copies metadata from the `spec`-namespac
 expressions. Globbing resembles regular expressions. They do not have the same expressive power, but are easier to use. The semantics are
 more suitable to match path names:
 
-- `*` matches any key name of just one hierarchy. This means it complies with any character except slash or null.
-- `?` satisfies single characters with the same exclusion.
 - `#` matches Elektra array elements. (e.g. `#0`, `#_10`, `#__987`)
 - `_` matches anything that `*` matches, except array elements.
-- Additionally, there are ranges and character classes. They can also be inverted. For more infos take a look at the code documentation of
-  `elektraKeyGlob()`.
 
 The plugin copies the metadata of the corresponding `spec` key to every matching (see below) key in the other namespaces. The copied metadata
 is removed again during `kdbSet` (if remained unchanged).
@@ -93,51 +88,6 @@ Note: We don't actually validate that the array doesn't contain elements above t
 to do with the specification, whether the array contains additional elements. Note also that we only copy metadata onto elements within
 the bounds of the array size.
 
-## Configuration
-
-There are various ways in which a conflict can occur during the validation process. To handle these conflicts, we provide various
-configuration options.
-
-### Conflicts
-
-The possible conflicts are:
-
-- Invalid array `member`: an invalid array key has been detected. e.g. `/#abc`, or `/x` (i.e. non-array-element) if array (`#`) was specified
-- Out of `range`: the array has more or less elements than specified by the `array/min` and `array/max` metakeys.
-- Missing keys `missing`: the key marked as `require`d wasn't found.
-- Invalid keys `invalid`: the specification or a key was invalid
-- Conflicting metadata `collision`: the metakey that's supposed to be added already exists.
-
-#### Configuration Keys
-
-To define what actions should be taken on on conflicts during `kdbGet` and `kdbSet` respectively use the keys `conflict/set` and
-`conflict/get` in the plugin configuration.
-
-This base configuration can be overridden on a per-conflict basis to provide more granularity. The keys for this are (replace `_` with
-`get` or `set` accordingly):
-
-```
-conflict/_/member
-conflict/_/range
-conflict/_/missing
-conflict/_/invalid
-conflict/_/collision
-```
-
-For even more granularity, the above per-conflict metakeys can also be specified on individual keys.
-
-The allowed values for the conflict keys are always the same:
-
-- `ERROR` yields an error when a conflict occurs
-- `WARNING` adds a warning when a conflict occurs
-- `INFO` adds a metakey `logs/spec/info` to the parent-key which can be used by logging plugins.
-  `logs/spec/info` is an array, each element is one conflict.
-- any other value ignores the conflict, this includes if the conflict key is not given (i.e. the default)
-
-There is also the special key `missing/log`. If it is set to `1`, the plugin will create the meta array `logs/spec/missing/#`.
-This array will contain a list of the missing keys. The key `missing/log` can only be part of the main plugin configuration,
-not individual keys' metakeys. It also applies to `kdbGet` and `kdbSet` calls.
-
 ## Examples
 
 <!-- FIXME [new_backend]: outdated -->
@@ -179,11 +129,3 @@ kdb meta-ls spec:/freedesktop/openicc/device/camera/#0/EXIF_serial   # seems lik
 kdb set "/freedesktop/openicc/device/camera/#0/EXIF_serial" 203     # success, is a long
 kdb set "/freedesktop/openicc/device/camera/#0/EXIF_serial" x   # fails, not a long
 ```
-
-## Known Issues
-
-- In MINGW32 builds, there is no globbing and therefore no support for key names with # and \_.
-- Added metadata is not correctly removed during `kdbSet`, if the corresponding spec key was modified.
-- Default values do not work if globbing is involved.
-- By default, keys tagged with `require` do not emit errors even if not present
-  (https://issues.libelektra.org/1024)
