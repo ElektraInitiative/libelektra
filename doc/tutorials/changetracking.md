@@ -38,7 +38,7 @@ int myPluginSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	const ChangeTrackingContext * ctx = elektraChangeTrackingGetContextFromPlugin (handle);
 	ElektraDiff * diff = elektraChangeTrackingCalculateDiff (returned, ctx, parentKey);
 
-	// Don't be impatient, we will soon look into
+	// Don't be impatient, we will soon look into what we can do with the diff
 
 	elektraDiffDel (diff);
 	return 1;
@@ -57,7 +57,7 @@ KeySet * myKeySet;
 const ChangeTrackingContext * ctx = elektraChangeTrackingGetContextFromKdb (kdb);
 ElektraDiff * diff = elektraChangeTrackingCalculateDiff (myKeySet, ctx, parentKey);
 
-// Don't be impatient, we will soon look into
+// Don't be impatient, we will soon look into what we can do with the diff
 
 elektraDiffDel (diff);
 ```
