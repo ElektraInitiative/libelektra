@@ -240,6 +240,16 @@ static int keySetContainsSameOrBelow (Key * check, KeySet * ks)
 	return 0;
 }
 
+/**
+ * Walk through all registered key and determine whether they are contained in the diff.
+ * If they are, call their notifiaction callback.
+ * @internal
+ *
+ * @param plugin    internal plugin handle
+ * @param diff      diff as determined in the hook functions
+ *                  e.g. elektraInternalnotificationGet or elektraInternalnotificationCommit)
+ *
+ */
 void elektraInternalnotificationNotifyChangedKeys (Plugin * plugin, const ElektraDiff * diff)
 {
 	PluginState * pluginState = elektraPluginGetData (plugin);
