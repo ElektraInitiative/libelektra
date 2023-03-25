@@ -45,7 +45,7 @@ static Key * elektraYajlCurrentKey (Context * context)
 }
 
 /**
- @retval 0 if ksAtCursor(ks, it) does not hold an array entry
+ @retval 0 if the current @p context does not hold an array entry
  @retval 1 if the array entry will be used because its the first
  @retval 2 if a new array entry was created
  @retval -1 error in snprintf
