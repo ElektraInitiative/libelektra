@@ -2,14 +2,15 @@
 #include "kdbglobbing.h"
 
 #include <kdbhelper.h>
+#include <stdio.h>
 
 /**
  * Check whether the {@link otherKey} matches the {@link specKey}.
  *
  * @param specKey specification key
  * @param otherKey the other key to match the specification key with
- * @return 0 - if the keys match
- * 	  -1 - if the keys do not match
+ * @return 1 - if the keys match
+ * 	   0 - if the keys do not match
  */
 static bool specMatches (Key * specKey, Key * otherKey)
 {
@@ -55,20 +56,12 @@ static void addDefaultKeyIfNotExists (KeySet * ks, Key * parentKey, Key * specKe
 
 static bool isRequired (Key * specKey)
 {
-	if (keyGetMeta (specKey, "meta:/require") == 0)
-	{
-		return false;
-	}
-	return true;
+	return keyGetMeta (specKey, "meta:/require") != 0;
 }
 
 static bool hasDefault (Key * specKey)
 {
-	if (keyGetMeta (specKey, "meta:/default") == 0)
-	{
-		return false;
-	}
-	return true;
+	return keyGetMeta (specKey, "meta:/default") != 0;
 }
 
 /**
@@ -103,8 +96,8 @@ static KeySet * extractSpecKeys (KeySet * ks)
 /**
  * Copies all meta keys from the {@link specKey} to the provided {@link key}.
  *
- * @param key
- * @param specKey
+ * @param key the key to copy the meta data too
+ * @param specKey the specification key to copy meta data from
  *
  * @return 0 - in case the copying was successful
  * 	  -1 - if the copying was unsuccessful
@@ -154,14 +147,13 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * ks)
 
 		if (specMatches(specKey, current))
 		{
-			if (found == -1)
-			{
-				found = 0;
-			}
-
+			found = 0;
 			if (copyMeta (current, specKey) != 0)
 			{
-				handle (parentKey, ERROR_KEY, "Could not copy metadata");
+				char msg[256];
+				snprintf (msg, sizeof (msg), "Could not copy metadata from spec key %s", keyName (specKey));
+
+				handle (parentKey, ERROR_KEY, msg);
 				return -1;
 			}
 		}
@@ -170,7 +162,8 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * ks)
 	// key was not found
 	if (found == -1)
 	{
-		// TODO concat string for error and info message
+		char msg[256];
+		snprintf (msg, sizeof (msg), "Key for specification %s does not exist", keyName (specKey));
 
 		if (isRequired(specKey) && hasDefault (specKey))
 		{
@@ -179,12 +172,12 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * ks)
 		}
 		else if (isRequired (specKey))
 		{
-			handle (parentKey, ERROR_KEY, "Key for specification %s does not exist");
+			handle (parentKey, ERROR_KEY, msg);
 			return -1;
 		}
 		else
 		{
-			handle (parentKey, INFO_KEY, "Key for specification %s does not exist");
+			handle (parentKey, INFO_KEY, msg);
 			return 0;
 		}
 	}
