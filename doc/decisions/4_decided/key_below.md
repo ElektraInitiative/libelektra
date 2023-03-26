@@ -31,7 +31,7 @@ Merge `keyIsBelow` with `keyIsBelowOrSame` and `keyIsDirectlyBelow` to create th
  * @retval 0 @p base and @p other have the same name
  * @retval 1 @p other is directly below @p base
  * @retval > 1 @p other is below @p base (but not directly)
- * @retval < 0 otherwise, i.e. @p other is above @p base,
+ * @retval -1  otherwise, i.e. @p other is above @p base,
  *             the keys do not have a common parent, or
  *             (at least) one of @p other and @p base is NULL
  */

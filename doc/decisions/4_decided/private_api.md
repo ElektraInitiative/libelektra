@@ -21,7 +21,7 @@ All other headers are anybody's guess.
 
 ## Decision
 
-- Also allow other libraries (e.g. a new `libelektra-operations`) to access to non-public API.
+- Also allow other libraries (e.g. a new `libelektra-operations`) to access non-public API.
   Such libraries need to have a good reason (e.g. performance, impossible otherwise, etc.) why they access non-public API and they need to be kept up-to-date.
   If a library cannot provide a stable API on top of the unstable non-public API, it clearly needs to state which APIs are not stable.
 - Put struct definitions of Key/KeySet in a separate header file, which gets included by parts that need it (see also [Header File Structure](header_file_structure.md)).
