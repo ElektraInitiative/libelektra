@@ -13,16 +13,8 @@
 #include <kdbplugin.h>
 #include <kdbtypes.h> /* for bool */
 
-#ifndef ERROR_KEY
-#define ERROR_KEY "meta:/error/spec"
-#endif
-
-#ifndef WARNING_KEY
-#define WARNING_KEY "meta:/warning/spec"
-#endif
-
 #ifndef INFO_KEY
-#define INFO_KEY "meta:/info/spec"
+#define INFO_KEY "info/spec"
 #endif
 
 int elektraSpecGet (Plugin * handle, KeySet * ks, Key * parentKey);

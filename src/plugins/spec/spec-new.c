@@ -1,9 +1,30 @@
 #include "spec-new.h"
+#include "kdberrors.h"
 #include "kdbglobbing.h"
 
 #include <kdbhelper.h>
-#include <stdio.h>
 
+#ifdef __MINGW32__
+static bool specMatches (Key * specKey, Key * otherKey)
+{
+	/**
+	 * Known limitation: For MINGW builds fnmatch.h does not exist. Therefore, globbing can't be used.
+	 * This means that there is no support for # and _ in key names.
+	 * This function was copied from 68e9dff, doesn't use globbing and therefore doesn't require the globbing library which is not
+	 * compatible with Windows:
+	 */
+	const char * spec = keyUnescapedName (specKey);
+	size_t specNsLen = strlen (spec) + 1;
+	spec += specNsLen; // skip namespace
+	const char * other = keyUnescapedName (otherKey);
+	size_t otherNsLen = strlen (other) + 1;
+	other += otherNsLen; // skip namespace
+	size_t const specSize = keyGetUnescapedNameSize (specKey) - specNsLen;
+	size_t const otherSize = keyGetUnescapedNameSize (otherKey) - otherNsLen;
+
+	return specSize == otherSize && memcmp (spec, other, specSize) == 0;
+}
+#else
 /**
  * Check whether the {@link otherKey} matches the {@link specKey}.
  *
@@ -20,18 +41,7 @@ static bool specMatches (Key * specKey, Key * otherKey)
 	keyDel (globKey);
 	return matches;
 }
-
-/**
- * In case of an error, warning, information it handles it by appended the meta key
- * to the parent key.
- *
- * @param parentKey the parent key to append the meta key too
- * @param msg the value of the meta key type
- */
-static void handle (Key * parentKey, const char * type, const char * msg)
-{
-	keySetMeta (parentKey, type, msg);
-}
+#endif
 
 /**
  * Appends a key to the KeySet with the default value specified in the meta key (meta:/default) in the
@@ -45,10 +55,13 @@ static void handle (Key * parentKey, const char * type, const char * msg)
  */
 static void addDefaultKeyIfNotExists (KeySet * ks, Key * parentKey, Key * specKey)
 {
-	const Key * defaultMetaKey = keyGetMeta (specKey, "meta:/default");
+	const Key * defaultMetaKey = keyGetMeta (specKey, "default");
 	const char * defaultValue = keyString (defaultMetaKey);
 
-	Key * newDefaultKey = keyNew (keyName(parentKey), keyName (specKey), KEY_VALUE, defaultValue, KEY_END);
+	const char * parentKeyName = keyName (parentKey);
+	const char * specKeyName = keyBaseName (specKey);
+
+	Key * newDefaultKey = keyNew (elektraFormat ("%s:/%s/%s", "default", parentKeyName, specKeyName), KEY_VALUE, defaultValue, KEY_END);
 	keyCopyAllMeta (newDefaultKey, specKey);
 
 	ksAppendKey (ks, newDefaultKey);
@@ -56,12 +69,21 @@ static void addDefaultKeyIfNotExists (KeySet * ks, Key * parentKey, Key * specKe
 
 static bool isRequired (Key * specKey)
 {
-	return keyGetMeta (specKey, "meta:/require") != 0;
+	const Key * key = keyGetMeta (specKey, "require");
+
+	if (key == 0)
+	{
+		return false;
+	}
+
+	const char * keyValue = keyString (key);
+
+	return elektraStrCmp (keyValue, "true") == 0;
 }
 
 static bool hasDefault (Key * specKey)
 {
-	return keyGetMeta (specKey, "meta:/default") != 0;
+	return keyGetMeta (specKey, "default") != 0;
 }
 
 /**
@@ -122,7 +144,7 @@ static int copyMeta (Key * key, Key * specKey)
 }
 
 /**
- * Copy the meta data by searching through the {@link ks} KeySet.
+ * Copy the meta data for a given key {@link specKey} by searching through the {@link ks} KeySet.
  *
  * In case no key was found for {@link specKey} and it has meta key default (meta:/default) it will
  * be created.
@@ -145,15 +167,13 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * ks)
 	{
 		Key * current = ksAtCursor (ks, it);
 
-		if (specMatches(specKey, current))
+		if (specMatches (specKey, current))
 		{
 			found = 0;
 			if (copyMeta (current, specKey) != 0)
 			{
-				char msg[256];
-				snprintf (msg, sizeof (msg), "Could not copy metadata from spec key %s", keyName (specKey));
-
-				handle (parentKey, ERROR_KEY, msg);
+				ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey, "Could not copy metadata from spec key %s",
+								       keyName (specKey));
 				return -1;
 			}
 		}
@@ -162,22 +182,20 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * ks)
 	// key was not found
 	if (found == -1)
 	{
-		char msg[256];
-		snprintf (msg, sizeof (msg), "Key for specification %s does not exist", keyName (specKey));
-
-		if (isRequired(specKey) && hasDefault (specKey))
+		if (hasDefault (specKey))
 		{
 			addDefaultKeyIfNotExists (ks, parentKey, specKey);
 			return 0;
 		}
 		else if (isRequired (specKey))
 		{
-			handle (parentKey, ERROR_KEY, msg);
+			ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey, "Key for specification %s does not exist", keyName (specKey));
 			return -1;
 		}
 		else
 		{
-			handle (parentKey, INFO_KEY, msg);
+			const char * msg = elektraFormat ("Key for specification %s does not exist", keyName (specKey));
+			keySetMeta (parentKey, elektraFormat ("%s/%s", INFO_KEY, "description"), msg);
 			return 0;
 		}
 	}
@@ -192,9 +210,10 @@ int elektraSpecCopy (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * pa
  	for (elektraCursor it = 0; it < ksGetSize (specKeys); it++)
 	{
 		Key * current = ksAtCursor (specKeys, it);
+
 		if (copyMetaData (parentKey, current, returned) != 0)
 		{
-			return ELEKTRA_PLUGIN_ERROR;
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
 
@@ -202,5 +221,5 @@ int elektraSpecCopy (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * pa
 
 	ksDel (specKeys);
 
-	return 1;
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
