@@ -70,6 +70,55 @@ struct StringNode * addStrAtEnd (struct StringNode * startNode, char * str, bool
 	return newNode;
 }
 
+/* removes elements with the provided string from a list
+ * returns the start node of the filtered list (NULL if all nodes get removed)
+ * if @p removeAll ist false, only the first element that was found gets removed */
+struct StringNode * removeFromStringList (struct StringNode * startNode, const char * strToRemove, bool removeAll)
+{
+	if (!startNode)
+	{
+		return NULL;
+	}
+
+	/* Check if the start node must be removed */
+	for (struct StringNode * tmpNode; elektraStrCmp (startNode->str, strToRemove) == 0;)
+	{
+		tmpNode = startNode;
+		startNode = startNode->next;
+		tmpNode->next = NULL;
+		freeStringList (tmpNode);
+
+		if (!removeAll)
+		{
+			return startNode;
+		}
+	}
+
+	/* Check other nodes */
+	for (struct StringNode * prevNode = startNode, *tmpNode = startNode->next; tmpNode; prevNode = tmpNode, tmpNode = tmpNode->next)
+	{
+		if (elektraStrCmp (tmpNode->str, strToRemove) == 0)
+		{
+			prevNode->next = tmpNode->next;
+			tmpNode->next = NULL;
+			freeStringList (tmpNode);
+
+			if (!removeAll)
+			{
+				return startNode;
+			}
+			else
+			{
+				/* prevNode stays the same as in the previous iteration */
+				tmpNode = prevNode;
+			}
+		}
+	}
+
+	return startNode;
+}
+
+
 struct BackendInfo
 {
 	/* Where the backend is mounted */
@@ -1668,6 +1717,7 @@ const char * modulesPluginDatabaseLookupInfo (struct PluginSpec ps, const char *
 	else
 	{
 		const char * result = pluginLookupInfo (p, info, "infos");
+		/* TODO: Copy result and close plugin (check if KeySets for infos and symbols should be deleted) */
 		return result;
 	}
 }
@@ -2086,8 +2136,8 @@ struct PluginSpecNode * sortPluginSpecList (struct PluginSpecNode * pluginSpecsT
 	struct PluginSpecNode * sortedListStartNode = NULL;
 	struct PluginSpecNode * sortedListEndNode = NULL;
 
-	long * usedIndizes = elektraMalloc(ksGetSize(deps) * sizeof(long));
-	long numUsedIndizes = 0;
+	long * usedIndices = elektraMalloc(ksGetSize(deps) * sizeof(long));
+	long numUsedIndices = 0;
 
 	for (elektraCursor it = 0; it < ksGetSize(deps); it++)
 	{
@@ -2112,9 +2162,9 @@ struct PluginSpecNode * sortPluginSpecList (struct PluginSpecNode * pluginSpecsT
 		for (long l = 0; l < curIndex; l++)
 		{
 			bool indexUsed = false;
-			for (long usedIndexIt = 0; usedIndexIt < numUsedIndizes; usedIndexIt++)
+			for (long usedIndexIt = 0; usedIndexIt < numUsedIndices; usedIndexIt++)
 			{
-				if (usedIndizes[usedIndexIt] == l)
+				if (usedIndices[usedIndexIt] == l)
 				{
 					indexUsed = true;
 					break;
@@ -2139,7 +2189,7 @@ struct PluginSpecNode * sortPluginSpecList (struct PluginSpecNode * pluginSpecsT
 			}
 		}
 
-		usedIndizes[numUsedIndizes++] = curIndex;
+		usedIndices[numUsedIndices++] = curIndex;
 
 		/* move node to end of sorted result list */
 		if (!sortedListStartNode)
@@ -2165,7 +2215,7 @@ struct PluginSpecNode * sortPluginSpecList (struct PluginSpecNode * pluginSpecsT
 
 
 // C++: backendbuilder.cpp[424-489]
-struct PluginSpec backendBuilderAddPlugin (const struct PluginSpecNode * existingSpecs, struct PluginSpec ps, KeySet ** ksBackendConf, KeySet * ksModules)
+struct PluginSpec backendBuilderAddPlugin (struct PluginSpecNode * existingSpecs, struct PluginSpec ps, KeySet ** ksBackendConf, KeySet * ksModules)
 {
 	char * pluginFullName = getPluginFullName (ps);
 
@@ -2201,7 +2251,16 @@ struct PluginSpec backendBuilderAddPlugin (const struct PluginSpecNode * existin
 	{
 		/* Keep our config and refname */
 		ps.name = provides.name;
-		ksAppend (ps.config, provides.config);
+
+		if (ksGetSize(provides.config) > 0)
+		{
+			if (!ps.config)
+			{
+				ps.config = ksNew (0, KS_END);
+			}
+
+			ksAppend (ps.config, provides.config);
+		}
 	}
 
 	/* Call the checkconf-function of the plugin (if provided)
@@ -2235,6 +2294,8 @@ struct PluginSpec backendBuilderAddPlugin (const struct PluginSpecNode * existin
 
 			/* Take over the new configuration */
 			*ksBackendConf = ksCut (pluginConfig, backendParent);
+
+			ksDel (ps.config);
 			ps.config = pluginConfig;
 
 			keyDel (backendParent);
@@ -2318,80 +2379,83 @@ KeySet * OBSOLETE_strToKeySet (const char * str, char delim)
 	return ksRet;
 }
 
-KeySet * collectInfosFromKs (const KeySet * ksToAdd, KeySet * ksInfo, const char * info)
+/* C++: replaces void BackendBuilder::collectNeeds (std::vector<std::string> & needs) const and
+ * void BackendBuilder::collectRecommends (std::vector<std::string> & recommends) const in backendbuilder.cpp[225,243] */
+struct StringNode * collectInfosFromKs (struct StringNode * existingInfos, struct PluginSpecNode * existingPlugins, const char * info,
+	KeySet * ksModules)
 {
-	if (!ksToAdd || ksGetSize (ksToAdd) <= 0) return NULL;
+	if (!existingPlugins) return NULL;
 
-	KeySet * ksRet = ksNew (ksGetSize (ksToAdd), KS_END);
-	for (ssize_t it = 0; it < ksGetSize (ksToAdd); it++)
+	struct StringNode * curInfoNode = existingInfos;
+	for (; existingPlugins; existingPlugins = existingPlugins->next)
 	{
-		Key * curKey = ksAtCursor (ksToAdd, it);
-		struct PluginSpec * curPs = (struct PluginSpec *) keyValue (curKey);
-		const char * luInfo = modulesPluginDatabaseLookupInfo (*curPs, ksInfo, info);
-		KeySet * ksLuInfo = strToKeySet (luInfo, 0);
-		ksAppend (ksRet, ksLuInfo);
-		ksDel (ksLuInfo);
+		curInfoNode = splitAndCopyStringToStringList(curInfoNode, modulesPluginDatabaseLookupInfo (existingPlugins->ps, info, ksModules));
+		if (!existingInfos)
+		{
+			/* New list (start node) created */
+			existingInfos = curInfoNode;
+		}
 	}
 
-	return ksRet;
+	return existingInfos;
 }
 
-void removeProvided (const KeySet * ksToAdd, KeySet * ksNeeds, KeySet * ksInfo)
+// C++: void BackendBuilder::removeProvided (std::vector<std::string> & needs) const from backendbuilder.cpp[256-272]
+struct StringNode * removeProvided (struct StringNode * toProcess, const struct PluginSpecNode * psList, KeySet * ksModules)
 {
-	for (ssize_t it = 0; it < ksGetSize (ksToAdd); it++)
+	for (; toProcess && psList; psList = psList->next)
 	{
-		Key * curKey = ksAtCursor (ksToAdd, it);
-		struct PluginSpec * curPs = (struct PluginSpec *) keyValue (curKey);
-
 		/* Remove the needed plugins that are already inserted */
 		// C++: needs.erase (std::remove (needs.begin (), needs.end (), ps.getName ()), needs.end ());
-		keyDel (ksLookupByName (ksNeeds, curPs->name, KDB_O_POP));
+		toProcess = removeFromStringList (toProcess, psList->ps.name, true);
+
+		if (!toProcess) break;
 
 		/* Remove what is already provided */
-		const char * luProvides = modulesPluginDatabaseLookupInfo (*curPs, ksInfo, "provides");
-
-		KeySet * ksToRemove = strToKeySet (luProvides, 0);
-		for (ssize_t j = 0; j < ksGetSize (ksToRemove); j++)
+		const char * strProvides = modulesPluginDatabaseLookupInfo (psList->ps, "provides", ksModules);
+		struct StringNode * listProvides = splitAndCopyStringToStringList (NULL, strProvides);
+		for (struct StringNode * curProvidesNode = listProvides; curProvidesNode; curProvidesNode = curProvidesNode->next)
 		{
-			// C++: needs.erase (std::remove (needs.begin (), needs.end (), toRemove), needs.end ());
-			Key * curKey1 = ksAtCursor (ksToRemove, j);
-			keyDel (ksLookupByName (ksNeeds, keyString (curKey1), KDB_O_POP));
+			toProcess = removeFromStringList (toProcess, curProvidesNode->str, true);
+			if (!toProcess) break;
 		}
-		ksDel (ksToRemove);
+		freeStringList (listProvides);
 	}
+
+	return toProcess;
 }
 
-void removeMissing (KeySet * ksRecommendedPlugins, const KeySet * ksMissingPlugins)
+// C++: void removeMissing (std::vector<std::string> & recommendedPlugins, std::vector<std::string> const & missingPlugins) from backendbuilder.cpp[292-298]
+struct StringNode * removeMissing (struct StringNode * recommendedPlugins, const struct StringNode * missingPlugins)
 {
-	for (ssize_t it = 0; it < ksGetSize (ksMissingPlugins); it++)
+	for (; recommendedPlugins && missingPlugins; missingPlugins = missingPlugins->next)
 	{
-		Key * curKey = ksAtCursor (ksMissingPlugins, it);
-		keyDel (ksLookup (ksRecommendedPlugins, curKey, KDB_O_POP));
+		recommendedPlugins = removeFromStringList(recommendedPlugins, missingPlugins->str, true);
 	}
+
+	return recommendedPlugins;
 }
 
-void removeMetadata (const KeySet * ksToAdd, KeySet * ksNeedsMetadata, KeySet * ksInfo)
+struct StringNode * removeMetadata (struct StringNode * metaDataList, const struct PluginSpecNode * psList, KeySet * ksModules)
 {
-	if (!ksToAdd || !ksNeedsMetadata) return;
 
-	for (ssize_t it = 0; it < ksGetSize (ksToAdd); it++)
+	for (; metaDataList && psList; psList = psList->next)
 	{
-		Key * curKey = ksAtCursor (ksToAdd, it);
-		struct PluginSpec * curPs = (struct PluginSpec *) keyValue (curKey);
+		/* Remove metadata that is already provided */
+		const char * strMeta = modulesPluginDatabaseLookupInfo(psList->ps, "metadata", ksModules);
+		struct StringNode * listMeta = splitAndCopyStringToStringList(NULL, strMeta);
 
-		/* Remove metadata that already is provided */
-		const char * luMetadata = modulesPluginDatabaseLookupInfo (*curPs, ksInfo, "metadata");
-
-		KeySet * ksToRemove = strToKeySet (luMetadata, 0);
-		for (ssize_t j = 0; j < ksGetSize (ksToRemove); j++)
+		for (struct StringNode * curMeta = listMeta; curMeta; curMeta = curMeta->next)
 		{
-			// C++: needsMetadata.erase (toRemove);
-			Key * curKey1 = ksAtCursor (ksToRemove, j);
-			keyDel (ksLookupByName (ksNeedsMetadata, keyString (curKey1), KDB_O_POP));
+			metaDataList = removeFromStringList (metaDataList, curMeta->str, true);
+			if (!metaDataList) break;
 		}
-		ksDel (ksToRemove);
+		freeStringList (listMeta);
 	}
+
+	return metaDataList;
 }
+
 
 /**
  * @brief resolve all needs that were not resolved by adding plugins.
@@ -2399,26 +2463,72 @@ void removeMetadata (const KeySet * ksToAdd, KeySet * ksNeedsMetadata, KeySet * 
  * @warning Must only be used once after all plugins/recommends are added.
  *
  * @return the missing recommended plugins
- * @retval empty if addRecommends was false
+ * @retval NULL if addRecommends was false
  *
  * @see addPlugin()
  */
 // C++: std::vector<std::string> BackendBuilder::resolveNeeds (bool addRecommends) from backendbuilder.cpp[334]
-KeySet * resolveNeeds (bool addRecommends, const struct PluginSpecNode * psList, KeySet **backendConf, KeySet * ksModules)
+struct StringNode * resolveNeeds (bool addRecommends, struct PluginSpecNode * psList, struct StringNode * neededPlugins,
+	struct StringNode * recommendedPlugins, struct StringNode * metaData, KeySet **backendConf, KeySet * ksModules)
 {
 	/* Load dependency-plugins immediately */
 	for (; psList; psList = psList->next)
 	{
 		const char * curInfo = modulesPluginDatabaseLookupInfo (psList->ps, "plugins", ksModules);
 
-		/* curInfo string gets temporarly modified inside function, when function returns, the old content is restored */
+		/* curInfo string gets temporarily modified inside function, when function returns, the old content is restored */
 		struct PluginSpecNode * psListParsed = parseArguments ((char *) curInfo);
 		for (struct PluginSpecNode * psParsedCur = psListParsed; psParsedCur; psParsedCur = psParsedCur->next)
 		{
-			struct PluginSpec newPs = backendBuilderAddPlugin(psList, psParsedCur->ps, backendConf, ksModules);
-
+			/* returns sorted list */
+			psList = backendBuilderAddAndInsertPlugin (psList, psParsedCur->ps, backendConf, ksModules);
 		}
 	}
+
+
+	struct StringNode * missingRecommends = NULL;
+
+	do
+	{
+		// C++: collectNeeds (neededPlugins);
+		neededPlugins = collectInfosFromKs (neededPlugins, psList, "needs", ksModules);
+
+		// C++: collectRecommends (recommendedPlugins);
+		recommendedPlugins = collectInfosFromKs (recommendedPlugins, psList, "recommends", ksModules);
+
+		// C++: removeProvided (neededPlugins);
+		neededPlugins = removeProvided (neededPlugins, psList, ksModules);
+
+		// C++: removeProvided (recommendedPlugins);
+		recommendedPlugins = removeProvided (recommendedPlugins, psList, ksModules);
+
+		// C++: removeMissing (recommendedPlugins, missingRecommends);
+		recommendedPlugins = removeMissing (recommendedPlugins, missingRecommends);
+
+		// C++: removeMetadata (metadata);
+		metaData = removeMetadata (metaData, psList, ksModules);
+
+		/* Leftover in needs (metadata) is what is still needed --> let's add first one */
+		if (neededPlugins)
+		{
+			struct PluginSpec ps;
+			setPluginFullName(&ps, neededPlugins->str);
+			psList = backendBuilderAddAndInsertPlugin (psList, ps, backendConf, ksModules);
+		}
+		else if (metaData)
+		{
+
+		}
+		else if (recommendedPlugins && addRecommends)
+		{
+
+		}
+	} while (neededPlugins || metaData || (recommendedPlugins && addRecommends));
+
+
+	return missingRecommends;
+
+
 
 
 	for (ssize_t it = 0; it < ksGetSize (ksToAdd); it++)
@@ -3517,7 +3627,7 @@ void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, cha
 
 	/* C++: outputMissingRecommends (backend.resolveNeeds (cl.withRecommends)); */
 	/* TODO: Add real parameters */
-	KeySet * ksMissingRecommends = resolveNeeds (withRecommends, psnToAdd, &ksBackendConfig, ksModules);
+	KeySet * ksMissingRecommends = resolveNeeds (withRecommends, pluginSpecsToAdd, &ksBackendConfig, ksModules);
 
 	// C++: outputMissingRecommends (backend.resolveNeeds (cl.withRecommends));
 	/* Output missing recommends */
