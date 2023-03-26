@@ -8,11 +8,32 @@
 #define PARENT_KEY "/sw/org"
 #endif
 
+static void printAllKeysAndCorrespondingMetaKeys(KeySet * ks)
+{
+	for (elektraCursor it = 0; it < ksGetSize (ks); it++)
+	{
+		Key * current = ksAtCursor (ks, it);
+		printf ("keyName: %s, keyValue: %s\n", keyName (current), keyString (current));
+
+		printf ("-----------------\n");
+
+		KeySet * currentMetaKeys = keyMeta (current);
+		for (elektraCursor it2 = 0; it2 < ksGetSize (currentMetaKeys); it2++)
+		{
+			Key * currentMetKey = ksAtCursor (currentMetaKeys, it2);
+			printf ("metaKeyName: %s, metaKeyValue: %s\n", keyName (currentMetKey), keyString (currentMetKey));
+		}
+
+		printf ("-----------------\n");
+	}
+}
 
 int main(void)
 {
 	KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "othermeta", "hiiiii", KEY_END),
-			     keyNew ("user:/" PARENT_KEY "/a", KEY_VALUE, "19", KEY_END), KS_END);
+			     keyNew ("user:/" PARENT_KEY "/a", KEY_VALUE, "19", KEY_END),
+			     keyNew ("system:/" PARENT_KEY "/a", KEY_VALUE, "12", KEY_END),
+			     KS_END);
 
 	bool isKdbGet = true;
 	Key * parentKey = keyNew (PARENT_KEY, KEY_END);
@@ -24,6 +45,8 @@ int main(void)
 		printf ("Failed on copying\n");
 		return -1;
 	}
+
+	printAllKeysAndCorrespondingMetaKeys (ks);
 
 	Key * lookup = ksLookupByName (ks, PARENT_KEY "/a", 0);
 	if (lookup == 0)
