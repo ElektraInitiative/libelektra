@@ -15,19 +15,19 @@ class HighlevelGenTemplate : public GenTemplate
 {
 	struct Params
 	{
-		static const char * InitFunctionName;
-		static const char * HelpFunctionName;
-		static const char * SpecloadFunctionName;
-		static const char * RunCommandsFunctionName;
-		static const char * TagPrefix;
-		static const char * EnumConversion;
-		static const char * AdditionalHeaders;
-		static const char * GenerateSetters;
-		static const char * EmbeddedSpec;
-		static const char * InstallPrefix;
-		static const char * EmbedHelpFallback;
-		static const char * UseCommands;
-		static const char * InitWithPointers;
+		static const char * const InitFunctionName;
+		static const char * const HelpFunctionName;
+		static const char * const SpecloadFunctionName;
+		static const char * const RunCommandsFunctionName;
+		static const char * const TagPrefix;
+		static const char * const EnumConversion;
+		static const char * const AdditionalHeaders;
+		static const char * const GenerateSetters;
+		static const char * const EmbeddedSpec;
+		static const char * const InstallPrefix;
+		static const char * const EmbedHelpFallback;
+		static const char * const UseCommands;
+		static const char * const InitWithPointers;
 	};
 
 public:

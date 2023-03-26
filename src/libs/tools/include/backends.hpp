@@ -47,7 +47,7 @@ public:
 
 	static std::string getBasePath (std::string name);
 
-	static const char * mountpointsPath;
+	static const char * const mountpointsPath;
 };
 } // namespace tools
 } // namespace kdb

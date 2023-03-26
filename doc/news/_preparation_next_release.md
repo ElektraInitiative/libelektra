@@ -105,6 +105,12 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - <<TODO>>
 
+### counter
+
+- Move `static` variables into functions to avoid global variables _(@kodebach)_
+- <<TODO>>
+- <<TODO>>
+
 ### <<Plugin>>
 
 - <<TODO>>
@@ -115,6 +121,18 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 
 - Utilize new changetracking API _(Maximilian Irlinger @atmaxinger)_
 - Add Maximilian Irlinger as maintainer _(Maximilian Irlinger @atmaxinger)_
+
+### yajl
+
+- The `itKs` global variable workaround, which was used to replace the now removed internal `KeySet` cursor, was replaced with a custom context struct. _(@kodebach)_
+- <<TODO>>
+- <<TODO>>
+
+### toml
+
+- The `flex` lexer and `bison` parser are now fully reentrant and therefore thread-safe. _(@kodebach)_
+- <<TODO>>
+- <<TODO>>
 
 ### multifile
 
@@ -129,6 +147,17 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - Use separate symbols for `set` and `commit` functions to satisfy `kdb plugin-check` _(@kodebach)_
 - Use new `elektraPluginGetPhase()` instead of counting executions _(@kodebach)_
+
+### mmapstorage
+
+> **Note**: The plugin is currently disabled, because it is not yet compatible with the COW data structures.
+
+TODO: remove above note, when COW support is added.
+
+- The magic data structures are now fully compile-time constants.
+  The magic number to detect endianness is generated in CMake instead of at runtime. _(@kodebach)_
+- <<TODO>>
+- <<TODO>>
 
 ### syslog
 
@@ -180,7 +209,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Core
 
-- <<TODO>>
+- The `syslog` logging code now calls `openlog` before every `syslog` to avoid the use of a global variable. _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -554,6 +583,10 @@ The website is generated from the repository, so all information about plugins, 
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+
+## Miscellaneous
+
+- Many global variables that where used as constants have been made fully `const` _(@kodebach)_
 
 ## Outlook
 

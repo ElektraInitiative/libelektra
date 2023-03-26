@@ -17,8 +17,11 @@
 #include <kdbmacros.h>
 #include <yajl/yajl_parse.h>
 
-
-static elektraCursor itKs;
+typedef struct
+{
+	KeySet * ks;
+	elektraCursor cursor;
+} Context;
 
 static void elektraYajlSetArrayLength (KeySet * ks, Key * current)
 {
@@ -30,24 +33,34 @@ static void elektraYajlSetArrayLength (KeySet * ks, Key * current)
 	keyDel (arrayKey);
 }
 
+static void elektraYajlAppendKey (Context * context, Key * key)
+{
+	ksAppendKey (context->ks, key);
+	context->cursor = ksSearch (context->ks, key);
+}
+
+static Key * elektraYajlCurrentKey (Context * context)
+{
+	return ksAtCursor (context->ks, context->cursor);
+}
+
 /**
- @retval 0 if ksAtCursor(ks, it) does not hold an array entry
+ @retval 0 if the current @p context does not hold an array entry
  @retval 1 if the array entry will be used because its the first
  @retval 2 if a new array entry was created
  @retval -1 error in snprintf
  */
-static int elektraYajlIncrementArrayEntry (KeySet * ks)
+static int elektraYajlIncrementArrayEntry (Context * context)
 {
-	Key * current = ksAtCursor (ks, itKs);
+	Key * current = elektraYajlCurrentKey (context);
 	const char * baseName = keyBaseName (current);
 	const char * meta = keyString (keyGetMeta (current, "array"));
 	if (!strcmp (meta, "empty"))
 	{
 		current = keyNew (keyName (current), KEY_END);
 		keyAddName (current, "#0");
-		ksAppendKey (ks, current);
-		itKs = ksSearch (ks, current);
-		elektraYajlSetArrayLength (ks, current);
+		elektraYajlAppendKey (context, current);
+		elektraYajlSetArrayLength (context->ks, current);
 
 		return 1;
 	}
@@ -56,9 +69,8 @@ static int elektraYajlIncrementArrayEntry (KeySet * ks)
 		// we are in an array
 		current = keyNew (keyName (current), KEY_END);
 		elektraArrayIncName (current);
-		ksAppendKey (ks, current);
-		itKs = ksSearch (ks, current);
-		elektraYajlSetArrayLength (ks, current);
+		elektraYajlAppendKey (context, current);
+		elektraYajlSetArrayLength (context->ks, current);
 
 		return 2;
 	}
@@ -71,10 +83,10 @@ static int elektraYajlIncrementArrayEntry (KeySet * ks)
 
 static int elektraYajlParseNull (void * ctx)
 {
-	KeySet * ks = (KeySet *) ctx;
-	elektraYajlIncrementArrayEntry (ks);
+	Context * context = (Context *) ctx;
+	elektraYajlIncrementArrayEntry (context);
 
-	Key * current = ksAtCursor (ks, itKs);
+	Key * current = elektraYajlCurrentKey (context);
 
 	keySetBinary (current, NULL, 0);
 
@@ -85,10 +97,10 @@ static int elektraYajlParseNull (void * ctx)
 
 static int elektraYajlParseBoolean (void * ctx, int boolean)
 {
-	KeySet * ks = (KeySet *) ctx;
-	elektraYajlIncrementArrayEntry (ks);
+	Context * context = (Context *) ctx;
+	elektraYajlIncrementArrayEntry (context);
 
-	Key * current = ksAtCursor (ks, itKs);
+	Key * current = elektraYajlCurrentKey (context);
 
 	if (boolean == 1)
 	{
@@ -107,10 +119,10 @@ static int elektraYajlParseBoolean (void * ctx, int boolean)
 
 static int elektraYajlParseNumber (void * ctx, const char * stringVal, yajl_size_type stringLen)
 {
-	KeySet * ks = (KeySet *) ctx;
-	elektraYajlIncrementArrayEntry (ks);
+	Context * context = (Context *) ctx;
+	elektraYajlIncrementArrayEntry (context);
 
-	Key * current = ksAtCursor (ks, itKs);
+	Key * current = elektraYajlCurrentKey (context);
 
 	unsigned char delim = stringVal[stringLen];
 	char * stringValue = (char *) stringVal;
@@ -129,10 +141,10 @@ static int elektraYajlParseNumber (void * ctx, const char * stringVal, yajl_size
 
 static int elektraYajlParseString (void * ctx, const unsigned char * stringVal, yajl_size_type stringLen)
 {
-	KeySet * ks = (KeySet *) ctx;
-	elektraYajlIncrementArrayEntry (ks);
+	Context * context = (Context *) ctx;
+	elektraYajlIncrementArrayEntry (context);
 
-	Key * current = ksAtCursor (ks, itKs);
+	Key * current = elektraYajlCurrentKey (context);
 
 	unsigned char delim = stringVal[stringLen];
 	char * stringValue = (char *) stringVal;
@@ -149,10 +161,10 @@ static int elektraYajlParseString (void * ctx, const unsigned char * stringVal, 
 
 static int elektraYajlParseMapKey (void * ctx, const unsigned char * stringVal, yajl_size_type stringLen)
 {
-	KeySet * ks = (KeySet *) ctx;
-	elektraYajlIncrementArrayEntry (ks);
+	Context * context = (Context *) ctx;
+	elektraYajlIncrementArrayEntry (context);
 
-	Key * currentKey = keyNew (keyName (ksAtCursor (ks, itKs)), KEY_END);
+	Key * currentKey = keyNew (keyName (elektraYajlCurrentKey (context)), KEY_END);
 	keySetString (currentKey, 0);
 
 	unsigned char delim = stringVal[stringLen];
@@ -163,8 +175,8 @@ static int elektraYajlParseMapKey (void * ctx, const unsigned char * stringVal, 
 	if (currentKey && !strcmp (keyBaseName (currentKey), "___empty_map"))
 	{
 		// remove old key
-		keyDel (ksLookup (ks, currentKey, KDB_O_POP));
-		itKs = 0; // current key was popped from KeySet
+		keyDel (ksLookup (context->ks, currentKey, KDB_O_POP));
+		context->cursor = 0; // current key was popped from KeySet
 		// now we know the name of the object
 		keySetBaseName (currentKey, stringValue);
 	}
@@ -173,8 +185,7 @@ static int elektraYajlParseMapKey (void * ctx, const unsigned char * stringVal, 
 		// we entered a new pair (inside the previous object)
 		keySetBaseName (currentKey, stringValue);
 	}
-	ksAppendKey (ks, currentKey);
-	itKs = ksSearch (ks, currentKey);
+	elektraYajlAppendKey (context, currentKey);
 
 	// restore old character in buffer
 	stringValue[stringLen] = delim;
@@ -184,16 +195,15 @@ static int elektraYajlParseMapKey (void * ctx, const unsigned char * stringVal, 
 
 static int elektraYajlParseStartMap (void * ctx)
 {
-	KeySet * ks = (KeySet *) ctx;
-	elektraYajlIncrementArrayEntry (ks);
+	Context * context = (Context *) ctx;
+	elektraYajlIncrementArrayEntry (context);
 
-	Key * currentKey = ksAtCursor (ks, itKs);
+	Key * currentKey = elektraYajlCurrentKey (context);
 
 	Key * newKey = keyNew (keyName (currentKey), KEY_END);
 	// add a pseudo element for empty map
 	keyAddBaseName (newKey, "___empty_map");
-	ksAppendKey (ks, newKey);
-	itKs = ksSearch (ks, newKey);
+	elektraYajlAppendKey (context, newKey);
 
 	ELEKTRA_LOG_DEBUG ("with new key %s", keyName (newKey));
 
@@ -202,8 +212,8 @@ static int elektraYajlParseStartMap (void * ctx)
 
 static int elektraYajlParseEnd (void * ctx)
 {
-	KeySet * ks = (KeySet *) ctx;
-	Key * currentKey = ksAtCursor (ks, itKs);
+	Context * context = (Context *) ctx;
+	Key * currentKey = elektraYajlCurrentKey (context);
 
 	const char * meta = keyString (keyGetMeta (currentKey, "array"));
 	// If array is still empty by the time we reach the end, replace with ""
@@ -217,12 +227,12 @@ static int elektraYajlParseEnd (void * ctx)
 	keySetBaseName (lookupKey, 0); // remove current baseName
 
 	// lets move iterator to the correct place
-	itKs = ksSearch (ks, lookupKey);
+	context->cursor = ksSearch (context->ks, lookupKey);
 
 #ifdef HAVE_LOGGER
-	if (itKs >= 0)
+	if (context->cursor >= 0)
 	{
-		ELEKTRA_LOG_DEBUG ("Iterator position: %zd", itKs);
+		ELEKTRA_LOG_DEBUG ("Iterator position: %zd", context->cursor);
 	}
 	else
 	{
@@ -237,15 +247,14 @@ static int elektraYajlParseEnd (void * ctx)
 
 static int elektraYajlParseStartArray (void * ctx)
 {
-	KeySet * ks = (KeySet *) ctx;
-	elektraYajlIncrementArrayEntry (ks);
+	Context * context = (Context *) ctx;
+	elektraYajlIncrementArrayEntry (context);
 
-	Key * currentKey = ksAtCursor (ks, itKs);
+	Key * currentKey = elektraYajlCurrentKey (context);
 
 	Key * newKey = keyNew (keyName (currentKey), KEY_END);
 	keySetMeta (newKey, "array", "empty");
-	ksAppendKey (ks, newKey);
-	itKs = ksSearch (ks, newKey);
+	elektraYajlAppendKey (context, newKey);
 
 	ELEKTRA_LOG_DEBUG ("with new key %s", keyName (newKey));
 
@@ -372,11 +381,12 @@ int elektraYajlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 	ksAppendKey (returned, keyNew (keyName ((parentKey)), KEY_END));
 
+	Context context = { .ks = returned, .cursor = 0 };
 #if YAJL_MAJOR == 1
 	yajl_parser_config cfg = { 1, 1 };
-	yajl_handle hand = yajl_alloc (&callbacks, &cfg, NULL, returned);
+	yajl_handle hand = yajl_alloc (&callbacks, &cfg, NULL, &context);
 #else
-	yajl_handle hand = yajl_alloc (&callbacks, NULL, returned);
+	yajl_handle hand = yajl_alloc (&callbacks, NULL, &context);
 	yajl_config (hand, yajl_allow_comments, 1);
 #endif
 
@@ -392,8 +402,6 @@ int elektraYajlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		return -1;
 	}
 
-	/* external iteration of the keyset */
-	itKs = 0;
 	while (!done)
 	{
 		yajl_size_type rd = fread ((void *) fileData, 1, sizeof (fileData) - 1, fileHandle);

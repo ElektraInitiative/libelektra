@@ -163,7 +163,7 @@ class GlobalPluginsBuilder : public BackendBuilder
 {
 public:
 	explicit GlobalPluginsBuilder (BackendBuilderInit const & bbi = BackendBuilderInit ());
-	static const char * globalPluginsPath;
+	static const char * const globalPluginsPath;
 	void serialize (kdb::KeySet & ret);
 };
 

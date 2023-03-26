@@ -38,10 +38,10 @@ struct change
 };
 
 // TODO: allow more changes
-static struct change allowedChanges[] = { { "meta:/description", true, true, true }, { "meta:/opt/help", true, true, true },
-					  { "meta:/comment", true, true, true },     { "meta:/order", true, true, true },
-					  { "meta:/rationale", true, true, true },   { "meta:/requirement", true, true, true },
-					  { "meta:/example", true, true, true },     { NULL, false, false, false } };
+static const struct change allowedChanges[] = { { "meta:/description", true, true, true }, { "meta:/opt/help", true, true, true },
+						{ "meta:/comment", true, true, true },	   { "meta:/order", true, true, true },
+						{ "meta:/rationale", true, true, true },   { "meta:/requirement", true, true, true },
+						{ "meta:/example", true, true, true },	   { NULL, false, false, false } };
 
 static bool readConfig (KeySet * conf, char ** directFilePtr, char ** appPtr, char *** argvPtr, Key * errorKey);
 static bool loadSpec (KeySet * returned, const char * directFile, const char * app, char * argv[], Key * parentKey,

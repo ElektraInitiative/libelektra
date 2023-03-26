@@ -28,7 +28,7 @@
 #include <sys/wait.h>
 #endif
 
-const char * buildinExecPath = BUILTIN_EXEC_FOLDER;
+const char * const buildinExecPath = BUILTIN_EXEC_FOLDER;
 
 static std::string cwd ()
 {
