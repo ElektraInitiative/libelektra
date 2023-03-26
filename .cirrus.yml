@@ -94,6 +94,7 @@ task:
     # Work around stalled process plugin and library problems on FreeBSD: https://issues.libelektra.org/2323
     - sudo mount -t fdescfs fdesc /dev/fd
     - export $(dbus-launch) # Some libraries such as xfconf require a running dbus instance
+    - systemd-machine-id-setup || true # xfconf also requires a machine-id
     - *run_tests
 
 task:
@@ -250,6 +251,7 @@ task:
     - export LUA_CPATH="${CIRRUS_WORKING_DIR}/install/lib/lua/5.2/?.so;"
     - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"$CIRRUS_WORKING_DIR/install/lib"
     - export $(dbus-launch) # Some libraries such as xfconf require a running dbus instance
+    - systemd-machine-id-setup || true # xfconf also requires a machine-id
     - *run_tests
 
 task:

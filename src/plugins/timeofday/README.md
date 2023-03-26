@@ -3,7 +3,7 @@
 - infos/licence = BSD
 - infos/provides = tracing
 - infos/needs =
-- infos/placements = pregetstorage procgetstorage postgetstorage presetstorage precommit postcommit prerollback postrollback
+- infos/placements = pregetstorage postgetstorage presetstorage precommit postcommit prerollback postrollback
 - infos/status = maintained tested nodep configurable global
 - infos/description = Prints timestamps during execution of backend
 

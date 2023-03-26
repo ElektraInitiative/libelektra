@@ -22,39 +22,18 @@ if contains "$KDB" "full" || contains "$KDB" "static"; then
 	ACTUAL_PLUGINS=$ADDED_PLUGINS_WITHOUT_ONLY_SHARED
 fi
 
-printf "Checking %s\n" "$ACTUAL_PLUGINS"
+printf "Checking %s\n\n" "$ACTUAL_PLUGINS"
 
 for PLUGIN in $ACTUAL_PLUGINS; do
 	ARGS=""
 	case "$PLUGIN" in
-	'jni')
-		# References:
-		#  - https://travis-ci.org/sanssecours/elektra/builds/410641048
-		#  - https://issues.libelektra.org/1466
-		#  - https://issues.libelektra.org/1963
-		continue
-		;;
-	"tracer")
-		# output on open/close
-		continue
-		;;
-	"timeofday")
-		# output on open/close
-		continue
-		;;
-	"counter")
-		# output on open/close
-		continue
-		;;
+	# exclude plugins with known issues
 	"xfconf")
-		# dbus is not enabled on internal checks
-		continue
-		;;
-	"specload")
-		ARGS="-c app=$(dirname "$KDB")/elektra-specload-testapp"
-		# exclude; cannot open on travis?
-		# https://travis-ci.com/kodebach/libelektra/jobs/179018147#L2180
-		continue
+		# xfconf needs running dbus
+		# sometimes dbus is available when compiling, but not during packaging
+		if ! command -v dbus-launch; then
+			continue
+		fi
 		;;
 	esac
 
@@ -62,21 +41,18 @@ for PLUGIN in $ACTUAL_PLUGINS; do
 	if [ "$ASAN" = 'ON' ]; then
 		# Do not check plugins with known memory leaks in ASAN enabled build
 		"$KDB" plugin-info "$PLUGIN" status 2> /dev/null | grep -E -q 'memleak' && continue
-
-		case "$PLUGIN" in
-		'augeas') # Reference: https://travis-ci.org/sanssecours/elektra/jobs/418524229
-			continue
-			;;
-		esac
 	fi
 
-	: > "$FILE"
+	truncate -s0 "$FILE"
 	# shellcheck disable=SC2086
-	"$KDB" plugin-check $ARGS "$PLUGIN" 1> "$FILE" 2> "$FILE"
+	"$KDB" plugin-check $ARGS "$PLUGIN" > "$FILE" 2>&1
 	succeed_if "check of plugin $PLUGIN with args '$ARGS' failed"
 
-	test ! -s "$FILE"
-	succeed_if "check of plugin $PLUGIN produced: \"$(cat "$FILE")\""
+	if [ -s "$FILE" ]; then
+		echo "check of plugin $PLUGIN produced:"
+		cat "$FILE"
+		echo
+	fi
 done
 
 end_script basic commands

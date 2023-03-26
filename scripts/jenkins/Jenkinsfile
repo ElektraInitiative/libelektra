@@ -1084,6 +1084,8 @@ export DBUS_SESSION_BUS_ADDRESS=`dbus-daemon --session --fork --print-address`
 export LUA_CPATH="${WORKSPACE}/system/lib/lua/5.2/?.so;"
 export $(dbus-launch)
 
+systemd-machine-id-setup || true # xfconf also requires a machine-id
+
 env
 
 kdb run_all
@@ -1480,6 +1482,7 @@ def ctest(target = "Test", printFailedLogs = false) {
   */
   def script = """
       export \$(dbus-launch)
+      systemd-machine-id-setup || true # xfconf also requires a machine-id
 
       ${printFailedLogs ? "set +e" : ""}
       ctest -j 1 \

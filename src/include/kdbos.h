@@ -65,6 +65,11 @@
 #define ELEKTRA_NOINLINE
 #endif
 
+#if defined(__GNUC__) || defined(__clang__)
+#undef ELEKTRA_WEAK
+#define ELEKTRA_WEAK __attribute__ ((weak))
+#endif
+
 
 /** The buffer size needed for an array name
  *

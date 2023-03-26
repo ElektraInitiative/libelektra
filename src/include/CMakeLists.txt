@@ -175,6 +175,7 @@ install (
 	FILES kdbextension.h
 	      kdbmeta.h
 	      kdbease.h
+	      kdbchangetracking.h
 	      "${CMAKE_CURRENT_BINARY_DIR}/kdbtypes.h"
 	      kdbhelper.h
 	      "${CMAKE_CURRENT_BINARY_DIR}/kdb.h"

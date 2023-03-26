@@ -46,7 +46,8 @@ s/\<[Ll]ibre[ ]?[Oo]ffice/LibreOffice/g
 s/([^./[-])\<mark[Dd]own\>/\1Markdown/g
 s/\<([Mm]ac )?OS X\>/macOS/g
 
-s/\<unix|UNIX/Unix/g
+# exclude unixODBC from replacements
+/unixODBC|unixodbc|unixOdbc/!s/\<unix|UNIX/Unix/g
 s/\<XCode\>/Xcode/g
 
 # ===================

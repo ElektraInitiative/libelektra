@@ -35,6 +35,7 @@ target_link_elektra (opts elektra-ease elektra-opts)
 target_link_elektra (optsCommands elektra-ease elektra-opts)
 target_link_elektra (gopts elektra-ease elektra-kdb)
 target_link_elektra (goptsCommands elektra-ease elektra-kdb)
+target_link_elektra (changetracking elektra-kdb)
 
 # Notification examples
 

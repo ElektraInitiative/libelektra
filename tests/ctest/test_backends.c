@@ -97,22 +97,6 @@ void test_backendsDivide (void)
 	compare_keyset (ks8, ((const BackendData *) keyValue (ksLookupByName (backends, "system:/", 0)))->keys);
 	compare_keyset (ks9, ((const BackendData *) keyValue (ksLookupByName (backends, "default:/", 0)))->keys);
 
-	succeed_if (((const BackendData *) keyValue (ksLookupByName (backends, "dir:/", 0)))->keyNeedsSync == false, "shouldn't need sync");
-	succeed_if (((const BackendData *) keyValue (ksLookupByName (backends, "user:/", 0)))->keyNeedsSync == true, "should need sync");
-	succeed_if (((const BackendData *) keyValue (ksLookupByName (backends, "user:/bar", 0)))->keyNeedsSync == true, "should need sync");
-	succeed_if (((const BackendData *) keyValue (ksLookupByName (backends, "user:/bar/bar", 0)))->keyNeedsSync == true,
-		    "should need sync");
-	succeed_if (((const BackendData *) keyValue (ksLookupByName (backends, "user:/bar/baz", 0)))->keyNeedsSync == false,
-		    "shouldn't need sync");
-	succeed_if (((const BackendData *) keyValue (ksLookupByName (backends, "user:/bar/foo", 0)))->keyNeedsSync == true,
-		    "should need sync");
-	succeed_if (((const BackendData *) keyValue (ksLookupByName (backends, "user:/baz", 0)))->keyNeedsSync == false,
-		    "shouldn't need sync");
-	succeed_if (((const BackendData *) keyValue (ksLookupByName (backends, "user:/foo", 0)))->keyNeedsSync == true, "should need sync");
-	succeed_if (((const BackendData *) keyValue (ksLookupByName (backends, "system:/", 0)))->keyNeedsSync == false,
-		    "shouldn't need sync");
-	succeed_if (((const BackendData *) keyValue (ksLookupByName (backends, "default:/", 0)))->keyNeedsSync == true, "should need sync");
-
 	deleteBackends (backends);
 	ksDel (ks);
 	ksDel (ks0);

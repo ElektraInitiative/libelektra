@@ -273,13 +273,6 @@ struct _Key
 	bool isInMmap : 1;
 
 	/**
-	 * Key need sync.
-	 * If name, value or metadata are changed this flag will be set,
-	 * so that the backend will sync the key to database.
-	 */
-	bool needsSync : 1;
-
-	/**
 	 * Read only flag for name.
 	 * Key name is read only and not allowed to be changed.
 	 * All attempts to change the name will lead to an error.
@@ -428,6 +421,29 @@ typedef struct _SendNotificationHook
 	kdbHookSendNotificationSetPtr set;
 } SendNotificationHook;
 
+struct _ElektraDiff
+{
+	Key * parentKey;
+	KeySet * addedKeys;
+	/**
+	 * stores the old versions of modified keys
+	 */
+	KeySet * modifiedKeys;
+	KeySet * removedKeys;
+
+	uint16_t refs;
+};
+
+struct _ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKey, Key * parentKey);
+
+struct _ChangeTrackingContext
+{
+	KeySet * oldKeys;
+};
+
+struct _ChangeTrackingContext * elektraChangeTrackingCreateContextForTesting (KeySet * oldKeys);
+void elektraChangeTrackingContextDel (struct _ChangeTrackingContext * context);
+
 /**
  * The access point to the key database.
  *
@@ -473,6 +489,10 @@ struct _KDB
 
 		struct _SendNotificationHook * sendNotification;
 	} hooks;
+
+	KeySet * allKeys;
+
+	struct _ChangeTrackingContext changeTrackingContext;
 };
 
 /**
@@ -539,8 +559,6 @@ typedef struct _BackendData
 	size_t getSize;		     /*!< the size of @ref _BackendData.keys at the end of kdbGet()
 		      More precisely this is set by backendsMerge() to the size of @ref _BackendData.keys */
 	bool initialized;	     /*!< whether or not the init function of this backend has been called */
-	bool keyNeedsSync;	     /*!< whether or not any key in this backend needs a sync (keyNeedSync())
-		   More precisely this is set by backendsDivide() to indicate whether it encountered a key that needs sync */
 } BackendData;
 
 // clang-format on
@@ -575,8 +593,14 @@ Plugin * elektraFindInternalNotificationPlugin (KDB * kdb);
 /*Private helper for key*/
 ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize);
 void keyInit (Key * key);
-void keyClearSync (Key * key);
 int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix);
+
+static inline KeySet * keyMetaNoAlloc (const Key * key)
+{
+	if (!key) return NULL;
+	return key->meta;
+}
+
 
 /*Private helper for keyset*/
 int ksInit (KeySet * ks);
@@ -619,7 +643,6 @@ size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart);
 
 // TODO (kodebaach) [Q]: make public?
 int elektraIsArrayPart (const char * namePart);
-
 
 #ifdef __cplusplus
 }

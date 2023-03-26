@@ -44,11 +44,46 @@ docker run -it elektra/elektra
 
 ## Highlights
 
-- <<HIGHLIGHT>>
+- New Changetracking API
 - <<HIGHLIGHT>>
 - <<HIGHLIGHT>>
 
-### <<HIGHLIGHT>>
+### New Changetracking API
+
+We've created a new KeySet diffing and changetracking API for both internal and external use.
+Several plugins already had their own implementations to detect changes made to the key database.
+Unfortunately, every implementation did something different and results varied.
+With this new release every plugin now uses the same shared implementation!
+
+To try the amazing new API yourself, take a look at [the tutorial](../tutorials/changetracking.md)!
+
+Elektra's internal code now also uses this new API to detect which backends to execute.
+This can lead to better performance in I/O bound cases, where previously certain keys would have been detected as changed when they weren't.
+
+We ran some memory benchmarks and found a slightly increased memory usage on a stock instance of Elektra.
+If you're using many plugins that do changetracking, the overhead will decrease.
+
+| Number of Keys | Old Implementation (bytes) | New Implementation (bytes) | Memory Increase (%) |
+| -------------: | -------------------------: | -------------------------: | ------------------: |
+|             50 |               225792 bytes |               229580 bytes |              1,68 % |
+|            500 |               383180 bytes |               411238 bytes |              7,32 % |
+|           5000 |              1992294 bytes |              2306867 bytes |             15,79 % |
+|          50000 |             18245222 bytes |             21181235 bytes |             16,09 % |
+|         500000 |            178782208 bytes |            207827763 bytes |             16,25 % |
+
+Apart from memory benchmark, we also ran some performance benchmarks.
+As the benchmark is heavily I/O bound, the biggest bottleneck is the I/O performance of the system.
+We could not reliably detect a real, reliably reproducible performance impact measured in seconds.
+Alternatively, we have measured executed instructions.
+There seems to be about 10 % overhead, but we don't expect it to be noticeable in real-world workloads.
+
+| Number of Keys | Old Implementation (Instructions) | New Implementation (Instructions) | Performance Overhead (%) |
+| -------------: | --------------------------------: | --------------------------------: | -----------------------: |
+|             50 |                          18910449 |                          19583227 |                   3,56 % |
+|            500 |                          63001911 |                          68948096 |                   9,44 % |
+|           5000 |                         526801917 |                         586344210 |                  11,30 % |
+|          50000 |                        5730261920 |                        6340292587 |                  10,65 % |
+|         500000 |                      104614374974 |                      110702166761 |                   5,82 % |
 
 ### <<HIGHLIGHT>>
 
@@ -82,11 +117,10 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### logchange
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Utilize new changetracking API _(Maximilian Irlinger @atmaxinger)_
+- Add Maximilian Irlinger as maintainer _(Maximilian Irlinger @atmaxinger)_
 
 ### yajl
 
@@ -100,17 +134,19 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### multifile
 
-- <<TODO>>
+- Remove multifile plugin as it is unmaintained and conflicts with the new backend architecture _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### c
 
+- Add Florian Lindner as maintainer _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Use separate symbols for `set` and `commit` functions to satisfy `kdb plugin-check` _(@kodebach)_
+- Use new `elektraPluginGetPhase()` instead of counting executions _(@kodebach)_
 
 ### mmapstorage
 
@@ -123,11 +159,37 @@ TODO: remove above note, when COW support is added.
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### syslog
 
+- Convert to hook plugin _(Maximilian Irlinger @atmaxinger)_
+- Utilize new changetracking API _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
-- <<TODO>>
-- <<TODO>>
+
+### lineendings
+
+- Add Florian Lindner as maintainer _(Florian Lindner @flo91)_
+
+### length
+
+- Add Florian Lindner as maintainer _(Florian Lindner @flo91)_
+
+### missing
+
+- Add Florian Lindner as maintainer _(Florian Lindner @flo91)_
+
+### unit
+
+- Add Florian Lindner as maintainer _(Florian Lindner @flo91)_
+
+### dbus
+
+- Utilize new changetracking API _(Maximilian Irlinger @atmaxinger)_
+- Add Maximilian Irlinger as maintainer _(Maximilian Irlinger @atmaxinger)_
+
+### internalnotifications
+
+- Utilize new changetracking API _(Maximilian Irlinger @atmaxinger)_
+- Add Maximilian Irlinger as maintainer _(Maximilian Irlinger @atmaxinger)_
 
 ## Libraries
 
@@ -169,9 +231,9 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 
-### <<Library>>
+### kdb
 
-- <<TODO>>
+- Add new changetracking API _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 
@@ -273,6 +335,13 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ## Documentation
 
+- Adapt and remove outdated docs https://issues.libelektra.org/4882 _(Tomislav Makar @tmakar)_
+- <<TODO>>
+- <<TODO>>
+- Added Tomislav Makar to `AUTHORS.md` _(Tomislav Makar @tmakar)_
+- <<TODO>>
+- <<TODO>>
+- Added Florian Lindner to `AUTHORS.md` _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -284,18 +353,14 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Update AUTHORS.md info _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Add Stefan Hanreich to AUTHORS.md _(Stefan Hanreich @lawli3t)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -324,6 +389,30 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ### Decisions
 
+- Decide and implement [decision process](../decisions/5_partially_implemented/decision_process.md) _(Markus Raab)_
+- Decided future [library split](../decisions/4_decided/library_split.md) _(@kodebach)_
+- Decided [decision process](https://www.libelektra.org/decisions/decision-process) _(Markus Raab)_
+- Draft for [man pages](../decisions/0_drafts/man_pages.md) _(Markus Raab)_
+- <<TODO>>
+- Add decision for [change tracking](../decisions/3_in_review/change_tracking.md) _(Maximilian Irlinger @atmaxinger)_
+- <<TODO>>
+- Create [decision](../decisions/0_drafts/operation_sequences.md) for allowed and prohibited operation seqences _(Maximilian Irlinger @atmaxinger)_
+- <<TODO>>
+- Add decisions about [location of headers](../decisions/4_decided/header_file_structure.md) and [use of `#include`](../decisions/4_decided/header_include.md) in the repo _(@kodebach)_
+- <<TODO>>
+- <<TODO>>
+- Add decision about [metadata semantics](../decisions/0_drafts/metakey_semantics.md) _(@kodebach)_
+- <<TODO>>
+- <<TODO>>
+- Many small fixes to adapt to documentation guidelines and new decision process. _(Markus Raab)_
+- <<TODO>>
+- Add decision for [read-only keynames](../decisions/0_drafts/readonly_keynames.md) _(Maximilian Irlinger @atmaxinger)_
+- <<TODO>>
+- <<TODO>>
+- Revive [keyname decision](../decisions/4_decided/keyname.md) _(@kodebach)_
+- <<TODO>>
+- <<TODO>>
+- Add decision for [copy-on-write](../decisions/6_implemented/copy_on_write.md) and provide implementation suggestions. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -343,7 +432,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 ### Tutorials
 
 - <<TODO>>
-- <<TODO>>
+- Add basic tutorial about changetracking _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -504,6 +593,7 @@ The website is generated from the repository, so all information about plugins, 
 We are currently working on following topics:
 
 - <<TODO>>
+- Session recording and better Ansible integration _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 
