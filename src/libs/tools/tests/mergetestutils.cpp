@@ -78,14 +78,6 @@ protected:
 	{
 	}
 
-	virtual void unsyncKeys (KeySet & ks)
-	{
-		for (const Key & current : ks)
-		{
-			current.getKey ()->needsSync = false;
-		}
-	}
-
 	virtual void compareKeys (const Key & k1, const Key & k2)
 	{
 		EXPECT_EQ (k1, k2) << "keys have different names";

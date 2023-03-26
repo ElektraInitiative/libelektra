@@ -582,7 +582,6 @@ ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize)
 			key->keyData->data.v = NULL;
 		}
 		key->keyData->dataSize = 0;
-		key->needsSync = true;
 		if (keyIsBinary (key)) return 0;
 		return 1;
 	}
@@ -611,6 +610,5 @@ ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize)
 		memcpy (key->keyData->data.v, newBinary, key->keyData->dataSize);
 	}
 
-	key->needsSync = true;
 	return keyGetValueSize (key);
 }

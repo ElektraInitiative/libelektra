@@ -159,8 +159,6 @@ KeySet * keyMeta (Key * key);
 /* Methods for Making Tests */
 int keyCmp (const Key *k1, const Key *k2);
 
-int keyNeedSync (const Key *key);
-
 int keyIsBelow (const Key *key, const Key *check);
 int keyIsBelowOrSame (const Key *key, const Key *check);
 int keyIsDirectlyBelow (const Key *key, const Key *check);

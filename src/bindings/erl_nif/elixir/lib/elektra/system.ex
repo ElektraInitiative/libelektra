@@ -84,10 +84,6 @@ defmodule Elektra.System do
     raise error_message("key_cmp/2")
   end
 
-  def key_need_sync(_key) do
-    raise error_message("key_need_sync/1")
-  end
-
   def key_is_below(_key, _check) do
     raise error_message("key_is_below/2")
   end

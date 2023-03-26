@@ -700,8 +700,6 @@ ssize_t keySetName (Key * key, const char * newName)
 
 	elektraKeyNameUnescape (key->keyName->key, key->keyName->ukey);
 
-	key->needsSync = true;
-
 	return key->keyName->keySize;
 }
 
@@ -776,7 +774,6 @@ ssize_t keyAddName (Key * key, const char * newName)
 
 	elektraKeyNameUnescape (key->keyName->key, key->keyName->ukey);
 
-	key->needsSync = true;
 	return key->keyName->keySize;
 }
 
@@ -1685,7 +1682,6 @@ static size_t keyAddBaseNameInternal (Key * key, const char * baseName)
 	// terminate unescaped name
 	key->keyName->ukey[key->keyName->keyUSize - 1] = '\0';
 
-	key->needsSync = true;
 	return key->keyName->keySize;
 }
 

@@ -10,6 +10,8 @@
 #include "kdbconfig.h"
 #endif
 
+#include <kdbchangetracking.h>
+
 #include "log.h"
 
 int elektraSyslogOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
@@ -50,6 +52,10 @@ int elektraSyslogGet (Plugin * handle, KeySet * returned, Key * parentKey)
 				     keyNew ("system:/elektra/modules/syslog/exports/get", KEY_FUNC, elektraSyslogGet, KEY_END),
 				     keyNew ("system:/elektra/modules/syslog/exports/commit", KEY_FUNC, elektraSyslogCommit, KEY_END),
 				     keyNew ("system:/elektra/modules/syslog/exports/error", KEY_FUNC, elektraSyslogError, KEY_END),
+				     keyNew ("system:/elektra/modules/syslog/exports/hook/notification/send/get", KEY_FUNC,
+					     elektraSyslogGet, KEY_END),
+				     keyNew ("system:/elektra/modules/syslog/exports/hook/notification/send/set", KEY_FUNC,
+					     elektraSyslogCommit, KEY_END),
 #include "readme_syslog.c"
 				     keyNew ("system:/elektra/modules/syslog/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
 		ksDel (n);
@@ -65,21 +71,32 @@ int elektraSyslogGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return 1;
 }
 
-int elektraSyslogCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraSyslogCommit (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	size_t changed = 0;
+	const ChangeTrackingContext * context = elektraChangeTrackingGetContextFromPlugin (handle);
+	ElektraDiff * diff = elektraChangeTrackingCalculateDiff (returned, context, parentKey);
 
-	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
+	KeySet * added = elektraDiffGetAddedKeys (diff);
+	KeySet * modified = elektraDiffGetModifiedKeys (diff);
+
+	KeySet * changed = ksNew (0, KS_END);
+	ksAppend (changed, added);
+	ksAppend (changed, modified);
+
+	for (elektraCursor it = 0; it < ksGetSize (changed); ++it)
 	{
-		Key * k = ksAtCursor (returned, it);
-		if (keyNeedSync (k))
-		{
-			syslog (LOG_NOTICE, "change %s to %s", keyName (k), keyString (k));
-			changed++;
-		}
+		Key * k = ksAtCursor (changed, it);
+		Key * new = ksLookup (returned, k, 0);
+		syslog (LOG_NOTICE, "change %s to %s", keyName (new), keyString (new));
 	}
 
-	syslog (LOG_NOTICE, "committed configuration %s with %zd keys (%zu changed)", keyName (parentKey), ksGetSize (returned), changed);
+	syslog (LOG_NOTICE, "committed configuration %s with %zd keys (%zu changed)", keyName (parentKey), ksGetSize (returned),
+		ksGetSize (changed));
+
+	ksDel (modified);
+	ksDel (added);
+	ksDel (changed);
+	elektraDiffDel (diff);
 
 	return 1;
 }
