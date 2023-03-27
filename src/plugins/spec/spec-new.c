@@ -185,11 +185,6 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * ks)
 			addDefaultKeyIfNotExists (ks, parentKey, specKey);
 			return 0;
 		}
-		else if (isRequired (specKey))
-		{
-			ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey, "Key for specification %s does not exist", keyName (specKey));
-			return -1;
-		}
 		else
 		{
 			const char * msg = elektraFormat ("Key for specification %s does not exist", keyName (specKey));
@@ -208,6 +203,17 @@ int elektraSpecCopy (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * pa
  	for (elektraCursor it = 0; it < ksGetSize (specKeys); it++)
 	{
 		Key * current = ksAtCursor (specKeys, it);
+
+		// if required and no default => cascade lookup if exists in other namespaces
+		if (isRequired (current) && !hasDefault (current))
+		{
+			Key * cascadingKey = keyNew (strchr (keyName (current), '/'), KEY_END);
+			if (ksLookup (returned, cascadingKey, KDB_O_NONE) == 0)
+			{
+				ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey, "Key for specification %s does not exist", keyName (current));
+				return ELEKTRA_PLUGIN_STATUS_ERROR;
+			}
+		}
 
 		if (copyMetaData (parentKey, current, returned) != 0)
 		{
