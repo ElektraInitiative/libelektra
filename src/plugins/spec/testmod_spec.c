@@ -10,11 +10,15 @@
 #define PARENT_KEY "/sw/org"
 #endif
 
+#ifndef PARENT_KEY_WITH_NAMESPACE
+#define PARENT_KEY_WITH_NAMESPACE "user:/sw/org"
+#endif
+
 #define TEST_BEGIN                                                                                                                         \
-	{                                                                                                                                  \
+	{                                               										   \
 		Key * parentKey = keyNew (PARENT_KEY, KEY_END);                                                                            \
 		bool success = 1;
-#define TEST_END                                                                                                                      \
+#define TEST_END                                                                                                                      	   \
 	success = 1;                                                                                                                       \
 	keyDel (parentKey);                                                                                                                \
 	}
@@ -157,7 +161,6 @@ static void test_hook_copy_only_to_keys_specified_in_specification (bool isKdbGe
 			Key * current = ksAtCursor (ks, it);
 			if (keyGetNamespace (current) == KEY_NS_USER)
 			{
-				output_key (current);
 				if (elektraStrCmp (keyBaseName (current), "a") == 0)
 				{
 					succeed_if (keyGetMeta (current, "default") != 0, "key a needs default meta key");
@@ -178,6 +181,8 @@ static void test_hook_copy_only_to_keys_specified_in_specification (bool isKdbGe
 
 static void test_hook_copy_with_missing_key_and_no_default_should_info (bool isKdbGet)
 {
+	printf ("test %s, isKdbGet=%d\n", __func__, isKdbGet);
+
 	TEST_BEGIN
 	{
 		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "somemetakey", "hello", KEY_END), KS_END);
@@ -192,12 +197,39 @@ static void test_hook_copy_with_missing_key_and_no_default_should_info (bool isK
 	TEST_END
 }
 
+static void test_hook_copy_with_parent_key_containing_namespace (bool isKdbGet)
+{
+	printf ("test %s, isKdbGet=%d\n", __func__, isKdbGet);
+
+	TEST_BEGIN
+	{
+		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY_WITH_NAMESPACE "/a", KEY_META, "default", "17", KEY_END), KS_END);
+
+		Key * parentKeyWithNamespace = keyNew (PARENT_KEY_WITH_NAMESPACE, KEY_END);
+		int result = elektraSpecCopy (NULL, ks, parentKeyWithNamespace, isKdbGet);
+
+		const char * keyNameToMatch = elektraFormat ("default:%s/%s", PARENT_KEY, "a");
+		for (elektraCursor it = 0; it < ksGetSize (ks); it++)
+		{
+			Key * current = ksAtCursor (ks, it);
+			if (keyGetNamespace (current) == KEY_NS_DEFAULT)
+			{
+				succeed_if_same_string (keyName (current), keyNameToMatch)
+			}
+		}
+
+		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
+	}
+	TEST_END
+}
+
 int main (void)
 {
 	test_hook_copy_with_require_meta_key_and_missing_key_should_error (false);
 	test_hook_copy_with_default_meta_key_and_missing_key_should_create_key_with_default (false);
 	test_hook_copy_only_to_keys_specified_in_specification (false);
 	test_hook_copy_with_missing_key_and_no_default_should_info (false);
+	test_hook_copy_with_parent_key_containing_namespace (false);
 
 	return 0;
 }

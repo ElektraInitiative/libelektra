@@ -58,7 +58,7 @@ static void addDefaultKeyIfNotExists (KeySet * ks, Key * parentKey, Key * specKe
 	const Key * defaultMetaKey = keyGetMeta (specKey, "default");
 	const char * defaultValue = keyString (defaultMetaKey);
 
-	const char * parentKeyName = keyName (parentKey);
+	const char * parentKeyName = strchr (keyName (parentKey), '/');
 	const char * specKeyName = keyBaseName (specKey);
 
 	Key * newDefaultKey = keyNew (elektraFormat ("%s:/%s/%s", "default", parentKeyName, specKeyName), KEY_VALUE, defaultValue, KEY_END);
@@ -126,7 +126,7 @@ static KeySet * extractSpecKeys (KeySet * ks)
  */
 static int copyMeta (Key * key, Key * specKey)
 {
-	KeySet * metaKeys = ksDup (keyMeta (specKey));
+	KeySet * metaKeys = keyMeta (specKey);
 
 	for (elektraCursor it = 0; it < ksGetSize (metaKeys); it++)
 	{
@@ -137,8 +137,6 @@ static int copyMeta (Key * key, Key * specKey)
 			return -1;
 		}
 	}
-
-	ksDel (metaKeys);
 
 	return 0;
 }
