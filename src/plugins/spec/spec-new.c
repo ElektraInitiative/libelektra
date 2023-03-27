@@ -3,6 +3,7 @@
 #include "kdbglobbing.h"
 
 #include <kdbhelper.h>
+#include <stdlib.h>
 
 #ifdef __MINGW32__
 static bool specMatches (Key * specKey, Key * otherKey)
@@ -116,6 +117,27 @@ static KeySet * extractSpecKeys (KeySet * ks)
 }
 
 /**
+ * Checks if the {@link specKey} is a array specification key.
+ *
+ * @param specKey the specification key to check if it is an array specification
+ * @return true  - if it is an array specification
+ * 	   false - if it is no array specification
+ */
+static bool isArraySpecification(Key * specKey)
+{
+	const char * keyWithoutNamespace = strchr (keyName (specKey), '/');
+	for (size_t i = 0; i < elektraStrLen (keyWithoutNamespace); i++)
+	{
+		if (keyWithoutNamespace [i] == '#')
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
  * Copies all meta keys from the {@link specKey} to the provided {@link key}.
  *
  * @param key the key to copy the meta data too
@@ -153,13 +175,28 @@ static int copyMeta (Key * key, Key * specKey)
  * @param parentKey the parent key (primarily used to handle in case of error, warning, information)
  * @param specKey the specification key containing the meta data to be copied
  * @param ks the KeySet to search for the key
+ * @param isKdbGet
  * @return 0 - if the meta data was copied successfully
  * 	  -1 - if the metadata could not be copied (error is also added there)
- * 	     - if the key was not found but has meta:/require and no meta:/default in {@link specKey}
+ * 	       if the key was not found but has meta:/require and no meta:/default in {@link specKey}
  */
-static int copyMetaData (Key * parentKey, Key * specKey, KeySet * ks)
+static int copyMetaData (Key * parentKey, Key * specKey, KeySet * ks, bool isKdbGet)
 {
 	int found = -1;
+
+	if (isArraySpecification(specKey))
+	{
+		Key * key = ksLookupByName (ks, strchr (keyName (specKey), '/'), 0);
+		const Key * arrayMetaKey = keyGetMeta (key, "array");
+
+		if (arrayMetaKey == 0 || keyGetNamespace (key) == KEY_NS_SPEC)
+		{
+			// no array size found, skip
+			ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "Could not find array size for key %s",
+							       keyName (specKey));
+			return -1;
+		}
+	}
 
 	for (elektraCursor it = 0; it < ksGetSize (ks); it++)
 	{
@@ -170,8 +207,17 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * ks)
 			found = 0;
 			if (copyMeta (current, specKey) != 0)
 			{
-				ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey, "Could not copy metadata from spec key %s",
-								       keyName (specKey));
+				if (isKdbGet)
+				{
+					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (parentKey, "Could not copy metadata from spec key %s",
+										 keyName (specKey));
+				}
+				else
+				{
+					ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey, "Could not copy metadata from spec key %s",
+									       keyName (specKey));
+				}
+
 				return -1;
 			}
 		}
@@ -208,14 +254,21 @@ int elektraSpecCopy (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * pa
 		if (isRequired (current) && !hasDefault (current))
 		{
 			Key * cascadingKey = keyNew (strchr (keyName (current), '/'), KEY_END);
-			if (ksLookup (returned, cascadingKey, KDB_O_NONE) == 0)
+			if (ksLookup (returned, cascadingKey, 0) == 0)
 			{
-				ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey, "Key for specification %s does not exist", keyName (current));
+				if (isKdbGet)
+				{
+					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (parentKey, "Key for specification %s does not exist", keyName (current));
+				}
+				else
+				{
+					ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey, "Key for specification %s does not exist", keyName (current));
+				}
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 		}
 
-		if (copyMetaData (parentKey, current, returned) != 0)
+		if (copyMetaData (parentKey, current, returned, isKdbGet) != 0)
 		{
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
