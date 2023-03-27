@@ -58,23 +58,19 @@ Instead `_` is simply treated like `*` during matching. Afterwards we check that
 
 The basic functionality of the plugin is to just copy (using `keyCopyMeta()` so we don't waste memory) the metadata of spec keys to all
 matching (as described above) keys in other namespaces. This ensures that other plugins can do their work as expected, without manually
-setting metadata on every key. If any metakey we want to copy already exists on the target key (with a different value), this causes a
-`collision` conflict.
+setting metadata on every key. If a metakey on a target key already exists with different value, it gets overridden.
 
 In addition to the basic functionality, the plugin does some validation itself.
 
 ### Default Values
 
-If a spec key has the metakey `default` set and the key does not exist in other namespaces, we create a special (cascading) key that will
-be found by `ksLookup`. This key has the `default` value as its value. We also copy over metadata as always.
-
-A similar procedure takes place for `assign/condition`, but in this case, we don't set the value of the key. We only create it and copy
-metadata.
+If a spec key has the metakey `default` set and the key does not exist in other namespaces, we create a key in the
+`default:/` namespace. This key has the `default` value as its value. We also copy over metadata as always.
 
 ### Required Keys
 
 If a spec key has the metakey `require` (the value of this metakey is irrelevant and ignored), we ensure that this key exists in at least
-one other namespace, i.e. it can be found using a cascading `ksLookup`. If the key cannot be found, this causes a `missing` conflict.
+one other namespace, i.e. it can be found using a cascading `ksLookup`. If the key cannot be found, this causes an `error`.
 
 ### Array Size Validation
 
@@ -87,6 +83,35 @@ We also check that the array only contains actual array elements. If this not th
 Note: We don't actually validate that the array doesn't contain elements above the given array size. This is because it doesn't have anything
 to do with the specification, whether the array contains additional elements. Note also that we only copy metadata onto elements within
 the bounds of the array size.
+
+## Error Handling
+
+In case there is an error, warning or information, it is appended to the `parent key`.
+
+### Example
+```text
+parentKey = "system:/sw/org"
+
+# in case there is an error
+system:/sw/org/error/...
+
+# in case there is a warning
+system:/sw/org/warning/...
+
+# in case there is an info
+system:/sw/org/info/description
+```
+
+If there is an error, the `spec` plugin exists with `ELEKTRA_PLUGIN_STATUS_ERROR` otherwise with `ELEKTRA_PLUGIN_STATUS_SUCCESS`. 
+
+### Cases
+
+- Key is required but does not exist
+  - In this case an `error` is appended to the `parent key`
+- Key is in specification but does not exist in any other namespace
+  - Just append an info to the `parent key`
+- Key has default but does not exist
+  - In this case the key is created
 
 ## Examples
 
