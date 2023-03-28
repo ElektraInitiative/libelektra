@@ -61,7 +61,7 @@ To build the documentation you need doxygen (we recommend 1.8.8+), graphviz and 
 - on APT-based systems (Ubuntu, Debian):
 
   ```sh
-  apt-get install doxygen graphviz
+  apt-get install doxygen graphviz ruby
   gem install ronn-ng -v 0.10.1.pre1
   ```
 
@@ -114,7 +114,7 @@ A small subset of build dependencies to get you started:
   ```sh
   sudo apt install -y libxerces-c-dev libxml2-dev libyajl-dev \
   libcurl4-gnutls-dev libaugeas-dev git git-buildpackage dh-lua liblua5.2-dev \
-  dh-python python3-all python3-dev default-jdk libjna-java ruby-dev flex bison
+  dh-python python3-all python3-dev openjdk-17-jdk libjna-java ruby-dev flex bison
   ```
 
 ## Preparation
