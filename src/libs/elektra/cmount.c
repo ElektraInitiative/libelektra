@@ -17,6 +17,51 @@
 #include <kdblogger.h>
 #include <assert.h>
 
+/*****************************************************
+ * PART I: enums and related functions               *
+ *****************************************************/
+
+enum PluginStatus
+{
+	/* works not directly, but can be loaded via provides */
+	provides,
+	/* exists and working as given */
+	real,
+	/* does not exist or cannot be loaded */
+	missing
+};
+
+enum PluginType
+{
+	pluginTypeGet,
+	pluginTypeSet,
+	pluginTypeError,
+	pluginTypeCommit
+};
+
+const char * pluginTypeToStr (enum PluginType pluginType)
+{
+	switch (pluginType)
+	{
+	case pluginTypeError:
+		return "error";
+	case pluginTypeCommit:
+		return "commit";
+	case pluginTypeGet:
+		return "get";
+	case pluginTypeSet:
+		return "set";
+	default:
+		return "unknown";
+	}
+}
+
+
+
+/*****************************************************
+ * PART II: structs and related functions            *
+ *****************************************************/
+
 /* Simple linked list with strings */
 struct StringNode
 {
@@ -119,6 +164,68 @@ struct StringNode * removeFromStringList (struct StringNode * startNode, const c
 	return startNode;
 }
 
+/* Be aware that the string `str` is changed by the function!
+ * Returns the inserted node */
+struct StringNode * splitAndMoveStringToStringList (struct StringNode * startNode, char * str)
+{
+	char * lastStart = str;
+	struct StringNode * curNode = startNode;
+
+	for (; str; str++)
+	{
+		if (isspace (*str))
+		{
+			*str = '\0';
+
+			if (!startNode)
+			{
+				/* Create new start node */
+				startNode = addStrAtEnd (NULL, lastStart, false);
+				curNode = startNode;
+			}
+			else
+			{
+				/* Use existing start node */
+				curNode = addStrAtEnd (curNode, lastStart, false);
+			}
+			lastStart = str + 1;
+		}
+	}
+
+	return curNode;
+}
+
+struct StringNode * splitAndCopyStringToStringList (struct StringNode * startNode, const char * str)
+{
+	const char * lastStart = str;
+	struct StringNode * curNode = startNode;
+
+	for (; str; str++)
+	{
+		if (isspace (*str))
+		{
+			char * newStr = elektraMalloc (str - lastStart + 1);
+			strncpy (newStr, lastStart, str - lastStart);
+			newStr[str-lastStart] = '\0';
+			lastStart = str + 1;
+
+			if (!startNode)
+			{
+				/* Create new start node */
+				startNode = addStrAtEnd (NULL, newStr, true);
+				curNode = startNode;
+			}
+			else
+			{
+				/* Use existing start node */
+				curNode = addStrAtEnd (curNode, newStr, true);
+			}
+		}
+	}
+
+	return curNode;
+}
+
 
 struct BackendInfo
 {
@@ -172,19 +279,6 @@ struct PluginInfos * addInfoToInfoList (struct PluginInfos * startNode, const ch
 	}
 
 	return newNode;
-}
-
-const char * getInfoFromList (struct PluginInfos * startNode, const char * infoName)
-{
-	for (; startNode; startNode = startNode->next)
-	{
-		if (elektraStrCmp (startNode->infoName, infoName) == 0)
-		{
-			return startNode->infoVal;
-		}
-	}
-
-	return NULL;
 }
 
 /* List of symbols (functions) for a plugin */
@@ -272,35 +366,6 @@ struct PluginSpecNode
 	struct PluginSpecNode * next;
 };
 
-/* A linked list of plugins for a slot */
-struct PluginSpecsSlotNode
-{
-	char * slot;
-	/* Start node of a list of plugins specs for that slot */
-	struct PluginSpecNode * plugins;
-	struct PluginSpecsSlotNode * next;
-};
-
-void addPsAtBegin (struct PluginSpecsSlotNode * pssn, struct PluginSpec ps)
-{
-	struct PluginSpecNode * psn = elektraMalloc (sizeof (struct PluginSpecNode *));
-	psn->ps = ps;
-	psn->next = pssn->plugins;
-	pssn->plugins = psn;
-}
-
-void addPsAtEnd (struct PluginSpecsSlotNode * pssn, struct PluginSpec ps)
-{
-	struct PluginSpecNode * psn = elektraMalloc (sizeof (struct PluginSpecNode *));
-	psn->ps = ps;
-	psn->next = NULL;
-
-	struct PluginSpecNode * curPlugin = pssn->plugins;
-	for (; curPlugin->next; curPlugin = curPlugin->next)
-		;
-	curPlugin->next = psn;
-}
-
 void freePsList (struct PluginSpecNode * psn)
 {
 	for (struct PluginSpecNode * nextNode; psn; psn = nextNode)
@@ -308,30 +373,6 @@ void freePsList (struct PluginSpecNode * psn)
 		nextNode = psn->next;
 		elektraFree (psn);
 	}
-}
-
-void freePsSlotsList (struct PluginSpecsSlotNode * pssn, bool freeSlotNames)
-{
-	for (struct PluginSpecsSlotNode * nextNode; pssn; pssn = nextNode)
-	{
-		if (freeSlotNames)
-		{
-			elektraFree (pssn->slot);
-		}
-		freePsList (pssn->plugins);
-
-		nextNode = pssn->next;
-		elektraFree (pssn);
-	}
-}
-
-struct PluginSpecNode * getPsListForSlot (struct PluginSpecsSlotNode * startNode, const char * slotName)
-{
-	for (; startNode; startNode = startNode->next)
-	{
-		if (elektraStrCmp (slotName, startNode->slot)) return startNode->plugins;
-	}
-	return NULL; /* not found */
 }
 
 struct PluginScore
@@ -388,130 +429,119 @@ void freePluginSpecScoreList (struct PluginSpecScoreNode * listStart, bool freeP
 }
 
 
-enum PluginStatus
-{
-	/* works not directly, but can be loaded via provides */
-	provides,
-	/* exists and working as given */
-	real,
-	/* does not exist or cannot be loaded */
-	missing
-};
 
-enum PluginType
-{
-	pluginTypeGet,
-	pluginTypeSet,
-	pluginTypeError,
-	pluginTypeCommit
-};
+/*****************************************************
+ * PART III: General (helper) functions              *
+ *****************************************************/
 
-const char * pluginTypeToStr (enum PluginType pluginType)
+/* Compare function for sorting strings */
+int pstrcmp (const void * a, const void * b)
 {
-	switch (pluginType)
-	{
-	case pluginTypeError:
-		return "error";
-	case pluginTypeCommit:
-		return "commit";
-	case pluginTypeGet:
-		return "get";
-	case pluginTypeSet:
-		return "set";
-	default:
-		return "unknown";
-	}
+	char * const * pa = a;
+	char * const * pb = b;
+	return strcmp (*pa, *pb);
 }
 
-
-/* Be aware that the string `pluginInfo` is changed by the function!
- * Returns the inserted node */
-struct StringNode * splitAndMoveStringToStringList (struct StringNode * startNode, char * str)
+/** @returns true if str1 starts with str2
+ */
+bool compareStrStart (const char * str1, const char * str2)
 {
-	char * lastStart = str;
-	struct StringNode * curNode = startNode;
-
-	for (; str; str++)
+	if (!str2)
 	{
-		if (isspace (*str))
-		{
-			*str = '\0';
-
-			if (!startNode)
-			{
-				/* Create new start node */
-				startNode = addStrAtEnd (NULL, lastStart, false);
-				curNode = startNode;
-			}
-			else
-			{
-				/* Use existing start node */
-				curNode = addStrAtEnd (curNode, lastStart, false);
-			}
-			lastStart = str + 1;
-		}
+		/* Every string starts with a NULL string */
+		return true;
 	}
-
-	return curNode;
-}
-
-struct StringNode * splitAndCopyStringToStringList (struct StringNode * startNode, const char * str)
-{
-	const char * lastStart = str;
-	struct StringNode * curNode = startNode;
-
-	for (; str; str++)
+	else if (!str1)
 	{
-		if (isspace (*str))
-		{
-			char * newStr = elektraMalloc (str - lastStart + 1);
-			strncpy (newStr, lastStart, str - lastStart);
-			newStr[str-lastStart] = '\0';
-			lastStart = str + 1;
-
-			if (!startNode)
-			{
-				/* Create new start node */
-				startNode = addStrAtEnd (NULL, newStr, true);
-				curNode = startNode;
-			}
-			else
-			{
-				/* Use existing start node */
-				curNode = addStrAtEnd (curNode, newStr, true);
-			}
-		}
+		/* A NULL-string starts only with a NULL-string */
+		return false;
 	}
-
-	return curNode;
-}
-
-
-/* Read mount configuration from the KDB
- * Make sure to ksDel(...) the returned KeySet */
-// C++: MountBaseCommand::readMountConf in mountbase.cpp[31-41]
-KeySet * getMountConfig (KDB * handle, Key * errorKey, const char * const mountpointsPath)
-{
-	Key * parent = NULL;
-
-	if (!mountpointsPath || !*mountpointsPath)
-		parent = keyNew (DEFAULT_MOUNTPOINTS_PATH, KEY_END);
 	else
-		parent = keyNew (mountpointsPath, KEY_END);
-
-	KeySet * mountInfo = ksNew (0, KS_END);
-	if (kdbGet (handle, mountInfo, parent) == -1)
 	{
-		/* TODO: Implement error handling */
+		for (; *str1 && *str2; str1++, str2++)
+		{
+			if (*str1 != *str2)
+			{
+				return false;
+			}
+		}
 	}
 
-	/* TODO: maybe print warnings(or add them to error key) */
-
-	keyDel (parent);
-	return mountInfo;
+	return *str2 ? false : true;
 }
 
 
+/* The provided array must have NULL as the last element (no NULL before an element, no element after a NULL) */
+void freeStrArr (char ** strArr, bool freeStrings)
+{
+	if (freeStrings)
+	{
+		for (char ** curStr = strArr; curStr; curStr++)
+		{
+			elektraFree (*curStr);
+		}
+	}
+	else
+	{
+		/* A continuous memory section was used for all strings in the string array, so we just have to free *strArr and strArr */
+		elektraFree (*strArr);
+	}
+
+	elektraFree (strArr);
+}
+
+
+void (*getFuncFromKey (Key * k)) (void)
+{
+	union
+	{
+		void (*f) (void);
+		void * v;
+	} conversation;
+
+	assert (sizeof (conversation) == sizeof (void (*) (void)));
+
+
+	if (keyGetBinary (k, &conversation.v, sizeof (conversation)) != sizeof (conversation))
+	{
+		/* TODO: Handle error */
+		fprintf (stderr, "Key type mismatch\n");
+	}
+
+	return conversation.f;
+}
+
+// C++: from backends.cpp[138-144]
+/* make sure to free the returned buffer! */
+char * getBasePath (const char * mp)
+{
+	Key * k = keyNew (DEFAULT_MOUNTPOINTS_PATH, KEY_END);
+
+	/* canonify name */
+	Key * kmp = keyNew (mp, KEY_END);
+
+	/* escape name */
+	keyAddBaseName (k, keyName(kmp));
+	kmp ? keyDel (kmp) : 0;
+
+	char * outBuf = elektraMalloc (keyGetNameSize (k));
+	if (keyGetName (k, outBuf, keyGetNameSize (k)) > 0)
+	{
+		k ? keyDel(k) : 0;
+		return outBuf;
+	}
+	else
+	{
+		/* TODO: Handle error */
+		outBuf ? elektraFree (outBuf) : (void) NULL;
+		k ? keyDel(k) : 0;
+		return NULL;
+	}
+}
+
+/*****************************************************
+ * PART IV: functions for mounting                  *
+ *****************************************************/
 
 
 /**
@@ -591,7 +621,6 @@ struct BackendInfo * getBackendInfo (KeySet * mountConf)
 	return resultList;
 }
 
-
 void cOutputMtab (KeySet * mountConf, bool clFirst, bool clSecond, bool clNull)
 {
 	// in c++: Vector with BackendInfo-structs
@@ -619,6 +648,31 @@ void cOutputMtab (KeySet * mountConf, bool clFirst, bool clSecond, bool clNull)
 		}
 	}
 }
+
+/* Read mount configuration from the KDB
+ * Make sure to ksDel(...) the returned KeySet */
+// C++: MountBaseCommand::readMountConf in mountbase.cpp[31-41]
+KeySet * getMountConfig (KDB * handle, Key * errorKey, const char * const mountpointsPath)
+{
+	Key * parent = NULL;
+
+	if (!mountpointsPath || !*mountpointsPath)
+		parent = keyNew (DEFAULT_MOUNTPOINTS_PATH, KEY_END);
+	else
+		parent = keyNew (mountpointsPath, KEY_END);
+
+	KeySet * mountInfo = ksNew (0, KS_END);
+	if (kdbGet (handle, mountInfo, parent) == -1)
+	{
+		/* TODO: Implement error handling */
+	}
+
+	/* TODO: maybe print warnings(or add them to error key) */
+
+	keyDel (parent);
+	return mountInfo;
+}
+
 
 // C++: void Backend::setMountpoint (Key mountpoint, KeySet mountConf) in backend.cpp[94-229]
 bool isValidMountPoint (Key * mountPoint, KeySet * mountConf)
@@ -710,7 +764,7 @@ bool isValidMountPoint (Key * mountPoint, KeySet * mountConf)
 		/* always add name itself, too */
 		if (!alreadyUsedMountpoints)
 		{
-			alreadyUsedMountpoints = addStrAtEnd (NULL, curNode->mountPoint, false);
+			alreadyUsedMountpoints = addStrAtEnd (NULL, (char *) curNode->mountPoint, false);
 		}
 	}
 	freeBackendInfoList (backendInfos);
@@ -874,16 +928,272 @@ bool isValidMountPoint (Key * mountPoint, KeySet * mountConf)
 
 
 
+/*****************************************************
+ * PART V: Plugin-related stuff                     *
+ *****************************************************/
+
+/* from plugindatabase.cpp[52-98] */
+/* For the returned string-array, make sure to free the individual strings AND the array that holds the char*-pointers */
+char ** getAllPluginNames (bool * freeStrings)
+{
+	char ** ret = NULL; /* Last element must be NULL */
+	size_t retIndex = 0;
+
+#ifndef ELEKTRA_SHARED
+#ifdef HAVE_GLOB
+	const char * toIgnore[] = { "proposal", "core", "ease", "meta", "plugin", "full", "kdb", "static", NULL };
+	glob_t pglob;
+
+	if (glob (BUILTIN_PLUGIN_FOLDER "/libelektra-*", GLOB_NOSORT, NULL, &pglob) == 0)
+	{
+		ELEKTRA_LOG ("has glob %zd", pglob.gl_pathc);
+
+		/* iterate over matched pathnames */
+		ret = elektraMalloc ((pglob.gl_pathc + 1) * sizeof (char *));
+		for (size_t i = 0; i < pglob.gl_pathc; ++i)
+		{
+			char * curPathname = pglob.gl_pathv[i];
+			/* find last '-' in string */
+			size_t startPos = -1;
+			for (size_t j = 0; curPathname[j] != '\0'; ++j)
+			{
+				if (curPathname[j] == '-')
+				{
+					startPos = j;
+				}
+			}
+
+			if (startPos == (size_t) (-1))
+			{
+				// ignore wrong file
+				continue;
+			}
+
+			/* find first '.' after the last '-' */
+			size_t endPos;
+			for (endPos = startPos; curPathname[endPos + 1] != '\0' && curPathname[endPos + 1] != '.'; ++endPos)
+				;
+
+			if (endPos > startPos && curPathname[endPos + 1] == '.')
+			{
+				++endPos;
+			}
+			else
+			{
+				// ignore wrong file
+				continue;
+			}
+
+			/* Copy substring (start after last '-' and end before the next '.') */
+			/* TODO: Assert that (endPos - startPos) > 1 */
+			char * extractedName = elektraMalloc ((endPos - startPos) * sizeof (char));
+			for (size_t j = startPos + 1; j < endPos; ++j)
+				extractedName[j - startPos - 1] = curPathname[j];
+			extractedName[endPos - startPos - 1] = '\0';
+
+			/* check if the entry should be ignored */
+			bool ignoreEntry = false;
+			for (i = 0; *(toIgnore + i); i++)
+			{
+				if (strcmp (extractedName, *(toIgnore + i)) == 0)
+				{
+					ignoreEntry = true;
+					break;
+				}
+			}
+
+			if (!ignoreEntry)
+			{
+				ret[retIndex++] = extractedName;
+			}
+		}
+		ret[retIndex] = NULL; /* last element (like '\0' in strings) */
+		globfree (&pglob);
+		/* TODO: Resize ret-array if optimizing for small size */
+	}
+#undef IGNORE_COUNT
+#endif /* HAVE_GLOB */
+
+	if (retIndex > 0)
+	{
+		/* C++: std::sort (ret.begin (), ret.end ()); */
+		qsort (*ret, retIndex, sizeof (char *), pstrcmp);
+		*freeStrings = true;
+		return ret;
+	}
+	else
+	{
+		elektraFree (ret);
+	}
 
 
+/* if we did not find plugins, return builtinPlugins
+   (even if they might be wrong for ELEKTRA_SHARED) */
+#endif /* ELEKTRA_SHARED */
+
+	/* count number of plugins */
+	size_t numPlugins = 1;
+	for (size_t i = 0; i < elektraStrLen (ELEKTRA_PLUGINS); ++i)
+	{
+		if (ELEKTRA_PLUGINS[i] == ';') ++numPlugins;
+	}
+
+	ret = elektraMalloc ((numPlugins + 1) * sizeof (char *));
+
+	char * builtinPlugins = elektraStrDup (ELEKTRA_PLUGINS);
+
+	if (builtinPlugins && *builtinPlugins)
+	{
+		retIndex = 1;
+		ret[0] = builtinPlugins;
+		for (size_t i = 0; builtinPlugins[i] != '\0'; ++i)
+		{
+			if (builtinPlugins[i] == ';')
+			{
+				builtinPlugins[i] = '\0';
+				/* TODO: assert (retIndex < numPlugins) */
+				ret[retIndex++] = builtinPlugins + i + 1;
+			}
+		}
+		ret[retIndex] = NULL; /* last element */
+	}
+	else
+	{
+		/* TODO: handle error */
+		elektraFree (ret);
+		return NULL;
+	}
 
 
+	qsort (ret, retIndex, sizeof (char *), pstrcmp);
+
+	/* Remove duplicates */
+	for (size_t i = 1; i < retIndex; ++i)
+	{
+		if (strcmp (ret[i - 1], ret[i]) == 0)
+		{
+			/* remove duplicate and move subsequent items one step up */
+			--retIndex;
+			for (size_t j = i; j < retIndex; ++j)
+			{
+				/* No freeing here, because the memory for all strings in ret must be freed at once
+				 * by calling elektraFree (*ret) and then elektraFree (ret) to free the array with char pointers */
+				ret[j] = ret[j + 1];
+			}
+			ret[retIndex] = NULL; /* remove last element */
+		}
+	}
 
 
+	/* TODO: resize ret when optimizing for small size */
+	*freeStrings = false;
+	return ret;
+}
+
+int calculatePluginScore (char * strStatus)
+{
+	/* TODO: Directly use data from CONTRACT.INI */
+	// clang-format off
+
+	if (!strStatus || !(*strStatus))
+	{
+		fprintf (stderr, "NULL or empty string given for strStatus!\n");
+		return INT_MIN;
+	}
+
+	const struct PluginScore pointMap[31] =
+	{
+		{"default",      64000},
+		{"recommended",  32000},
+		{"productive",    8000},
+		{"maintained",    4000},
+		{"reviewed",      4000},
+		{"conformant",    2000},
+		{"compatible",    2000},
+		{"coverage",      2000},
+		{"specific",      1000},
+
+		{"unittest",      1000},
+		{"shelltest",     1000},
+		{"tested",         500},
+		{"nodep",          250},
+		{"libc",           250},
+		{"configurable",    50},
+		{"final",           50},
+		{"global",           1},
+		{"readonly",         0},
+		{"writeonly",        0},
+		{"preview",        -50},
+		{"memleak",       -250},
+		{"experimental",  -500},
+		{"difficult",     -500},
+		{"limited",       -750},
+		{"unfinished",   -1000},
+		{"old",          -1000},
+		{"nodoc",        -1000},
+		{"concept",      -2000},
+		{"orphan",       -4000},
+		{"obsolete",     -4000},
+		{"discouraged", -32000}
+	};
 
 
+	int ret = 0;
 
-/* Plugin related stuff */
+	for (char *strPrevStart = strStatus; ; strStatus++)
+	{
+		if (!(*strStatus) || isspace (*strStatus))
+		{
+			bool lastIteration = *strStatus ? false : true;
+			*strStatus = '\0';
+
+			int i;
+			for (i = 0; i < 31; i++)
+			{
+				if (elektraStrCmp (pointMap[i].name, strPrevStart) == 0)
+				{
+					ret += pointMap[i].points;
+					break;
+				}
+			}
+
+			if (i == 31)
+			{
+				/* Status not found in map */
+
+				char * eptr;
+				long numStatus = strtol (strPrevStart, &eptr, 10);
+
+				if ((numStatus + ret) > INT_MAX || (numStatus + ret) < (INT_MIN + 1))
+				{
+					fprintf (stderr, "Invalid argument for status given, integer overflow occurred: %s\n",
+						strPrevStart);
+				}
+				else if (!(*eptr))
+				{
+					ret += (int) numStatus;
+				}
+				else
+				{
+					fprintf (stderr, "Invalid argument for status given: %s\n", strPrevStart);
+				}
+			}
+
+			if (lastIteration)
+			{
+				break;
+			}
+			else
+			{
+				strPrevStart = strStatus + 1;
+			}
+		}
+	}
+
+	return ret;
+}
+
+
 
 /**
  * @brief Check if str starts with a-z and then only has chars a-z, 0-9 or underscore (_)
@@ -976,6 +1286,136 @@ char * getPluginFullName (struct PluginSpec ps)
 
 	return result;
 }
+
+/* The returned plugin takes ownership of _ps (esp. of the pointers inside the struct)! */
+// C++: PluginPtr Modules::load (PluginSpec const & spec) in modules.cpp[47-54]
+struct Plugin loadPluginFromSpec (struct PluginSpec _ps, KeySet * ksModules, bool * errOccurred)
+{
+	struct Plugin p;
+	p.ps = _ps;
+	/* TODO: replace NULL with errorKey for error handling */
+	/* TODO: Check if ksDup is needed here */
+	p.plugin = elektraPluginOpen (p.ps.name, ksModules, ksDup (p.ps.config), NULL);
+
+	if (!p.plugin)
+	{
+		/* TODO: Handle error */
+		fprintf (stderr, "No plugin could be loaded (elektraPluginOpen returned NULL)!\n");
+		if (errOccurred)
+		{
+			*errOccurred = true;
+		}
+		return p;
+	}
+
+	if (elektraStrCmp (p.ps.name, p.plugin->name) != 0)
+	{
+		/* save virtual name as refname */
+		char * tmp = p.ps.refname;
+		p.ps.refname = getPluginFullName (p.ps);
+		elektraFree (tmp);
+
+		/* use actual name */
+		p.ps.name = elektraStrDup (p.plugin->name);
+	}
+
+
+	// C++: from Plugin::loadInfo() (plugin.cpp[96-112])
+	Key * keyInfo = keyNew ("system:/elektra/modules", KEY_END);
+	keyAddBaseName (keyInfo, p.ps.name);
+
+	if (p.plugin->kdbGet)
+	{
+		p.plugin->kdbGet (p.plugin, p.ksInfo, keyInfo);
+	}
+	else
+	{
+		/* TODO: Handle error */
+		// C++: throw MissingSymbol ("kdbGet", plugin->name);
+		fprintf (stderr,"The symbol 'kdbGet' is missing from the plugin: %s\n", p.plugin->name);
+		if (errOccurred)
+		{
+			*errOccurred = true;
+		}
+		elektraPluginClose (p.plugin, NULL);
+		return p;
+	}
+
+
+
+	// C++: from Plugin::parse() (plugin.cpp[115-155])
+	Key * k = ksLookup (p.ksInfo, keyInfo, KDB_O_NONE);
+
+	if (!k)
+	{
+		/* TODO: Handle error */
+		// C++: throw PluginNoContract ();
+		fprintf (stderr, "A contract is missing from the plugin: %s\n", p.plugin->name);
+		if (errOccurred)
+		{
+			*errOccurred = true;
+		}
+		elektraPluginClose (p.plugin, NULL);
+		return p;
+	}
+
+	keyAddBaseName (keyInfo, "exports");
+
+	elektraCursor it = ksSearch (p.ksInfo, keyInfo) + 1;
+	if (it > 0)
+	{
+		for (; it < ksGetSize (p.ksInfo); it++)
+		{
+			k = ksAtCursor (p.ksInfo, it);
+			if (keyIsBelow (keyInfo, k))
+			{
+				addFuncToSymbolList (p.symbols, keyName (k) + keyGetNameSize (keyInfo), getFuncFromKey (k));
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+
+	keySetBaseName (keyInfo, "infos");
+	it = ksSearch (p.ksInfo, keyInfo) + 1;
+	if (it > 0)
+	{
+		for (; it < ksGetSize (p.ksInfo); it++)
+		{
+			k = ksAtCursor (p.ksInfo, it);
+			if (keyIsBelow (keyInfo, k))
+			{
+				addInfoToInfoList (p.infos, keyName (k) + keyGetNameSize (keyInfo), keyString (k));
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+	else
+	{
+		/* TODO: Handle error */
+		fprintf (stderr, "No plugin info for plugin: %s\n", p.plugin->name);
+		if (errOccurred)
+		{
+			*errOccurred = true;
+		}
+		elektraPluginClose (p.plugin, NULL);
+		return p;
+	}
+
+	if (errOccurred)
+	{
+		*errOccurred = false;
+	}
+
+	return p;
+}
+
+
 
 
 /** @brief Parse a string containing information to create a KeySet
@@ -1260,296 +1700,6 @@ struct PluginSpecNode * parseArguments (char * strPlugins)
 }
 
 
-int pstrcmp (const void * a, const void * b)
-{
-	char * const * pa = a;
-	char * const * pb = b;
-	return strcmp (*pa, *pb);
-}
-
-
-/* from plugindatabase.cpp[52-98] */
-/* For the returned string-array, make sure to free the individual strings AND the array that holds the char*-pointers */
-char ** getAllPluginNames (bool * freeStrings)
-{
-	char ** ret = NULL; /* Last element must be NULL */
-	size_t retIndex = 0;
-
-#ifndef ELEKTRA_SHARED
-#ifdef HAVE_GLOB
-	const char * toIgnore[] = { "proposal", "core", "ease", "meta", "plugin", "full", "kdb", "static", NULL };
-	glob_t pglob;
-
-	if (glob (BUILTIN_PLUGIN_FOLDER "/libelektra-*", GLOB_NOSORT, NULL, &pglob) == 0)
-	{
-		ELEKTRA_LOG ("has glob %zd", pglob.gl_pathc);
-
-		/* iterate over matched pathnames */
-		ret = elektraMalloc ((pglob.gl_pathc + 1) * sizeof (char *));
-		for (size_t i = 0; i < pglob.gl_pathc; ++i)
-		{
-			char * curPathname = pglob.gl_pathv[i];
-			/* find last '-' in string */
-			size_t startPos = -1;
-			for (size_t j = 0; curPathname[j] != '\0'; ++j)
-			{
-				if (curPathname[j] == '-')
-				{
-					startPos = j;
-				}
-			}
-
-			if (startPos == (size_t) (-1))
-			{
-				// ignore wrong file
-				continue;
-			}
-
-			/* find first '.' after the last '-' */
-			size_t endPos;
-			for (endPos = startPos; curPathname[endPos + 1] != '\0' && curPathname[endPos + 1] != '.'; ++endPos)
-				;
-
-			if (endPos > startPos && curPathname[endPos + 1] == '.')
-			{
-				++endPos;
-			}
-			else
-			{
-				// ignore wrong file
-				continue;
-			}
-
-			/* Copy substring (start after last '-' and end before the next '.') */
-			/* TODO: Assert that (endPos - startPos) > 1 */
-			char * extractedName = elektraMalloc ((endPos - startPos) * sizeof (char));
-			for (size_t j = startPos + 1; j < endPos; ++j)
-				extractedName[j - startPos - 1] = curPathname[j];
-			extractedName[endPos - startPos - 1] = '\0';
-
-			/* check if the entry should be ignored */
-			bool ignoreEntry = false;
-			for (i = 0; *(toIgnore + i); i++)
-			{
-				if (strcmp (extractedName, *(toIgnore + i)) == 0)
-				{
-					ignoreEntry = true;
-					break;
-				}
-			}
-
-			if (!ignoreEntry)
-			{
-				ret[retIndex++] = extractedName;
-			}
-		}
-		ret[retIndex] = NULL; /* last element (like '\0' in strings) */
-		globfree (&pglob);
-		/* TODO: Resize ret-array if optimizing for small size */
-	}
-#undef IGNORE_COUNT
-#endif /* HAVE_GLOB */
-
-	if (retIndex > 0)
-	{
-		/* C++: std::sort (ret.begin (), ret.end ()); */
-		qsort (*ret, retIndex, sizeof (char *), pstrcmp);
-		*freeStrings = true;
-		return ret;
-	}
-	else
-	{
-		elektraFree (ret);
-	}
-
-
-/* if we did not find plugins, return builtinPlugins
-   (even if they might be wrong for ELEKTRA_SHARED) */
-#endif /* ELEKTRA_SHARED */
-
-	/* count number of plugins */
-	size_t numPlugins = 1;
-	for (size_t i = 0; i < elektraStrLen (ELEKTRA_PLUGINS); ++i)
-	{
-		if (ELEKTRA_PLUGINS[i] == ';') ++numPlugins;
-	}
-
-	ret = elektraMalloc ((numPlugins + 1) * sizeof (char *));
-
-	char * builtinPlugins = elektraStrDup (ELEKTRA_PLUGINS);
-
-	if (builtinPlugins && *builtinPlugins)
-	{
-		retIndex = 1;
-		ret[0] = builtinPlugins;
-		for (size_t i = 0; builtinPlugins[i] != '\0'; ++i)
-		{
-			if (builtinPlugins[i] == ';')
-			{
-				builtinPlugins[i] = '\0';
-				/* TODO: assert (retIndex < numPlugins) */
-				ret[retIndex++] = builtinPlugins + i + 1;
-			}
-		}
-		ret[retIndex] = NULL; /* last element */
-	}
-	else
-	{
-		/* TODO: handle error */
-		elektraFree (ret);
-		return NULL;
-	}
-
-
-	qsort (ret, retIndex, sizeof (char *), pstrcmp);
-
-	/* Remove duplicates */
-	for (size_t i = 1; i < retIndex; ++i)
-	{
-		if (strcmp (ret[i - 1], ret[i]) == 0)
-		{
-			/* remove duplicate and move subsequent items one step up */
-			--retIndex;
-			for (size_t j = i; j < retIndex; ++j)
-			{
-				/* No freeing here, because the memory for all strings in ret must be freed at once
-				 * by calling elektraFree (*ret) and then elektraFree (ret) to free the array with char pointers */
-				ret[j] = ret[j + 1];
-			}
-			ret[retIndex] = NULL; /* remove last element */
-		}
-	}
-
-
-	/* TODO: resize ret when optimizing for small size */
-	*freeStrings = false;
-	return ret;
-}
-
-/* The provided array must have NULL as the last element (no NULL before an element, no element after a NULL) */
-void freeStrArr (char ** strArr, bool freeStrings)
-{
-	if (freeStrings)
-	{
-		for (char ** curStr = strArr; curStr; curStr++)
-		{
-			elektraFree (*curStr);
-		}
-	}
-	else
-	{
-		/* A continuous memory section was used for all strings in the string array, so we just have to free *strArr and strArr */
-		elektraFree (*strArr);
-	}
-
-	elektraFree (strArr);
-}
-
-
-int calculatePluginScore (char * strStatus)
-{
-	/* TODO: Directly use data from CONTRACT.INI */
-	// clang-format off
-
-	if (!strStatus || !(*strStatus))
-	{
-		fprintf (stderr, "NULL or empty string given for strStatus!\n");
-		return INT_MIN;
-	}
-
-	const struct PluginScore pointMap[31] =
-	{
-		{"default",      64000},
-		{"recommended",  32000},
-		{"productive",    8000},
-		{"maintained",    4000},
-		{"reviewed",      4000},
-		{"conformant",    2000},
-		{"compatible",    2000},
-		{"coverage",      2000},
-		{"specific",      1000},
-
-		{"unittest",      1000},
-		{"shelltest",     1000},
-		{"tested",         500},
-		{"nodep",          250},
-		{"libc",           250},
-		{"configurable",    50},
-		{"final",           50},
-		{"global",           1},
-		{"readonly",         0},
-		{"writeonly",        0},
-		{"preview",        -50},
-		{"memleak",       -250},
-		{"experimental",  -500},
-		{"difficult",     -500},
-		{"limited",       -750},
-		{"unfinished",   -1000},
-		{"old",          -1000},
-		{"nodoc",        -1000},
-		{"concept",      -2000},
-		{"orphan",       -4000},
-		{"obsolete",     -4000},
-		{"discouraged", -32000}
-	};
-
-
-	int ret = 0;
-
-	for (char *strPrevStart = strStatus; ; strStatus++)
-	{
-		if (!(*strStatus) || isspace (*strStatus))
-		{
-			bool lastIteration = *strStatus ? false : true;
-			*strStatus = '\0';
-
-			int i;
-			for (i = 0; i < 31; i++)
-			{
-				if (elektraStrCmp (pointMap[i].name, strPrevStart) == 0)
-				{
-					ret += pointMap[i].points;
-					break;
-				}
-			}
-
-			if (i == 31)
-			{
-				/* Status not found in map */
-
-				char * eptr;
-				long numStatus = strtol (strPrevStart, &eptr, 10);
-
-				if ((numStatus + ret) > INT_MAX || (numStatus + ret) < (INT_MIN + 1))
-				{
-					fprintf (stderr, "Invalid argument for status given, integer overflow occurred: %s\n",
-						strPrevStart);
-				}
-				else if (!(*eptr))
-				{
-					ret += (int) numStatus;
-				}
-				else
-				{
-					fprintf (stderr, "Invalid argument for status given: %s\n", strPrevStart);
-				}
-			}
-
-			if (lastIteration)
-			{
-				break;
-			}
-			else
-			{
-				strPrevStart = strStatus + 1;
-			}
-		}
-	}
-
-	return ret;
-}
-
-
 /* returned string is part of a key in the KeySet `info` */
 const char * pluginLookupInfo (struct Plugin p, const char * item, const char * section)
 {
@@ -1578,158 +1728,6 @@ const char * pluginLookupInfo (struct Plugin p, const char * item, const char * 
 	}
 }
 
-
-
-void (*getFuncFromKey (Key * k)) (void)
-{
-	union
-	{
-		void (*f) (void);
-		void * v;
-	} conversation;
-
-	/* TODO: Replace if with assert */
-	if (sizeof (conversation) != sizeof (void (*) (void)))
-	{
-		fprintf (stderr, "union does not have size of function pointer\n");
-	}
-
-	if (keyGetBinary (k, &conversation.v, sizeof (conversation)) != sizeof (conversation))
-	{
-		/* TODO: Handle error */
-		fprintf (stderr, "Key type mismatch\n");
-	}
-
-	return conversation.f;
-}
-
-/* The returned plugin takes ownership of _ps (esp. of the pointers inside the struct)! */
-// C++: PluginPtr Modules::load (PluginSpec const & spec) in modules.cpp[47-54]
-struct Plugin loadPluginFromSpec (struct PluginSpec _ps, KeySet * ksModules, bool * errOccurred)
-{
-	struct Plugin p;
-	p.ps = _ps;
-	/* TODO: replace NULL with errorKey for error handling */
-	/* TODO: Check if ksDup is needed here */
-	p.plugin = elektraPluginOpen (p.ps.name, ksModules, ksDup (p.ps.config), NULL);
-
-	if (!p.plugin)
-	{
-		/* TODO: Handle error */
-		fprintf (stderr, "No plugin could be loaded (elektraPluginOpen returned NULL)!\n");
-		if (errOccurred)
-		{
-			*errOccurred = true;
-		}
-		return p;
-	}
-
-	if (elektraStrCmp (p.ps.name, p.plugin->name) != 0)
-	{
-		/* save virtual name as refname */
-		char * tmp = p.ps.refname;
-		p.ps.refname = getPluginFullName (p.ps);
-		elektraFree (tmp);
-
-		/* use actual name */
-		p.ps.name = elektraStrDup (p.plugin->name);
-	}
-
-
-	// C++: from Plugin::loadInfo() (plugin.cpp[96-112])
-	Key * keyInfo = keyNew ("system:/elektra/modules", KEY_END);
-	keyAddBaseName (keyInfo, p.ps.name);
-
-	if (p.plugin->kdbGet)
-	{
-		p.plugin->kdbGet (p.plugin, p.ksInfo, keyInfo);
-	}
-	else
-	{
-		/* TODO: Handle error */
-		// C++: throw MissingSymbol ("kdbGet", plugin->name);
-		fprintf (stderr,"The symbol 'kdbGet' is missing from the plugin: %s\n", p.plugin->name);
-		if (errOccurred)
-		{
-			*errOccurred = true;
-		}
-		elektraPluginClose (p.plugin, NULL);
-		return p;
-	}
-
-
-
-	// C++: from Plugin::parse() (plugin.cpp[115-155])
-	Key * k = ksLookup (p.ksInfo, keyInfo, KDB_O_NONE);
-
-	if (!k)
-	{
-		/* TODO: Handle error */
-		// C++: throw PluginNoContract ();
-		fprintf (stderr, "A contract is missing from the plugin: %s\n", p.plugin->name);
-		if (errOccurred)
-		{
-			*errOccurred = true;
-		}
-		elektraPluginClose (p.plugin, NULL);
-		return p;
-	}
-
-	keyAddBaseName (keyInfo, "exports");
-
-	elektraCursor it = ksSearch (p.ksInfo, keyInfo) + 1;
-	if (it > 0)
-	{
-		for (; it < ksGetSize (p.ksInfo); it++)
-		{
-			k = ksAtCursor (p.ksInfo, it);
-			if (keyIsBelow (keyInfo, k))
-			{
-				addFuncToSymbolList (p.symbols, keyName (k) + keyGetNameSize (keyInfo), getFuncFromKey (k));
-			}
-			else
-			{
-				break;
-			}
-		}
-	}
-
-	keySetBaseName (keyInfo, "infos");
-	it = ksSearch (p.ksInfo, keyInfo) + 1;
-	if (it > 0)
-	{
-		for (; it < ksGetSize (p.ksInfo); it++)
-		{
-			k = ksAtCursor (p.ksInfo, it);
-			if (keyIsBelow (keyInfo, k))
-			{
-				addInfoToInfoList (p.infos, keyName (k) + keyGetNameSize (keyInfo), keyString (k));
-			}
-			else
-			{
-				break;
-			}
-		}
-	}
-	else
-	{
-		/* TODO: Handle error */
-		fprintf (stderr, "No plugin info for plugin: %s\n", p.plugin->name);
-		if (errOccurred)
-		{
-			*errOccurred = true;
-		}
-		elektraPluginClose (p.plugin, NULL);
-		return p;
-	}
-
-	if (errOccurred)
-	{
-		*errOccurred = false;
-	}
-
-	return p;
-}
 
 
 
@@ -2086,31 +2084,6 @@ struct PluginSpec lookupProvides (const char * pluginName, KeySet * ksModules)
 		return bestPs;
 	}
 }
-
-
-
-
-/** @returns true if str1 starts with str2
- */
-bool compareStrStart (const char * str1, const char * str2)
-{
-	if (!str2)
-	{
-		/* Every string starts with a NULL string */
-		return true;
-	}
-
-	for (; *str1 && *str2; str1++, str2++)
-	{
-		if (*str1 != *str2) return false;
-	}
-
-	return *str2 ? false : true;
-}
-
-
-
-
 
 
 /* Check if dependency is relevant (occurs in KeySet) */
@@ -2488,48 +2461,9 @@ struct PluginSpecNode * backendBuilderAddAndInsertPlugin (struct PluginSpecNode 
 	return sortPluginSpecList(existingSpecs, ksModules);
 }
 
-
-
-
-
-
-
-
-
-
-
-/**
- * The substrings are stored as key-names, values of keys are not set
- * @retval A KeySet with Keys that have the substrings as keyname and value, make sure to ksDel() the returned KeySet
- * */
-KeySet * OBSOLETE_strToKeySet (const char * str, char delim)
-{
-	if (!str || !(*str)) return NULL;
-
-	KeySet * ksRet = ksNew (0, KS_END);
-
-	const char * lastStarPos = str;
-	/* We cast here to remove the const-qualifier, because we change the value intermediately,
-	 * but change it back to the original value after the key was created. */
-	for (char * c = (char *) str; *c; c++)
-	{
-		if ((delim && *c == delim) || (!delim && isspace (*c)))
-		{
-			char oldVal = *c;
-			*c = '\0';
-			Key * curKey = keyNew (lastStarPos, KEY_VALUE, lastStarPos, KEY_END);
-			ksAppendKey (ksRet, curKey);
-			*c = oldVal;
-			lastStarPos = c + 1;
-		}
-	}
-
-	return ksRet;
-}
-
 /* C++: replaces void BackendBuilder::collectNeeds (std::vector<std::string> & needs) const and
  * void BackendBuilder::collectRecommends (std::vector<std::string> & recommends) const in backendbuilder.cpp[225,243] */
-struct StringNode * collectInfosFromKs (struct StringNode * existingInfos, struct PluginSpecNode * existingPlugins, const char * info,
+struct StringNode * collectInfo (struct StringNode * existingInfos, struct PluginSpecNode * existingPlugins, const char * info,
 	KeySet * ksModules)
 {
 	if (!existingPlugins) return NULL;
@@ -2638,10 +2572,10 @@ struct StringNode * resolveNeeds (bool addRecommends, struct PluginSpecNode * ps
 	do
 	{
 		// C++: collectNeeds (neededPlugins);
-		neededPlugins = collectInfosFromKs (neededPlugins, psList, "needs", ksModules);
+		neededPlugins = collectInfo (neededPlugins, psList, "needs", ksModules);
 
 		// C++: collectRecommends (recommendedPlugins);
-		recommendedPlugins = collectInfosFromKs (recommendedPlugins, psList, "recommends", ksModules);
+		recommendedPlugins = collectInfo (recommendedPlugins, psList, "recommends", ksModules);
 
 		// C++: removeProvided (neededPlugins);
 		neededPlugins = removeProvided (neededPlugins, psList, ksModules);
@@ -3298,33 +3232,11 @@ bool mountBackendBuilderUseConfigFile (const char * file, const struct PluginSpe
 	return true;
 }
 
-// C++: from backends.cpp[138-144]
-/* make sure to free the returned buffer! */
-char * getBasePath (const char * mp)
-{
-	Key * k = keyNew (DEFAULT_MOUNTPOINTS_PATH, KEY_END);
 
-	/* canonify name */
-	Key * kmp = keyNew (mp, KEY_END);
 
-	/* escape name */
-	keyAddBaseName (k, keyName(kmp));
-	kmp ? keyDel (kmp) : 0;
-
-	char * outBuf = elektraMalloc (keyGetNameSize (k));
-	if (keyGetName (k, outBuf, keyGetNameSize (k)) > 0)
-	{
-		k ? keyDel(k) : 0;
-		return outBuf;
-	}
-	else
-	{
-		/* TODO: Handle error */
-		outBuf ? elektraFree (outBuf) : (void) NULL;
-		k ? keyDel(k) : 0;
-		return NULL;
-	}
-}
+/*****************************************************
+ * PART VI: Serialization of config                  *
+ *****************************************************/
 
 // C++: from plugins.cpp[394-411]
 void pluginsSerializeConfig (const char * name, const KeySet * ksSrc, KeySet * ksDest)
@@ -3482,8 +3394,6 @@ void serializePlugins (const Key * baseKey, KeySet * ksMountConf, struct Plugins
 	}
 }
 
-
-
 // C++ backendbuilder.cpp[604-612] - void MountBackendBuilder::serialize (kdb::KeySet & ret)
 /* returns filled ksMountConf KeySet */
 void serialize (KeySet * ksMountConf, const char * mp, const char * configFile, const struct PluginNode * pluginList,
@@ -3580,6 +3490,10 @@ void serialize (KeySet * ksMountConf, const char * mp, const char * configFile, 
 	ksAppendKey (ksMountConf, backendRootKey);
 }
 
+
+/**************************************************************************
+ * PART VII: Start-function that should be called from tools / other code *
+ **************************************************************************/
 
 void cBuildBackend (KeySet * const ksMountConf, const char * const mountPoint, char * pluginsConfig, bool clForce, bool clDebug,
 		    int mergeStrategy, char * resolverName, const char * path, const KeySet * ksPlugins, bool withRecommends)
@@ -3725,10 +3639,6 @@ void cBuildBackend (KeySet * const ksMountConf, const char * const mountPoint, c
 
 
 	/* Call it a day */
-
-
-
-
 
 	// C++: outputMissingRecommends (backend.resolveNeeds (cl.withRecommends));
 	struct StringNode * missingRecommends = resolveNeeds (withRecommends, pluginSpecsToAdd, neededPlugins, NULL, NULL, &ksBackendConfig, ksModules);
