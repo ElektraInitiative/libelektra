@@ -34,17 +34,11 @@ well known `fnmatch(3)`. However, there is special handling for array specificat
 
 ### Array Specifications
 
-Keys which contain a part that is exactly `#` (e.g. `my/#/key` or `my/#`) are called array specifications. Instead of just matching the spec
-key to any existing keys in other namespaces, theses keys are "instantiated". This means we lookup the array size (defined by the `array`
-metakey) using a cascading `ksLookup`. This only looks at non-spec namespaces, if we don't find an array size their, we check the array
-parent in the spec namespace. If we still have no array size, the array is deemed to be empty. For empty arrays, we will simply validate
-that they are indeed empty.
-
-For non-empty arrays "instantiation" takes place. This means that we replace each `#` part in the spec key by all the valid array elements
-for this specification, up to the array size (which was already checked to be less than the allowed maximum). In other words, instead of
-actually matching the globbing expression, we create a separate but identical specification for all valid array elements.
-
-The purpose of "instantiation" is to allow specifying `default` values for array elements.
+Keys which contain a part that is exactly `#` (e.g. `my/#/key` or `my/#`) are called array specifications. These keys are instantiated
+in order to support `default` values. If the key does not exist and `default` is specified in the spec namespace, the key is created under
+the `default` namespace. We also lookup the array size (defined by the `array` metakey) using a cascading `ksLookup`. This only looks at 
+non-spec namespaces, if we don't find an array size their, we check the array parent in the spec namespace. If we still have no array size, 
+the array is deemed to be empty. For empty arrays, we will simply validate that they are indeed empty.
 
 ### Wildcard Specifications
 
@@ -76,9 +70,8 @@ one other namespace, i.e. it can be found using a cascading `ksLookup`. If the k
 
 As hinted to above, we validate array sizes. If a spec key `x/#` is given, and the spec key `x` has the metakey `array/min` or `array/max`
 set, we validate the array size (given as metakey `array` on `x`) is within the limits of `array/min` and `array/max`. Both `array/min` and
-`array/max` have to be valid array-elements similar to `array`. If the array size is out of bounds, this causes a `range` conflict.
-
-We also check that the array only contains actual array elements. If this not the case, this causes a `member` conflict.
+`array/max` have to be valid array-elements similar to `array`. If the array size is out of bounds, this causes an `error`. If it is a
+`kdbGet` it is a `warning`.
 
 Note: We don't actually validate that the array doesn't contain elements above the given array size. This is because it doesn't have anything
 to do with the specification, whether the array contains additional elements. Note also that we only copy metadata onto elements within
