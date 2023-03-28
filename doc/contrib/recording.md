@@ -155,7 +155,7 @@ Currently, the module has the following shortcomings that need to be addressed:
 
 The core recording feature has two main components:
 
-1. Recording C API: Implements everything the tooling needs.
-2. Recording Plugin: Gets loaded as a hook plugin, calculates the changes and persists the diff.
+1. Recording C API (`libelektra-record`): Implements everything the tooling needs.
+2. Recording Plugin (`libelektra-recorder`): Gets loaded as a hook plugin, calculates the changes and persists the diff.
 
 Furthermore, for the export we'll have two plugins. One for the Playbook and one for the Commands format.
