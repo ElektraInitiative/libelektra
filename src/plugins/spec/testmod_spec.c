@@ -140,7 +140,13 @@ static void test_hook_copy_with_default_meta_key_and_missing_key_should_create_k
 }
 
 /**
+ * This test should verify that meta keys are only copied to the correct configuration which
+ * matches the specification.
  *
+ * Sample:
+ * 	spec:/sw/org/a => meta:/default = 17
+ * 	user:/sw/org/a => matches and will copied to this key
+ * 	user:/sw/org/b => does not match and will not be copied
  *
  * @param isKdbGet boolean value indicating if it is a kdb get call
  */
@@ -179,6 +185,17 @@ static void test_hook_copy_only_to_keys_specified_in_specification (bool isKdbGe
 	TEST_END
 }
 
+/**
+ * This test should verify that if a key was defined in the specification, has no default meta key and is not in the
+ * configuration (no other namespace), then it should show an info.
+ *
+ * Sample:
+ * 	spec:/sw/org/a => meta:/somemetakey = hello
+ *
+ * No key created. Info shown.
+ *
+ * @param isKdbGet boolean value indicating if it is a kdb get call
+ */
 static void test_hook_copy_with_missing_key_and_no_default_should_info (bool isKdbGet)
 {
 	printf ("test %s, isKdbGet=%d\n", __func__, isKdbGet);
@@ -197,13 +214,25 @@ static void test_hook_copy_with_missing_key_and_no_default_should_info (bool isK
 	TEST_END
 }
 
+/**
+ * This test should verify that if a parent key with the namespace is passed, key was not found and default meta key
+ * is set, the namespace does not get prepended on adding the default key to the default namespace.
+ *
+ * Sample:
+ * 	spec:/sw/org/a => meta:/default = 17
+ * 	PARENT_KEY: user:/sw/org/a
+ *
+ * 	default key should be created in default namespace => key: default:/sw/org/a, value: 17 => meta:/default = 17
+ *
+ * @param isKdbGet boolean value indicating if it is a kdb get call
+ */
 static void test_hook_copy_with_parent_key_containing_namespace (bool isKdbGet)
 {
 	printf ("test %s, isKdbGet=%d\n", __func__, isKdbGet);
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY_WITH_NAMESPACE "/a", KEY_META, "default", "17", KEY_END), KS_END);
+		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "default", "17", KEY_END), KS_END);
 
 		Key * parentKeyWithNamespace = keyNew (PARENT_KEY_WITH_NAMESPACE, KEY_END);
 		int result = elektraSpecCopy (NULL, ks, parentKeyWithNamespace, isKdbGet);
@@ -223,6 +252,78 @@ static void test_hook_copy_with_parent_key_containing_namespace (bool isKdbGet)
 	TEST_END
 }
 
+/**
+ * This test should verify that if wildcard specification exists (with one underline) it should copy all meta data to
+ * the existing configuration.
+ *
+ * Sample:
+ * 	spec:/sw/org/a/_/name => meta:/description = "This is a name"
+ * 	user:/sw/org/a/server/name => value = mailserver1
+ *
+ * Should copy meta:/description = "This is a name" to user:/sw/org/a/server/name.
+ *
+ * @param isKdbGet boolean value indicating if it is a kdb get call
+ */
+static void test_hook_copy_with_wildcard_specification_only_one_underline (bool isKdbGet)
+{
+	printf ("test %s, isKdbGet=%d\n", __func__, isKdbGet);
+
+	TEST_BEGIN
+	{
+		const char * descriptionToMatch = "This is a name";
+		const char * userNamespace = "user:";
+		const char * keyNameToMatch = elektraFormat ("%s/server/name", PARENT_KEY);
+		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "_/name", KEY_META, "description", descriptionToMatch,
+						 KEY_END), keyNew (elektraFormat ("%s/%s/%s", userNamespace, PARENT_KEY, keyNameToMatch),
+					     KEY_VALUE, "mailserver1", KEY_END), KS_END);
+
+		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
+
+		for (elektraCursor it = 0; it < ksGetSize (ks); it++)
+		{
+			Key * current = ksAtCursor (ks, it);
+			if (keyGetNamespace (current) == KEY_NS_USER)
+			{
+				if (elektraStrCmp (strchr (keyName (current), '/'), keyNameToMatch) == 0)
+				{
+					const Key * descriptionMetaKey = keyGetMeta (current, "description");
+					succeed_if_same_string (keyString (descriptionMetaKey), descriptionToMatch);
+				}
+			}
+		}
+
+		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
+	}
+	TEST_END
+}
+
+/**
+ * This test should verify that if a wildcard specification exists, a key is required, but does not exist, then it should fail.
+ *
+ * Sample:
+ * 	spec:/sw/org/a/_/name => meta:/require = true
+ *
+ * No configuration => should fail
+ *
+ * @param isKdbGet boolean value indicating if it is a kdb get call
+ */
+static void test_hook_copy_with_wildcard_specification_and_required_no_match_should_fail (bool isKdbGet)
+{
+	printf ("test %s, isKdbGet=%d\n", __func__, isKdbGet);
+
+	TEST_BEGIN
+	{
+		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "_/name", KEY_META, "require", "true", KEY_END), KS_END);
+
+		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
+
+		succeed_if (output_error (parentKey) == 0, "no errors found")
+
+		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_ERROR, "plugin should have failed");
+	}
+	TEST_END
+}
+
 int main (void)
 {
 	test_hook_copy_with_require_meta_key_and_missing_key_should_error (false);
@@ -230,6 +331,8 @@ int main (void)
 	test_hook_copy_only_to_keys_specified_in_specification (false);
 	test_hook_copy_with_missing_key_and_no_default_should_info (false);
 	test_hook_copy_with_parent_key_containing_namespace (false);
+	test_hook_copy_with_wildcard_specification_only_one_underline (false);
+	test_hook_copy_with_wildcard_specification_and_required_no_match_should_fail (false);
 
 	return 0;
 }

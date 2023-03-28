@@ -123,12 +123,26 @@ static KeySet * extractSpecKeys (KeySet * ks)
  * @return true  - if it is an array specification
  * 	   false - if it is no array specification
  */
-static bool isArraySpecification(Key * specKey)
+static bool isArraySpecification (Key * specKey)
 {
 	const char * keyWithoutNamespace = strchr (keyName (specKey), '/');
 	for (size_t i = 0; i < elektraStrLen (keyWithoutNamespace); i++)
 	{
 		if (keyWithoutNamespace [i] == '#')
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+static bool isWildcardSpecification (Key * specKey)
+{
+	const char * keyWithoutNamespace = strchr (keyName (specKey), '/');
+	for (size_t i = 0; i < elektraStrLen (keyWithoutNamespace); i++)
+	{
+		if (keyWithoutNamespace [i] == '_')
 		{
 			return true;
 		}
@@ -251,7 +265,8 @@ int elektraSpecCopy (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * pa
 		Key * current = ksAtCursor (specKeys, it);
 
 		// if required and no default => cascade lookup if exists in other namespaces
-		if (isRequired (current) && !hasDefault (current))
+		if ((isRequired (current) && !hasDefault (current)) ||
+		    (isRequired (current) && isWildcardSpecification (current)))
 		{
 			Key * cascadingKey = keyNew (strchr (keyName (current), '/'), KEY_END);
 			if (ksLookup (returned, cascadingKey, 0) == 0)
