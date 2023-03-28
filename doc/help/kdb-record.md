@@ -14,5 +14,5 @@ Where `<COMMAND>` is one of the following:
 - `remove-assert <key_name>`: unmarks a key to be used for value-based validation during import.
 
 - `export <commands|ansible>`: outputs the changes in the specified format.
-   - `commands`: a list of `kdb` commands to reproduce the current recorded state
-   - `ansible`: an Ansible playbook to reproduce the current recorded state
+  - `commands`: a list of `kdb` commands to reproduce the current recorded state
+  - `ansible`: an Ansible playbook to reproduce the current recorded state
