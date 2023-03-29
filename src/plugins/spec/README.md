@@ -77,6 +77,19 @@ Note: We don't actually validate that the array doesn't contain elements above t
 to do with the specification, whether the array contains additional elements. Note also that we only copy metadata onto elements within
 the bounds of the array size.
 
+### Array Specification and Wildcard Specification (Collision)
+
+A collision is when two specification keys exist, one as wildcard specification, the other as array specification, and it is not clear in 
+this case what the correct specification is.
+
+```text
+spec:/server/_/name => meta:/description = value1
+
+spec:/server/#/name => meta:/description = value2
+```
+
+Spec plugin does not know what specification to take in this case, so it appends an `error` or `warning` (if kdbGet).
+
 ## Error Handling
 
 In case there is an error, warning or information, it is appended to the `parent key`.
