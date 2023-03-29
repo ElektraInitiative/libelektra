@@ -519,7 +519,8 @@ void elektraDiffAppend (ElektraDiff * target, const ElektraDiff * source, Key * 
 
 		// Everything else has been checked already
 		// Key was not found in target so add it to modified keys
-		ksAppendKey (target->modifiedKeys, key);
+		// We need to take the key with the old value. Luckily, both keysets must contain the exact same keys
+		ksAppendKey (target->modifiedKeys, ksAtCursor (source->modifiedKeys, i));
 	}
 
 	for (elektraCursor i = 0; i < ksGetSize (source->removedKeys); i++)
