@@ -3,6 +3,7 @@
 #include "kdbglobbing.h"
 
 #include <kdbhelper.h>
+#include <printf.h>
 #include <stdlib.h>
 
 #ifdef __MINGW32__
@@ -43,6 +44,21 @@ static bool specMatches (Key * specKey, Key * otherKey)
 	return matches;
 }
 #endif
+
+static void replaceCharacter (const char * str, char * newStr, const char searchFor, const char c)
+{
+	for (size_t i = 0; i < elektraStrLen (str); i++)
+	{
+		if (str [i] == searchFor)
+		{
+			newStr [i] = c;
+		}
+		else
+		{
+			newStr [i] = str [i];
+		}
+	}
+}
 
 /**
  * Appends a key to the KeySet with the default value specified in the meta key (meta:/default) in the
@@ -137,6 +153,13 @@ static bool isArraySpecification (Key * specKey)
 	return false;
 }
 
+/**
+ * Checks if this specification key has a wildcard character in the key name.
+ *
+ * @param specKey the specification to check for if it has a wildcard character
+ * @return true - if the specification key has a wildcard character in the key name
+ * 	   false - if the specification does not contain a wildcard character
+ */
 static bool isWildcardSpecification (Key * specKey)
 {
 	const char * keyWithoutNamespace = strchr (keyName (specKey), '/');
@@ -149,6 +172,56 @@ static bool isWildcardSpecification (Key * specKey)
 	}
 
 	return false;
+}
+
+/**
+ * Checks if the specification has a collision. A collision is when two specification keys exist, one as wildcard specification,
+ * the other as array specification and it is not clear in this case what the correct specification is.
+ *
+ * Example:
+ * 	spec:/server/_/name => meta:/description = value1
+ * 	spec:/server/#/name => meta:/description = value2
+ *
+ * @param specKeys specification keys to check for collision
+ * @return 0 - if no collision was found
+ * 	   pointer to the key which caused collision
+ */
+static Key * specCollision (KeySet * specKeys)
+{
+	for (elektraCursor it = 0; it < ksGetSize (specKeys); it++)
+	{
+		Key * current = ksAtCursor (specKeys, it);
+
+		if (isWildcardSpecification (current))
+		{
+			const char * wildcardSpec = strchr (keyName (current), '/');
+
+			char * arraySpecKey = elektraMalloc (elektraStrLen (wildcardSpec));
+			replaceCharacter (wildcardSpec, arraySpecKey, '_', '#');
+
+			Key * foundKey = ksLookupByName(specKeys, elektraFormat ("spec:/%s", arraySpecKey), 0);
+			elektraFree (arraySpecKey);
+			if (foundKey != 0)
+			{
+				return foundKey;
+			}
+		}
+		else if (isArraySpecification (current))
+		{
+			const char * arraySpec = strchr (keyName (current), '/');
+
+			char * wildcardSpecKey = elektraMalloc (elektraStrLen (arraySpec));
+			replaceCharacter (arraySpec, wildcardSpecKey, '#', '_');
+
+			Key * foundKey = ksLookupByName (specKeys, elektraFormat ("spec:/%s", wildcardSpecKey), 0);
+			elektraFree (wildcardSpecKey);
+			if (foundKey != 0)
+			{
+				return foundKey;
+			}
+		}
+	}
+	return 0;
 }
 
 /**
@@ -259,6 +332,21 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * ks, bool isKdb
 int elektraSpecCopy (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * parentKey, ELEKTRA_UNUSED bool isKdbGet)
 {
 	KeySet * specKeys = extractSpecKeys (returned);
+
+	Key * collisionKey = specCollision (specKeys);
+	if (collisionKey != 0)
+	{
+		if (isKdbGet)
+		{
+			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (parentKey, "Specification %s has a collision. It seems that there exists an array and wildcard specification for the same key.", keyName (collisionKey));
+		}
+		else
+		{
+			ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey, "Specification %s has a collision. It seems that there exists an array and wildcard specification for the same key.", keyName (collisionKey));
+		}
+
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
 
  	for (elektraCursor it = 0; it < ksGetSize (specKeys); it++)
 	{
