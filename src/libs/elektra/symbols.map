@@ -165,8 +165,8 @@ libelektra_1.0 {
 	elektraDiffGetAddedMetaKeys;
 	elektraDiffGetRemovedMetaKeys;
 	elektraDiffGetModifiedMetaKeys;
-
-
+	elektraDiffRemoveSameOrBelow;
+	elektraDiffAppend;
 };
 
 libelektraprivate_1.0 {

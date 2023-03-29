@@ -431,10 +431,16 @@ struct _ElektraDiff
 	KeySet * modifiedKeys;
 	KeySet * removedKeys;
 
+	/**
+	 * optional; stores the new version of modified keys
+	 */
+	KeySet * modifiedNewKeys;
+
 	uint16_t refs;
 };
 
-struct _ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKey, Key * parentKey);
+struct _ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKey, KeySet * modifiedKeyNew, Key * parentKey);
+void elektraDiffAppend (struct _ElektraDiff * target, const struct _ElektraDiff * source, Key * parentKey);
 
 struct _ChangeTrackingContext
 {

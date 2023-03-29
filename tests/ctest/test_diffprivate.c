@@ -199,7 +199,7 @@ static void test_findDifferences_NULL_shouldReturnEmptyKeySets (void)
 	KeySet * modifiedKeys = ksNew (0, KS_END);
 
 	// Act
-	findDifferences (NULL, NULL, addedKeys, removedKeys, modifiedKeys, NULL);
+	findDifferences (NULL, NULL, addedKeys, removedKeys, modifiedKeys, NULL, NULL);
 
 	// Assert
 	succeed_if (ksGetSize (addedKeys) == 0, "should not find added keys");
@@ -223,7 +223,7 @@ static void test_findDifferences_emptyKeySets_shouldReturnEmptyKeySets (void)
 	KeySet * modifiedKeys = ksNew (0, KS_END);
 
 	// Act
-	findDifferences (new, old, addedKeys, removedKeys, modifiedKeys, NULL);
+	findDifferences (new, old, addedKeys, removedKeys, modifiedKeys, NULL, NULL);
 
 	// Assert
 	succeed_if (ksGetSize (addedKeys) == 0, "should not find added keys");
@@ -250,7 +250,7 @@ static void test_findDifferences_fullAndEmptyKeySet_shouldReturnAddedKeys (void)
 	KeySet * modifiedKeys = ksNew (0, KS_END);
 
 	// Act
-	findDifferences (new, old, addedKeys, removedKeys, modifiedKeys, NULL);
+	findDifferences (new, old, addedKeys, removedKeys, modifiedKeys, NULL, NULL);
 
 	// Assert
 	succeed_if (ksGetSize (addedKeys) == 2, "should find 2 added keys");
@@ -276,7 +276,7 @@ static void test_findDifferences_emptyAndFullKeySet_shouldReturnRemovedKeys (voi
 	KeySet * modifiedKeys = ksNew (0, KS_END);
 
 	// Act
-	findDifferences (new, old, addedKeys, removedKeys, modifiedKeys, NULL);
+	findDifferences (new, old, addedKeys, removedKeys, modifiedKeys, NULL, NULL);
 
 	// Assert
 	succeed_if (ksGetSize (addedKeys) == 0, "should not find added keys");
@@ -304,7 +304,7 @@ static void test_findDifferences_modifiedValue_shouldReturnModifiedKeys (void)
 	KeySet * modifiedKeys = ksNew (0, KS_END);
 
 	// Act
-	findDifferences (new, old, addedKeys, removedKeys, modifiedKeys, NULL);
+	findDifferences (new, old, addedKeys, removedKeys, modifiedKeys, NULL, NULL);
 
 	// Assert
 	succeed_if (ksGetSize (addedKeys) == 0, "should not find added keys");
@@ -330,7 +330,7 @@ static void test_findDifferences_addedMeta_shouldReturnModifiedKeys (void)
 	KeySet * modifiedKeys = ksNew (0, KS_END);
 
 	// Act
-	findDifferences (new, old, addedKeys, removedKeys, modifiedKeys, NULL);
+	findDifferences (new, old, addedKeys, removedKeys, modifiedKeys, NULL, NULL);
 
 	// Assert
 	succeed_if (ksGetSize (addedKeys) == 0, "should not find added keys");
@@ -356,7 +356,7 @@ static void test_findDifferences_removedMeta_shouldReturnModifiedKeys (void)
 	KeySet * modifiedKeys = ksNew (0, KS_END);
 
 	// Act
-	findDifferences (new, old, addedKeys, removedKeys, modifiedKeys, NULL);
+	findDifferences (new, old, addedKeys, removedKeys, modifiedKeys, NULL, NULL);
 
 	// Assert
 	succeed_if (ksGetSize (addedKeys) == 0, "should not find added keys");
@@ -382,7 +382,7 @@ static void test_findDifferences_modifiedMeta_shouldReturnModifiedKeys (void)
 	KeySet * modifiedKeys = ksNew (0, KS_END);
 
 	// Act
-	findDifferences (new, old, addedKeys, removedKeys, modifiedKeys, NULL);
+	findDifferences (new, old, addedKeys, removedKeys, modifiedKeys, NULL, NULL);
 
 	// Assert
 	succeed_if (ksGetSize (addedKeys) == 0, "should not find added keys");
@@ -408,7 +408,7 @@ static void test_findDifferences_sameMeta_shouldReturnEmptyKeySets (void)
 	KeySet * modifiedKeys = ksNew (0, KS_END);
 
 	// Act
-	findDifferences (new, old, addedKeys, removedKeys, modifiedKeys, NULL);
+	findDifferences (new, old, addedKeys, removedKeys, modifiedKeys, NULL, NULL);
 
 	// Assert
 	succeed_if (ksGetSize (addedKeys) == 0, "should not find added keys");
@@ -434,7 +434,7 @@ static void test_findDifferences_modifiedShouldContainOldKeys (void)
 	KeySet * modifiedKeys = ksNew (0, KS_END);
 
 	// Act
-	findDifferences (new, old, addedKeys, removedKeys, modifiedKeys, NULL);
+	findDifferences (new, old, addedKeys, removedKeys, modifiedKeys, NULL, NULL);
 
 	// Assert
 	Key * modifiedKey = ksLookupByName (modifiedKeys, "system:/test/name", KDB_O_NONE);
@@ -482,7 +482,7 @@ static void test_findDifferences_realWorld_withParentKey (void)
 	KeySet * modifiedKeys = ksNew (0, KS_END);
 
 	// Act
-	findDifferences (new, old, addedKeys, removedKeys, modifiedKeys, parentKey);
+	findDifferences (new, old, addedKeys, removedKeys, modifiedKeys, NULL, parentKey);
 
 	// Assert
 	succeed_if_fmt (ksGetSize (addedKeys) == 2, "should find 2 added keys (was %zd)", ksGetSize (addedKeys));
@@ -557,7 +557,7 @@ static void test_findDifferences_realWorld_withoutParentKey (void)
 	KeySet * modifiedKeys = ksNew (0, KS_END);
 
 	// Act
-	findDifferences (new, old, addedKeys, removedKeys, modifiedKeys, NULL);
+	findDifferences (new, old, addedKeys, removedKeys, modifiedKeys, NULL, NULL);
 
 	// Assert
 	succeed_if_fmt (ksGetSize (addedKeys) == 3, "should find 3 added keys (was %zd)", ksGetSize (addedKeys));

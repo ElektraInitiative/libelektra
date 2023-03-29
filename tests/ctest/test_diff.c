@@ -18,7 +18,7 @@ static void initializeDemoDiff (void)
 			       "test", KEY_END),
 		       KS_END);
 
-	demoDiff = elektraDiffNew (addedKeys, removedKeys, modifiedKeys, demoParent);
+	demoDiff = elektraDiffNew (addedKeys, removedKeys, modifiedKeys, NULL, demoParent);
 
 	keyDel (demoParent);
 }
@@ -37,7 +37,7 @@ static void test_elektraDiffNew_shouldIncreaseRefCount (void)
 	ksIncRef (modified);
 
 	// Act
-	ElektraDiff * diff = elektraDiffNew (added, removed, modified, NULL);
+	ElektraDiff * diff = elektraDiffNew (added, removed, modified, NULL, NULL);
 
 	// Assert
 	succeed_if (ksGetRef (added) == 2, "should increase refcount of added");
@@ -76,7 +76,7 @@ static void test_elektraDiffGetParentKey_ifNoParentKey_shouldReturnNull (void)
 {
 	printf ("Test %s\n", __func__);
 
-	ElektraDiff * diff = elektraDiffNew (ksNew (0, KS_END), ksNew (0, KS_END), ksNew (0, KS_END), NULL);
+	ElektraDiff * diff = elektraDiffNew (ksNew (0, KS_END), ksNew (0, KS_END), ksNew (0, KS_END), ksNew (0, KS_END), NULL);
 
 	succeed_if (elektraDiffGetParentKey (diff) == NULL, "should return NULL");
 
@@ -408,7 +408,7 @@ static void test_refCounting (void)
 {
 	printf ("Test %s\n", __func__);
 
-	ElektraDiff * diff = elektraDiffNew (ksNew (0, KS_END), ksNew (0, KS_END), ksNew (0, KS_END), NULL);
+	ElektraDiff * diff = elektraDiffNew (ksNew (0, KS_END), ksNew (0, KS_END), ksNew (0, KS_END), NULL, NULL);
 
 	succeed_if (elektraDiffGetRef (diff) == 0, "refcounter should be 0");
 
@@ -452,6 +452,177 @@ static void test_elektraDiffCalculate_shouldReturnDiff (void)
 	ksDel (ks);
 	keyDel (parentKey);
 	elektraDiffDel (diff);
+}
+
+static void test_elektraDiffAppend_addedKeys_shouldWork (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange
+	KeySet * targetAdded = ksNew (1, keyNew ("system:/key/addedInTarget", KEY_END), KS_END);
+	KeySet * targetModified = ksNew (1, keyNew ("system:/key/modifiedInTarget", KEY_VALUE, "test", KEY_END), KS_END);
+	KeySet * targetRemoved =
+		ksNew (1, keyNew ("system:/key/completelyRemoved", KEY_VALUE, "test", KEY_END),
+		       keyNew ("system:/key/willBeUntracked", KEY_VALUE, "test2", KEY_END),
+		       keyNew ("system:/key/willBeUntrackedAlso", KEY_VALUE, "test3", KEY_META, "meta:/test", "metavalue", KEY_END),
+		       keyNew ("system:/key/willBeModified", KEY_VALUE, "test4", KEY_END), KS_END);
+	ElektraDiff * target = elektraDiffNew (targetAdded, targetRemoved, targetModified, NULL, NULL);
+
+	KeySet * sourceAdded = ksNew (
+		1, keyNew ("system:/key/addedInSource", KEY_END), keyNew ("system:/key/willBeUntracked", KEY_VALUE, "test2", KEY_END),
+		keyNew ("system:/key/willBeUntrackedAlso", KEY_VALUE, "test3", KEY_META, "meta:/test", "metavalue", KEY_END),
+		keyNew ("system:/key/willBeModified", KEY_VALUE, "modified-test4", KEY_END), KS_END);
+	KeySet * sourceModified = ksNew (0, KS_END);
+	KeySet * sourceRemoved = ksNew (0, KS_END);
+	ElektraDiff * source = elektraDiffNew (sourceAdded, sourceRemoved, sourceModified, ksNew (0, KS_END), NULL);
+
+	// Act
+	elektraDiffAppend (target, source, NULL);
+
+	// Assert
+	KeySet * addedKeys = elektraDiffGetAddedKeys (target);
+	KeySet * modifiedKeys = elektraDiffGetModifiedKeys (target);
+	KeySet * removedKeys = elektraDiffGetRemovedKeys (target);
+
+	succeed_if_fmt (ksGetSize (addedKeys) == 2, "Added keys should have 2 keys, was %zu", ksGetSize (addedKeys));
+	succeed_if (ksLookupByName (addedKeys, "system:/key/addedInTarget", 0) != NULL,
+		    "Added keys should contain system:/key/addedInTarget");
+	succeed_if (ksLookupByName (addedKeys, "system:/key/addedInSource", 0) != NULL,
+		    "Added keys should contain system:/key/addedInSource");
+
+	succeed_if_fmt (ksGetSize (removedKeys) == 1, "Removed keys should have 1 key, was %zu", ksGetSize (removedKeys));
+	succeed_if (ksLookupByName (removedKeys, "system:/key/completelyRemoved", 0) != NULL,
+		    "Removed keys should contain system:/key/completelyRemoved");
+
+	succeed_if_fmt (ksGetSize (modifiedKeys) == 2, "Modified keys should have 2 keys, was %zu", ksGetSize (modifiedKeys));
+	succeed_if (ksLookupByName (modifiedKeys, "system:/key/willBeModified", 0) != NULL,
+		    "Modified keys should contain system:/key/willBeModified");
+	succeed_if (ksLookupByName (modifiedKeys, "system:/key/modifiedInTarget", 0) != NULL,
+		    "Modified keys should contain system:/key/modifiedInTarget");
+	succeed_if (strcmp (keyString (ksLookupByName (modifiedKeys, "system:/key/willBeModified", 0)), "test4") == 0,
+		    "Modified keys should only contain old value");
+
+	elektraDiffDel (target);
+	elektraDiffDel (source);
+	ksDel (addedKeys);
+	ksDel (removedKeys);
+	ksDel (modifiedKeys);
+}
+
+static void test_elektraDiffAppend_modifiedKeys_shouldWork (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange
+	KeySet * targetAdded = ksNew (1, keyNew ("system:/key/addedInTarget", KEY_VALUE, "target", KEY_END), KS_END);
+	KeySet * targetModified =
+		ksNew (1, keyNew ("system:/key/modifiedInTarget", KEY_VALUE, "test", KEY_END),
+		       keyNew ("system:/key/modifiedInTargetAlso", KEY_VALUE, "test", KEY_META, "meta:/test", "metavalue", KEY_END),
+		       keyNew ("system:/key/willBeUntracked", KEY_VALUE, "test", KEY_END),
+		       keyNew ("system:/key/willBeUntrackedAlso", KEY_VALUE, "test", KEY_META, "meta:/test", "metavalue", KEY_END), KS_END);
+	KeySet * targetRemoved = ksNew (1, keyNew ("system:/key/completelyRemoved", KEY_VALUE, "test", KEY_END), KS_END);
+	ElektraDiff * target = elektraDiffNew (targetAdded, targetRemoved, targetModified, NULL, NULL);
+
+	KeySet * sourceAdded = ksNew (0, KS_END);
+	KeySet * sourceModified =
+		ksNew (1, keyNew ("system:/key/addedInTarget", KEY_VALUE, "target", KEY_END),
+		       keyNew ("system:/key/modifiedInTarget", KEY_VALUE, "gugu", KEY_END),
+		       keyNew ("system:/key/modifiedInTargetAlso", KEY_VALUE, "test", KEY_META, "meta:/test", "gugu", KEY_END),
+		       keyNew ("system:/key/willBeUntracked", KEY_VALUE, "gugu", KEY_END),
+		       keyNew ("system:/key/willBeUntrackedAlso", KEY_VALUE, "test", KEY_META, "meta:/test", "gugu", KEY_END), KS_END);
+	KeySet * sourceModifiedNew = ksNew (
+		1, keyNew ("system:/key/addedInTarget", KEY_VALUE, "source", KEY_END),
+		keyNew ("system:/key/modifiedInTarget", KEY_VALUE, "modified-test", KEY_END),
+		keyNew ("system:/key/modifiedInTargetAlso", KEY_VALUE, "test", KEY_META, "meta:/test", "modified-metavalue", KEY_END),
+		keyNew ("system:/key/willBeUntracked", KEY_VALUE, "test", KEY_END),
+		keyNew ("system:/key/willBeUntrackedAlso", KEY_VALUE, "test", KEY_META, "meta:/test", "metavalue", KEY_END), KS_END);
+	KeySet * sourceRemoved = ksNew (0, KS_END);
+	ElektraDiff * source = elektraDiffNew (sourceAdded, sourceRemoved, sourceModified, sourceModifiedNew, NULL);
+
+	// Act
+	elektraDiffAppend (target, source, NULL);
+
+	// Assert
+	KeySet * addedKeys = elektraDiffGetAddedKeys (target);
+	KeySet * modifiedKeys = elektraDiffGetModifiedKeys (target);
+	KeySet * removedKeys = elektraDiffGetRemovedKeys (target);
+
+	succeed_if_fmt (ksGetSize (addedKeys) == 1, "Added keys should have 1 key, was %zu", ksGetSize (addedKeys));
+	succeed_if (ksLookupByName (addedKeys, "system:/key/addedInTarget", 0) != NULL,
+		    "Added keys should contain system:/key/addedInTarget");
+	succeed_if (strcmp (keyString (ksLookupByName (addedKeys, "system:/key/addedInTarget", 0)), "source") == 0,
+		    "Added key should be updated");
+
+	succeed_if_fmt (ksGetSize (removedKeys) == 1, "Removed keys should have 1 key, was %zu", ksGetSize (removedKeys));
+	succeed_if (ksLookupByName (removedKeys, "system:/key/completelyRemoved", 0) != NULL,
+		    "Removed keys should contain system:/key/completelyRemoved");
+
+	succeed_if_fmt (ksGetSize (modifiedKeys) == 2, "Modified keys should have 2 keys, was %zu", ksGetSize (modifiedKeys));
+	succeed_if (ksLookupByName (modifiedKeys, "system:/key/modifiedInTarget", 0) != NULL,
+		    "Modified keys should contain system:/key/modifiedInTarget");
+	succeed_if (ksLookupByName (modifiedKeys, "system:/key/modifiedInTargetAlso", 0) != NULL,
+		    "Modified keys should contain system:/key/modifiedInTargetAlso");
+	succeed_if (strcmp (keyString (ksLookupByName (modifiedKeys, "system:/key/modifiedInTarget", 0)), "test") == 0,
+		    "Modified key modifiedInTarget should only contain old value");
+	succeed_if (strcmp (keyString (ksLookupByName (modifiedKeys, "system:/key/modifiedInTargetAlso", 0)), "test") == 0,
+		    "Modified key modifiedInTargetAlso should only contain old value");
+
+	elektraDiffDel (target);
+	elektraDiffDel (source);
+	ksDel (addedKeys);
+	ksDel (removedKeys);
+	ksDel (modifiedKeys);
+}
+
+static void test_elektraDiffAppend_removedKeys_shouldWork (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange
+	KeySet * targetAdded =
+		ksNew (1, keyNew ("system:/key/addedInTarget", KEY_END), keyNew ("system:/key/addedWillBeRemoved", KEY_END), KS_END);
+	KeySet * targetModified = ksNew (1, keyNew ("system:/key/modifiedInTarget", KEY_VALUE, "test", KEY_END),
+					 keyNew ("system:/key/modifiedWillBeRemoved", KEY_VALUE, "test", KEY_END), KS_END);
+	KeySet * targetRemoved = ksNew (1, keyNew ("system:/key/completelyRemoved", KEY_VALUE, "test", KEY_END), KS_END);
+
+	ElektraDiff * target = elektraDiffNew (targetAdded, targetRemoved, targetModified, NULL, NULL);
+
+	KeySet * sourceAdded = ksNew (0, KS_END);
+	KeySet * sourceModified = ksNew (0, KS_END);
+	KeySet * sourceRemoved =
+		ksNew (1, keyNew ("system:/key/addedWillBeRemoved", KEY_END), keyNew ("system:/key/modifiedWillBeRemoved", KEY_END),
+		       keyNew ("system:/key/removedInSource", KEY_END), KS_END);
+	ElektraDiff * source = elektraDiffNew (sourceAdded, sourceRemoved, sourceModified, ksNew (0, KS_END), NULL);
+
+	// Act
+	elektraDiffAppend (target, source, NULL);
+
+	// Assert
+	KeySet * addedKeys = elektraDiffGetAddedKeys (target);
+	KeySet * modifiedKeys = elektraDiffGetModifiedKeys (target);
+	KeySet * removedKeys = elektraDiffGetRemovedKeys (target);
+
+	succeed_if_fmt (ksGetSize (addedKeys) == 1, "Added keys should have 1 key, was %zu", ksGetSize (addedKeys));
+	succeed_if (ksLookupByName (addedKeys, "system:/key/addedInTarget", 0) != NULL,
+		    "Added keys should contain system:/key/addedInTarget");
+
+	succeed_if_fmt (ksGetSize (modifiedKeys) == 1, "Modified keys should have 1 key, was %zu", ksGetSize (modifiedKeys));
+	succeed_if (ksLookupByName (modifiedKeys, "system:/key/modifiedInTarget", 0) != NULL,
+		    "Modified keys should contain system:/key/modifiedInTarget");
+
+	succeed_if_fmt (ksGetSize (removedKeys) == 3, "Removed keys should have 3 keys, was %zu", ksGetSize (removedKeys));
+	succeed_if (ksLookupByName (removedKeys, "system:/key/completelyRemoved", 0) != NULL,
+		    "Removed keys should contain system:/key/completelyRemoved");
+	succeed_if (ksLookupByName (removedKeys, "system:/key/modifiedWillBeRemoved", 0) != NULL,
+		    "Removed keys should contain system:/key/modifiedWillBeRemoved");
+	succeed_if (ksLookupByName (removedKeys, "system:/key/removedInSource", 0) != NULL,
+		    "Removed keys should contain system:/key/removedInSource");
+
+	elektraDiffDel (target);
+	elektraDiffDel (source);
+	ksDel (addedKeys);
+	ksDel (removedKeys);
+	ksDel (modifiedKeys);
 }
 
 int main (int argc, char ** argv)
@@ -505,6 +676,10 @@ int main (int argc, char ** argv)
 
 	test_elektraDiffCalculate_nullKeySets_shouldReturnNull ();
 	test_elektraDiffCalculate_shouldReturnDiff ();
+
+	test_elektraDiffAppend_addedKeys_shouldWork ();
+	test_elektraDiffAppend_modifiedKeys_shouldWork ();
+	test_elektraDiffAppend_removedKeys_shouldWork ();
 
 	elektraDiffDel (demoDiff);
 

@@ -1,5 +1,9 @@
 #include <kdbdiff.h>
+#include <kdberrors.h>
 #include <kdbprivate.h>
+
+static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKeys,
+			     KeySet * modifiedKeysNewValues, const Key * parentKey);
 
 /**
  * Determines whether two keys have a different value
@@ -64,6 +68,57 @@ static inline bool keyValueDifferent (Key * new, Key * old)
 }
 
 /**
+ * Determines whether the metadata of two keys are different
+ *
+ * @param[in] oldKey old key
+ * @param[in] newKey new key
+ * @param[out] metaAdded storage for the meta keys added in new key
+ * @param[out] metaRemoved storage for the meta keys removed in new key
+ * @param[out] metaModified storage for the meta keys modified in new key
+ * @return @p true if they have different values. @p false otherwise.
+ */
+static inline bool keyMetaDifferent (Key * oldKey, Key * newKey, KeySet * metaAdded, KeySet * metaRemoved, KeySet * metaModified)
+{
+	KeySet * oldMeta = keyMetaNoAlloc (oldKey);
+	KeySet * newMeta = keyMetaNoAlloc (newKey);
+
+	if (oldMeta == newMeta)
+	{
+		return false;
+	}
+
+	if (oldMeta != NULL && newMeta != NULL && oldMeta->data == newMeta->data)
+	{
+		return false;
+	}
+
+	ssize_t oldMetaSize = oldMeta ? ksGetSize (oldMeta) : 0;
+	ssize_t newMetaSize = newMeta ? ksGetSize (newMeta) : 0;
+
+	if (oldMetaSize != newMetaSize)
+	{
+		// there was a change in the meta keys --> modified
+		return true;
+	}
+	else if (oldMetaSize > 0 || newMetaSize > 0)
+	{
+		ksClear (metaAdded);
+		ksClear (metaRemoved);
+		ksClear (metaModified);
+
+		findDifferences (newMeta, oldMeta, metaAdded, metaRemoved, metaModified, NULL, NULL);
+
+		if (ksGetSize (metaAdded) > 0 || ksGetSize (metaRemoved) > 0 || ksGetSize (metaModified) > 0)
+		{
+			// there was a change in the meta keys --> modified
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
  * Find the differences between two keysets
  * Any of the out parameters (@p addedKeys, @p removedKey, @p modifiedKeys) may be @p NULL.
  * They will then not be calculated.
@@ -72,11 +127,14 @@ static inline bool keyValueDifferent (Key * new, Key * old)
  * @param[in] old the old keyset
  * @param[out] addedKeys adds keys present in @p new but not in @p old
  * @param[out] removedKeys adds keys present in @p old but not in @p new
- * @param[out] modifiedKeys adds keys present in both @p new and @p old, but with changes in value or in the meta keys
+ * @param[out] modifiedKeys adds keys present in both @p new and @p old, but with changes in value or in the meta keys. contains the OLD
+ * keys
+ * @param[out] modifiedKeysNewValues adds keys present in both @p new and @p old, but with changes in value or in the meta keys. contains
+ * the NEW keys
  * @param[in] parentKey parent key - if this parameter is not @p NULL, only keys below or same are processed.
  */
 static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKeys,
-			     const Key * parentKey)
+			     KeySet * modifiedKeysNewValues, const Key * parentKey)
 {
 	KeySet * metaAdded = ksNew (0, KS_END);
 	KeySet * metaRemoved = ksNew (0, KS_END);
@@ -150,34 +208,20 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 			{
 				// The value of the key changed --> modified
 				ksAppendKey (modifiedKeys, oldKey);
+				if (modifiedKeysNewValues != NULL)
+				{
+					ksAppendKey (modifiedKeysNewValues, newKey);
+				}
 			}
 			else if (keyGetNamespace (oldKey) != KEY_NS_META)
 			{
 				// Check whether something in the meta keys has changed
-
-				KeySet * oldMeta = keyMetaNoAlloc (oldKey);
-				KeySet * newMeta = keyMetaNoAlloc (newKey);
-
-				ssize_t oldMetaSize = oldMeta ? ksGetSize (oldMeta) : 0;
-				ssize_t newMetaSize = newMeta ? ksGetSize (newMeta) : 0;
-
-				if (oldMetaSize != newMetaSize)
+				if (keyMetaDifferent (oldKey, newKey, metaAdded, metaRemoved, metaModified))
 				{
-					// there was a change in the meta keys --> modified
 					ksAppendKey (modifiedKeys, oldKey);
-				}
-				else if (oldMetaSize > 0 || newMetaSize > 0)
-				{
-					ksClear (metaAdded);
-					ksClear (metaRemoved);
-					ksClear (metaModified);
-
-					findDifferences (newMeta, oldMeta, metaAdded, metaRemoved, metaModified, NULL);
-
-					if (ksGetSize (metaAdded) > 0 || ksGetSize (metaRemoved) > 0 || ksGetSize (metaModified) > 0)
+					if (modifiedKeysNewValues != NULL)
 					{
-						// there was a change in the meta keys --> modified
-						ksAppendKey (modifiedKeys, oldKey);
+						ksAppendKey (modifiedKeysNewValues, newKey);
 					}
 				}
 			}
@@ -243,14 +287,16 @@ ElektraDiff * elektraDiffCalculate (KeySet * newKeys, KeySet * oldKeys, Key * pa
 	ksIncRef (ksd->removedKeys);
 	ksd->modifiedKeys = ksNew (0, KS_END);
 	ksIncRef (ksd->modifiedKeys);
+	ksd->modifiedNewKeys = ksNew (0, KS_END);
+	ksIncRef (ksd->modifiedNewKeys);
 
-	findDifferences (newKeys, oldKeys, ksd->addedKeys, ksd->removedKeys, ksd->modifiedKeys, parentKey);
+	findDifferences (newKeys, oldKeys, ksd->addedKeys, ksd->removedKeys, ksd->modifiedKeys, ksd->modifiedNewKeys, parentKey);
 
 	return ksd;
 }
 
 /**
- * Mostly for testing purposes: Create a ElektraDiff.
+ * Create an ElektraDiff.
  * The returned ElektraDiff contains the same KeySets that are passed in, so be sure
  * to @p ksIncRef them if you plan to use them after deleting the ElektraDiff.
  *
@@ -260,7 +306,7 @@ ElektraDiff * elektraDiffCalculate (KeySet * newKeys, KeySet * oldKeys, Key * pa
  * @param parentKey the parent key
  * @return ElektraDiff with the provided parameters
  */
-ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKey, Key * parentKey)
+ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKey, KeySet * modifiedKeyNew, Key * parentKey)
 {
 	ElektraDiff * ksd = elektraCalloc (sizeof (ElektraDiff));
 
@@ -277,6 +323,12 @@ ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet *
 
 	ksIncRef (modifiedKey);
 	ksd->modifiedKeys = modifiedKey;
+
+	if (modifiedKeyNew != NULL)
+	{
+		ksIncRef (modifiedKeyNew);
+		ksd->modifiedNewKeys = modifiedKeyNew;
+	}
 
 	return ksd;
 }
@@ -308,7 +360,213 @@ void elektraDiffDel (ElektraDiff * ksd)
 	ksDecRef (ksd->addedKeys);
 	ksDel (ksd->addedKeys);
 
+	if (ksd->modifiedNewKeys)
+	{
+		ksDecRef (ksd->modifiedNewKeys);
+		ksDel (ksd->modifiedNewKeys);
+	}
+
 	elektraFree (ksd);
+}
+
+/**
+ * Removes all keys from the diff that are same or below the given cutpoint
+ *
+ * @param ksd the diff where the keys should be removed
+ * @param cutpoint the cutpoint
+ */
+void elektraDiffRemoveSameOrBelow (ElektraDiff * ksd, const Key * cutpoint)
+{
+	if (ksd == NULL || cutpoint == NULL)
+	{
+		return;
+	}
+
+	if (ksd->addedKeys) ksDel (ksCut (ksd->addedKeys, cutpoint));
+	if (ksd->removedKeys) ksDel (ksCut (ksd->removedKeys, cutpoint));
+	if (ksd->modifiedKeys) ksDel (ksCut (ksd->modifiedKeys, cutpoint));
+	if (ksd->modifiedNewKeys) ksDel (ksCut (ksd->modifiedNewKeys, cutpoint));
+}
+
+/**
+ * Appends a diff to another diff.
+ *
+ * @param target the diff where the other diff should be appended
+ * @param source the diff that should be appended to the other diff
+ * @param parentKey the parent key.
+ *                  only keys below or same this key are appended.
+ *                  if errors or warnings occur, they are stored as metadata in this key
+ */
+void elektraDiffAppend (ElektraDiff * target, const ElektraDiff * source, Key * parentKey)
+{
+	if (target == NULL || source == NULL)
+	{
+		return;
+	}
+
+	if (source->modifiedNewKeys == NULL)
+	{
+		ELEKTRA_SET_INTERNAL_ERROR (parentKey,
+					    "the passed ElektraDiff in source does not include the new values for the modified keys");
+		return;
+	}
+
+	if (target->addedKeys == NULL) target->addedKeys = ksNew (0, KS_END);
+	if (target->modifiedKeys == NULL) target->modifiedKeys = ksNew (0, KS_END);
+	if (target->removedKeys == NULL) target->removedKeys = ksNew (0, KS_END);
+
+	KeySet * metaAdded = ksNew (0, KS_END);
+	KeySet * metaRemoved = ksNew (0, KS_END);
+	KeySet * metaModified = ksNew (0, KS_END);
+
+	for (elektraCursor i = 0; i < ksGetSize (source->addedKeys); i++)
+	{
+		Key * key = ksAtCursor (source->addedKeys, i);
+		if (!keyIsBelowOrSame (parentKey, key))
+		{
+			continue;
+		}
+
+		Key * targetKey = ksLookup (target->addedKeys, key, 0);
+		if (targetKey != NULL)
+		{
+			ELEKTRA_ADD_INTERNAL_WARNINGF (parentKey, "Can't add already added key %s", keyName (key));
+			continue;
+		}
+
+		targetKey = ksLookup (target->removedKeys, key, KDB_O_POP);
+		if (targetKey != NULL)
+		{
+			if (keyValueDifferent (targetKey, key) || keyMetaDifferent (targetKey, key, metaAdded, metaRemoved, metaModified))
+			{
+				// key was added again, but with different value -> modified
+				// as modified keys include the old value --> append targetKey
+				ksAppendKey (target->modifiedKeys, targetKey);
+				continue;
+			}
+			else
+			{
+				// key was added again but with the same value it was before --> remove from target
+				keyDel (targetKey);
+				continue;
+			}
+		}
+
+		targetKey = ksLookup (target->modifiedKeys, key, 0);
+		if (targetKey == NULL)
+		{
+			// Key was NOT found in modified keys --> add to added keys
+			ksAppendKey (target->addedKeys, key);
+			continue;
+		}
+		else
+		{
+			ELEKTRA_ADD_INTERNAL_WARNINGF (parentKey, "Can't add already modified key %s", keyName (key));
+			continue;
+		}
+	}
+
+	// calculating on modified keys only works if we have the new values for the modified keys in source
+	for (elektraCursor i = 0; i < ksGetSize (source->modifiedNewKeys); i++)
+	{
+		Key * key = ksAtCursor (source->modifiedNewKeys, i);
+		if (!keyIsBelowOrSame (parentKey, key))
+		{
+			continue;
+		}
+
+		Key * targetKey = ksLookup (target->addedKeys, key, KDB_O_POP);
+		if (targetKey != NULL)
+		{
+			// Key was added and now modified -> still in added
+			ksAppendKey (target->addedKeys, key);
+			keyDel (targetKey);
+			continue;
+		}
+
+		targetKey = ksLookup (target->modifiedKeys, key, KDB_O_POP);
+		if (targetKey != NULL)
+		{
+			if (keyValueDifferent (targetKey, key) || keyMetaDifferent (targetKey, key, metaAdded, metaRemoved, metaModified))
+			{
+				// key value is different than the old key --> still modified
+				// as modified keys include the old value --> append targetKey
+				ksAppendKey (target->modifiedKeys, targetKey);
+				if (target->modifiedNewKeys != NULL)
+				{
+					ksAppendKey (target->modifiedNewKeys, key);
+				}
+				continue;
+			}
+			else
+			{
+				// key was modified back to original value --> remove from target
+				keyDel (targetKey);
+				if (target->modifiedNewKeys != NULL)
+				{
+					ksLookup (target->modifiedNewKeys, key, KDB_O_POP);
+				}
+				continue;
+			}
+		}
+
+		targetKey = ksLookup (target->removedKeys, key, 0);
+		if (targetKey != NULL)
+		{
+			ELEKTRA_ADD_INTERNAL_WARNINGF (parentKey, "Can't modify already removed key %s", keyName (key));
+			continue;
+		}
+
+		// Everything else has been checked already
+		// Key was not found in target so add it to modified keys
+		ksAppendKey (target->modifiedKeys, key);
+	}
+
+	for (elektraCursor i = 0; i < ksGetSize (source->removedKeys); i++)
+	{
+		Key * key = ksAtCursor (source->removedKeys, i);
+		if (!keyIsBelowOrSame (parentKey, key))
+		{
+			continue;
+		}
+
+		Key * targetKey = ksLookup (target->addedKeys, key, KDB_O_POP);
+		if (targetKey != NULL)
+		{
+			// Key was added and now removed -> untracked
+			keyDel (targetKey);
+			continue;
+		}
+
+		targetKey = ksLookup (target->modifiedKeys, key, KDB_O_POP);
+		if (targetKey != NULL)
+		{
+			// removedKeys always stores the old value
+			// thus we have to add the key from target
+			ksAppendKey (target->removedKeys, targetKey);
+			if (target->modifiedNewKeys != NULL)
+			{
+				ksLookup (target->modifiedNewKeys, key, KDB_O_DEL);
+			}
+			continue;
+		}
+
+		targetKey = ksLookup (target->removedKeys, key, 0);
+		if (targetKey == NULL)
+		{
+			ksAppendKey (target->removedKeys, key);
+			continue;
+		}
+		else
+		{
+			ELEKTRA_ADD_INTERNAL_WARNINGF (parentKey, "Can't remove already removed key %s", keyName (key));
+			continue;
+		}
+	}
+
+	ksDel (metaAdded);
+	ksDel (metaRemoved);
+	ksDel (metaModified);
 }
 
 /**
@@ -472,7 +730,7 @@ KeySet * elektraDiffGetAddedMetaKeys (const ElektraDiff * ksd, Key * key)
 
 	KeySet * addedKeys = ksNew (0, KS_END);
 
-	findDifferences (keyMeta (key), keyMeta (oldKey), addedKeys, NULL, NULL, NULL);
+	findDifferences (keyMeta (key), keyMeta (oldKey), addedKeys, NULL, NULL, NULL, NULL);
 
 	return addedKeys;
 }
@@ -501,7 +759,7 @@ KeySet * elektraDiffGetRemovedMetaKeys (const ElektraDiff * ksd, Key * key)
 
 	KeySet * removedKeys = ksNew (0, KS_END);
 
-	findDifferences (keyMeta (key), keyMeta (oldKey), NULL, removedKeys, NULL, NULL);
+	findDifferences (keyMeta (key), keyMeta (oldKey), NULL, removedKeys, NULL, NULL, NULL);
 
 	return removedKeys;
 }
@@ -530,7 +788,7 @@ KeySet * elektraDiffGetModifiedMetaKeys (const ElektraDiff * ksd, Key * key)
 
 	KeySet * modifiedKeys = ksNew (0, KS_END);
 
-	findDifferences (keyMeta (key), keyMeta (oldKey), NULL, NULL, modifiedKeys, NULL);
+	findDifferences (keyMeta (key), keyMeta (oldKey), NULL, NULL, modifiedKeys, NULL, NULL);
 
 	return modifiedKeys;
 }

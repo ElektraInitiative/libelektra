@@ -15,6 +15,7 @@ typedef struct _ElektraDiff ElektraDiff;
 ElektraDiff * elektraDiffCalculate (KeySet * newKeys, KeySet * oldKeys, Key * parentKey);
 
 void elektraDiffDel (ElektraDiff * ksd);
+void elektraDiffRemoveSameOrBelow (ElektraDiff * ksd, const Key * cutpoint);
 
 uint16_t elektraDiffIncRef (ElektraDiff * ksd);
 uint16_t elektraDiffDecRef (ElektraDiff * ksd);
