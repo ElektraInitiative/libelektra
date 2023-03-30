@@ -1,26 +1,46 @@
 #include "elektra-xfconf.h"
 #include "elektra-xfconf-util.h"
+#include <pthread.h>
 
+
+pthread_rwlock_t channel_lock = PTHREAD_RWLOCK_INITIALIZER;
 GList * channel_list = NULL;
 KDB * elektraKdb = NULL;
 
 gboolean xfconf_init (GError ** error)
 {
 	trace ();
-	Key * elektraError = keyNew ("/elektra_error", KEY_END);
-	elektraKdb = kdbOpen (NULL, elektraError);
-	if (elektraKdb == NULL)
+	if (pthread_rwlock_trywrlock (&channel_lock) == 0)
 	{
-		g_debug ("unable to open elektraKdb");
-		*error = g_error_new (0, 1, "unable to open kdb: %s", keyString (elektraError));
-		return FALSE;
+		g_info ("channel lock successful, initialize structures if necessary");
+		Key * elektraError = keyNew ("/elektra_error", KEY_END);
+		if (elektraKdb == NULL)
+		{
+			g_info ("structures are not initialized yet, proceeding");
+			elektraKdb = kdbOpen (NULL, elektraError);
+			if (elektraKdb == NULL)
+			{
+				g_debug ("unable to open elektraKdb");
+				*error = g_error_new (0, 1, "unable to open kdb: %s", keyString (elektraError));
+				return FALSE;
+			}
+		}
+		else
+		{
+			g_info ("structures were already initialized");
+		}
+		pthread_rwlock_unlock (&channel_lock);
+	}
+	else
+	{
+		g_info ("channel lock failed, structures seem to be already initialized");
 	}
 	return TRUE;
 }
 void xfconf_shutdown (void)
 {
 	trace ();
-	g_list_free (channel_list);
+	// g_list_free (channel_list);
 }
 
 void xfconf_named_struct_register (const gchar * struct_name, guint n_members, const GType * member_types)
@@ -38,7 +58,8 @@ gchar ** xfconf_list_channels (void)
 	trace ();
 	Key * parentKey = keyNew (XFCONF_ROOT, KEY_END);
 	KeySet * channelKeySet = ksNew (0, KS_END);
-	kdbGet (elektraKdb, channelKeySet, parentKey);
+
+	require_read_lock () kdbGet (elektraKdb, channelKeySet, parentKey);
 	ssize_t keySetLength = ksGetSize (channelKeySet);
 	gchar ** channelNames = calloc (keySetLength + 1, sizeof (gchar *));
 	const Key * currentKey;
@@ -68,6 +89,5 @@ gchar ** xfconf_list_channels (void)
 			free (firstLevelName);
 		}
 	}
-
-	return channelNames;
+	release_lock () return channelNames;
 }
