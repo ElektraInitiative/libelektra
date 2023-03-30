@@ -562,7 +562,6 @@ static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySe
 		keyDel (elektraRoot);
 		return false;
 	}
-
 	keyDel (elektraRoot);
 	elektraRoot = NULL;
 
@@ -978,6 +977,8 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 		ksDel (elektraKs);
 		goto error;
 	}
+
+	ksAppendKey (handle->global, ksLookupByName (elektraKs, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, 0));
 
 	// Step 5: parse mountpoints
 	KeySet * backends = elektraMountpointsParse (elektraKs, handle->modules, handle->global, errorKey);
@@ -2564,6 +2565,11 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		}
 
 		sendNotificationHook = sendNotificationHook->next;
+	}
+
+	if (handle->hooks.record.record != NULL)
+	{
+		handle->hooks.record.record (handle->hooks.record.plugin, setKs, parentKey);
 	}
 
 	keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);

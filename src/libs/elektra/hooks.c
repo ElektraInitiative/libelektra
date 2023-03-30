@@ -50,6 +50,12 @@ void freeHooks (KDB * kdb, Key * errorKey)
 
 		kdb->hooks.sendNotification = NULL;
 	}
+
+	if (kdb->hooks.record.plugin != NULL)
+	{
+		elektraPluginClose (kdb->hooks.record.plugin, errorKey);
+		kdb->hooks.record.record = NULL;
+	}
 }
 
 static size_t getFunction (Plugin * plugin, const char * functionName, Key * errorKey)
@@ -71,13 +77,13 @@ static int initHooksGopts (KDB * kdb, Plugin * plugin, Key * errorKey)
 		return -1;
 	}
 
-	kdb->hooks.gopts.plugin = plugin;
-
 	if ((kdb->hooks.gopts.get = (kdbHookGoptsGetPtr) getFunction (plugin, "hook/gopts/get", errorKey)) == NULL)
 	{
 		elektraPluginClose (plugin, errorKey);
 		return -1;
 	}
+
+	kdb->hooks.gopts.plugin = plugin;
 
 	return 0;
 }
@@ -89,8 +95,6 @@ static int initHooksSpec (KDB * kdb, Plugin * plugin, Key * errorKey)
 		return -1;
 	}
 
-	kdb->hooks.spec.plugin = plugin;
-
 	kdb->hooks.spec.copy = (kdbHookSpecCopyPtr) getFunction (plugin, "hook/spec/copy", errorKey);
 	kdb->hooks.spec.remove = (kdbHookSpecRemovePtr) getFunction (plugin, "hook/spec/remove", errorKey);
 
@@ -99,6 +103,28 @@ static int initHooksSpec (KDB * kdb, Plugin * plugin, Key * errorKey)
 		elektraPluginClose (plugin, errorKey);
 		return -1;
 	}
+
+	kdb->hooks.spec.plugin = plugin;
+
+	return 0;
+}
+
+static int initHooksRecord (KDB * kdb, Plugin * plugin, Key * errorKey)
+{
+	if (!plugin)
+	{
+		return -1;
+	}
+
+	kdb->hooks.record.record = (kdbHookRecordPtr) getFunction (plugin, "hook/record/record", errorKey);
+
+	if (kdb->hooks.record.record == NULL)
+	{
+		elektraPluginClose (plugin, errorKey);
+		return -1;
+	}
+
+	kdb->hooks.record.plugin = plugin;
 
 	return 0;
 }
@@ -369,6 +395,10 @@ int initHooks (KDB * kdb, const KeySet * config, KeySet * modules, const KeySet 
 	{
 		goto error;
 	}
+
+	// No need for error handling here
+	// If the plugin does not exist, recording functionality will not be used
+	initHooksRecord (kdb, loadPlugin ("recorder", kdb->global, modules, contract, errorKey), errorKey);
 
 	if (!existingError)
 	{

@@ -59,8 +59,19 @@ docker run -it elektra/elektra
 The following text lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
 ### <<Plugin>>
+### General
 
+- Updated target name of shared object files according to [#3486](https://issues.libelektra.org/3486)
+
+### spec
+
+- Rewrite spec plugin, fix bugs and use correct error handling _(Tomislav Makar @tmakar)_
+- Remove info metakey from spec plugin _(Tomislav Makar @tmakar)_
 - <<TODO>>
+
+### recorder
+
+- Add recorder plugin. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 

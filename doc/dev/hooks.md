@@ -62,6 +62,17 @@ The following functions **may** be exported (optional):
   - Signature: `(Plugin * handle, KeySet * returned, Key * parentKey)`
   - Called in `kdbSet` after the storage phase.
 
+### `record` hook
+
+Used for the session recording plugin.
+Hard coded to search for a plugin named `recorder`.
+
+The following function must be exported:
+
+- `record`:
+  - Signature: `(Plugin * handle, KeySet * returned, Key * parentKey)`
+  - Called in `kdbSet` after the storage phase.
+
 ## Lifecycle
 
 1. Hooks are initialized within `kdbOpen` after the contract has been processed. This includes loading the plugins.

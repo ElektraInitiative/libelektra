@@ -55,6 +55,12 @@
 /** All keys below this are used for cache metadata in the global keyset */
 #define KDB_CACHE_PREFIX "system:/elektra/cache"
 
+#define ELEKTRA_RECORD_CONFIG_KEY "/elektra/record"
+#define ELEKTRA_RECORD_CONFIG_ACTIVE_KEY "/elektra/record/config/active"
+#define ELEKTRA_RECORD_SESSION_KEY "/record/session"
+#define ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/record/session/diff/added"
+#define ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY "/record/session/diff/modified"
+#define ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/record/session/diff/removed"
 
 #ifdef __cplusplus
 namespace ckdb
@@ -97,6 +103,8 @@ typedef int (*kdbHookSpecRemovePtr) (Plugin * handle, KeySet * returned, Key * p
 
 typedef int (*kdbHookSendNotificationGetPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 typedef int (*kdbHookSendNotificationSetPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
+
+typedef int (*kdbHookRecordPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 
 typedef Plugin * (*OpenMapper) (const char *, const char *, KeySet *);
 typedef int (*CloseMapper) (Plugin *);
@@ -439,7 +447,8 @@ struct _ElektraDiff
 	uint16_t refs;
 };
 
-struct _ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKey, KeySet * modifiedKeyNew, Key * parentKey);
+struct _ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKey, KeySet * modifiedKeyNew,
+				      Key * parentKey);
 void elektraDiffAppend (struct _ElektraDiff * target, const struct _ElektraDiff * source, Key * parentKey);
 
 struct _ChangeTrackingContext
@@ -494,6 +503,12 @@ struct _KDB
 		} spec;
 
 		struct _SendNotificationHook * sendNotification;
+
+		struct
+		{
+			struct _Plugin * plugin;
+			kdbHookRecordPtr record;
+		} record;
 	} hooks;
 
 	KeySet * allKeys;
