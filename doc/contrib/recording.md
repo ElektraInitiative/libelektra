@@ -22,38 +22,41 @@ The following namespaces are monitored for changes:
 
 ## Storage of the Session Diff
 
-The session diff is persisted in the respective namespace under `/elektra/record/session`.
-I.e. all keys in the diff of the `system` namespace are under `system:/elektra/record/session`.
+The session diff is persisted in the respective namespace under `/record/session`.
+I.e. all keys in the diff of the `system` namespace are under `system:/record/session`.
+Why not under `/elektra/record`? 
+Because then the whole session would be loaded everytime KDB is initialized.
+This would cause too much memory overhead when recording is paused.
 
 The recording plugin needs its own KDB instance to store the session diff within Elektra.
 For concurrency and performance reasons, the storage should be a separately mounted file under each namespace.
 This means we need to provide default mountpoints for the
 
-- `dir:/elektra/record/session`,
-- `system:/elektra/record/session` and
-- `user:/elektra/record/session`
+- `dir:/record/session`,
+- `system:/record/session` and
+- `user:/record/session`
   keys.
 
 The following list describes some important keys:
 
 - `/elektra/record`
-- `/elektra/record/settings`
-- `/elektra/record/settings/active`
+- `/elektra/record/config`
+- `/elektra/record/config/active`
   - If the key is present, session recording is active.
   - The keys value is the parent key
-- `/elektra/record/settings/export/ansible/template`
+- `/elektra/record/config/export/ansible/template`
   - Optional. If we want to perform in-place updates of Ansible files, this key stores the last-used Ansible file.
-- `/elektra/record/session`
+- `/record/session`
   - Contains all the recorded data.
   - Should be mounted into separate files in each namespace.
-- `/elektra/record/session/assert`
+- `/record/session/assert`
   - Keys that should be asserted
-- `/elektra/record/session/diff`
-- `/elektra/record/session/diff/added`
-- `/elektra/record/session/diff/modified`
+- `/record/session/diff`
+- `/record/session/diff/added`
+- `/record/session/diff/modified`
   - Contains the _old_ values and metadata for the keys that have been modified
-- `/elektra/record/session/diff/removed`
-- `/elektra/record/session/new`
+- `/record/session/diff/removed`
+- `/record/session/new`
   - Contains the _new_ values and metadata for the keys that have been modified
 
 ## Calculating the Session Diff
