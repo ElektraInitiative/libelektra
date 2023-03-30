@@ -61,6 +61,9 @@ public:
 	virtual inline int set (KeySet & returned, std::string const & keyname);
 	virtual inline int set (KeySet & returned, Key & parentKey);
 
+	inline ckdb::KDB * getKdb () const;
+	inline ckdb::KDB * operator* () const;
+
 private:
 	ckdb::KDB * handle; ///< holds an kdb handle
 };
@@ -286,6 +289,30 @@ inline int KDB::set (KeySet & returned, Key & parentKey)
 		throw KDBException (parentKey);
 	}
 	return ret;
+}
+
+/**
+ * Passes out the raw kdb pointer.
+ *
+ * This pointer can be used to directly interact with the underlying kdb instance
+ *
+ * \note that the ownership remains in the object
+ */
+inline ckdb::KDB * KDB::getKdb () const
+{
+	return handle;
+}
+
+/**
+ * Is an abbreviation for getKdb.
+ *
+ * @copydoc getKdb
+ *
+ * @see getKdb()
+ */
+inline ckdb::KDB * KDB::operator* () const
+{
+	return handle;
 }
 
 /**

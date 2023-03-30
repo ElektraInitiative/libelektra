@@ -187,6 +187,25 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- <<TODO>>
+
+### C++
+
+- Provide getter for the underlying C object of KDB _(Maximilian Irlinger @atmaxinger)_
+- <<TODO>>
+- <<TODO>>
+
+### <<Binding>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Binding>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ### <<Binding>>
 
