@@ -24,7 +24,7 @@ The following namespaces are monitored for changes:
 
 The session diff is persisted in the respective namespace under `/record/session`.
 I.e. all keys in the diff of the `system` namespace are under `system:/record/session`.
-Why not under `/elektra/record`? 
+Why not under `/elektra/record`?
 Because then the whole session would be loaded everytime KDB is initialized.
 This would cause too much memory overhead when recording is paused.
 
