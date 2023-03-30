@@ -54,3 +54,58 @@ eval "$XFCONF_QUERY_COMMAND" -c xsettings -p /Gtk/DialogsUseHeader -n -s false -
 eval "$XFCONF_QUERY_COMMAND" -c xsettings -p /Gtk/TitlebarMiddleClick -n -s "lower" -t string
 
 eval "$XFCONF_QUERY_COMMAND" -c xsettings -p /Gdk/WindowScalingFactor -n -s 1 -t int
+
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /configver -n -s 2 -t int
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /panels -n -s 1 -s 2 -a -t int -t int
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /panels/dark-mode -n -s true -t bool
+
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /panels/panel-1 -n -s true -t bool
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /panels/panel-1/position -n -s "'p=6;x=0;y=0'" -t string
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /panels/panel-1/length -n -s 100 -t uint
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /panels/panel-1/position-locked -n -s true -t bool
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /panels/panel-1/icon-size -n -s 16 -t uint
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /panels/panel-1/size -n -s 26 -t uint
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /panels/panel-1/plugin-ids -n -a -s 1 -s 2 -s 3 -s 4 -s 5 -s 6 -s 7 -s 8 -s 9 -s 10 -s 11 -s 12 -s 13 -s 14 -t int -t int -t int -t int -t int -t int -t int -t int -t int -t int -t int -t int -t int -t int
+
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /panels/panel-2 -n -s true -t bool
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /panels/panel-2/position -n -s "'p=10;x=0;y=0'" -t string
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /panels/panel-2/length -n -s 1 -t uint
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /panels/panel-2/position-locked -n -s true -t bool
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /panels/panel-2/icon-size -n -s 48 -t uint
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /panels/panel-2/size -n -s 26 -t uint
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /panels/panel-1/plugin-ids -n -a -s 15 -s 16 -s 17 -s 18 -s 19 -s 20 -s 21 -s 22 -t int -t int -t int -t int -t int -t int -t int -t int
+
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-1 -n -s "applicationsmenu" -t string
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-2 -n -s "tasklist" -t string
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-2/grouping -n -s 1 -t uint
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-3 -n -s "separator" -t string
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-3/expand -n -s true -t bool
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-3/style -n -s 0 -t uint
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-4 -n -s "pager" -t string
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-5 -n -s "separator" -t string
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-5/style -n -s 0 -t uint
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-6 -n -s "systray" -t string
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-6/square-icons -n -s true -t bool
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-8 -n -s "pulseaudio" -t string
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-8/enable-keyboard-shortcuts -n -s true -t bool
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-8/show-notifications -n -s true -t bool
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-9 -n -s "power-manager-plugin" -t string
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-10 -n -s "notification-plugin" -t string
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-11 -n -s "separator" -t string
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-11/style -n -s 0 -t uint
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-12 -n -s "clock" -t string
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-13 -n -s "separator" -t string
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-13/style -n -s 0 -t uint
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-14 -n -s "actions" -t string
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-15 -n -s "showdesktop" -t string
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-16 -n -s "separator" -t string
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-17 -n -s "launcher" -t string
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-17/items -n -a -s "xfce4-terminal-emulator.desktop" -t string
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-18 -n -s "launcher" -t string
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-18/items -n -a -s "xfce4-file-manager.desktop" -t string
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-19 -n -s "launcher" -t string
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-19/items -n -a -s "xfce4-web-browser.desktop" -t string
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-20 -n -s "launcher" -t string
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-20/items -n -a -s "xfce4-appfinder.desktop" -t string
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-21 -n -s "separator" -t string
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-22 -n -s "directorymenu" -t string
