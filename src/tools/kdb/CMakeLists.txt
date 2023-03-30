@@ -29,7 +29,8 @@ if (BUILD_SHARED)
 		elektra-kdb
 		elektratools
 		elektra-opts
-		elektra-merge)
+		elektra-merge
+		elektra-record)
 
 	install (
 		TARGETS kdb

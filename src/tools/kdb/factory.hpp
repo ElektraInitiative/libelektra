@@ -61,6 +61,10 @@
 #include <test.hpp>
 #include <umount.hpp>
 #include <validate.hpp>
+#include <recordclear.hpp>
+#include <recordsetup.hpp>
+#include <recordstart.hpp>
+#include <recordstop.hpp>
 
 class Instancer
 {
@@ -125,6 +129,10 @@ public:
 		m_factory.insert (std::make_pair ("basename", std::make_shared<Cnstancer<BasenameCommand>> ()));
 		m_factory.insert (std::make_pair ("dirname", std::make_shared<Cnstancer<DirnameCommand>> ()));
 		m_factory.insert (std::make_pair ("validate", std::make_shared<Cnstancer<ValidateCommand>> ()));
+		m_factory.insert (std::make_pair ("record-clear", std::make_shared<Cnstancer<RecordClearCommand>> ()));
+		m_factory.insert (std::make_pair ("record-setup", std::make_shared<Cnstancer<RecordSetupCommand>> ()));
+		m_factory.insert (std::make_pair ("record-start", std::make_shared<Cnstancer<RecordStartCommand>> ()));
+		m_factory.insert (std::make_pair ("record-stop", std::make_shared<Cnstancer<RecordStopCommand>> ()));
 	}
 
 	std::vector<std::string> getPrettyCommands () const
