@@ -45,6 +45,15 @@ static bool specMatches (Key * specKey, Key * otherKey)
 }
 #endif
 
+/**
+ * Replace the {@link searchFor} with {@link c} in the {@link str}.
+ * The {@link newStr} contains the string with the replaced character.
+ *
+ * @param str the old string
+ * @param newStr the newly created string with the already replaced character
+ * @param searchFor the character to replace
+ * @param c the character to use instead
+ */
 static void replaceCharacter (const char * str, char * newStr, const char searchFor, const char c)
 {
 	for (size_t i = 0; i < elektraStrLen (str); i++)
@@ -84,6 +93,13 @@ static void addDefaultKeyIfNotExists (KeySet * ks, Key * parentKey, Key * specKe
 	ksAppendKey (ks, newDefaultKey);
 }
 
+/**
+ * Check if the specification key has a meta key `required`.
+ *
+ * @param specKey the specification key to check for the required meta key
+ * @return true - if the specification key contains a meta key required
+ * 	   false - if the specification key does not contain a meta key required
+ */
 static bool isRequired (Key * specKey)
 {
 	const Key * key = keyGetMeta (specKey, "require");
@@ -98,6 +114,13 @@ static bool isRequired (Key * specKey)
 	return elektraStrCmp (keyValue, "true") == 0;
 }
 
+/**
+ * Check if the specification key has a meta key `default`.
+ *
+ * @param specKey the specification key to check for the default meta key
+ * @return true - if the specification key contains a meta key default
+ * 	   false - if the specification key does not contain the meta key default
+ */
 static bool hasDefault (Key * specKey)
 {
 	return keyGetMeta (specKey, "default") != 0;
@@ -142,9 +165,33 @@ static KeySet * extractSpecKeys (KeySet * ks)
 static bool isArraySpecification (Key * specKey)
 {
 	const char * keyWithoutNamespace = strchr (keyName (specKey), '/');
+
 	for (size_t i = 0; i < elektraStrLen (keyWithoutNamespace); i++)
 	{
 		if (keyWithoutNamespace [i] == '#')
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
+ * Checks if this specification key contains an `_` in the array specification.
+ *
+ * @param specKey the specification key to check for underline if it is array specification
+ * @return true - if the array specification contains an `_`
+ * 	   false - if the array specification does not contain an `_`
+ */
+static bool containsUnderlineInArraySpec (Key * specKey)
+{
+	const char * keyWithoutNamespace = strchr (keyName (specKey), '/');
+	size_t len = elektraStrLen (keyWithoutNamespace);
+
+	for (size_t i = 0; i < len; i++)
+	{
+		if (keyWithoutNamespace [i] == '#' && (i != len && keyWithoutNamespace [i + 1] == '_'))
 		{
 			return true;
 		}
@@ -172,6 +219,102 @@ static bool isWildcardSpecification (Key * specKey)
 	}
 
 	return false;
+}
+
+/**
+ * Creates the name of the array element.
+ *
+ * Example:
+ * 	arrayNumber = 2
+ * 	size = 2
+ *
+ * 	arrayElement = #2
+ *
+ * 	arrayNumber = 10
+ * 	size = 4
+ *
+ * 	arrayElement = #_10
+ *
+ * 	arrayNumber = 100
+ * 	size = 6
+ *
+ * 	arrayElement = #__100
+ *
+ * @param arrayElement the element to store the name in
+ * @param arrayNumber the array element number
+ * @param size the size of array
+ */
+static void createArrayElementName (char * arrayElement, int arrayNumber, int size)
+{
+	arrayElement [0] = '#';
+	for (int j = 1; j < (arrayNumber % 10); j++)
+	{
+		arrayElement [j] = '_';
+	}
+	sprintf (&arrayElement [size], "%d", arrayNumber);
+}
+
+/**
+ * Creates the corresponding array element keys and copies all the meta data keys from {@link specKey}.
+ *
+ * @param specKey the specification key to copy the meta data from
+ * @param ks the KeySet to append the newly created array element keys too
+ * @param arraySize number of array elements to create under the key
+ * @param pos the position of the array element (`#`) to start instantiating at
+ */
+static void instantiateArraySpecificationAndCopyMeta (Key * specKey, KeySet * ks, int arraySize, int pos)
+{
+	KeySet * instantiatedArraySpecs = ksNew (arraySize, KS_END);
+	for (int i = 0; i < arraySize; i++)
+	{
+		char * keyNameWithoutNamespace = strchr (keyName (specKey), '/');
+
+		char * strUntilArrayElement = elektraMalloc (pos);
+		memcpy (strUntilArrayElement, &keyNameWithoutNamespace [0], pos - 1);
+		strUntilArrayElement [pos] = '\0';
+
+		size_t keyNameSize = elektraStrLen (keyNameWithoutNamespace);
+		char * strAfterArrayElement = elektraMalloc (keyNameSize + 1);
+		memcpy (strAfterArrayElement, &keyNameWithoutNamespace [pos], keyNameSize);
+		strAfterArrayElement [keyNameSize + 1] = '\0';
+
+		char * arrayElementName = elektraMalloc (1 + (i % 10) + i);
+		createArrayElementName (arrayElementName, i, 1 + (i % 10) + i);
+
+		Key * key = keyNew (elektraFormat ("%s/%s/%s", strUntilArrayElement, arrayElementName,
+							   strAfterArrayElement), KEY_END);
+		keyCopyAllMeta (key, specKey);
+
+		ksAppendKey (instantiatedArraySpecs, key);
+
+		elektraFree (strUntilArrayElement);
+		elektraFree (strAfterArrayElement);
+		elektraFree (arrayElementName);
+	}
+
+	ksAppend (ks, instantiatedArraySpecs);
+}
+
+/**
+ * Validate the array size of a specification key.
+ *
+ * @param specKey the specification key to validate the array size from
+ * @return true - if the array size is valid
+ * 	   false - if the array size is not valid
+ */
+static bool validateArraySize (Key * specKey)
+{
+	const Key * arrayMetaKey = keyGetMeta (specKey, "array");
+	const Key * arrayMinSizeKey = keyGetMeta (specKey, "array/min");
+	const Key * arrayMaxSizeKey = keyGetMeta (specKey, "array/max");
+
+	const char * arraySize = keyString (arrayMetaKey);
+	const char * minSize = keyString (arrayMinSizeKey);
+	const char * maxSize = keyString (arrayMaxSizeKey);
+
+
+	return (minSize == 0 || elektraStrCmp (minSize, arraySize) < 0) &&
+	       (maxSize == 0 || elektraStrCmp (maxSize, arraySize) > 0);
 }
 
 /**
@@ -225,29 +368,44 @@ static Key * specCollision (KeySet * specKeys)
 }
 
 /**
- * Copies all meta keys from the {@link specKey} to the provided {@link key}.
+ * Get the number of `#` elements in a specification key.
  *
- * @param key the key to copy the meta data too
- * @param specKey the specification key to copy meta data from
- *
- * @return 0 - in case the copying was successful
- * 	  -1 - if the copying was unsuccessful
+ * @param specKey the specification key to use to count the number of `#` from
+ * @return the number of elements `#` in the specification key
  */
-static int copyMeta (Key * key, Key * specKey)
+ static int getArraySize (Key * specKey)
 {
-	KeySet * metaKeys = keyMeta (specKey);
+	char * keyNameWithoutNamespace = strchr (keyName (specKey), '/');
 
-	for (elektraCursor it = 0; it < ksGetSize (metaKeys); it++)
+	int count = 0;
+	for (size_t i = 0; i < elektraStrLen (keyNameWithoutNamespace); i++)
 	{
-		Key * current = ksAtCursor (metaKeys, it);
-
-		if (!keyCopyMeta (key, specKey, keyName (current)))
+		if (keyNameWithoutNamespace [i] == 0)
 		{
-			return -1;
+			count++;
 		}
 	}
 
-	return 0;
+	return count;
+}
+
+/**
+ * The positions of where the `#` occurs in the specification key.
+ *
+ * @param keyNameWithoutNamespace the key name without the namespace
+ * @param arrayPositions the array to hold all the positions of the `#` in the specification key
+ * @param arraySize number of `#` in the whole specification key
+ */
+static void setArrayPositions (const char * keyNameWithoutNamespace, int * arrayPositions, int arraySize)
+{
+	int arrPos = 0;
+	for (int i = 0; i < arraySize; i++)
+	{
+		if (keyNameWithoutNamespace [i] == 0)
+		{
+			arrayPositions [arrPos++] = i;
+		}
+	}
 }
 
 /**
@@ -266,12 +424,13 @@ static int copyMeta (Key * key, Key * specKey)
  * @return 0 - if the meta data was copied successfully
  * 	  -1 - if the metadata could not be copied (error is also added there)
  * 	       if the key was not found but has meta:/require and no meta:/default in {@link specKey}
+ * 	       if the array specification is not valid
  */
 static int copyMetaData (Key * parentKey, Key * specKey, KeySet * ks, bool isKdbGet)
 {
 	int found = -1;
 
-	if (isArraySpecification(specKey))
+	if (isArraySpecification (specKey) && !containsUnderlineInArraySpec (specKey))
 	{
 		Key * key = ksLookupByName (ks, strchr (keyName (specKey), '/'), 0);
 		const Key * arrayMetaKey = keyGetMeta (key, "array");
@@ -280,9 +439,43 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * ks, bool isKdb
 		{
 			// no array size found, skip
 			ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "Could not find array size for key %s",
-							       keyName (specKey));
+								   keyName (specKey));
 			return -1;
 		}
+
+		if (!validateArraySize (specKey))
+		{
+			return -1;
+		}
+
+		int arraySize = getArraySize (specKey);
+		int * arrayPositions = elektraMalloc (arraySize);
+		setArrayPositions (strchr (keyName (specKey), '/'), arrayPositions, arraySize);
+
+		char * keyNameWithoutNamespace = strchr (keyName (specKey), '/');
+
+		for (int i = 0; i < arraySize; i++)
+		{
+			char * untilArrayElementAtPositionI = elektraMalloc (arrayPositions [i]);
+			memcpy (untilArrayElementAtPositionI, &keyNameWithoutNamespace [0], arrayPositions [i]);
+
+			Key * substringKey = keyNew (untilArrayElementAtPositionI, KEY_END);
+
+			const char * arraySizeToInstantiate = keyString (keyGetMeta (substringKey, "array"));
+
+			for (int j = 0; j < arraySize; j++)
+			{
+				char * end;
+				int size = strtol (arraySizeToInstantiate, &end, 10);
+				instantiateArraySpecificationAndCopyMeta (specKey, ks, size, arrayPositions [j]);
+			}
+
+			elektraFree (untilArrayElementAtPositionI);
+		}
+
+		elektraFree (arrayPositions);
+
+		return 0;
 	}
 
 	for (elektraCursor it = 0; it < ksGetSize (ks); it++)
@@ -292,7 +485,7 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * ks, bool isKdb
 		if (specMatches (specKey, current))
 		{
 			found = 0;
-			if (copyMeta (current, specKey) != 0)
+			if (keyCopyAllMeta (current, specKey) >= 0)
 			{
 				if (isKdbGet)
 				{
