@@ -1,9 +1,9 @@
 /**
-* @file
-*
-* @brief
-*
-* @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include "recordsetup.hpp"
@@ -23,4 +23,3 @@ int RecordSetupCommand::execute (const Cmdline & cmdline)
 
 	ckdb::elektraRecordSetup ();
 }
-

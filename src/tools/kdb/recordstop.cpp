@@ -1,9 +1,9 @@
 /**
-* @file
-*
-* @brief
-*
-* @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include "recordstop.hpp"
@@ -23,4 +23,3 @@ int RecordStopCommand::execute (const Cmdline & cmdline)
 
 	ckdb::elektraRecordDisableRecording (*kdb, *errorKey);
 }
-

@@ -9,9 +9,9 @@
 
 #include "recorder.h"
 
+#include <kdbchangetracking.h>
 #include <kdbhelper.h>
 #include <kdbprivate.h>
-#include <kdbchangetracking.h>
 #include <stdio.h>
 
 int elektraRecorderOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
@@ -34,15 +34,15 @@ int elektraRecorderGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/recorder"))
 	{
-		KeySet * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/recorder", KEY_VALUE, "recorder plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/recorder/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/recorder/exports/open", KEY_FUNC, elektraRecorderOpen, KEY_END),
-			       keyNew ("system:/elektra/modules/recorder/exports/close", KEY_FUNC, elektraRecorderClose, KEY_END),
-			       keyNew ("system:/elektra/modules/recorder/exports/get", KEY_FUNC, elektraRecorderGet, KEY_END),
-			       keyNew ("system:/elektra/modules/recorder/exports/hook/record/record", KEY_FUNC, elektraRecorderRecord, KEY_END),
+		KeySet * contract = ksNew (
+			30, keyNew ("system:/elektra/modules/recorder", KEY_VALUE, "recorder plugin waits for your orders", KEY_END),
+			keyNew ("system:/elektra/modules/recorder/exports", KEY_END),
+			keyNew ("system:/elektra/modules/recorder/exports/open", KEY_FUNC, elektraRecorderOpen, KEY_END),
+			keyNew ("system:/elektra/modules/recorder/exports/close", KEY_FUNC, elektraRecorderClose, KEY_END),
+			keyNew ("system:/elektra/modules/recorder/exports/get", KEY_FUNC, elektraRecorderGet, KEY_END),
+			keyNew ("system:/elektra/modules/recorder/exports/hook/record/record", KEY_FUNC, elektraRecorderRecord, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/recorder/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/recorder/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -81,8 +81,8 @@ static ElektraDiff * getDiffFromSessionStorage (KeySet * recordStorage, Key * se
 		renameKeysInAllNamespaces (ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY, "/", ksCut (recordStorage, sessionDiffAddedKey)),
 		renameKeysInAllNamespaces (ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY, "/", ksCut (recordStorage, sessionDiffRemovedKey)),
 		renameKeysInAllNamespaces (ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY, "/", ksCut (recordStorage, sessionDiffModifiedKey)),
-						    NULL, /* we don't need new keys */
-						    sessionRecordingParentKey);
+		NULL, /* we don't need new keys */
+		sessionRecordingParentKey);
 
 	keyDel (sessionDiffAddedKey);
 	keyDel (sessionDiffModifiedKey);
@@ -94,8 +94,10 @@ static ElektraDiff * getDiffFromSessionStorage (KeySet * recordStorage, Key * se
 static void putDiffIntoSessionStorage (KeySet * recordStorage, ElektraDiff * sessionDiff)
 {
 	KeySet * addedKeys = renameKeysInAllNamespaces ("/", ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY, elektraDiffGetAddedKeys (sessionDiff));
-	KeySet * modifiedKeys = renameKeysInAllNamespaces ("/", ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY, elektraDiffGetModifiedKeys (sessionDiff));
-	KeySet * removedKeys = renameKeysInAllNamespaces ("/", ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY, elektraDiffGetRemovedKeys (sessionDiff));
+	KeySet * modifiedKeys =
+		renameKeysInAllNamespaces ("/", ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY, elektraDiffGetModifiedKeys (sessionDiff));
+	KeySet * removedKeys =
+		renameKeysInAllNamespaces ("/", ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY, elektraDiffGetRemovedKeys (sessionDiff));
 
 	ksAppend (recordStorage, addedKeys);
 	ksAppend (recordStorage, modifiedKeys);
@@ -136,7 +138,7 @@ int elektraRecorderRecord (Plugin * handle, KeySet * returned, Key * parentKey)
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	Key * sessionRecordingParentKey = keyNew (keyString(activeKey), KEY_END);
+	Key * sessionRecordingParentKey = keyNew (keyString (activeKey), KEY_END);
 
 	const ChangeTrackingContext * changeTrackingContext = elektraChangeTrackingGetContextFromPlugin (handle);
 	ElektraDiff * partDiff = elektraChangeTrackingCalculateDiff (duped, changeTrackingContext, parentKey);

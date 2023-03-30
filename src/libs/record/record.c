@@ -1,15 +1,15 @@
 #include <kdbprivate.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <kdbrecord.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-const char * const recordNamespaces [] = {
+const char * const recordNamespaces[] = {
 	"dir:",
 	"user:",
 	"system:",
 };
 
-const size_t numRecordNamespaces = sizeof (recordNamespaces) / sizeof (char*);
+const size_t numRecordNamespaces = sizeof (recordNamespaces) / sizeof (char *);
 
 static void elektraRecordMount (void)
 {
@@ -79,9 +79,9 @@ void elektraRecordDisableRecording (KDB * handle, Key * errorKey)
 	KeySet * config = ksNew (0, KS_END);
 	kdbGet (handle, config, configKey);
 
-	Key * activeKey =  NULL;
+	Key * activeKey = NULL;
 	while ((activeKey = ksLookupByName (config, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, KDB_O_POP)) != NULL)
-        {
+	{
 		keyDel (activeKey);
 	}
 

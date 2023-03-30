@@ -1,10 +1,10 @@
 /**
-* @file
-*
-* @brief
-*
-* @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
-*/
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
 
 #include "recordstart.hpp"
 #include <kdb.hpp>
@@ -24,4 +24,3 @@ int RecordStartCommand::execute (const Cmdline & cmdline)
 
 	ckdb::elektraRecordEnableRecording (*kdb, *parentKey, *errorKey);
 }
-

@@ -51,6 +51,10 @@
 #include <plugincheck.hpp>
 #include <plugininfo.hpp>
 #include <pluginlist.hpp>
+#include <recordclear.hpp>
+#include <recordsetup.hpp>
+#include <recordstart.hpp>
+#include <recordstop.hpp>
 #include <remount.hpp>
 #include <rm.hpp>
 #include <set.hpp>
@@ -61,10 +65,6 @@
 #include <test.hpp>
 #include <umount.hpp>
 #include <validate.hpp>
-#include <recordclear.hpp>
-#include <recordsetup.hpp>
-#include <recordstart.hpp>
-#include <recordstop.hpp>
 
 class Instancer
 {

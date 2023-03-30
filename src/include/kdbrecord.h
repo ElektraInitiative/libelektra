@@ -1,10 +1,10 @@
 /**
-* @file
-*
-* @brief Defines for record.
-*
-* @copyright BSD License (see doc/COPYING or https://www.libelektra.org)
-*/
+ * @file
+ *
+ * @brief Defines for record.
+ *
+ * @copyright BSD License (see doc/COPYING or https://www.libelektra.org)
+ */
 #ifndef ELEKTRA_KDBRECORD_H
 #define ELEKTRA_KDBRECORD_H
 
