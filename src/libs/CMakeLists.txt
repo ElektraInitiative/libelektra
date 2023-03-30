@@ -14,6 +14,7 @@ set (
 	notification
 	highlevel
 	merge
+	record
 	opts)
 
 # The subdirectory for LibElektra must be the last entry!

@@ -137,6 +137,14 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+
+### loader
+
+- Adapt target rename with `-plugin-` in `dl.c` _(Tomislav Makar @tmakar)_
+### record
+
+- Add record library used for session recording. _(Maximilian Irlinger @atmaxinger)_
+- <<TODO>>
 - <<TODO>>
 
 ### <<Library>>
