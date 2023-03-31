@@ -3,7 +3,7 @@
 #include "kdbglobbing.h"
 
 #include <kdbhelper.h>
-#include <printf.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #ifdef __MINGW32__
@@ -485,7 +485,7 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * ks, bool isKdb
 		if (specMatches (specKey, current))
 		{
 			found = 0;
-			if (keyCopyAllMeta (current, specKey) >= 0)
+			if (keyCopyAllMeta (current, specKey) < 0)
 			{
 				if (isKdbGet)
 				{
