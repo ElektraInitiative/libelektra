@@ -500,6 +500,55 @@ static void test_hook_copy_with_wildcard_array_specification_collision_should_fa
 	TEST_END
 }
 
+/**
+ * This test should verify that a specification key with array element is instantiated correctly and validated correctly.
+ *
+ * Sample:
+ * 	spec:/sw/org/server/#/name => meta:/description = The name of the server
+ *
+ * 	/sw/org/server => meta:/array = 4
+ *
+ * 	user:/sw/org/server/#0/name
+ * 	user:/sw/org/server/#1/name
+ * 	user:/sw/org/server/#2/name
+ * 	user:/sw/org/server/#3/name
+ *
+ * All four configurations should have the description meta key.
+ *
+ * @param isKdbGet boolean value indicating if it is a kdb get call
+ */
+static void test_hook_copy_with_array_specification_should_copy_to_correct_configuration (bool isKdbGet)
+{
+	printf ("test %s, isKdbGet=%d\n", __func__, isKdbGet);
+
+	TEST_BEGIN
+	{
+		char * metaKeyDescriptionValue = "The name of the server";
+		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/server/#/name", KEY_META, "description",
+						 metaKeyDescriptionValue, KEY_END), keyNew ("spec:/" PARENT_KEY "/server",
+					     KEY_META, "array", "4", KEY_END),
+				     keyNew ("user:/" PARENT_KEY "/server/#0/name", KEY_END),
+				     keyNew ("user:/" PARENT_KEY "/server/#1/name", KEY_END),
+				     keyNew ("user:/" PARENT_KEY "/server/#2/name", KEY_END),
+				     keyNew ("user:/" PARENT_KEY "/server/#3/name", KEY_END), KS_END);
+
+		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
+
+		for (elektraCursor it = 0; it < ksGetSize (ks); it++)
+		{
+			Key * current = ksAtCursor (ks, it);
+			if (keyGetNamespace (current) == KEY_NS_USER)
+			{
+				const Key * metaKeyDescription = keyGetMeta (current, "description");
+				succeed_if_same_string (keyString (metaKeyDescription), metaKeyDescriptionValue);
+			}
+		}
+
+		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
+	}
+	TEST_END
+}
+
 int main (void)
 {
 	test_hook_copy_with_require_meta_key_and_missing_key_should_error (false);
@@ -507,12 +556,15 @@ int main (void)
 	test_hook_copy_only_to_keys_specified_in_specification_should_succeeded (false);
 	test_hook_copy_with_missing_key_and_no_default_should_info (false);
 	test_hook_copy_with_parent_key_containing_namespace_should_succeed (false);
+
 	test_hook_copy_with_wildcard_specification_only_one_underline_should_succeed (false);
 	test_hook_copy_with_wildcard_specification_and_required_no_match_should_fail (false);
 	test_hook_copy_with_wildcard_two_underlines_should_succeed (false);
 	test_hook_copy_with_wildcard_with_trailing_underline (false);
 	test_hook_copy_with_just_wildcard (false);
 	test_hook_copy_with_wildcard_array_specification_collision_should_fail (false);
+
+	test_hook_copy_with_array_specification_should_copy_to_correct_configuration (false);
 
 	return 0;
 }

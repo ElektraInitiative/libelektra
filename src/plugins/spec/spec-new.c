@@ -1,4 +1,5 @@
 #include "spec-new.h"
+#include "../../../tests/cframework/tests.h"
 #include "kdberrors.h"
 #include "kdbglobbing.h"
 
@@ -79,7 +80,7 @@ static void replaceCharacter (const char * str, char * newStr, const char search
  * @param parentKey of the key to appended
  * @param specKey specification key with meta data of the new default key
  */
-static void addDefaultKeyIfNotExists (KeySet * ks, Key * parentKey, Key * specKey)
+static void addDefaultKey (KeySet * ks, Key * parentKey, Key * specKey)
 {
 	const Key * defaultMetaKey = keyGetMeta (specKey, "default");
 	const char * defaultValue = keyString (defaultMetaKey);
@@ -87,7 +88,7 @@ static void addDefaultKeyIfNotExists (KeySet * ks, Key * parentKey, Key * specKe
 	const char * parentKeyName = strchr (keyName (parentKey), '/');
 	const char * specKeyName = keyBaseName (specKey);
 
-	Key * newDefaultKey = keyNew (elektraFormat ("%s:/%s/%s", "default", parentKeyName, specKeyName), KEY_VALUE, defaultValue, KEY_END);
+	Key * newDefaultKey = keyNew (elektraFormat ("default:/%s/%s", parentKeyName, specKeyName), KEY_VALUE, defaultValue, KEY_END);
 	keyCopyAllMeta (newDefaultKey, specKey);
 
 	ksAppendKey (ks, newDefaultKey);
@@ -281,7 +282,7 @@ static void instantiateArraySpecificationAndCopyMeta (Key * specKey, KeySet * ks
 		char * arrayElementName = elektraMalloc (1 + (i % 10) + i);
 		createArrayElementName (arrayElementName, i, 1 + (i % 10) + i);
 
-		Key * key = keyNew (elektraFormat ("%s/%s/%s", strUntilArrayElement, arrayElementName,
+		Key * key = keyNew (elektraFormat ("default:/%s/%s/%s", strUntilArrayElement, arrayElementName,
 							   strAfterArrayElement), KEY_END);
 		keyCopyAllMeta (key, specKey);
 
@@ -298,13 +299,14 @@ static void instantiateArraySpecificationAndCopyMeta (Key * specKey, KeySet * ks
 /**
  * Validate the array size of a specification key.
  *
+ * @param key the key to fetch the array size from
  * @param specKey the specification key to validate the array size from
  * @return true - if the array size is valid
  * 	   false - if the array size is not valid
  */
-static bool validateArraySize (Key * specKey)
+static bool validateArraySize (Key * key, Key * specKey)
 {
-	const Key * arrayMetaKey = keyGetMeta (specKey, "array");
+	const Key * arrayMetaKey = keyGetMeta (key, "array");
 	const Key * arrayMinSizeKey = keyGetMeta (specKey, "array/min");
 	const Key * arrayMaxSizeKey = keyGetMeta (specKey, "array/max");
 
@@ -313,8 +315,8 @@ static bool validateArraySize (Key * specKey)
 	const char * maxSize = keyString (arrayMaxSizeKey);
 
 
-	return (minSize == 0 || elektraStrCmp (minSize, arraySize) < 0) &&
-	       (maxSize == 0 || elektraStrCmp (maxSize, arraySize) > 0);
+	return (arrayMinSizeKey == 0 || elektraStrCmp (minSize, arraySize) < 0) &&
+	       (arrayMaxSizeKey == 0 || elektraStrCmp (maxSize, arraySize) > 0);
 }
 
 /**
@@ -368,6 +370,35 @@ static Key * specCollision (KeySet * specKeys)
 }
 
 /**
+ * Get the key which contains the array size as meta key.
+ *
+ * @param specKeys the specification keys
+ * @param specKey the specification key to use for lookup
+ * @return 0 - if the key was not found
+ * 	   key - the key which contains the array size
+ */
+static Key * getArraySizeOfArrayParent (KeySet * specKeys, Key * specKey)
+{
+	const char * specKeyName = keyName (specKey);
+	char * copiedKeyName = elektraMalloc (elektraStrLen (specKeyName) + 1);
+	strcpy (copiedKeyName, (char *) specKeyName);
+
+	char * arrayParent = strtok (copiedKeyName, "#");
+	arrayParent [strlen (arrayParent) - 1] = '\0';
+
+	for (elektraCursor it = 0; it < ksGetSize (specKeys); it++)
+	{
+		Key * current = ksAtCursor (specKeys, it);
+		if (elektraStrCmp (keyName (current), arrayParent) == 0)
+		{
+			return current;
+		}
+	}
+
+	return 0;
+}
+
+/**
  * Get the number of `#` elements in a specification key.
  *
  * @param specKey the specification key to use to count the number of `#` from
@@ -409,6 +440,39 @@ static void setArrayPositions (const char * keyNameWithoutNamespace, int * array
 }
 
 /**
+ * Validate the array size. If it does not find any array size a warning is appended to the parent key.
+ *
+ * @param ks the key set to look for the key
+ * @param specKeys the specification keys
+ * @param parentKey the parent key to be used for appending warning, error, information
+ * @param specKey the array specification key
+ * @return true - if the array size is valid
+ *         false - if the array size was not found
+ *               - if the array size is not valid
+ */
+static bool isValidArraySize (KeySet * ks, KeySet * specKeys, Key * parentKey, Key * specKey)
+{
+	Key * key = ksLookupByName (ks, strchr (keyName (specKey), '/'), 0);
+	Key * keyToFetchArraySizeFrom = key == NULL ? getArraySizeOfArrayParent (specKeys, specKey) : key;
+	const Key * arrayMetaKey = key == NULL ? keyGetMeta(keyToFetchArraySizeFrom, "array") : keyGetMeta (key, "array");
+
+	if (arrayMetaKey == 0)
+	{
+		// no array size found, skip
+		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "Could not find array size for key %s",
+							   keyName (specKey));
+		return false;
+	}
+
+	if (!validateArraySize (keyToFetchArraySizeFrom, specKey))
+	{
+		return false;
+	}
+
+	return true;
+}
+
+/**
  * Copy the meta data for a given key {@link specKey} by searching through the {@link ks} KeySet.
  *
  * In case no key was found for {@link specKey} and it has meta key default (meta:/default) it will
@@ -419,6 +483,7 @@ static void setArrayPositions (const char * keyNameWithoutNamespace, int * array
  *
  * @param parentKey the parent key (primarily used to handle in case of error, warning, information)
  * @param specKey the specification key containing the meta data to be copied
+ * @param specKeys the specification keys in this {@link ks}
  * @param ks the KeySet to search for the key
  * @param isKdbGet
  * @return 0 - if the meta data was copied successfully
@@ -426,28 +491,20 @@ static void setArrayPositions (const char * keyNameWithoutNamespace, int * array
  * 	       if the key was not found but has meta:/require and no meta:/default in {@link specKey}
  * 	       if the array specification is not valid
  */
-static int copyMetaData (Key * parentKey, Key * specKey, KeySet * ks, bool isKdbGet)
+static int copyMetaData (Key * parentKey, Key * specKey, KeySet * specKeys, KeySet * ks, bool isKdbGet)
 {
 	int found = -1;
 
-	if (isArraySpecification (specKey) && !containsUnderlineInArraySpec (specKey))
+	bool isArraySpec = isArraySpecification (specKey);
+	if (isArraySpec && !isValidArraySize (ks, specKeys, parentKey, specKey))
 	{
-		Key * key = ksLookupByName (ks, strchr (keyName (specKey), '/'), 0);
-		const Key * arrayMetaKey = keyGetMeta (key, "array");
+		return -1;
+	}
 
-		if (arrayMetaKey == 0 || keyGetNamespace (key) == KEY_NS_SPEC)
-		{
-			// no array size found, skip
-			ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "Could not find array size for key %s",
-								   keyName (specKey));
-			return -1;
-		}
-
-		if (!validateArraySize (specKey))
-		{
-			return -1;
-		}
-
+	// in case array spec does not look like #_10, #__100
+	// this will instantiate array keys and add to default:/ if they contain a default value
+	if (isArraySpec && !containsUnderlineInArraySpec (specKey) && hasDefault (specKey))
+	{
 		int arraySize = getArraySize (specKey);
 		int * arrayPositions = elektraMalloc (arraySize);
 		setArrayPositions (strchr (keyName (specKey), '/'), arrayPositions, arraySize);
@@ -456,8 +513,8 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * ks, bool isKdb
 
 		for (int i = 0; i < arraySize; i++)
 		{
-			char * untilArrayElementAtPositionI = elektraMalloc (arrayPositions [i]);
-			memcpy (untilArrayElementAtPositionI, &keyNameWithoutNamespace [0], arrayPositions [i]);
+			char * untilArrayElementAtPositionI = elektraMalloc (arrayPositions[i]);
+			memcpy (untilArrayElementAtPositionI, &keyNameWithoutNamespace[0], arrayPositions[i]);
 
 			Key * substringKey = keyNew (untilArrayElementAtPositionI, KEY_END);
 
@@ -467,7 +524,7 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * ks, bool isKdb
 			{
 				char * end;
 				int size = strtol (arraySizeToInstantiate, &end, 10);
-				instantiateArraySpecificationAndCopyMeta (specKey, ks, size, arrayPositions [j]);
+				instantiateArraySpecificationAndCopyMeta (specKey, ks, size, arrayPositions[j]);
 			}
 
 			elektraFree (untilArrayElementAtPositionI);
@@ -508,7 +565,7 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * ks, bool isKdb
 	{
 		if (hasDefault (specKey))
 		{
-			addDefaultKeyIfNotExists (ks, parentKey, specKey);
+			addDefaultKey (ks, parentKey, specKey);
 			return 0;
 		}
 		else
@@ -522,7 +579,7 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * ks, bool isKdb
 	return 0;
 }
 
-int elektraSpecCopy (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * parentKey, ELEKTRA_UNUSED bool isKdbGet)
+int elektraSpecCopy (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * parentKey, bool isKdbGet)
 {
 	KeySet * specKeys = extractSpecKeys (returned);
 
@@ -564,7 +621,7 @@ int elektraSpecCopy (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * pa
 			}
 		}
 
-		if (copyMetaData (parentKey, current, returned, isKdbGet) != 0)
+		if (copyMetaData (parentKey, current, specKeys, returned, isKdbGet) != 0)
 		{
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
