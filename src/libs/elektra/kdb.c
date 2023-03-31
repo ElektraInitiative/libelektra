@@ -730,10 +730,8 @@ KeySet * elektraMountpointsParse (KeySet * elektraKs, KeySet * modules, KeySet *
 	return mountpoints;
 }
 
-static bool addRootMountpoint (KeySet * backends, elektraNamespace ns, KeySet * modules, KeySet * global, Key * errorKey)
+static bool addBasicMountpoint (KeySet * backends, Key * rootKey, const char * path, KeySet * modules, KeySet * global, Key * errorKey)
 {
-	Key * rootKey = keyNew ("/", KEY_END);
-	keySetNamespace (rootKey, ns);
 	if (ksLookup (backends, rootKey, 0) != NULL)
 	{
 		// already present
@@ -767,7 +765,7 @@ static bool addRootMountpoint (KeySet * backends, elektraNamespace ns, KeySet * 
 
 	KeySet * rootDefinition =
 		ksNew (7,
-			keyNew ("system:/path", KEY_VALUE, KDB_DB_FILE, KEY_END),
+			keyNew ("system:/path", KEY_VALUE, path, KEY_END),
 			keyNew ("system:/positions/get/resolver", KEY_VALUE, "resolver", KEY_END),
 			keyNew ("system:/positions/get/storage", KEY_VALUE, "storage", KEY_END),
 			keyNew ("system:/positions/set/resolver", KEY_VALUE, "resolver", KEY_END),
@@ -792,6 +790,30 @@ static bool addRootMountpoint (KeySet * backends, elektraNamespace ns, KeySet * 
 
 	addMountpoint (backends, rootKey, root, rootPlugins, rootDefinition);
 	return true;
+}
+
+static bool addRootMountpoint (KeySet * backends, elektraNamespace ns, KeySet * modules, KeySet * global, Key * errorKey)
+{
+	Key * rootKey = keyNew ("/", KEY_END);
+	keySetNamespace (rootKey, ns);
+
+	bool ret = addBasicMountpoint (backends, keyDup (rootKey, KEY_CP_ALL), KDB_DB_FILE, modules, global, errorKey);
+
+	keyDel (rootKey);
+
+	return ret;
+}
+
+static bool addRecordingMountpoint (KeySet * backends, elektraNamespace ns, KeySet * modules, KeySet * global, Key * errorKey)
+{
+	Key * rootKey = keyNew (ELEKTRA_RECORD_SESSION_KEY, KEY_END);
+	keySetNamespace (rootKey, ns);
+
+	bool ret = addBasicMountpoint (backends, keyDup (rootKey, KEY_CP_ALL), "record-session.cfg", modules, global, errorKey);
+
+	keyDel (rootKey);
+
+	return ret;
 }
 
 static bool addModulesMountpoint (KDB * handle, Key * mountpoint, Key * errorKey)
@@ -845,6 +867,19 @@ static bool addHardcodedMountpoints (KDB * handle, Key * errorKey)
 		return false;
 	}
 	if (!addRootMountpoint (handle->backends, KEY_NS_PROC, handle->modules, handle->global, errorKey))
+	{
+		return false;
+	}
+
+	if (!addRecordingMountpoint (handle->backends, KEY_NS_SYSTEM, handle->modules, handle->global, errorKey))
+	{
+		return false;
+	}
+	if (!addRecordingMountpoint (handle->backends, KEY_NS_USER, handle->modules, handle->global, errorKey))
+	{
+		return false;
+	}
+	if (!addRecordingMountpoint (handle->backends, KEY_NS_DIR, handle->modules, handle->global, errorKey))
 	{
 		return false;
 	}

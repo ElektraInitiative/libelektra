@@ -1,6 +1,5 @@
 libelektra_0.9 {
 	# kdbrecord.h
-	elektraRecordSetup;
 	elektraRecordEnableRecording;
 	elektraRecordDisableRecording;
 	elektraRecordClearSession;

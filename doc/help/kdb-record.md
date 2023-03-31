@@ -9,7 +9,6 @@ Where `<COMMAND>` is one of the following:
 - `start [--parent key]`: start recording. Will not clear existing recording data.
 - `stop`: stop recording.
 - `clear`: clear existing recording data.
-- `setup`: setup (only needed after installation of elektra). mounts the session storage mountpoints.
 
 - `assert [--meta meta_name] <key_name>`: marks a key to be used for value-based validation during import.
 - `remove-assert <key_name>`: unmarks a key to be used for value-based validation during import.

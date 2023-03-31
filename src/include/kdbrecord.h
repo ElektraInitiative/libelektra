@@ -17,8 +17,6 @@ namespace ckdb
 extern "C" {
 #endif
 
-void elektraRecordSetup (void);
-
 void elektraRecordEnableRecording (KDB * handle, const Key * parentKey, Key * errorKey);
 void elektraRecordDisableRecording (KDB * handle, Key * errorKey);
 void elektraRecordClearSession (KDB * handle, Key * errorKey);
