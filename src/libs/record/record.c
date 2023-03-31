@@ -175,7 +175,15 @@ bool elektraRecordRecord (KDB * handle, KDB * sessionStorageHandle, KeySet * new
 	Key * sessionRecordingParentKey = keyNew (keyString (activeKey), KEY_END);
 
 	const ChangeTrackingContext * changeTrackingContext = elektraChangeTrackingGetContextFromKdb (handle);
-	ElektraDiff * partDiff = elektraChangeTrackingCalculateDiff (duped, changeTrackingContext, parentKey);
+
+	Key * parentKeyForDiff = parentKey;
+	if (keyIsBelow (parentKey, sessionRecordingParentKey))
+	{
+		// if the sessionRecordingParentKey is below parentKey we only need to diff changes below sessionRecordingParentKey
+		parentKeyForDiff = sessionRecordingParentKey;
+	}
+
+	ElektraDiff * partDiff = elektraChangeTrackingCalculateDiff (duped, changeTrackingContext, parentKeyForDiff);
 	elektraDiffRemoveSameOrBelow (partDiff, sessionRecordingKey);
 	elektraDiffRemoveSameOrBelow (partDiff, recordConfigurationKey);
 
