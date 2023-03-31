@@ -549,6 +549,84 @@ static void test_hook_copy_with_array_specification_should_copy_to_correct_confi
 	TEST_END
 }
 
+/**
+ * This test should verify that if a array specification exists and an array size as well, but no default value it
+ * does not instantiate the array elements.
+ *
+ * Sample:
+ * 	spec:/sw/org/server/#/name => meta:/description = "The name of the server"
+ * 	spec:/sw/org/server => meta:/array = 4
+ *
+ * No configuration. It should also not instantiate any keys.
+ *
+ * @param isKdbGet boolean value indicating if it is a kdb get call
+ */
+static void test_hook_copy_with_array_specification_without_default_meta_key_should_not_instantiate_any_key (bool isKdbGet)
+{
+	printf ("test %s, isKdbGet=%d\n", __func__, isKdbGet);
+
+	TEST_BEGIN
+	{
+		char * metaKeyDescriptionValue = "The name of the server";
+		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/server/#/name", KEY_VALUE, "testserver",
+						 KEY_META, "description", metaKeyDescriptionValue, KEY_END),
+				     keyNew ("spec:/" PARENT_KEY "/server", KEY_META, "array", "4", KEY_END), KS_END);
+
+		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
+
+		for (elektraCursor it = 0; it < ksGetSize (ks); it++)
+		{
+			succeed_if (keyGetNamespace (ksAtCursor (ks, it)) != KEY_NS_DEFAULT, "should not contain default");
+		}
+
+		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
+	}
+	TEST_END
+}
+
+/**
+ * This test should verify if a array specification exists and has default meta key and no configuration for this specification key exists
+ * it creates
+ *
+ *
+ * @param isKdbGet boolean value indicating if it is a kdb get call
+ */
+static void test_hook_copy_with_array_specification_with_default_meta_key_should_instantiate (bool isKdbGet)
+{
+	printf ("test %s, isKdbGet=%d\n", __func__, isKdbGet);
+
+	TEST_BEGIN
+	{
+		char * metaKeyDescriptionValue = "The name of the server";
+		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/server/#/name", KEY_META, "default", "mail", KEY_META, "description",
+						 metaKeyDescriptionValue, KEY_END), keyNew ("spec:/" PARENT_KEY "/server", KEY_META,
+					     "array", "4", KEY_END), KS_END);
+
+		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
+
+		int count = 0;
+		for (elektraCursor it = 0; it < ksGetSize (ks); it++)
+		{
+			Key * current = ksAtCursor (ks, it);
+
+			elektraNamespace namespace = keyGetNamespace (current);
+			if (namespace != KEY_NS_SPEC)
+			{
+				if (namespace == KEY_NS_DEFAULT)
+				{
+					count++;
+				}
+				succeed_if (keyGetNamespace (current) == KEY_NS_DEFAULT, "should not contain default");
+			}
+		}
+
+		succeed_if (count == 4, "not enough array keys created");
+
+		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
+	}
+	TEST_END
+}
+
 int main (void)
 {
 	test_hook_copy_with_require_meta_key_and_missing_key_should_error (false);
@@ -565,6 +643,8 @@ int main (void)
 	test_hook_copy_with_wildcard_array_specification_collision_should_fail (false);
 
 	test_hook_copy_with_array_specification_should_copy_to_correct_configuration (false);
+	test_hook_copy_with_array_specification_without_default_meta_key_should_not_instantiate_any_key (false);
+	test_hook_copy_with_array_specification_with_default_meta_key_should_instantiate (false);
 
 	return 0;
 }

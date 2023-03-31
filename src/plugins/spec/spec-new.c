@@ -314,7 +314,6 @@ static bool validateArraySize (Key * key, Key * specKey)
 	const char * minSize = keyString (arrayMinSizeKey);
 	const char * maxSize = keyString (arrayMaxSizeKey);
 
-
 	return (arrayMinSizeKey == 0 || elektraStrCmp (minSize, arraySize) < 0) &&
 	       (arrayMaxSizeKey == 0 || elektraStrCmp (maxSize, arraySize) > 0);
 }
@@ -369,6 +368,19 @@ static Key * specCollision (KeySet * specKeys)
 	return 0;
 }
 
+static Key * getMatchingKeyFromKeySet (KeySet * ks, char * name)
+{
+	for (elektraCursor it = 0; it < ksGetSize (ks); it++)
+	{
+		Key * current = ksAtCursor (ks, it);
+		if (elektraStrCmp (strchr (keyName (current), '/'), name) == 0)
+		{
+			return current;
+		}
+	}
+	return 0;
+}
+
 /**
  * Get the key which contains the array size as meta key.
  *
@@ -386,32 +398,28 @@ static Key * getArraySizeOfArrayParent (KeySet * specKeys, Key * specKey)
 	char * arrayParent = strtok (copiedKeyName, "#");
 	arrayParent [strlen (arrayParent) - 1] = '\0';
 
-	for (elektraCursor it = 0; it < ksGetSize (specKeys); it++)
-	{
-		Key * current = ksAtCursor (specKeys, it);
-		if (elektraStrCmp (keyName (current), arrayParent) == 0)
-		{
-			return current;
-		}
-	}
+	Key * key = getMatchingKeyFromKeySet (specKeys, strchr (arrayParent, '/'));
 
-	return 0;
+	elektraFree (copiedKeyName);
+
+	return key;
 }
 
 /**
- * Get the number of `#` elements in a specification key.
+ * Get the number of array characters in an array specification key name.
  *
- * @param specKey the specification key to use to count the number of `#` from
- * @return the number of elements `#` in the specification key
+ * @param specKey the specification key to use
+ * @return number of array characters in the array specification key name
  */
- static int getArraySize (Key * specKey)
+static int getNumberOfArrayCharactersInSpecName (Key * specKey)
 {
-	char * keyNameWithoutNamespace = strchr (keyName (specKey), '/');
+	char * withoutNamespace = strchr (keyName (specKey), '/');
 
 	int count = 0;
-	for (size_t i = 0; i < elektraStrLen (keyNameWithoutNamespace); i++)
+
+	for (size_t i = 0; i < elektraStrLen (withoutNamespace); i++)
 	{
-		if (keyNameWithoutNamespace [i] == 0)
+		if (withoutNamespace [i] == '#')
 		{
 			count++;
 		}
@@ -427,14 +435,14 @@ static Key * getArraySizeOfArrayParent (KeySet * specKeys, Key * specKey)
  * @param arrayPositions the array to hold all the positions of the `#` in the specification key
  * @param arraySize number of `#` in the whole specification key
  */
-static void setArrayPositions (const char * keyNameWithoutNamespace, int * arrayPositions, int arraySize)
+static void setArrayPositions (const char * keyNameWithoutNamespace, int * arrayPositions)
 {
 	int arrPos = 0;
-	for (int i = 0; i < arraySize; i++)
+	for (size_t i = 0; i < elektraStrLen (keyNameWithoutNamespace); i++)
 	{
-		if (keyNameWithoutNamespace [i] == 0)
+		if (keyNameWithoutNamespace [i] == '#')
 		{
-			arrayPositions [arrPos++] = i;
+			arrayPositions [arrPos++] = (int) i;
 		}
 	}
 }
@@ -473,6 +481,31 @@ static bool isValidArraySize (KeySet * ks, KeySet * specKeys, Key * parentKey, K
 }
 
 /**
+ * Check if the array is empty.
+ *
+ * @param ks the KeySet with all keys
+ * @param arrayPosition the position of the array character
+ * @return true - if the array is empty
+ * 	   false - if the array is not empty
+ */
+static bool isArrayEmpty (KeySet * ks, int arrayPosition)
+{
+	for (elektraCursor it = 0; it < ksGetSize (ks); it++)
+	{
+		Key * current = ksAtCursor (ks, it);
+		char * withoutNamespace = strchr (keyName (current), '/');
+
+		size_t len = elektraStrLen (withoutNamespace);
+		if (withoutNamespace [arrayPosition] == '#' && ((int) len != arrayPosition + 1 && (withoutNamespace [arrayPosition + 1] == '_' || withoutNamespace [arrayPosition + 1] != '/')))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+/**
  * Copy the meta data for a given key {@link specKey} by searching through the {@link ks} KeySet.
  *
  * In case no key was found for {@link specKey} and it has meta key default (meta:/default) it will
@@ -505,27 +538,35 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * specKeys, KeyS
 	// this will instantiate array keys and add to default:/ if they contain a default value
 	if (isArraySpec && !containsUnderlineInArraySpec (specKey) && hasDefault (specKey))
 	{
-		int arraySize = getArraySize (specKey);
-		int * arrayPositions = elektraMalloc (arraySize);
-		setArrayPositions (strchr (keyName (specKey), '/'), arrayPositions, arraySize);
+		int num = getNumberOfArrayCharactersInSpecName (specKey);
+
+		int * arrayPositions = elektraMalloc (num);
+		setArrayPositions (strchr (keyName (specKey), '/'), arrayPositions);
 
 		char * keyNameWithoutNamespace = strchr (keyName (specKey), '/');
 
-		for (int i = 0; i < arraySize; i++)
+/**		Key * arraySizeKey = getArraySizeOfArrayParent(specKeys, specKey);
+		const char * arraySizeString = keyString (keyGetMeta (arraySizeKey, "array"));
+		int arraySize = arraySizeString == 0 ? 0 : atoi (arraySizeString);
+*/
+
+		for (int i = 0; i < num; i++)
 		{
 			char * untilArrayElementAtPositionI = elektraMalloc (arrayPositions[i]);
 			memcpy (untilArrayElementAtPositionI, &keyNameWithoutNamespace[0], arrayPositions[i]);
+			untilArrayElementAtPositionI [arrayPositions [i] - 1] = '\0';
 
-			Key * substringKey = keyNew (untilArrayElementAtPositionI, KEY_END);
+			Key * arraySizeKeyToInstantiate = getMatchingKeyFromKeySet (specKeys, untilArrayElementAtPositionI);
+			const char * arraySizeToInstantiate = keyString (keyGetMeta (arraySizeKeyToInstantiate, "array"));
 
-			const char * arraySizeToInstantiate = keyString (keyGetMeta (substringKey, "array"));
-
-			for (int j = 0; j < arraySize; j++)
+			if (!isArrayEmpty (ks, arrayPositions [i]))
 			{
-				char * end;
-				int size = strtol (arraySizeToInstantiate, &end, 10);
-				instantiateArraySpecificationAndCopyMeta (specKey, ks, size, arrayPositions[j]);
+				continue;
 			}
+
+			char * end;
+			int size = strtol (arraySizeToInstantiate, &end, 10);
+			instantiateArraySpecificationAndCopyMeta (specKey, ks, size, arrayPositions[i]);
 
 			elektraFree (untilArrayElementAtPositionI);
 		}
