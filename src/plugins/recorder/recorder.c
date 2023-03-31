@@ -10,9 +10,9 @@
 #include "recorder.h"
 
 #include <kdb.h>
+#include <kdberrors.h>
 #include <kdbhelper.h>
 #include <kdbrecord.h>
-#include <kdberrors.h>
 
 int elektraRecorderOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {

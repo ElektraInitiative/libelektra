@@ -1,7 +1,7 @@
 #include <kdbchangetracking.h>
+#include <kdberrors.h>
 #include <kdbhelper.h>
 #include <kdbprivate.h>
-#include <kdberrors.h>
 
 static KeySet * renameKeysInAllNamespaces (const char * oldPrefix, const char * newPrefix, KeySet * ks)
 {
