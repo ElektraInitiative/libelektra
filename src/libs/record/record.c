@@ -109,3 +109,19 @@ void elektraRecordClearSession (KDB * handle, Key * errorKey)
 	keyDel (sessionKey);
 	ksDel (session);
 }
+
+bool elektraRecordIsActive (KDB * handle)
+{
+	if (handle == NULL)
+	{
+		return false;
+	}
+
+	const Key * activeKey = ksLookupByName (handle->global, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, 0);
+	if (activeKey == NULL)
+	{
+		return false;
+	}
+
+	return true;
+}

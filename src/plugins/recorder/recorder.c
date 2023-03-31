@@ -9,10 +9,10 @@
 
 #include "recorder.h"
 
-#include <kdbchangetracking.h>
+#include <kdb.h>
 #include <kdbhelper.h>
-#include <kdbprivate.h>
-#include <stdio.h>
+#include <kdbrecord.h>
+#include <kdberrors.h>
 
 int elektraRecorderOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
@@ -53,122 +53,41 @@ int elektraRecorderGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
-static KeySet * renameKeysInAllNamespaces (const char * oldPrefix, const char * newPrefix, KeySet * ks)
-{
-	Key * prefixKey = keyNew (oldPrefix, KEY_END);
-	Key * newRootKey = keyNew (newPrefix, KEY_END);
-
-	for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ns++)
-	{
-		keySetNamespace (prefixKey, ns);
-		keySetNamespace (newRootKey, ns);
-		ksRename (ks, prefixKey, newRootKey);
-	}
-
-	keyDel (prefixKey);
-	keyDel (newRootKey);
-
-	return ks;
-}
-
-static ElektraDiff * getDiffFromSessionStorage (KeySet * recordStorage, Key * sessionRecordingParentKey)
-{
-	Key * sessionDiffAddedKey = keyNew (ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY, KEY_END);
-	Key * sessionDiffModifiedKey = keyNew (ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY, KEY_END);
-	Key * sessionDiffRemovedKey = keyNew (ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY, KEY_END);
-
-	ElektraDiff * sessionDiff = elektraDiffNew (
-		renameKeysInAllNamespaces (ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY, "/", ksCut (recordStorage, sessionDiffAddedKey)),
-		renameKeysInAllNamespaces (ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY, "/", ksCut (recordStorage, sessionDiffRemovedKey)),
-		renameKeysInAllNamespaces (ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY, "/", ksCut (recordStorage, sessionDiffModifiedKey)),
-		NULL, /* we don't need new keys */
-		sessionRecordingParentKey);
-
-	keyDel (sessionDiffAddedKey);
-	keyDel (sessionDiffModifiedKey);
-	keyDel (sessionDiffRemovedKey);
-
-	return sessionDiff;
-}
-
-static void putDiffIntoSessionStorage (KeySet * recordStorage, ElektraDiff * sessionDiff)
-{
-	KeySet * addedKeys = renameKeysInAllNamespaces ("/", ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY, elektraDiffGetAddedKeys (sessionDiff));
-	KeySet * modifiedKeys =
-		renameKeysInAllNamespaces ("/", ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY, elektraDiffGetModifiedKeys (sessionDiff));
-	KeySet * removedKeys =
-		renameKeysInAllNamespaces ("/", ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY, elektraDiffGetRemovedKeys (sessionDiff));
-
-	ksAppend (recordStorage, addedKeys);
-	ksAppend (recordStorage, modifiedKeys);
-	ksAppend (recordStorage, removedKeys);
-
-	ksDel (addedKeys);
-	ksDel (modifiedKeys);
-	ksDel (removedKeys);
-}
-
 int elektraRecorderRecord (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	const Key * activeKey = ksLookupByName (elektraPluginGetGlobalKeySet (handle), ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, 0);
-	if (activeKey == NULL)
+	KeySet * global = elektraPluginGetGlobalKeySet (handle);
+	Key * kdbKey = ksLookupByName (global, "system:/elektra/kdb", 0);
+	if (kdbKey == NULL)
+	{
+		ELEKTRA_SET_INTERNAL_ERROR (parentKey, "Keys system:/elektra/kdb was not present in global keyset");
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	const void * kdbPtr = keyValue (kdbKey);
+	KDB * hostKdb = kdbPtr == NULL ? NULL : *(KDB **) keyValue (kdbKey);
+	if (hostKdb == NULL)
+	{
+		ELEKTRA_SET_INTERNAL_ERROR (parentKey, "No valid KDB instance found");
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	if (!elektraRecordIsActive (hostKdb))
 	{
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	Key * recordConfigurationKey = keyNew (ELEKTRA_RECORD_CONFIG_KEY, KEY_END);
-	Key * sessionRecordingKey = keyNew (ELEKTRA_RECORD_SESSION_KEY, KEY_END);
+	Key * sessionRecordingErrorKey = keyNew ("/", KEY_END);
+	KDB * recordingKdb = kdbOpen (NULL, sessionRecordingErrorKey);
 
-	if (keyIsBelowOrSame (sessionRecordingKey, parentKey) || keyIsBelowOrSame (recordConfigurationKey, parentKey))
+	bool success = elektraRecordRecord (hostKdb, recordingKdb, returned, parentKey, parentKey);
+
+	kdbClose (recordingKdb, sessionRecordingErrorKey);
+	keyDel (sessionRecordingErrorKey);
+
+	if (!success)
 	{
-		keyDel (sessionRecordingKey);
-		keyDel (recordConfigurationKey);
-		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-
-	KeySet * duped = ksDup (returned);
-	ksDel (ksCut (duped, sessionRecordingKey));
-	ksDel (ksCut (duped, recordConfigurationKey));
-
-	if (ksGetSize (duped) == 0 && ksGetSize (returned) != 0)
-	{
-		keyDel (sessionRecordingKey);
-		keyDel (recordConfigurationKey);
-		ksDel (duped);
-		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-	}
-
-	Key * sessionRecordingParentKey = keyNew (keyString (activeKey), KEY_END);
-
-	const ChangeTrackingContext * changeTrackingContext = elektraChangeTrackingGetContextFromPlugin (handle);
-	ElektraDiff * partDiff = elektraChangeTrackingCalculateDiff (duped, changeTrackingContext, parentKey);
-	elektraDiffRemoveSameOrBelow (partDiff, sessionRecordingKey);
-	elektraDiffRemoveSameOrBelow (partDiff, recordConfigurationKey);
-
-	KDB * recordingKdb = kdbOpen (NULL, sessionRecordingKey);
-
-	KeySet * recordStorage = ksNew (0, KS_END);
-	kdbGet (recordingKdb, recordStorage, sessionRecordingKey);
-
-	ElektraDiff * sessionDiff = getDiffFromSessionStorage (recordStorage, sessionRecordingParentKey);
-	Key * appendKey = keyNew ("/", KEY_END);
-	elektraDiffAppend (sessionDiff, partDiff, appendKey);
-	keyDel (appendKey);
-
-	putDiffIntoSessionStorage (recordStorage, sessionDiff);
-
-	kdbSet (recordingKdb, recordStorage, sessionRecordingKey);
-
-	kdbClose (recordingKdb, sessionRecordingKey);
-
-
-	keyDel (sessionRecordingKey);
-	keyDel (recordConfigurationKey);
-	keyDel (sessionRecordingParentKey);
-	ksDel (duped);
-	ksDel (recordStorage);
-	elektraDiffDel (partDiff);
-	elektraDiffDel (sessionDiff);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }

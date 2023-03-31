@@ -4,4 +4,6 @@ libelektra_0.9 {
 	elektraRecordEnableRecording;
 	elektraRecordDisableRecording;
 	elektraRecordClearSession;
+	elektraRecordRecord;
+	elektraRecordIsActive;
 };
