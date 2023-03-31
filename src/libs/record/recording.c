@@ -96,26 +96,29 @@ bool elektraRecordRecord (KDB * handle, KDB * sessionStorageHandle, KeySet * new
 	elektraDiffRemoveSameOrBelow (partDiff, sessionRecordingKey);
 	elektraDiffRemoveSameOrBelow (partDiff, recordConfigurationKey);
 
-	KeySet * recordStorage = ksNew (0, KS_END);
-	kdbGet (sessionStorageHandle, recordStorage, sessionRecordingKey);
+	if (!elektraDiffIsEmpty (partDiff))
+	{
+		KeySet * recordStorage = ksNew (0, KS_END);
+		kdbGet (sessionStorageHandle, recordStorage, sessionRecordingKey);
 
-	ElektraDiff * sessionDiff = getDiffFromSessionStorage (recordStorage, sessionRecordingParentKey);
-	Key * appendKey = keyNew ("/", KEY_END);
-	elektraDiffAppend (sessionDiff, partDiff, appendKey);
-	keyDel (appendKey);
+		ElektraDiff * sessionDiff = getDiffFromSessionStorage (recordStorage, sessionRecordingParentKey);
+		Key * appendKey = keyNew ("/", KEY_END);
+		elektraDiffAppend (sessionDiff, partDiff, appendKey);
+		keyDel (appendKey);
 
-	putDiffIntoSessionStorage (recordStorage, sessionDiff);
+		putDiffIntoSessionStorage (recordStorage, sessionDiff);
 
-	kdbSet (sessionStorageHandle, recordStorage, sessionRecordingKey);
+		kdbSet (sessionStorageHandle, recordStorage, sessionRecordingKey);
 
+		elektraDiffDel (sessionDiff);
+		ksDel (recordStorage);
+	}
 
 	keyDel (sessionRecordingKey);
 	keyDel (recordConfigurationKey);
 	keyDel (sessionRecordingParentKey);
 	ksDel (duped);
-	ksDel (recordStorage);
 	elektraDiffDel (partDiff);
-	elektraDiffDel (sessionDiff);
 
 	return true;
 }
