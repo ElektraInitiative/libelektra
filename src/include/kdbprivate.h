@@ -57,10 +57,10 @@
 
 #define ELEKTRA_RECORD_CONFIG_KEY "/elektra/record"
 #define ELEKTRA_RECORD_CONFIG_ACTIVE_KEY "/elektra/record/config/active"
-#define ELEKTRA_RECORD_SESSION_KEY "/record/session"
-#define ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/record/session/diff/added"
-#define ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY "/record/session/diff/modified"
-#define ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/record/session/diff/removed"
+#define ELEKTRA_RECORD_SESSION_KEY "/elektra/record/session"
+#define ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/elektra/record/session/diff/added"
+#define ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY "/elektra/record/session/diff/modified"
+#define ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/elektra/record/session/diff/removed"
 
 #ifdef __cplusplus
 namespace ckdb

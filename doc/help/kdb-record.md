@@ -6,7 +6,7 @@
 
 Where `<COMMAND>` is one of the following:
 
-- `start [--parent key]`: start recording. Will not clear existing recording data.
+- `start [parent_key]`: start recording. Will not clear existing recording data.
 - `stop`: stop recording.
 - `clear`: clear existing recording data.
 - `undo [parent_key]`: undoes everything that has been recorded.

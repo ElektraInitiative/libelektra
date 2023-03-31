@@ -26,7 +26,7 @@ public:
 
 	virtual std::string getSynopsis () override
 	{
-		return "";
+		return "[parentKey]";
 	};
 
 	virtual std::string getShortHelpText () override
@@ -36,7 +36,8 @@ public:
 
 	virtual std::string getLongHelpText () override
 	{
-		return "";
+		return "For example, use \"kdb record-start\" to start a recording session for the entire KDB,\nor "
+		       "use \"kdb record-start user:/test\" to only record changes made to keys living in user:/test";
 	}
 
 	virtual int execute (Cmdline const & cmdline) override;
