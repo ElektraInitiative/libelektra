@@ -674,3 +674,32 @@ int elektraSpecCopy (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * pa
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
+
+int elektraSpecGet (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * parentKey)
+{
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/spec"))
+	{
+		KeySet * contract =
+			ksNew (30, keyNew ("system:/elektra/modules/spec", KEY_VALUE, "spec plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/spec/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/spec/exports/get", KEY_FUNC, elektraSpecGet, KEY_END),
+			       keyNew ("system:/elektra/modules/spec/exports/hook/spec/copy", KEY_FUNC, elektraSpecCopy, KEY_END),
+			       keyNew ("system:/elektra/modules/spec/exports/hook/spec/remove", KEY_FUNC, elektraSpecRemove, KEY_END),
+#include ELEKTRA_README
+			       keyNew ("system:/elektra/modules/spec/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+		ksAppend (returned, contract);
+		ksDel (contract);
+
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS; // success
+	}
+
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+
+Plugin * ELEKTRA_PLUGIN_EXPORT
+{
+	// clang-format off
+	return elektraPluginExport ("spec",
+			ELEKTRA_PLUGIN_GET,	&elektraSpecGet,
+			ELEKTRA_PLUGIN_END);
+}
