@@ -4,13 +4,14 @@
 
 
 pthread_rwlock_t channel_lock = PTHREAD_RWLOCK_INITIALIZER;
+pthread_rwlock_t init_lock = PTHREAD_RWLOCK_INITIALIZER;
 GList * channel_list = NULL;
 KDB * elektraKdb = NULL;
 
 gboolean xfconf_init (GError ** error)
 {
 	trace ();
-	if (pthread_rwlock_trywrlock (&channel_lock) == 0)
+	if (pthread_rwlock_trywrlock (&init_lock) == 0 && pthread_rwlock_trywrlock (&channel_lock) == 0)
 	{
 		g_info ("channel lock successful, initialize structures if necessary");
 		Key * elektraError = keyNew ("/elektra_error", KEY_END);
@@ -59,7 +60,7 @@ gchar ** xfconf_list_channels (void)
 	Key * parentKey = keyNew (XFCONF_ROOT, KEY_END);
 	KeySet * channelKeySet = ksNew (0, KS_END);
 
-	require_read_lock () kdbGet (elektraKdb, channelKeySet, parentKey);
+	require_channel_read_lock () kdbGet (elektraKdb, channelKeySet, parentKey);
 	ssize_t keySetLength = ksGetSize (channelKeySet);
 	gchar ** channelNames = calloc (keySetLength + 1, sizeof (gchar *));
 	const Key * currentKey;
@@ -89,5 +90,5 @@ gchar ** xfconf_list_channels (void)
 			free (firstLevelName);
 		}
 	}
-	release_lock () return channelNames;
+	release_channel_lock () return channelNames;
 }

@@ -12,43 +12,48 @@
 #define XFCONF_NUM_BUF_SIZE 64
 
 #define XFCONF_PERSIST_DEFAULT 1
+#define XFCONF_DEBUG_LOG_FOUND_KEYS 0
 
 extern GList * channel_list;
 extern KDB * elektraKdb;
 extern pthread_rwlock_t channel_lock;
 
 
-#define require_read_lock()                                                                                                                \
+#define require_read_lock(lock, name)                                                                                                      \
 	g_debug ("acquiring read lock in %s on line %d...", __func__, __LINE__);                                                           \
-	if (pthread_rwlock_rdlock (&channel_lock) != 0)                                                                                    \
+	if (pthread_rwlock_rdlock (lock) != 0)                                                                                             \
 	{                                                                                                                                  \
-		g_error ("unable to acquire read lock in %s on line %d", __func__, __LINE__);                                              \
+		g_error ("unable to acquire read lock %s in %s on line %d", name, __func__, __LINE__);                                     \
 	}                                                                                                                                  \
 	else                                                                                                                               \
 	{                                                                                                                                  \
-		g_debug ("acquired read lock in %s on line %d", __func__, __LINE__);                                                       \
+		g_debug ("acquired read lock %s in %s on line %d", name, __func__, __LINE__);                                              \
 	}
 
-#define require_write_lock()                                                                                                               \
-	g_debug ("acquiring write lock in %s on line %d...", __func__, __LINE__);                                                          \
-	if (pthread_rwlock_wrlock (&channel_lock) != 0)                                                                                    \
+#define require_write_lock(lock, name)                                                                                                     \
+	g_debug ("acquiring write lock %s in %s on line %d...", name, __func__, __LINE__);                                                 \
+	if (pthread_rwlock_wrlock (lock) != 0)                                                                                             \
 	{                                                                                                                                  \
-		g_warning ("unable to acquire write lock in %s on line %d", __func__, __LINE__);                                           \
+		g_warning ("unable to acquire write lock %s in %s on line %d", name __func__, __LINE__);                                   \
 	}                                                                                                                                  \
 	else                                                                                                                               \
 	{                                                                                                                                  \
-		g_debug ("acquired write lock in %s on line %d", __func__, __LINE__);                                                      \
+		g_debug ("acquired write lock %s in %s on line %d", name, __func__, __LINE__);                                             \
 	}
 
-#define release_lock()                                                                                                                     \
-	if (pthread_rwlock_unlock (&channel_lock) != 0)                                                                                    \
+#define release_lock(lock, name)                                                                                                           \
+	if (pthread_rwlock_unlock (lock) != 0)                                                                                             \
 	{                                                                                                                                  \
-		g_warning ("unable to release lock in %s on line %d, subsequent locks may fail", __func__, __LINE__);                      \
+		g_warning ("unable to release lock %s in %s on line %d, subsequent locks may fail", name, __func__, __LINE__);             \
 	}                                                                                                                                  \
 	else                                                                                                                               \
 	{                                                                                                                                  \
-		g_debug ("released lock in %s on line %d", __func__, __LINE__);                                                            \
+		g_debug ("released lock %s in %s on line %d", name, __func__, __LINE__);                                                   \
 	}
+
+#define require_channel_read_lock() require_read_lock (&channel_lock, "CHANNEL")
+#define require_channel_write_lock() require_read_lock (&channel_lock, "CHANNEL")
+#define release_channel_lock() require_read_lock (&channel_lock, "CHANNEL")
 
 typedef struct
 {

@@ -186,8 +186,8 @@ static gint compare_pairs (gconstpointer a, gconstpointer b)
 static ChannelKeySetPair * find_or_create_channel_pair (const gchar * channel_name)
 {
 	trace ();
-	require_read_lock () GList * channel_item = g_list_find_custom (channel_list, channel_name, &find_pair_by_name);
-	release_lock () if (channel_item != NULL)
+	require_channel_read_lock () GList * channel_item = g_list_find_custom (channel_list, channel_name, &find_pair_by_name);
+	release_channel_lock () if (channel_item != NULL)
 	{
 		g_debug ("ChannelKeySetPair for channel %s already exists, returning it", channel_name);
 		return channel_item->data;
@@ -196,8 +196,8 @@ static ChannelKeySetPair * find_or_create_channel_pair (const gchar * channel_na
 	ChannelKeySetPair * channel_pair = malloc (sizeof (ChannelKeySetPair));
 	channel_pair->channel = xfconf_channel_new (channel_name);
 	channel_pair->keySet = ksNew (0, KS_END);
-	require_write_lock () channel_list = g_list_insert_sorted (channel_list, channel_pair, &compare_pairs);
-	release_lock () return channel_pair;
+	require_channel_write_lock () channel_list = g_list_insert_sorted (channel_list, channel_pair, &compare_pairs);
+	release_channel_lock () return channel_pair;
 }
 
 KeySet * ksDeepDup (const KeySet * ks)
@@ -244,14 +244,6 @@ static char * channelNameToKeyName (const char * channelName)
 	return kdbKeyName;
 }
 
-// enum {
-//	CHANNEL_DEEP_COPY = 0,
-//	CHANNEL_REF_READ   = 1<<0,
-//	CHANNEL_REF_WRITE   = 1<<1,
-//	CHANNEL_REF_READ_WRITE    = CHANNEL_REF_READ | CHANNEL_REF_WRITE,
-// };
-// typedef unsigned int channelRefFlags;
-
 static KeySet * keySet_from_channel (const gchar * channel_name, uint reference)
 {
 	trace ();
@@ -259,8 +251,8 @@ static KeySet * keySet_from_channel (const gchar * channel_name, uint reference)
 	ChannelKeySetPair * channelPair = find_or_create_channel_pair (channel_name);
 	Key * parentKey = keyNew (kdbKeyName, KEY_END);
 	g_debug ("Fetch keys from parent: %s", kdbKeyName);
-	require_write_lock () int getStatusCode = kdbGet (elektraKdb, channelPair->keySet, parentKey);
-	release_lock ()
+	require_channel_write_lock () int getStatusCode = kdbGet (elektraKdb, channelPair->keySet, parentKey);
+	release_channel_lock ()
 
 		switch (getStatusCode)
 	{
@@ -279,21 +271,24 @@ static KeySet * keySet_from_channel (const gchar * channel_name, uint reference)
 	default:
 		g_warning ("An unknown status code(%d) occurred during keyset fetch", getStatusCode);
 	}
-	Key * cur;
-	require_read_lock () ssize_t keySetSize = ksGetSize (channelPair->keySet);
-	g_debug ("KeySet has %ld keys", keySetSize);
-	for (elektraCursor i = 0; i < keySetSize; i++)
+	if (XFCONF_DEBUG_LOG_FOUND_KEYS == 1)
 	{
-		cur = ksAtCursor (channelPair->keySet, i);
-		g_debug ("Found key: %s", keyName (cur));
+		Key * cur;
+		require_channel_read_lock () ssize_t keySetSize = ksGetSize (channelPair->keySet);
+		g_debug ("KeySet has %ld keys", keySetSize);
+		for (elektraCursor i = 0; i < keySetSize; i++)
+		{
+			cur = ksAtCursor (channelPair->keySet, i);
+			g_debug ("Found key: %s", keyName (cur));
+		}
+		release_channel_lock () free (kdbKeyName);
 	}
-	release_lock () free (kdbKeyName);
 	if (reference != 0)
 	{
 		return channelPair->keySet;
 	}
-	require_read_lock () KeySet * deepCopy = ksDeepDup (channelPair->keySet);
-	release_lock () return deepCopy;
+	require_channel_read_lock () KeySet * deepCopy = ksDeepDup (channelPair->keySet);
+	release_channel_lock () return deepCopy;
 }
 
 /**
@@ -448,8 +443,8 @@ static gboolean xfconf_channel_get_formatted (XfconfChannel * channel, const gch
 {
 	trace ();
 	KeySet * keySet = keySet_from_channel (channel->channel_name, 1);
-	require_read_lock () gboolean result = ks_get_formatted (keySet, channel, property, g_value);
-	release_lock () return result;
+	require_channel_read_lock () gboolean result = ks_get_formatted (keySet, channel, property, g_value);
+	release_channel_lock () return result;
 }
 
 /**
@@ -470,12 +465,12 @@ static int appendKeyToChannel (const XfconfChannel * channel, Key * key)
 {
 	trace ();
 	KeySet * keySet = keySet_from_channel (channel->channel_name, 1);
-	require_write_lock () ksAppendKey (keySet, key);
+	require_channel_write_lock () ksAppendKey (keySet, key);
 	char * parentKeyName = malloc ((strlen (XFCONF_ROOT) + strlen (channel->channel_name) + 2) * sizeof (char));
 	sprintf (parentKeyName, "%s/%s", XFCONF_ROOT, channel->channel_name);
 	Key * parentKey = keyNew (parentKeyName, KEY_END);
 	int resultCode = kdbSet (elektraKdb, keySet, parentKey);
-	release_lock () g_debug ("storing key set for parent key %s returned %d", parentKeyName, resultCode);
+	release_channel_lock () g_debug ("storing key set for parent key %s returned %d", parentKeyName, resultCode);
 	return resultCode;
 }
 
@@ -560,13 +555,13 @@ gboolean xfconf_channel_has_property (XfconfChannel * channel, const gchar * pro
 	KeySet * keySet = keySet_from_channel (channel->channel_name, 1);
 	char * propertyName = malloc ((strlen (XFCONF_ROOT) + strlen (channel->channel_name) + strlen (property) + 2) * sizeof (char));
 	sprintf (propertyName, "%s/%s%s", XFCONF_ROOT, channel->channel_name, property);
-	require_read_lock ()
+	require_channel_read_lock ()
 		g_debug ("request key %s on channel: %s which has %zd keys", property, channel->channel_name, ksGetSize (keySet));
 	const Key * key = ksLookupByName (keySet, propertyName, KDB_O_NONE);
 	g_debug ("channel %s has key %s: %d", channel->channel_name, propertyName, key != NULL);
 	g_debug ("RESULT: %s exists%s", property, key ? "" : " NOT");
 	gboolean exists = key != NULL;
-	release_lock () return exists;
+	release_channel_lock () return exists;
 }
 
 gboolean xfconf_channel_is_property_locked (XfconfChannel * channel, const gchar * property)
@@ -617,7 +612,7 @@ GHashTable * xfconf_channel_get_properties (XfconfChannel * channel, const gchar
 					   1); // todo: wrong key set seems to be returned, it contains keys from other channels
 	const Key * key;
 	unsigned long propertyBaseLength = strlen (property_base);
-	require_read_lock () for (elektraCursor i = 0; i < ksGetSize (ks); i++)
+	require_channel_read_lock () for (elektraCursor i = 0; i < ksGetSize (ks); i++)
 	{
 		key = ksAtCursor (ks, i);
 		const char * keyNameWithoutPrefix =
@@ -635,7 +630,7 @@ GHashTable * xfconf_channel_get_properties (XfconfChannel * channel, const gchar
 			g_debug ("key %s does NOT start with property base %s", keyNameWithoutPrefix, property_base);
 		}
 	}
-	release_lock () return properties;
+	release_channel_lock () return properties;
 }
 
 /* basic types */
@@ -958,8 +953,8 @@ GPtrArray * xfconf_channel_get_arrayv (XfconfChannel * channel, const gchar * pr
 {
 	trace ();
 	KeySet * ks = keySet_from_channel (channel->channel_name, 1);
-	require_read_lock () GPtrArray * resultPtr = ks_get_arrayv (ks, channel, property);
-	release_lock () return resultPtr;
+	require_channel_read_lock () GPtrArray * resultPtr = ks_get_arrayv (ks, channel, property);
+	release_channel_lock () return resultPtr;
 }
 
 gboolean xfconf_channel_set_array (XfconfChannel * channel, const gchar * property, GType first_value_type, ...)
