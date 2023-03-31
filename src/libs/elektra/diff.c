@@ -388,6 +388,44 @@ void elektraDiffRemoveSameOrBelow (ElektraDiff * ksd, const Key * cutpoint)
 	if (ksd->modifiedNewKeys) ksDel (ksCut (ksd->modifiedNewKeys, cutpoint));
 }
 
+static void cutOthers (KeySet ** ks, const Key * cutpoint)
+{
+	KeySet * below = ksCut (*ks, cutpoint);
+
+	ksDecRef (*ks);
+	ksDel (*ks);
+
+	ksIncRef (below);
+	*ks = below;
+}
+
+/**
+ * Removes all the keys from the diff that are NOT same or below the given parentkey
+ *
+ * @param ksd the diff where the keys should be removed
+ * @param parentKey the parent key
+ */
+void elektraDiffRemoveOther (ElektraDiff * ksd, const Key * parentKey)
+{
+	if (ksd == NULL || parentKey == NULL)
+	{
+		return;
+	}
+
+	if (ksd->parentKey != NULL)
+	{
+		keyDel (ksd->parentKey);
+		ksd->parentKey = NULL;
+	}
+
+	ksd->parentKey = keyDup (parentKey, KEY_CP_ALL);
+
+	if (ksd->addedKeys) cutOthers (&ksd->addedKeys, parentKey);
+	if (ksd->removedKeys) cutOthers (&ksd->removedKeys, parentKey);
+	if (ksd->modifiedKeys) cutOthers (&ksd->modifiedKeys, parentKey);
+	if (ksd->modifiedNewKeys) cutOthers (&ksd->modifiedNewKeys, parentKey);
+}
+
 /**
  * Appends a diff to another diff.
  *
