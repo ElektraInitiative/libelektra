@@ -1,8 +1,8 @@
-#include <kdbprivate.h>
-#include <kdbrecord.h>
 #include <kdbchangetracking.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
+#include <kdbprivate.h>
+#include <kdbrecord.h>
 
 void elektraRecordEnableRecording (KDB * handle, const Key * parentKey, Key * errorKey)
 {
