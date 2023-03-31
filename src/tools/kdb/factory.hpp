@@ -54,6 +54,7 @@
 #include <recordclear.hpp>
 #include <recordstart.hpp>
 #include <recordstop.hpp>
+#include <recordundo.hpp>
 #include <remount.hpp>
 #include <rm.hpp>
 #include <set.hpp>
@@ -131,6 +132,7 @@ public:
 		m_factory.insert (std::make_pair ("record-clear", std::make_shared<Cnstancer<RecordClearCommand>> ()));
 		m_factory.insert (std::make_pair ("record-start", std::make_shared<Cnstancer<RecordStartCommand>> ()));
 		m_factory.insert (std::make_pair ("record-stop", std::make_shared<Cnstancer<RecordStopCommand>> ()));
+		m_factory.insert (std::make_pair ("record-undo", std::make_shared<Cnstancer<RecordUndoCommand>> ()));
 	}
 
 	std::vector<std::string> getPrettyCommands () const

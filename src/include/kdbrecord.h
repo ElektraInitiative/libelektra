@@ -22,6 +22,7 @@ void elektraRecordDisableRecording (KDB * handle, Key * errorKey);
 void elektraRecordClearSession (KDB * handle, Key * errorKey);
 
 bool elektraRecordRecord (KDB * handle, KDB * sessionStorageHandle, KeySet * newKeys, Key * parentKey, Key * errorKey);
+bool elektraRecordUndo (KDB * handle, KDB * sessionStorageHandle, Key * parentKey, Key * errorKey);
 bool elektraRecordIsActive (KDB * handle);
 
 #ifdef __cplusplus
