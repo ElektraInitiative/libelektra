@@ -743,6 +743,80 @@ static void test_elektraDiffRemoveOther_shouldWork (void)
 	keyDel (toKeep);
 }
 
+static void test_elektraDiffCut_shouldWork (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange
+	ElektraDiff * diff = elektraDiffNew (
+		ksNew (2,
+		       keyNew ("system:/a/added", KEY_END),
+		       keyNew ("system:/b/added", KEY_END),
+		       KS_END
+		       ),
+		ksNew (2,
+		       keyNew ("system:/a/removed", KEY_END),
+		       keyNew ("system:/b/removed", KEY_END),
+		       KS_END
+		       ),
+		ksNew (2,
+		       keyNew ("system:/a/modified", KEY_END),
+		       keyNew ("system:/b/modified", KEY_END),
+		       KS_END
+		       ),
+		ksNew (2,
+		       keyNew ("system:/a/modifiedNew", KEY_END),
+		       keyNew ("system:/b/modifiedNew", KEY_END),
+		       KS_END
+		       ),
+		NULL
+	);
+
+	Key * toKeep = keyNew ("system:/b", KEY_END);
+
+	// Act
+	ElektraDiff * newDiff = elektraDiffCut (diff, toKeep);
+
+	// Assert
+	succeed_if (diff->addedKeys != NULL, "added keys should not be NULL");
+	succeed_if_fmt (ksGetSize (diff->addedKeys) == 1, "added keys should have 1 key, was %zu", ksGetSize (diff->addedKeys));
+	succeed_if (ksLookupByName (diff->addedKeys, "system:/a/added", 0) != NULL, "system:/a/added should still be in added keys");
+	
+	succeed_if (diff->removedKeys != NULL, "removed keys should not be NULL");
+	succeed_if_fmt (ksGetSize (diff->removedKeys) == 1, "removed keys should have 1 key, was %zu", ksGetSize (diff->removedKeys));
+	succeed_if (ksLookupByName (diff->removedKeys, "system:/a/removed", 0) != NULL, "system:/a/removed should still be in removed keys");
+
+	succeed_if (diff->modifiedKeys != NULL, "modified keys should not be NULL");
+	succeed_if_fmt (ksGetSize (diff->modifiedKeys) == 1, "modified keys should have 1 key, was %zu", ksGetSize (diff->modifiedKeys));
+	succeed_if (ksLookupByName (diff->modifiedKeys, "system:/a/modified", 0) != NULL, "system:/a/modified should still be in added keys");
+
+	succeed_if (diff->modifiedNewKeys != NULL, "modified new keys should not be NULL");
+	succeed_if_fmt (ksGetSize (diff->modifiedNewKeys) == 1, "modified new keys should have 1 key, was %zu", ksGetSize (diff->modifiedNewKeys));
+	succeed_if (ksLookupByName (diff->modifiedNewKeys, "system:/a/modifiedNew", 0) != NULL, "system:/a/modifiedNew should still be in added keys");
+
+	succeed_if (newDiff->addedKeys != NULL, "added keys should not be NULL");
+	succeed_if_fmt (ksGetSize (newDiff->addedKeys) == 1, "added keys should have 1 key, was %zu", ksGetSize (newDiff->addedKeys));
+	succeed_if (ksLookupByName (newDiff->addedKeys, "system:/b/added", 0) != NULL, "system:/b/added should still be in added keys");
+
+	succeed_if (newDiff->removedKeys != NULL, "removed keys should not be NULL");
+	succeed_if_fmt (ksGetSize (newDiff->removedKeys) == 1, "removed keys should have 1 key, was %zu", ksGetSize (newDiff->removedKeys));
+	succeed_if (ksLookupByName (newDiff->removedKeys, "system:/b/removed", 0) != NULL, "system:/b/removed should still be in removed keys");
+
+	succeed_if (newDiff->modifiedKeys != NULL, "modified keys should not be NULL");
+	succeed_if_fmt (ksGetSize (newDiff->modifiedKeys) == 1, "modified keys should have 1 key, was %zu", ksGetSize (newDiff->modifiedKeys));
+	succeed_if (ksLookupByName (newDiff->modifiedKeys, "system:/b/modified", 0) != NULL, "system:/b/modified should still be in added keys");
+
+	succeed_if (newDiff->modifiedNewKeys != NULL, "modified new keys should not be NULL");
+	succeed_if_fmt (ksGetSize (newDiff->modifiedNewKeys) == 1, "modified new keys should have 1 key, was %zu", ksGetSize (newDiff->modifiedNewKeys));
+	succeed_if (ksLookupByName (newDiff->modifiedNewKeys, "system:/b/modifiedNew", 0) != NULL, "system:/b/modifiedNew should still be in added keys");
+
+	succeed_if (keyCmp (toKeep, newDiff->parentKey) == 0, "newDiff should now have same parent key");
+
+	elektraDiffDel (diff);
+	elektraDiffDel (newDiff);
+	keyDel (toKeep);
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("DIFF                 TESTS\n");
@@ -801,6 +875,7 @@ int main (int argc, char ** argv)
 
 	test_elektraDiffRemoveSameOrBelow_shouldWork ();
 	test_elektraDiffRemoveOther_shouldWork ();
+	test_elektraDiffCut_shouldWork ();
 
 	elektraDiffDel (demoDiff);
 

@@ -388,6 +388,39 @@ void elektraDiffRemoveSameOrBelow (ElektraDiff * ksd, const Key * cutpoint)
 	if (ksd->modifiedNewKeys) ksDel (ksCut (ksd->modifiedNewKeys, cutpoint));
 }
 
+/**
+ * Creates a new diff with all keys from @p original that are same or below @p cutpoint.
+ * The affected keys are removed from @p original
+ *
+ * @param original the original diff
+ * @param cutpoint the cutpoint
+ * @return new diff with all the keys same or beloq @p cutpoint,
+ *         OR @p NULL if @p original is @p NULL
+ *         OR @p NULL if @p cutpoint is @p NULL
+ */
+ElektraDiff * elektraDiffCut (ElektraDiff * original, const Key * cutpoint)
+{
+	if (original == NULL || cutpoint == NULL)
+	{
+		return NULL;
+	}
+
+	ElektraDiff * new = elektraCalloc (sizeof (ElektraDiff));
+	new->parentKey = keyDup (cutpoint, KEY_CP_ALL);
+
+	new->addedKeys = ksCut (original->addedKeys, cutpoint);
+	new->removedKeys = ksCut (original->removedKeys, cutpoint);
+	new->modifiedKeys = ksCut (original->modifiedKeys, cutpoint);
+	new->modifiedNewKeys = ksCut (original->modifiedNewKeys, cutpoint);
+
+	if (new->addedKeys) ksIncRef (new->addedKeys);
+	if (new->removedKeys) ksIncRef (new->removedKeys);
+	if (new->modifiedKeys) ksIncRef (new->modifiedKeys);
+	if (new->modifiedNewKeys) ksIncRef (new->modifiedNewKeys);
+
+	return new;
+}
+
 static void cutOthers (KeySet ** ks, const Key * cutpoint)
 {
 	KeySet * below = ksCut (*ks, cutpoint);
