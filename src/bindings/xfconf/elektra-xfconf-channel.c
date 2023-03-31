@@ -1,4 +1,5 @@
 #include "elektra-xfconf-channel.h"
+#include "elektra-xfconf-binding.h"
 #include "elektra-xfconf-util.h"
 #include "elektra-xfconf.h"
 #include <kdbhelper.h>
@@ -21,11 +22,7 @@
 	}
 
 typedef struct XfconfCache XfconfCache;
-struct _XfconfChannel
-{
-	GObject parent;
-	gchar * channel_name;
-};
+
 
 typedef struct XfconfChannelClass
 {
@@ -439,7 +436,7 @@ gboolean ks_get_formatted (KeySet * ks, XfconfChannel * channel, const gchar * p
 	return TRUE;
 }
 
-static gboolean xfconf_channel_get_formatted (XfconfChannel * channel, const gchar * property, GValue * g_value)
+gboolean xfconf_channel_get_formatted (XfconfChannel * channel, const gchar * property, GValue * g_value)
 {
 	trace ();
 	KeySet * keySet = keySet_from_channel (channel->channel_name, 1);
@@ -501,6 +498,7 @@ static gboolean xfconf_channel_set_formatted (XfconfChannel * channel, const gch
 	keySetString (key, value);
 	keySetMeta (key, XFCONF_GTYPE_META_NAME, g_type_name (g_type));
 	int resultCode = appendKeyToChannel (channel, key);
+	notify_property_changed (channel, property);
 	g_debug ("RESULT: set %s to %s", propertyName, value);
 	return resultCode >= 0;
 }

@@ -3,4 +3,6 @@
 
 #include <xfconf/xfconf.h>
 
+void notify_property_changed (XfconfChannel * channel, const gchar * property_name);
+
 #endif
