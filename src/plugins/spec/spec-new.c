@@ -675,6 +675,45 @@ int elektraSpecCopy (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * pa
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
+int elektraSpecRemove (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, ELEKTRA_UNUSED Key * parentKey)
+{
+	Key * specName = keyNew ("spec:/", KEY_END);
+
+	for (elektraCursor i = 0; i < ksGetSize (returned); i++)
+	{
+		Key * current = ksAtCursor (returned, i);
+
+		if (keyGetNamespace (current) == KEY_NS_SPEC)
+		{
+			continue;
+		}
+
+		// Find out if there is a spec:/ key for the current key
+		keySetName (specName, "spec:/");
+		keyAddName (specName, strchr (keyName (current), '/'));
+		Key * specKey = ksLookup (returned, specName, 0);
+
+		if (specKey != NULL)
+		{
+			KeySet * specMeta = keyMeta (specKey);
+			KeySet * meta = keyMeta (current);
+
+			for (elektraCursor it = 0; it < ksGetSize (specMeta); it++)
+			{
+				Key * m = ksAtCursor (specMeta, it);
+				if (ksLookup (meta, m, 0) == m)
+				{
+					keySetMeta (current, keyName (m), NULL);
+				}
+			}
+		}
+	}
+
+	keyDel (specName);
+
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+
 int elektraSpecGet (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/spec"))
@@ -690,7 +729,7 @@ int elektraSpecGet (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * par
 		ksAppend (returned, contract);
 		ksDel (contract);
 
-		return ELEKTRA_PLUGIN_STATUS_SUCCESS; // success
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;

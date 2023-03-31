@@ -627,6 +627,52 @@ static void test_hook_copy_with_array_specification_with_default_meta_key_should
 	TEST_END
 }
 
+/**
+ * Test should verify that if meta keys get copied with elektraSpecCopy, they should get removed by elektraSpecRemove.
+ *
+ * @param isKdbGet boolean value indicating if it is a kdb get call
+ */
+static void test_hook_remove_spec_keys_should_succeed (bool isKdbGet)
+{
+	printf ("test %s, isKdbGet=%d\n", __func__, isKdbGet);
+
+	TEST_BEGIN
+	{
+		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "default", "default value a", KEY_META,
+						 "test1", "value1", KEY_META, "test2", "description2", KEY_END), KS_END);
+
+		int resultCopy = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
+
+		// check if neta keys were copied
+		for (elektraCursor it = 0; it < ksGetSize (ks); it++)
+		{
+			Key * current = ksAtCursor (ks, it);
+			if (keyGetNamespace (current) == KEY_NS_DEFAULT)
+			{
+				KeySet * metaKeysForCurrent = keyMeta (current);
+				succeed_if (ksGetSize (metaKeysForCurrent) == 3, "there should be three meta keys");
+			}
+		}
+
+		int resultRemove = elektraSpecRemove (NULL, ks, parentKey);
+
+		// check if meta keys were removed
+		for (elektraCursor it = 0; it < ksGetSize (ks); it++)
+		{
+			Key * current = ksAtCursor (ks, it);
+			if (keyGetNamespace (current) == KEY_NS_DEFAULT)
+			{
+				KeySet * metaKeysForCurrent = keyMeta (current);
+				succeed_if (ksGetSize (metaKeysForCurrent) == 0, "meta keys should be empty");
+			}
+		}
+
+		TEST_CHECK (resultCopy == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
+		TEST_CHECK (resultRemove == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
+	}
+	TEST_END
+}
+
 int main (void)
 {
 	test_hook_copy_with_require_meta_key_and_missing_key_should_error (false);
@@ -645,6 +691,8 @@ int main (void)
 	test_hook_copy_with_array_specification_should_copy_to_correct_configuration (false);
 	test_hook_copy_with_array_specification_without_default_meta_key_should_not_instantiate_any_key (false);
 	test_hook_copy_with_array_specification_with_default_meta_key_should_instantiate (false);
+
+	test_hook_remove_spec_keys_should_succeed (true);
 
 	return 0;
 }
