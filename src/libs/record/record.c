@@ -422,7 +422,7 @@ bool elektraRecordUndo (KDB * handle, KDB * sessionStorageHandle, Key * parentKe
 			goto innercleanup;
 		}
 
-innercleanup:
+	innercleanup:
 		if (activeKey != NULL)
 		{
 			// Reenable session recording

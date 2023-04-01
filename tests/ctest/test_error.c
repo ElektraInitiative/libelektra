@@ -1,13 +1,13 @@
 /**
-* @file
-*
-* @brief
-*
-* @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
-*/
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
 
-#include <tests.h>
 #include <kdberrors.h>
+#include <tests.h>
 
 static void test_elektraSetErrorINTERNAL_shouldAddError (void)
 {

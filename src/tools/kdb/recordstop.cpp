@@ -6,12 +6,12 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "coloredkdbio.hpp"
 #include "recordstop.hpp"
-#include <kdb.hpp>
-#include <kdbrecord.h>
+#include "coloredkdbio.hpp"
 #include <cmdline.hpp>
 #include <iostream>
+#include <kdb.hpp>
+#include <kdbrecord.h>
 
 using namespace std;
 using namespace kdb;

@@ -243,7 +243,7 @@ void elektraCopyError (Key * target, Key * source)
 	KeySet * targetMeta = keyMeta (target);
 	if (targetMeta == NULL)
 	{
-		return ;
+		return;
 	}
 
 	KeySet * sourceMeta = keyMeta (source);

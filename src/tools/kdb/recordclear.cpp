@@ -9,9 +9,9 @@
 #include "recordclear.hpp"
 #include "coloredkdbio.hpp"
 #include <cmdline.hpp>
+#include <iostream>
 #include <kdb.hpp>
 #include <kdbrecord.h>
-#include <iostream>
 
 using namespace std;
 using namespace kdb;

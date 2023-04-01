@@ -293,13 +293,13 @@ int init (int argc, char ** argv);
 				const char * value = keyString (k);                                                                        \
 				if (value == NULL)                                                                                         \
 				{                                                                                                          \
-					yield_error_fmt ("expected value of key \"%s\" to equal \"%s\" but was NULL"                       \
-							 , keyName, expectedKeyValue)                                                      \
+					yield_error_fmt ("expected value of key \"%s\" to equal \"%s\" but was NULL", keyName,             \
+							 expectedKeyValue)                                                                 \
 				}                                                                                                          \
 				else if (strcmp (expectedKeyValue, value) != 0)                                                            \
 				{                                                                                                          \
-					yield_error_fmt ("expected value of key \"%s\" to equal \"%s\" but was \"%s\""                     \
-							 , keyName, expectedKeyValue, value)                                               \
+					yield_error_fmt ("expected value of key \"%s\" to equal \"%s\" but was \"%s\"", keyName,           \
+							 expectedKeyValue, value)                                                          \
 				}                                                                                                          \
 			}                                                                                                                  \
 		}                                                                                                                          \
