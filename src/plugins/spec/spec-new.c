@@ -59,13 +59,13 @@ static void replaceCharacter (const char * str, char * newStr, const char search
 {
 	for (size_t i = 0; i < elektraStrLen (str); i++)
 	{
-		if (str [i] == searchFor)
+		if (str[i] == searchFor)
 		{
-			newStr [i] = c;
+			newStr[i] = c;
 		}
 		else
 		{
-			newStr [i] = str [i];
+			newStr[i] = str[i];
 		}
 	}
 }
@@ -169,7 +169,7 @@ static bool isArraySpecification (Key * specKey)
 
 	for (size_t i = 0; i < elektraStrLen (keyWithoutNamespace); i++)
 	{
-		if (keyWithoutNamespace [i] == '#')
+		if (keyWithoutNamespace[i] == '#')
 		{
 			return true;
 		}
@@ -192,7 +192,7 @@ static bool containsUnderlineInArraySpec (Key * specKey)
 
 	for (size_t i = 0; i < len; i++)
 	{
-		if (keyWithoutNamespace [i] == '#' && (i != len && keyWithoutNamespace [i + 1] == '_'))
+		if (keyWithoutNamespace[i] == '#' && (i != len && keyWithoutNamespace[i + 1] == '_'))
 		{
 			return true;
 		}
@@ -213,7 +213,7 @@ static bool isWildcardSpecification (Key * specKey)
 	const char * keyWithoutNamespace = strchr (keyName (specKey), '/');
 	for (size_t i = 0; i < elektraStrLen (keyWithoutNamespace); i++)
 	{
-		if (keyWithoutNamespace [i] == '_')
+		if (keyWithoutNamespace[i] == '_')
 		{
 			return true;
 		}
@@ -247,12 +247,12 @@ static bool isWildcardSpecification (Key * specKey)
  */
 static void createArrayElementName (char * arrayElement, int arrayNumber, int size)
 {
-	arrayElement [0] = '#';
+	arrayElement[0] = '#';
 	for (int j = 1; j < (arrayNumber % 10); j++)
 	{
-		arrayElement [j] = '_';
+		arrayElement[j] = '_';
 	}
-	sprintf (&arrayElement [size], "%d", arrayNumber);
+	sprintf (&arrayElement[size], "%d", arrayNumber);
 }
 
 /**
@@ -271,19 +271,19 @@ static void instantiateArraySpecificationAndCopyMeta (Key * specKey, KeySet * ks
 		char * keyNameWithoutNamespace = strchr (keyName (specKey), '/');
 
 		char * strUntilArrayElement = elektraMalloc (pos);
-		memcpy (strUntilArrayElement, &keyNameWithoutNamespace [0], pos - 1);
-		strUntilArrayElement [pos] = '\0';
+		memcpy (strUntilArrayElement, &keyNameWithoutNamespace[0], pos - 1);
+		strUntilArrayElement[pos] = '\0';
 
 		size_t keyNameSize = elektraStrLen (keyNameWithoutNamespace);
 		char * strAfterArrayElement = elektraMalloc (keyNameSize + 1);
-		memcpy (strAfterArrayElement, &keyNameWithoutNamespace [pos], keyNameSize);
-		strAfterArrayElement [keyNameSize + 1] = '\0';
+		memcpy (strAfterArrayElement, &keyNameWithoutNamespace[pos], keyNameSize);
+		strAfterArrayElement[keyNameSize + 1] = '\0';
 
 		char * arrayElementName = elektraMalloc (1 + (i % 10) + i);
 		createArrayElementName (arrayElementName, i, 1 + (i % 10) + i);
 
-		Key * key = keyNew (elektraFormat ("default:/%s/%s/%s", strUntilArrayElement, arrayElementName,
-							   strAfterArrayElement), KEY_END);
+		Key * key =
+			keyNew (elektraFormat ("default:/%s/%s/%s", strUntilArrayElement, arrayElementName, strAfterArrayElement), KEY_END);
 		keyCopyAllMeta (key, specKey);
 
 		ksAppendKey (instantiatedArraySpecs, key);
@@ -343,7 +343,7 @@ static Key * specCollision (KeySet * specKeys)
 			char * arraySpecKey = elektraMalloc (elektraStrLen (wildcardSpec));
 			replaceCharacter (wildcardSpec, arraySpecKey, '_', '#');
 
-			Key * foundKey = ksLookupByName(specKeys, elektraFormat ("spec:/%s", arraySpecKey), 0);
+			Key * foundKey = ksLookupByName (specKeys, elektraFormat ("spec:/%s", arraySpecKey), 0);
 			elektraFree (arraySpecKey);
 			if (foundKey != 0)
 			{
@@ -396,7 +396,7 @@ static Key * getArraySizeOfArrayParent (KeySet * specKeys, Key * specKey)
 	strcpy (copiedKeyName, (char *) specKeyName);
 
 	char * arrayParent = strtok (copiedKeyName, "#");
-	arrayParent [strlen (arrayParent) - 1] = '\0';
+	arrayParent[strlen (arrayParent) - 1] = '\0';
 
 	Key * key = getMatchingKeyFromKeySet (specKeys, strchr (arrayParent, '/'));
 
@@ -419,7 +419,7 @@ static int getNumberOfArrayCharactersInSpecName (Key * specKey)
 
 	for (size_t i = 0; i < elektraStrLen (withoutNamespace); i++)
 	{
-		if (withoutNamespace [i] == '#')
+		if (withoutNamespace[i] == '#')
 		{
 			count++;
 		}
@@ -440,9 +440,9 @@ static void setArrayPositions (const char * keyNameWithoutNamespace, int * array
 	int arrPos = 0;
 	for (size_t i = 0; i < elektraStrLen (keyNameWithoutNamespace); i++)
 	{
-		if (keyNameWithoutNamespace [i] == '#')
+		if (keyNameWithoutNamespace[i] == '#')
 		{
-			arrayPositions [arrPos++] = (int) i;
+			arrayPositions[arrPos++] = (int) i;
 		}
 	}
 }
@@ -462,13 +462,12 @@ static bool isValidArraySize (KeySet * ks, KeySet * specKeys, Key * parentKey, K
 {
 	Key * key = ksLookupByName (ks, strchr (keyName (specKey), '/'), 0);
 	Key * keyToFetchArraySizeFrom = key == NULL ? getArraySizeOfArrayParent (specKeys, specKey) : key;
-	const Key * arrayMetaKey = key == NULL ? keyGetMeta(keyToFetchArraySizeFrom, "array") : keyGetMeta (key, "array");
+	const Key * arrayMetaKey = key == NULL ? keyGetMeta (keyToFetchArraySizeFrom, "array") : keyGetMeta (key, "array");
 
 	if (arrayMetaKey == 0)
 	{
 		// no array size found, skip
-		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "Could not find array size for key %s",
-							   keyName (specKey));
+		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "Could not find array size for key %s", keyName (specKey));
 		return false;
 	}
 
@@ -496,7 +495,9 @@ static bool isArrayEmpty (KeySet * ks, int arrayPosition)
 		char * withoutNamespace = strchr (keyName (current), '/');
 
 		size_t len = elektraStrLen (withoutNamespace);
-		if (withoutNamespace [arrayPosition] == '#' && ((int) len != arrayPosition + 1 && (withoutNamespace [arrayPosition + 1] == '_' || withoutNamespace [arrayPosition + 1] != '/')))
+		if (withoutNamespace[arrayPosition] == '#' &&
+		    ((int) len != arrayPosition + 1 &&
+		     (withoutNamespace[arrayPosition + 1] == '_' || withoutNamespace[arrayPosition + 1] != '/')))
 		{
 			return false;
 		}
@@ -549,12 +550,12 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * specKeys, KeyS
 		{
 			char * untilArrayElementAtPositionI = elektraMalloc (arrayPositions[i]);
 			memcpy (untilArrayElementAtPositionI, &keyNameWithoutNamespace[0], arrayPositions[i]);
-			untilArrayElementAtPositionI [arrayPositions [i] - 1] = '\0';
+			untilArrayElementAtPositionI[arrayPositions[i] - 1] = '\0';
 
 			Key * arraySizeKeyToInstantiate = getMatchingKeyFromKeySet (specKeys, untilArrayElementAtPositionI);
 			const char * arraySizeToInstantiate = keyString (keyGetMeta (arraySizeKeyToInstantiate, "array"));
 
-			if (!isArrayEmpty (ks, arrayPositions [i]))
+			if (!isArrayEmpty (ks, arrayPositions[i]))
 			{
 				continue;
 			}
@@ -624,34 +625,41 @@ int elektraSpecCopy (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * pa
 	{
 		if (isKdbGet)
 		{
-			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (parentKey, "Specification %s has a collision. It seems that there exists an array and wildcard specification for the same key.", keyName (collisionKey));
+			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (parentKey,
+								 "Specification %s has a collision. It seems that there exists an array "
+								 "and wildcard specification for the same key.",
+								 keyName (collisionKey));
 		}
 		else
 		{
-			ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey, "Specification %s has a collision. It seems that there exists an array and wildcard specification for the same key.", keyName (collisionKey));
+			ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey,
+							       "Specification %s has a collision. It seems that there exists an array and "
+							       "wildcard specification for the same key.",
+							       keyName (collisionKey));
 		}
 
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
- 	for (elektraCursor it = 0; it < ksGetSize (specKeys); it++)
+	for (elektraCursor it = 0; it < ksGetSize (specKeys); it++)
 	{
 		Key * current = ksAtCursor (specKeys, it);
 
 		// if required and no default => cascade lookup if exists in other namespaces
-		if ((isRequired (current) && !hasDefault (current)) ||
-		    (isRequired (current) && isWildcardSpecification (current)))
+		if ((isRequired (current) && !hasDefault (current)) || (isRequired (current) && isWildcardSpecification (current)))
 		{
 			Key * cascadingKey = keyNew (strchr (keyName (current), '/'), KEY_END);
 			if (ksLookup (returned, cascadingKey, 0) == 0)
 			{
 				if (isKdbGet)
 				{
-					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (parentKey, "Key for specification %s does not exist", keyName (current));
+					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (parentKey, "Key for specification %s does not exist",
+										 keyName (current));
 				}
 				else
 				{
-					ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey, "Key for specification %s does not exist", keyName (current));
+					ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey, "Key for specification %s does not exist",
+									       keyName (current));
 				}
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}

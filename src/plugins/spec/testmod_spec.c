@@ -15,10 +15,10 @@
 #endif
 
 #define TEST_BEGIN                                                                                                                         \
-	{                                               										   \
+	{                                                                                                                                  \
 		Key * parentKey = keyNew (PARENT_KEY, KEY_END);                                                                            \
 		bool success = 1;
-#define TEST_END                                                                                                                      	   \
+#define TEST_END                                                                                                                           \
 	success = 1;                                                                                                                       \
 	keyDel (parentKey);                                                                                                                \
 	}
@@ -273,9 +273,10 @@ static void test_hook_copy_with_wildcard_specification_only_one_underline_should
 		const char * descriptionToMatch = "This is a name";
 		const char * userNamespace = "user:";
 		const char * keyNameToMatch = elektraFormat ("%s/server/name", PARENT_KEY);
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "_/name", KEY_META, "description", descriptionToMatch,
-						 KEY_END), keyNew (elektraFormat ("%s/%s/%s", userNamespace, PARENT_KEY, keyNameToMatch),
-					     KEY_VALUE, "mailserver1", KEY_END), KS_END);
+		KeySet * ks = ksNew (
+			10, keyNew ("spec:/" PARENT_KEY "_/name", KEY_META, "description", descriptionToMatch, KEY_END),
+			keyNew (elektraFormat ("%s/%s/%s", userNamespace, PARENT_KEY, keyNameToMatch), KEY_VALUE, "mailserver1", KEY_END),
+			KS_END);
 
 		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
@@ -342,9 +343,8 @@ static void test_hook_copy_with_wildcard_two_underlines_should_succeed (bool isK
 	{
 		const char * namespace = "user:/";
 		const char * keyname = elektraFormat ("%s/test/server/test2/name", PARENT_KEY);
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/_/server/_/name", KEY_META, "description", "place",
-							 KEY_END), keyNew (elektraFormat ("%s%s", namespace, keyname),
-					     KEY_END), KS_END);
+		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/_/server/_/name", KEY_META, "description", "place", KEY_END),
+				     keyNew (elektraFormat ("%s%s", namespace, keyname), KEY_END), KS_END);
 
 		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
@@ -385,10 +385,8 @@ static void test_hook_copy_with_wildcard_with_trailing_underline (bool isKdbGet)
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/_/server/_", KEY_META, "description", "place",
-						 KEY_END),
-				     keyNew ("user:/sw/org/test/server/test1", KEY_END),
-				     keyNew ("user:/sw/org/test/server/test2", KEY_END),
+		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/_/server/_", KEY_META, "description", "place", KEY_END),
+				     keyNew ("user:/sw/org/test/server/test1", KEY_END), keyNew ("user:/sw/org/test/server/test2", KEY_END),
 				     keyNew ("user:/sw/org/test/server/test3", KEY_END),
 				     keyNew ("user:/sw/org/test/server2/test4", KEY_END), KS_END);
 
@@ -409,8 +407,7 @@ static void test_hook_copy_with_wildcard_with_trailing_underline (bool isKdbGet)
 
 				if (elektraStrCmp (baseName, "test4") == 0)
 				{
-					succeed_if (keyGetMeta (current, "description") == 0,
-						    "test4 should not have metadata");
+					succeed_if (keyGetMeta (current, "description") == 0, "test4 should not have metadata");
 				}
 			}
 		}
@@ -487,9 +484,8 @@ static void test_hook_copy_with_wildcard_array_specification_collision_should_fa
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/server/_/name", KEY_META, "description", "value1",
-						 KEY_END), keyNew ("spec:/" PARENT_KEY "/server/#/name", KEY_META, "description",
-					     "value2", KEY_END), KS_END);
+		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/server/_/name", KEY_META, "description", "value1", KEY_END),
+				     keyNew ("spec:/" PARENT_KEY "/server/#/name", KEY_META, "description", "value2", KEY_END), KS_END);
 
 		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
@@ -524,13 +520,12 @@ static void test_hook_copy_with_array_specification_should_copy_to_correct_confi
 	TEST_BEGIN
 	{
 		char * metaKeyDescriptionValue = "The name of the server";
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/server/#/name", KEY_META, "description",
-						 metaKeyDescriptionValue, KEY_END), keyNew ("spec:/" PARENT_KEY "/server",
-					     KEY_META, "array", "4", KEY_END),
-				     keyNew ("user:/" PARENT_KEY "/server/#0/name", KEY_END),
-				     keyNew ("user:/" PARENT_KEY "/server/#1/name", KEY_END),
-				     keyNew ("user:/" PARENT_KEY "/server/#2/name", KEY_END),
-				     keyNew ("user:/" PARENT_KEY "/server/#3/name", KEY_END), KS_END);
+		KeySet * ks = ksNew (
+			10, keyNew ("spec:/" PARENT_KEY "/server/#/name", KEY_META, "description", metaKeyDescriptionValue, KEY_END),
+			keyNew ("spec:/" PARENT_KEY "/server", KEY_META, "array", "4", KEY_END),
+			keyNew ("user:/" PARENT_KEY "/server/#0/name", KEY_END), keyNew ("user:/" PARENT_KEY "/server/#1/name", KEY_END),
+			keyNew ("user:/" PARENT_KEY "/server/#2/name", KEY_END), keyNew ("user:/" PARENT_KEY "/server/#3/name", KEY_END),
+			KS_END);
 
 		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
@@ -568,8 +563,9 @@ static void test_hook_copy_with_array_specification_without_default_meta_key_sho
 	TEST_BEGIN
 	{
 		char * metaKeyDescriptionValue = "The name of the server";
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/server/#/name", KEY_VALUE, "testserver",
-						 KEY_META, "description", metaKeyDescriptionValue, KEY_END),
+		KeySet * ks = ksNew (10,
+				     keyNew ("spec:/" PARENT_KEY "/server/#/name", KEY_VALUE, "testserver", KEY_META, "description",
+					     metaKeyDescriptionValue, KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/server", KEY_META, "array", "4", KEY_END), KS_END);
 
 		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
@@ -598,9 +594,10 @@ static void test_hook_copy_with_array_specification_with_default_meta_key_should
 	TEST_BEGIN
 	{
 		char * metaKeyDescriptionValue = "The name of the server";
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/server/#/name", KEY_META, "default", "mail", KEY_META, "description",
-						 metaKeyDescriptionValue, KEY_END), keyNew ("spec:/" PARENT_KEY "/server", KEY_META,
-					     "array", "4", KEY_END), KS_END);
+		KeySet * ks = ksNew (10,
+				     keyNew ("spec:/" PARENT_KEY "/server/#/name", KEY_META, "default", "mail", KEY_META, "description",
+					     metaKeyDescriptionValue, KEY_END),
+				     keyNew ("spec:/" PARENT_KEY "/server", KEY_META, "array", "4", KEY_END), KS_END);
 
 		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
@@ -638,8 +635,10 @@ static void test_hook_remove_spec_keys_should_succeed (bool isKdbGet)
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "default", "default value a", KEY_META,
-						 "test1", "value1", KEY_META, "test2", "description2", KEY_END), KS_END);
+		KeySet * ks = ksNew (10,
+				     keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "default", "default value a", KEY_META, "test1", "value1",
+					     KEY_META, "test2", "description2", KEY_END),
+				     KS_END);
 
 		int resultCopy = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
