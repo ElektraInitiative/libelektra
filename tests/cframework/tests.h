@@ -261,6 +261,52 @@ int init (int argc, char ** argv);
 		ELEKTRA_DIAG_RESTORE                                                                                                       \
 	}
 
+#define succeed_if_keyset_contains_key_with_value(pks, pkn, pv)                                                                            \
+	{                                                                                                                                  \
+		nbTest++;                                                                                                                  \
+		KeySet * ks = pks;                                                                                                         \
+		const char * keyName = pkn;                                                                                                \
+		const char * expectedKeyValue = pv;                                                                                        \
+		ELEKTRA_DIAG_STORE                                                                                                         \
+		ELEKTRA_DIAG_OFF (-Waddress)                                                                                               \
+		if (!ks)                                                                                                                   \
+		{                                                                                                                          \
+			yield_error ("keyset is null pointer")                                                                             \
+		}                                                                                                                          \
+		else if (!keyName)                                                                                                         \
+		{                                                                                                                          \
+			yield_error ("key name is null pointer")                                                                           \
+		}                                                                                                                          \
+		else if (!expectedKeyValue)                                                                                                \
+		{                                                                                                                          \
+			yield_error ("key value is null pointer")                                                                          \
+		}                                                                                                                          \
+		else                                                                                                                       \
+		{                                                                                                                          \
+			Key * k = ksLookupByName (ks, keyName, 0);                                                                         \
+			if (k == NULL)                                                                                                     \
+			{                                                                                                                  \
+				yield_error_fmt ("expected keyset to contain key \"%s\"", keyName)                                         \
+			}                                                                                                                  \
+			else                                                                                                               \
+			{                                                                                                                  \
+				const char * value = keyString (k);                                                                        \
+				if (value == NULL)                                                                                         \
+				{                                                                                                          \
+					yield_error_fmt ("expected value of key \"%s\" to equal \"%s\" but was NULL"                       \
+							 , keyName, expectedKeyValue)                                                      \
+				}                                                                                                          \
+				else if (strcmp (expectedKeyValue, value) != 0)                                                            \
+				{                                                                                                          \
+					yield_error_fmt ("expected value of key \"%s\" to equal \"%s\" but was \"%s\""                     \
+							 , keyName, expectedKeyValue, value)                                               \
+				}                                                                                                          \
+			}                                                                                                                  \
+		}                                                                                                                          \
+                                                                                                                                           \
+		ELEKTRA_DIAG_RESTORE                                                                                                       \
+	}
+
 // only works with types convertible to int
 #define succeed_if_same_int(s1, s2)                                                                                                        \
 	{                                                                                                                                  \
