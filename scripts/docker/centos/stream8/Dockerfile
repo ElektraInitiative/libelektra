@@ -1,5 +1,7 @@
 FROM quay.io/centos/centos:stream8
 
+# Install DNF config manager plugin
+RUN dnf install -y 'dnf-command(config-manager)'
 # Enable PowerTools repo
 RUN dnf config-manager --set-enabled powertools
 # Enable EPEL repo
