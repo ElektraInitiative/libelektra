@@ -73,7 +73,7 @@ eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /panels/panel-2/length -n -s 1 -t
 eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /panels/panel-2/position-locked -n -s true -t bool
 eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /panels/panel-2/icon-size -n -s 48 -t uint
 eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /panels/panel-2/size -n -s 26 -t uint
-eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /panels/panel-1/plugin-ids -n -a -s 15 -s 16 -s 17 -s 18 -s 19 -s 20 -s 21 -s 22 -t int -t int -t int -t int -t int -t int -t int -t int
+eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /panels/panel-2/plugin-ids -n -a -s 15 -s 16 -s 17 -s 18 -s 19 -s 20 -s 21 -s 22 -t int -t int -t int -t int -t int -t int -t int -t int
 
 eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-1 -n -s "applicationsmenu" -t string
 eval "$XFCONF_QUERY_COMMAND" -c xfce4-panel -p /plugins/plugin-2 -n -s "tasklist" -t string
