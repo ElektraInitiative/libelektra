@@ -210,6 +210,8 @@ libelektraprivate_1.0 {
 	elektraChangeTrackingCreateContextForTesting;
 	elektraChangeTrackingContextDel;
 
+	elektraBootstrapPathContract;
+
 	# kdblogger.h
 	elektraLog;
 

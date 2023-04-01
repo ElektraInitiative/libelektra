@@ -322,7 +322,7 @@ static void addMountpoint (KeySet * backends, Key * mountpoint, Plugin * backend
 	ksAppendKey (backends, mountpoint);
 }
 
-static bool addElektraMountpoint (KeySet * backends, KeySet * modules, KeySet * global, Key * errorKey)
+static bool addElektraMountpoint (KeySet * backends, const char * path, KeySet * modules, KeySet * global, Key * errorKey)
 {
 	// TODO [new_backend]: implement user:/elektra and dir:/elektra
 	// TODO [new_backend]: replace KDB_DEFAULT_STORAGE with separate KDB_BOOTSTRAP_STORAGE
@@ -364,7 +364,7 @@ static bool addElektraMountpoint (KeySet * backends, KeySet * modules, KeySet * 
 		KS_END);
 	KeySet * definition =
 		ksNew (3,
-			keyNew ("system:/path", KEY_VALUE, KDB_DB_INIT, KEY_END),
+			keyNew ("system:/path", KEY_VALUE, path, KEY_END),
 			keyNew ("system:/positions/get/resolver", KEY_VALUE, "#0", KEY_END),
 			keyNew ("system:/positions/get/storage", KEY_VALUE, "#1", KEY_END),
 			keyNew ("system:/positions/set/resolver", KEY_VALUE, "#0", KEY_END),
@@ -845,7 +845,7 @@ static bool addModulesMountpoint (KDB * handle, Key * mountpoint, Key * errorKey
 
 static bool addHardcodedMountpoints (KDB * handle, Key * errorKey)
 {
-	if (!addElektraMountpoint (handle->backends, handle->modules, handle->global, errorKey))
+	if (!addElektraMountpoint (handle->backends, KDB_DB_INIT, handle->modules, handle->global, errorKey))
 	{
 		return false;
 	}
@@ -985,7 +985,18 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 	}
 
 	// Step 2: configure for bootstrap
-	if (!addElektraMountpoint (handle->backends, handle->modules, handle->global, errorKey))
+	const char * bootstrapPath = KDB_DB_INIT;
+	if (contract != NULL)
+	{
+		Key * bootstrapPathKey = ksLookupByName (contract, "system:/elektra/contract/bootstrap/path", 0);
+
+		if (bootstrapPathKey)
+		{
+			bootstrapPath = keyString (bootstrapPathKey);
+		}
+	}
+
+	if (!addElektraMountpoint (handle->backends, bootstrapPath, handle->modules, handle->global, errorKey))
 	{
 		goto error;
 	}

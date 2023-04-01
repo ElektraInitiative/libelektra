@@ -665,6 +665,7 @@ size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart);
 // TODO (kodebaach) [Q]: make public?
 int elektraIsArrayPart (const char * namePart);
 
+int elektraBootstrapPathContract (KeySet * contract, const char * prefix);
 #ifdef __cplusplus
 }
 }
