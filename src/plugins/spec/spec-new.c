@@ -545,11 +545,6 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * specKeys, KeyS
 
 		char * keyNameWithoutNamespace = strchr (keyName (specKey), '/');
 
-/**		Key * arraySizeKey = getArraySizeOfArrayParent(specKeys, specKey);
-		const char * arraySizeString = keyString (keyGetMeta (arraySizeKey, "array"));
-		int arraySize = arraySizeString == 0 ? 0 : atoi (arraySizeString);
-*/
-
 		for (int i = 0; i < num; i++)
 		{
 			char * untilArrayElementAtPositionI = elektraMalloc (arrayPositions[i]);
