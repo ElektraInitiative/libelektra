@@ -452,13 +452,12 @@ static void setArrayPositions (const char * keyNameWithoutNamespace, int * array
  *
  * @param ks the key set to look for the key
  * @param specKeys the specification keys
- * @param parentKey the parent key to be used for appending warning, error, information
  * @param specKey the array specification key
  * @return true - if the array size is valid
  *         false - if the array size was not found
  *               - if the array size is not valid
  */
-static bool isValidArraySize (KeySet * ks, KeySet * specKeys, Key * parentKey, Key * specKey)
+static bool isValidArraySize (KeySet * ks, KeySet * specKeys, Key * specKey)
 {
 	Key * key = ksLookupByName (ks, strchr (keyName (specKey), '/'), 0);
 	Key * keyToFetchArraySizeFrom = key == NULL ? getArraySizeOfArrayParent (specKeys, specKey) : key;
@@ -467,8 +466,7 @@ static bool isValidArraySize (KeySet * ks, KeySet * specKeys, Key * parentKey, K
 	if (arrayMetaKey == 0)
 	{
 		// no array size found, skip
-		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "Could not find array size for key %s", keyName (specKey));
-		return false;
+		return true;
 	}
 
 	if (!validateArraySize (keyToFetchArraySizeFrom, specKey))
@@ -530,7 +528,7 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * specKeys, KeyS
 	int found = -1;
 
 	bool isArraySpec = isArraySpecification (specKey);
-	if (isArraySpec && !isValidArraySize (ks, specKeys, parentKey, specKey))
+	if (isArraySpec && !isValidArraySize (ks, specKeys, parentKey))
 	{
 		return -1;
 	}
