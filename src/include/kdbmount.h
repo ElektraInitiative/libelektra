@@ -16,7 +16,7 @@ extern "C" {
 
 /* Actual mounting functionality */
 /* TODO: from mountbase.cpp */
-KeySet * getMountConfig (KDB * handle, Key * errorKey, const char * const mountpointsPath);
+KeySet * getMountConfig (KDB * handle, const char * const mountpointsPath);
 const char * cGetMountpoint (const KeySet * const mountconf, bool clInteractive);
 
 /* TODO: from mount.cpp */
