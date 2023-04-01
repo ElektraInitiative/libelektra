@@ -3,9 +3,9 @@
 #include "elektra-xfconf-util.h"
 #include "elektra-xfconf.h"
 
-#define require_binding_read_lock() require_read_lock (&channel_lock, "BINDING")
-#define require_binding_write_lock() require_read_lock (&channel_lock, "BINDING")
-#define release_binding_lock() require_read_lock (&channel_lock, "BINDING")
+#define require_binding_read_lock() require_read_lock (&binding_lock, "BINDING")
+#define require_binding_write_lock() require_read_lock (&binding_lock, "BINDING")
+#define release_binding_lock() require_read_lock (&binding_lock, "BINDING")
 
 typedef struct
 {

@@ -13,9 +13,11 @@
 
 #define XFCONF_PERSIST_DEFAULT 1
 #define XFCONF_DEBUG_LOG_FOUND_KEYS 0
+#define XFCONF_INDIVIDUAL_KEY_SETS 0
 
 extern GList * channel_list;
 extern KDB * elektraKdb;
+extern KeySet * globalKeySet;
 extern pthread_rwlock_t channel_lock;
 
 

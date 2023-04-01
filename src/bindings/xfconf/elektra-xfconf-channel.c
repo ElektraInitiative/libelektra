@@ -180,11 +180,19 @@ static gint compare_pairs (gconstpointer a, gconstpointer b)
 	return strcmp (pair_a->channel->channel_name, pair_b->channel->channel_name);
 }
 
-static ChannelKeySetPair * find_or_create_channel_pair (const gchar * channel_name)
+static ChannelKeySetPair * find_or_create_channel_pair (const gchar * channel_name, uint already_locked)
 {
 	trace ();
-	require_channel_read_lock () GList * channel_item = g_list_find_custom (channel_list, channel_name, &find_pair_by_name);
-	release_channel_lock () if (channel_item != NULL)
+	if (already_locked != 1)
+	{
+		require_channel_read_lock ()
+	}
+	GList * channel_item = g_list_find_custom (channel_list, channel_name, &find_pair_by_name);
+	if (already_locked != 1)
+	{
+		release_channel_lock ()
+	}
+	if (channel_item != NULL)
 	{
 		g_debug ("ChannelKeySetPair for channel %s already exists, returning it", channel_name);
 		return channel_item->data;
@@ -192,9 +200,25 @@ static ChannelKeySetPair * find_or_create_channel_pair (const gchar * channel_na
 	g_debug ("ChannelKeySetPair for channel %s does not exist, creating it", channel_name);
 	ChannelKeySetPair * channel_pair = malloc (sizeof (ChannelKeySetPair));
 	channel_pair->channel = xfconf_channel_new (channel_name);
-	channel_pair->keySet = ksNew (0, KS_END);
-	require_channel_write_lock () channel_list = g_list_insert_sorted (channel_list, channel_pair, &compare_pairs);
-	release_channel_lock () return channel_pair;
+	if (XFCONF_INDIVIDUAL_KEY_SETS == 1)
+	{
+		channel_pair->keySet = ksNew (0, KS_END);
+	}
+	else
+	{
+		channel_pair->keySet = globalKeySet; // new backend loads all keys which belong to the same backend in an atomic way, using
+						     // the same pointer for all channels
+	}
+	if (already_locked != 1)
+	{
+		require_channel_write_lock ()
+	}
+	channel_list = g_list_insert_sorted (channel_list, channel_pair, &compare_pairs);
+	if (already_locked != 1)
+	{
+		release_channel_lock ()
+	}
+	return channel_pair;
 }
 
 KeySet * ksDeepDup (const KeySet * ks)
@@ -211,7 +235,7 @@ KeySet * ksDeepDup (const KeySet * ks)
 XfconfChannel * xfconf_channel_get (const gchar * channel_name)
 {
 	trace ();
-	XfconfChannel * channel = find_or_create_channel_pair (channel_name)->channel;
+	XfconfChannel * channel = find_or_create_channel_pair (channel_name, 0)->channel;
 	return channel;
 }
 
@@ -236,22 +260,39 @@ XfconfChannel * xfconf_channel_new_with_property_base (const gchar * channel_nam
  */
 static char * channelNameToKeyName (const char * channelName)
 {
-	char * kdbKeyName = malloc ((strlen (channelName) + strlen (XFCONF_ROOT) + 2) * sizeof (char));
-	sprintf (kdbKeyName, "%s/%s", XFCONF_ROOT, channelName);
+	char * kdbKeyName = malloc ((strlen (channelName) + strlen (XFCONF_ROOT) + strlen (XFCONF_NAMESPACE) + 3) * sizeof (char));
+	sprintf (kdbKeyName, "%s%s/%s", XFCONF_NAMESPACE, XFCONF_ROOT, channelName);
 	return kdbKeyName;
 }
 
-static KeySet * keySet_from_channel (const gchar * channel_name, uint reference)
+static KeySet * keySet_from_channel (const gchar * channel_name, uint reference, uint already_locked)
 {
 	trace ();
-	char * kdbKeyName = channelNameToKeyName (channel_name);
-	ChannelKeySetPair * channelPair = find_or_create_channel_pair (channel_name);
+	char * kdbKeyName;
+	if (XFCONF_INDIVIDUAL_KEY_SETS == 1)
+	{
+		kdbKeyName = channelNameToKeyName (channel_name);
+	}
+	else
+	{
+		kdbKeyName = channelNameToKeyName ("");
+	}
+	ChannelKeySetPair * channelPair = find_or_create_channel_pair (channel_name, 1);
 	Key * parentKey = keyNew (kdbKeyName, KEY_END);
 	g_debug ("Fetch keys from parent: %s", kdbKeyName);
-	require_channel_write_lock () int getStatusCode = kdbGet (elektraKdb, channelPair->keySet, parentKey);
-	release_channel_lock ()
+	if (already_locked != 1)
+	{
+		require_channel_write_lock ()
+	}
+	g_debug ("Refreshing keyset for channel %s from kdb, currently %ld keys", channel_name, ksGetSize (channelPair->keySet));
+	int getStatusCode = kdbGet (elektraKdb, channelPair->keySet, parentKey);
+	g_debug ("Refreshed keyset (status code was %d) now has %ld keys", getStatusCode, ksGetSize (channelPair->keySet));
+	if (already_locked != 1)
+	{
+		release_channel_lock ()
+	}
 
-		switch (getStatusCode)
+	switch (getStatusCode)
 	{
 	case -1:
 		g_warning ("There was a failure fetching the keys");
@@ -271,21 +312,37 @@ static KeySet * keySet_from_channel (const gchar * channel_name, uint reference)
 	if (XFCONF_DEBUG_LOG_FOUND_KEYS == 1)
 	{
 		Key * cur;
-		require_channel_read_lock () ssize_t keySetSize = ksGetSize (channelPair->keySet);
+		if (already_locked != 1)
+		{
+			require_channel_read_lock ()
+		}
+		ssize_t keySetSize = ksGetSize (channelPair->keySet);
 		g_debug ("KeySet has %ld keys", keySetSize);
 		for (elektraCursor i = 0; i < keySetSize; i++)
 		{
 			cur = ksAtCursor (channelPair->keySet, i);
 			g_debug ("Found key: %s", keyName (cur));
 		}
-		release_channel_lock () free (kdbKeyName);
+		if (already_locked != 1)
+		{
+			release_channel_lock ()
+		}
+		free (kdbKeyName);
 	}
 	if (reference != 0)
 	{
 		return channelPair->keySet;
 	}
-	require_channel_read_lock () KeySet * deepCopy = ksDeepDup (channelPair->keySet);
-	release_channel_lock () return deepCopy;
+	if (already_locked != 1)
+	{
+		require_channel_read_lock ()
+	}
+	KeySet * deepCopy = ksDeepDup (channelPair->keySet);
+	if (already_locked != 1)
+	{
+		release_channel_lock ()
+	}
+	return deepCopy;
 }
 
 /**
@@ -439,7 +496,7 @@ gboolean ks_get_formatted (KeySet * ks, XfconfChannel * channel, const gchar * p
 gboolean xfconf_channel_get_formatted (XfconfChannel * channel, const gchar * property, GValue * g_value)
 {
 	trace ();
-	KeySet * keySet = keySet_from_channel (channel->channel_name, 1);
+	KeySet * keySet = keySet_from_channel (channel->channel_name, 1, 0);
 	require_channel_read_lock () gboolean result = ks_get_formatted (keySet, channel, property, g_value);
 	release_channel_lock () return result;
 }
@@ -461,12 +518,14 @@ gboolean xfconf_channel_get_formatted (XfconfChannel * channel, const gchar * pr
 static int appendKeyToChannel (const XfconfChannel * channel, Key * key)
 {
 	trace ();
-	KeySet * keySet = keySet_from_channel (channel->channel_name, 1);
-	require_channel_write_lock () ksAppendKey (keySet, key);
-	char * parentKeyName = malloc ((strlen (XFCONF_ROOT) + strlen (channel->channel_name) + 2) * sizeof (char));
-	sprintf (parentKeyName, "%s/%s", XFCONF_ROOT, channel->channel_name);
+	require_channel_write_lock () KeySet * keySet = keySet_from_channel (channel->channel_name, 1, 1);
+	g_debug ("the keyset contains %ld keysx before appending", ksGetSize (keySet));
+	ksAppendKey (keySet, key);
+	const char * parentKeyName = channelNameToKeyName (channel->channel_name);
 	Key * parentKey = keyNew (parentKeyName, KEY_END);
+	keySet = keySet_from_channel (channel->channel_name, 1, 1);
 	int resultCode = kdbSet (elektraKdb, keySet, parentKey);
+	g_debug ("the keyset contains %ld keysx after appending", ksGetSize (keySet));
 	release_channel_lock () g_debug ("storing key set for parent key %s returned %d", parentKeyName, resultCode);
 	return resultCode;
 }
@@ -550,7 +609,7 @@ static char * propertyWithChannelPrefix (const XfconfChannel * channel, const gc
 gboolean xfconf_channel_has_property (XfconfChannel * channel, const gchar * property)
 {
 	trace ();
-	KeySet * keySet = keySet_from_channel (channel->channel_name, 1);
+	KeySet * keySet = keySet_from_channel (channel->channel_name, 1, 0);
 	char * propertyName = malloc ((strlen (XFCONF_ROOT) + strlen (channel->channel_name) + strlen (property) + 2) * sizeof (char));
 	sprintf (propertyName, "%s/%s%s", XFCONF_ROOT, channel->channel_name, property);
 	require_channel_read_lock ()
@@ -606,8 +665,8 @@ GHashTable * xfconf_channel_get_properties (XfconfChannel * channel, const gchar
 	trace ();
 	g_debug ("Fetch properties of channel %s with base %s", channel->channel_name, property_base);
 	GHashTable * properties = g_hash_table_new (g_value_hash, g_value_equal);
-	KeySet * ks = keySet_from_channel (channel->channel_name,
-					   1); // todo: wrong key set seems to be returned, it contains keys from other channels
+	KeySet * ks = keySet_from_channel (channel->channel_name, 1,
+					   0); // todo: wrong key set seems to be returned, it contains keys from other channels
 	const Key * key;
 	unsigned long propertyBaseLength = strlen (property_base);
 	require_channel_read_lock () for (elektraCursor i = 0; i < ksGetSize (ks); i++)
@@ -950,7 +1009,7 @@ static gboolean elektraArrayLength (KeySet * ks, XfconfChannel * channel, const 
 GPtrArray * xfconf_channel_get_arrayv (XfconfChannel * channel, const gchar * property)
 {
 	trace ();
-	KeySet * ks = keySet_from_channel (channel->channel_name, 1);
+	KeySet * ks = keySet_from_channel (channel->channel_name, 1, 0);
 	require_channel_read_lock () GPtrArray * resultPtr = ks_get_arrayv (ks, channel, property);
 	release_channel_lock () return resultPtr;
 }

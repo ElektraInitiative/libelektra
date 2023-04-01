@@ -7,6 +7,7 @@ pthread_rwlock_t channel_lock = PTHREAD_RWLOCK_INITIALIZER;
 pthread_rwlock_t init_lock = PTHREAD_RWLOCK_INITIALIZER;
 GList * channel_list = NULL;
 KDB * elektraKdb = NULL;
+KeySet * globalKeySet = NULL;
 
 gboolean xfconf_init (GError ** error)
 {
@@ -15,6 +16,10 @@ gboolean xfconf_init (GError ** error)
 	{
 		g_info ("channel lock successful, initialize structures if necessary");
 		Key * elektraError = keyNew ("/elektra_error", KEY_END);
+		if (globalKeySet == NULL)
+		{
+			globalKeySet = ksNew (0, KS_END);
+		}
 		if (elektraKdb == NULL)
 		{
 			g_info ("structures are not initialized yet, proceeding");
