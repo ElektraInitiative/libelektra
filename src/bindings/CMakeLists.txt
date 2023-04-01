@@ -15,6 +15,11 @@ if (IS_INCLUDED)
 	add_subdirectory (rust)
 endif ()
 
+check_binding_included ("go-elektra" IS_INCLUDED)
+if (IS_INCLUDED)
+	add_subdirectory (go-elektra)
+endif ()
+
 add_subdirectory (swig)
 
 check_binding_included ("glib" IS_INCLUDED)
