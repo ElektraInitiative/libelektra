@@ -93,9 +93,9 @@ There seems to be about 10 % overhead, but we don't expect it to be noticeable i
 
 The following text lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-### <<Plugin>>
+### spec
 
-- <<TODO>>
+- Rewrite spec plugin, fix bugs and use correct error handling _(Tomislav Makar @tmakar)_
 - <<TODO>>
 - <<TODO>>
 
