@@ -36,8 +36,8 @@ well known `fnmatch(3)`. However, there is special handling for array specificat
 
 Keys which contain a part that is exactly `#` (e.g. `my/#/key` or `my/#`) are called array specifications. These keys are instantiated
 in order to support `default` values. If the key does not exist and `default` is specified in the spec namespace, the key is created under
-the `default` namespace. We also lookup the array size (defined by the `array` metakey) using a cascading `ksLookup`. This only looks at 
-non-spec namespaces, if we don't find an array size their, we check the array parent in the spec namespace. If we still have no array size, 
+the `default` namespace. We also lookup the array size (defined by the `array` metakey) using a cascading `ksLookup`. This only looks at
+non-spec namespaces, if we don't find an array size their, we check the array parent in the spec namespace. If we still have no array size,
 the array is deemed to be empty. For empty arrays, we will simply validate that they are indeed empty.
 
 ### Wildcard Specifications
@@ -73,13 +73,13 @@ set, we validate the array size (given as metakey `array` on `x`) is within the 
 `array/max` have to be valid array-elements similar to `array`. If the array size is out of bounds, this causes an `error`. If it is a
 `kdbGet` it is a `warning`.
 
-Note: We don't actually validate that the array doesn't contain elements above the given array size. This is because it doesn't have anything
-to do with the specification, whether the array contains additional elements. Note also that we only copy metadata onto elements within
-the bounds of the array size.
+Note: We don't actually validate that the array doesn't contain elements above the given array size. This is because it doesn't have
+anything to do with the specification, whether the array contains additional elements. Note also that we only copy metadata onto elements
+within the bounds of the array size.
 
 ### Array Specification and Wildcard Specification (Collision)
 
-A collision is when two specification keys exist, one as wildcard specification, the other as array specification, and it is not clear in 
+A collision is when two specification keys exist, one as wildcard specification, the other as array specification, and it is not clear in
 this case what the correct specification is.
 
 ```text
@@ -95,6 +95,7 @@ Spec plugin does not know what specification to take in this case, so it appends
 In case there is an error, warning or information, it is appended to the `parent key`.
 
 ### Example
+
 ```text
 parentKey = "system:/sw/org"
 
@@ -108,7 +109,7 @@ system:/sw/org/warning/...
 system:/sw/org/info/description
 ```
 
-If there is an error, the `spec` plugin exists with `ELEKTRA_PLUGIN_STATUS_ERROR` otherwise with `ELEKTRA_PLUGIN_STATUS_SUCCESS`. 
+If there is an error, the `spec` plugin exists with `ELEKTRA_PLUGIN_STATUS_ERROR` otherwise with `ELEKTRA_PLUGIN_STATUS_SUCCESS`.
 
 ### Cases
 
