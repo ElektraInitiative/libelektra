@@ -6,10 +6,12 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include "coloredkdbio.hpp"
 #include "recordstart.hpp"
 #include <cmdline.hpp>
 #include <kdb.hpp>
 #include <kdbrecord.h>
+#include <iostream>
 
 using namespace std;
 using namespace kdb;
@@ -33,7 +35,11 @@ int RecordStartCommand::execute (const Cmdline & cmdline)
 		parentKey = cmdline.createKey (0);
 	}
 
-	ckdb::elektraRecordEnableRecording (*kdb, *parentKey, *errorKey);
+	if (!ckdb::elektraRecordEnableRecording (*kdb, *parentKey, *errorKey))
+	{
+		printError (cerr, errorKey, cmdline.verbose, cmdline.debug);
+		return 1;
+	}
 
 	return 0;
 }

@@ -6,9 +6,12 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include "coloredkdbio.hpp"
 #include "recordstop.hpp"
 #include <kdb.hpp>
 #include <kdbrecord.h>
+#include <cmdline.hpp>
+#include <iostream>
 
 using namespace std;
 using namespace kdb;
@@ -21,5 +24,11 @@ int RecordStopCommand::execute (const Cmdline & cmdline)
 	KDB kdb;
 	Key errorKey ("/");
 
-	ckdb::elektraRecordDisableRecording (*kdb, *errorKey);
+	if (!ckdb::elektraRecordDisableRecording (*kdb, *errorKey))
+	{
+		printError (cerr, errorKey, cmdline.verbose, cmdline.debug);
+		return 1;
+	}
+
+	return 0;
 }

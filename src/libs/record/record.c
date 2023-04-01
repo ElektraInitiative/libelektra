@@ -4,12 +4,30 @@
 #include <kdbprivate.h>
 #include <kdbrecord.h>
 
-void elektraRecordEnableRecording (KDB * handle, const Key * parentKey, Key * errorKey)
+bool elektraRecordEnableRecording (KDB * handle, const Key * parentKey, Key * errorKey)
 {
+	if (handle == NULL)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "NULL pointer passed for KDB handle");
+		return false;
+	}
+
+	if (parentKey == NULL)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "NULL pointer passed for parent key");
+		return false;
+	}
+
 	Key * configKey = keyNew (ELEKTRA_RECORD_CONFIG_KEY, KEY_END);
 
 	KeySet * config = ksNew (0, KS_END);
-	kdbGet (handle, config, configKey);
+	if (kdbGet (handle, config, configKey) == -1)
+	{
+		elektraCopyError (errorKey, configKey);
+		keyDel (configKey);
+		ksDel (config);
+		return false;
+	}
 
 	elektraNamespace ns = KEY_NS_SYSTEM;
 	Key * activeKey = ksLookupByName (config, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, KDB_O_POP);
@@ -24,20 +42,41 @@ void elektraRecordEnableRecording (KDB * handle, const Key * parentKey, Key * er
 
 	ksAppendKey (config, activeKey);
 
-	kdbSet (handle, config, configKey);
+	if (kdbSet (handle, config, configKey) == -1)
+	{
+		elektraCopyError (errorKey, configKey);
+		keyDel (configKey);
+		ksDel (config);
+		keyDel (activeKey);
+		return false;
+	}
 
 	ksAppendKey (handle->global, activeKey);
 
 	keyDel (configKey);
 	ksDel (config);
+
+	return true;
 }
 
-void elektraRecordDisableRecording (KDB * handle, Key * errorKey)
+bool elektraRecordDisableRecording (KDB * handle, Key * errorKey)
 {
+	if (handle == NULL)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "NULL pointer passed for KDB handle");
+		return false;
+	}
+
 	Key * configKey = keyNew (ELEKTRA_RECORD_CONFIG_KEY, KEY_END);
 
 	KeySet * config = ksNew (0, KS_END);
-	kdbGet (handle, config, configKey);
+	if (kdbGet (handle, config, configKey) == -1)
+	{
+		elektraCopyError (errorKey, configKey);
+		keyDel (configKey);
+		ksDel (config);
+		return false;
+	}
 
 	Key * activeKey = NULL;
 	while ((activeKey = ksLookupByName (config, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, KDB_O_POP)) != NULL)
@@ -45,7 +84,14 @@ void elektraRecordDisableRecording (KDB * handle, Key * errorKey)
 		keyDel (activeKey);
 	}
 
-	kdbSet (handle, config, configKey);
+	if (kdbSet (handle, config, configKey) == -1)
+	{
+		elektraCopyError (errorKey, configKey);
+		keyDel (configKey);
+		ksDel (config);
+		keyDel (activeKey);
+		return false;
+	}
 
 	while ((activeKey = ksLookupByName (handle->global, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, KDB_O_POP)) != NULL)
 	{
@@ -54,20 +100,43 @@ void elektraRecordDisableRecording (KDB * handle, Key * errorKey)
 
 	keyDel (configKey);
 	ksDel (config);
+
+	return true;
 }
 
-void elektraRecordClearSession (KDB * handle, Key * errorKey)
+bool elektraRecordClearSession (KDB * handle, Key * errorKey)
 {
-	Key * sessionKey = keyNew (ELEKTRA_RECORD_SESSION_KEY, KEY_END);
+	if (handle == NULL)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "NULL pointer passed for KDB handle");
+		return false;
+	}
 
+	Key * sessionKey = keyNew (ELEKTRA_RECORD_SESSION_KEY, KEY_END);
 	KeySet * session = ksNew (0, KS_END);
 
-	kdbGet (handle, session, sessionKey);
+	if (kdbGet (handle, session, sessionKey) == -1)
+	{
+		elektraCopyError (errorKey, sessionKey);
+		keyDel (sessionKey);
+		ksDel (session);
+		return false;
+	}
+
 	ksDel (ksCut (session, sessionKey));
-	kdbSet (handle, session, sessionKey);
+
+	if (kdbSet (handle, session, sessionKey) == -1)
+	{
+		elektraCopyError (errorKey, sessionKey);
+		keyDel (sessionKey);
+		ksDel (session);
+		return false;
+	}
 
 	keyDel (sessionKey);
 	ksDel (session);
+
+	return true;
 }
 
 bool elektraRecordIsActive (KDB * handle)
@@ -143,11 +212,35 @@ static void putDiffIntoSessionStorage (KeySet * recordStorage, ElektraDiff * ses
 
 bool elektraRecordRecord (KDB * handle, KDB * sessionStorageHandle, KeySet * newKeys, Key * parentKey, Key * errorKey)
 {
+	if (handle == NULL)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "NULL pointer passed for KDB handle");
+		return false;
+	}
+
+	if (sessionStorageHandle == NULL)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "NULL pointer passed for KDB session storage handle");
+		return false;
+	}
+
+	if (newKeys == NULL)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "NULL pointer passed for new keys");
+		return false;
+	}
+
+	if (parentKey == NULL)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "NULL pointer passed for parent key");
+		return false;
+	}
+
 	const Key * activeKey = ksLookupByName (handle->global, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, 0);
 	if (activeKey == NULL)
 	{
-		ELEKTRA_ADD_INTERNAL_WARNINGF (errorKey, "Key %s was not found", ELEKTRA_RECORD_CONFIG_ACTIVE_KEY);
-		return false;
+		// recording is not activated --> do nothing, but still successful
+		return true;
 	}
 
 	Key * recordConfigurationKey = keyNew (ELEKTRA_RECORD_CONFIG_KEY, KEY_END);
@@ -155,27 +248,43 @@ bool elektraRecordRecord (KDB * handle, KDB * sessionStorageHandle, KeySet * new
 
 	if (keyIsBelowOrSame (sessionRecordingKey, parentKey) || keyIsBelowOrSame (recordConfigurationKey, parentKey))
 	{
+		// the parent key is either below our session storage or below our configuration storage
+		// we do not want to record changes to the recording tool itself
+		// do nothing, but still successful
 		keyDel (sessionRecordingKey);
 		keyDel (recordConfigurationKey);
 		return true;
 	}
 
-	KeySet * duped = ksDup (newKeys);
-	ksDel (ksCut (duped, sessionRecordingKey));
-	ksDel (ksCut (duped, recordConfigurationKey));
+	// Remove all keys that belong to the recording tool
+	KeySet * toRecord = ksDup (newKeys);
+	ksDel (ksCut (toRecord, sessionRecordingKey));
+	ksDel (ksCut (toRecord, recordConfigurationKey));
 
-	if (ksGetSize (duped) == 0 && ksGetSize (newKeys) != 0)
+	if (ksGetSize (toRecord) == 0 && ksGetSize (newKeys) != 0)
 	{
+		// after clearing out all keys that belong to the recording tool there are no more keys
+		// do nothing, but still successful
 		keyDel (sessionRecordingKey);
 		keyDel (recordConfigurationKey);
-		ksDel (duped);
+		ksDel (toRecord);
 		return true;
 	}
-
-	Key * sessionRecordingParentKey = keyNew (keyString (activeKey), KEY_END);
 
 	const ChangeTrackingContext * changeTrackingContext = elektraChangeTrackingGetContextFromKdb (handle);
+	if (changeTrackingContext == NULL)
+	{
+		ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not get changetracking context from KDB");
+		keyDel (sessionRecordingKey);
+		keyDel (recordConfigurationKey);
+		ksDel (toRecord);
+		return false;
+	}
 
+	// Root key for which session recording is enabled
+	Key * sessionRecordingParentKey = keyNew (keyString (activeKey), KEY_END);
+
+	// Parent key for the part diff
 	Key * parentKeyForDiff = parentKey;
 	if (keyIsBelow (parentKey, sessionRecordingParentKey))
 	{
@@ -183,51 +292,103 @@ bool elektraRecordRecord (KDB * handle, KDB * sessionStorageHandle, KeySet * new
 		parentKeyForDiff = sessionRecordingParentKey;
 	}
 
-	ElektraDiff * partDiff = elektraChangeTrackingCalculateDiff (duped, changeTrackingContext, parentKeyForDiff);
+	ElektraDiff * partDiff = elektraChangeTrackingCalculateDiff (toRecord, changeTrackingContext, parentKeyForDiff);
 	elektraDiffRemoveSameOrBelow (partDiff, sessionRecordingKey);
 	elektraDiffRemoveSameOrBelow (partDiff, recordConfigurationKey);
 
+	bool successful = true;
 	if (!elektraDiffIsEmpty (partDiff))
 	{
 		KeySet * recordStorage = ksNew (0, KS_END);
-		kdbGet (sessionStorageHandle, recordStorage, sessionRecordingKey);
+
+		// load data for current session diff
+		if (kdbGet (sessionStorageHandle, recordStorage, sessionRecordingKey) == -1)
+		{
+			elektraCopyError (errorKey, sessionRecordingKey);
+			successful = false;
+			ksDel (recordStorage);
+			goto cleanup;
+		}
 
 		ElektraDiff * sessionDiff = getDiffFromSessionStorage (recordStorage, sessionRecordingParentKey);
+
+		// Calculate new session diff
 		Key * appendKey = keyNew ("/", KEY_END);
 		elektraDiffAppend (sessionDiff, partDiff, appendKey);
 		keyDel (appendKey);
 
 		putDiffIntoSessionStorage (recordStorage, sessionDiff);
 
-		kdbSet (sessionStorageHandle, recordStorage, sessionRecordingKey);
+		// store data for session diff
+		if (kdbSet (sessionStorageHandle, recordStorage, sessionRecordingKey) == -1)
+		{
+			elektraCopyError (errorKey, sessionRecordingKey);
+			successful = false;
+			elektraDiffDel (sessionDiff);
+			ksDel (recordStorage);
+			goto cleanup;
+		}
 
 		elektraDiffDel (sessionDiff);
 		ksDel (recordStorage);
 	}
 
+cleanup:
 	keyDel (sessionRecordingKey);
 	keyDel (recordConfigurationKey);
 	keyDel (sessionRecordingParentKey);
-	ksDel (duped);
+	ksDel (toRecord);
 	elektraDiffDel (partDiff);
 
-	return true;
+	return successful;
 }
 
 bool elektraRecordUndo (KDB * handle, KDB * sessionStorageHandle, Key * parentKey, Key * errorKey)
 {
-	Key * sessionRecordingKey = keyNew (ELEKTRA_RECORD_SESSION_KEY, KEY_END);
+	if (handle == NULL)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "NULL pointer passed for KDB handle");
+		return false;
+	}
 
+	if (sessionStorageHandle == NULL)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "NULL pointer passed for KDB session storage handle");
+		return false;
+	}
+
+	if (parentKey == NULL)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "NULL pointer passed for parent key");
+		return false;
+	}
+
+	Key * sessionRecordingKey = keyNew (ELEKTRA_RECORD_SESSION_KEY, KEY_END);
 	KeySet * recordStorage = ksNew (0, KS_END);
-	kdbGet (sessionStorageHandle, recordStorage, sessionRecordingKey);
+
+	// Load data from session diff
+	if (kdbGet (sessionStorageHandle, recordStorage, sessionRecordingKey) == -1)
+	{
+		elektraCopyError (errorKey, sessionRecordingKey);
+		keyDel (sessionRecordingKey);
+		ksDel (recordStorage);
+		return false;
+	}
 
 	ElektraDiff * sessionDiff = getDiffFromSessionStorage (recordStorage, NULL);
 	ElektraDiff * undoDiff = elektraDiffCut (sessionDiff, parentKey);
 
+	bool successful = true;
 	if (!elektraDiffIsEmpty (undoDiff))
 	{
 		KeySet * ks = ksNew (0, KS_END);
-		kdbGet (handle, ks, parentKey);
+		if (kdbGet (handle, ks, parentKey) == -1)
+		{
+			elektraCopyError (errorKey, parentKey);
+			successful = false;
+			ksDel (ks);
+			goto cleanup;
+		}
 
 		KeySet * keysToRemove = elektraDiffGetAddedKeys (undoDiff);
 		KeySet * keysToModify = elektraDiffGetModifiedKeys (undoDiff);
@@ -246,11 +407,22 @@ bool elektraRecordUndo (KDB * handle, KDB * sessionStorageHandle, Key * parentKe
 		// Disable session recording for now
 		Key * activeKey = ksLookupByName (handle->global, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, KDB_O_POP);
 
-		kdbSet (handle, ks, parentKey);
+		if (kdbSet (handle, ks, parentKey) == -1)
+		{
+			elektraCopyError (errorKey, parentKey);
+			successful = false;
+			goto innercleanup;
+		}
 
 		putDiffIntoSessionStorage (recordStorage, sessionDiff);
-		kdbSet (sessionStorageHandle, recordStorage, sessionRecordingKey);
+		if (kdbSet (sessionStorageHandle, recordStorage, sessionRecordingKey) == -1)
+		{
+			elektraCopyError (errorKey, parentKey);
+			successful = false;
+			goto innercleanup;
+		}
 
+innercleanup:
 		if (activeKey != NULL)
 		{
 			// Reenable session recording
@@ -261,13 +433,19 @@ bool elektraRecordUndo (KDB * handle, KDB * sessionStorageHandle, Key * parentKe
 		ksDel (keysToModify);
 		ksDel (keysToAdd);
 		ksDel (ks);
+
+		if (!successful)
+		{
+			goto cleanup;
+		}
 	}
 
+cleanup:
 	keyDel (sessionRecordingKey);
 	ksDel (recordStorage);
 
 	elektraDiffDel (sessionDiff);
 	elektraDiffDel (undoDiff);
 
-	return true;
+	return successful;
 }

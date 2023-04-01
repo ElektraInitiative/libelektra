@@ -6,10 +6,12 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include "coloredkdbio.hpp"
 #include "recordundo.hpp"
 #include <cmdline.hpp>
 #include <kdb.hpp>
 #include <kdbrecord.h>
+#include <iostream>
 
 using namespace std;
 using namespace kdb;
@@ -33,7 +35,11 @@ int RecordUndoCommand::execute (const Cmdline & cmdline)
 	KDB kdb;
 	Key errorKey ("/");
 
-	ckdb::elektraRecordUndo (*kdb, *kdb, *parentKey, *errorKey);
+	if (!ckdb::elektraRecordUndo (*kdb, *kdb, *parentKey, *errorKey))
+	{
+		printError (cerr, errorKey, cmdline.verbose, cmdline.debug);
+		return 1;
+	}
 
 	return 0;
 }
