@@ -871,6 +871,10 @@ static bool addHardcodedMountpoints (KDB * handle, Key * errorKey)
 		return false;
 	}
 
+	if (!addRecordingMountpoint (handle->backends, KEY_NS_SPEC, handle->modules, handle->global, errorKey))
+	{
+		return false;
+	}
 	if (!addRecordingMountpoint (handle->backends, KEY_NS_SYSTEM, handle->modules, handle->global, errorKey))
 	{
 		return false;
