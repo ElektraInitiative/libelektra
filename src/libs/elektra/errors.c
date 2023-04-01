@@ -7,6 +7,7 @@
  */
 
 #include <kdberrors.h>
+#include <kdbprivate.h>
 
 #include <string.h>
 
@@ -225,4 +226,37 @@ void elektraTriggerError (const char * nr, Key * parentKey, const char * message
 	MAYBE_TRIGGER_ERROR (VALIDATION_SYNTACTIC, nr, parentKey, message);
 	MAYBE_TRIGGER_ERROR (VALIDATION_SEMANTIC, nr, parentKey, message);
 	ELEKTRA_SET_INTERNAL_ERRORF (parentKey, "Unkown error code %s", nr);
+}
+
+/**
+ * Copy the error from the source key to target key
+ * @param target append error to this key
+ * @param source copy error from this key
+ */
+void elektraCopyError (Key * target, Key * source)
+{
+	if (target == NULL || source == NULL)
+	{
+		return;
+	}
+
+	KeySet * targetMeta = keyMeta (target);
+	if (targetMeta == NULL)
+	{
+		return ;
+	}
+
+	KeySet * sourceMeta = keyMeta (source);
+	if (sourceMeta == NULL)
+	{
+		return;
+	}
+
+	Key * errorRoot = keyNew ("meta:/error", KEY_END);
+	KeySet * sourceError = ksBelow (sourceMeta, errorRoot);
+
+	ksAppend (targetMeta, sourceError);
+
+	ksDel (sourceError);
+	keyDel (errorRoot);
 }

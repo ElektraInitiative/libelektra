@@ -42,6 +42,8 @@ target_link_elektra (test_changetracking elektra-kdb)
 target_link_elektra (test_diff elektra-kdb)
 target_link_elektra (test_diffprivate elektra-kdb)
 
+target_link_elektra (test_error elektra-kdb)
+
 if (TARGET elektra-notification
     AND TARGET elektra-dbus
     AND TARGET elektra-internalnotification
