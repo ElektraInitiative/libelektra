@@ -988,7 +988,7 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 	const char * bootstrapPath = KDB_DB_INIT;
 	if (contract != NULL)
 	{
-		Key * bootstrapPathKey = ksLookupByName (contract, "system:/elektra/contract/bootstrap/path", 0);
+		Key * bootstrapPathKey = ksLookupByName ((KeySet *) contract, "system:/elektra/contract/bootstrap/path", 0);
 
 		if (bootstrapPathKey)
 		{
