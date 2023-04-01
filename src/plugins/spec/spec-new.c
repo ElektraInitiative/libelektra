@@ -88,10 +88,13 @@ static void addDefaultKey (KeySet * ks, Key * parentKey, Key * specKey)
 	const char * parentKeyName = strchr (keyName (parentKey), '/');
 	const char * specKeyName = keyBaseName (specKey);
 
-	Key * newDefaultKey = keyNew (elektraFormat ("default:/%s/%s", parentKeyName, specKeyName), KEY_VALUE, defaultValue, KEY_END);
+	char * formattedKeyName = elektraFormat ("default:/%s/%s", parentKeyName, specKeyName);
+	Key * newDefaultKey = keyNew (formattedKeyName, KEY_VALUE, defaultValue, KEY_END);
 	keyCopyAllMeta (newDefaultKey, specKey);
 
 	ksAppendKey (ks, newDefaultKey);
+
+	elektraFree (formattedKeyName);
 }
 
 /**
@@ -282,8 +285,8 @@ static void instantiateArraySpecificationAndCopyMeta (Key * specKey, KeySet * ks
 		char * arrayElementName = elektraMalloc (1 + (i % 10) + i);
 		createArrayElementName (arrayElementName, i, 1 + (i % 10) + i);
 
-		Key * key =
-			keyNew (elektraFormat ("default:/%s/%s/%s", strUntilArrayElement, arrayElementName, strAfterArrayElement), KEY_END);
+		char * formattedKeyName = elektraFormat ("default:/%s/%s/%s", strUntilArrayElement, arrayElementName, strAfterArrayElement);
+		Key * key = keyNew (formattedKeyName, KEY_END);
 		keyCopyAllMeta (key, specKey);
 
 		ksAppendKey (instantiatedArraySpecs, key);
@@ -291,6 +294,7 @@ static void instantiateArraySpecificationAndCopyMeta (Key * specKey, KeySet * ks
 		elektraFree (strUntilArrayElement);
 		elektraFree (strAfterArrayElement);
 		elektraFree (arrayElementName);
+		elektraFree (formattedKeyName);
 	}
 
 	ksAppend (ks, instantiatedArraySpecs);
@@ -343,8 +347,10 @@ static Key * specCollision (KeySet * specKeys)
 			char * arraySpecKey = elektraMalloc (elektraStrLen (wildcardSpec));
 			replaceCharacter (wildcardSpec, arraySpecKey, '_', '#');
 
-			Key * foundKey = ksLookupByName (specKeys, elektraFormat ("spec:/%s", arraySpecKey), 0);
+			char * formattedLookupKeyName = elektraFormat ("spec:/%s", arraySpecKey);
+			Key * foundKey = ksLookupByName (specKeys, formattedLookupKeyName, 0);
 			elektraFree (arraySpecKey);
+			elektraFree (formattedLookupKeyName);
 			if (foundKey != 0)
 			{
 				return foundKey;
@@ -357,8 +363,10 @@ static Key * specCollision (KeySet * specKeys)
 			char * wildcardSpecKey = elektraMalloc (elektraStrLen (arraySpec));
 			replaceCharacter (arraySpec, wildcardSpecKey, '#', '_');
 
-			Key * foundKey = ksLookupByName (specKeys, elektraFormat ("spec:/%s", wildcardSpecKey), 0);
+			char * formattedLookupKeyName = elektraFormat ("spec:/%s", wildcardSpecKey);
+			Key * foundKey = ksLookupByName (specKeys, formattedLookupKeyName, 0);
 			elektraFree (wildcardSpecKey);
+			elektraFree (formattedLookupKeyName);
 			if (foundKey != 0)
 			{
 				return foundKey;
@@ -605,8 +613,9 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * specKeys, KeyS
 		}
 		else
 		{
-			const char * msg = elektraFormat ("Key for specification %s does not exist", keyName (specKey));
+			char * msg = elektraFormat ("Key for specification %s does not exist", keyName (specKey));
 			keySetMeta (parentKey, elektraFormat ("%s/%s", INFO_KEY, "description"), msg);
+			elektraFree (msg);
 			return 0;
 		}
 	}
