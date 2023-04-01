@@ -530,7 +530,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- CentOS 8 Stream: manually install `config-manager` DNF plugin. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
