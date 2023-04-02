@@ -53,15 +53,15 @@ gulong xfconf_g_property_bind (XfconfChannel * channel, const gchar * xfconf_pro
 gulong xfconf_g_property_bind_gdkcolor (XfconfChannel * channel, const gchar * xfconf_property, gpointer object,
 					const gchar * object_property)
 {
-	unimplemented ();
-	return 0;
+	trace ();
+	return xfconf_g_property_bind (channel, xfconf_property, G_TYPE_STRING, object, object_property);
 }
 
 gulong xfconf_g_property_bind_gdkrgba (XfconfChannel * channel, const gchar * xfconf_property, gpointer object,
 				       const gchar * object_property)
 {
-	unimplemented ();
-	return 0;
+	trace ();
+	return xfconf_g_property_bind (channel, xfconf_property, G_TYPE_STRING, object, object_property);
 }
 
 static gint find_by_id (gconstpointer a, gconstpointer b)
