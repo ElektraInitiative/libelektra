@@ -5,8 +5,8 @@ dependencies {
     // Include java libelektra
     api project(":libelektra")
 
-    api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
+    api("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxJsonVersion")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-    testImplementation("io.mockk:mockk:1.12.3")
+    testImplementation("io.mockk:mockk:$mockkVersion")
 }

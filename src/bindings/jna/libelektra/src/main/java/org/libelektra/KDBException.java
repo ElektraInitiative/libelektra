@@ -17,11 +17,7 @@ import org.libelektra.exception.ResourceException;
 import org.libelektra.exception.SemanticValidationException;
 import org.libelektra.exception.SyntacticValidationException;
 
-/**
- * Wraps Elektra errors into the corresponding Java exceptions
- *
- * @see #releaseErrorKey()
- */
+/** Wraps Elektra errors into the corresponding Java exceptions */
 public abstract class KDBException extends Exception {
 
   protected static final String VALUE_META_KEY_NOT_FOUND = "(unknown)";
@@ -36,7 +32,12 @@ public abstract class KDBException extends Exception {
 
   private static final long serialVersionUID = 1L;
 
-  private final transient Key errorKey;
+  private final String reason;
+  private final String number;
+  private final String mountpoint;
+  private final String configFile;
+  private final String debugInformation;
+  private final String module;
   private final transient List<WarningEntry> warnings;
 
   /**
@@ -50,6 +51,7 @@ public abstract class KDBException extends Exception {
   @Nonnull
   public static KDBException getMappedException(Key errorKey) {
     argNotNull(errorKey, "Key 'errorKey'");
+
     String errorNumber =
         errorKey
             .getMeta("error/number")
@@ -85,42 +87,60 @@ public abstract class KDBException extends Exception {
     }
 
     errorKey.setMeta("error/reason", String.format(MSG_UNKNOWN_ERROR_NUMBER, errorNumber));
+
     return new InternalException(errorKey);
   }
 
   /** @param errorKey Key containing {@code error/*} and {@code warnings/*} meta keys */
   protected KDBException(Key errorKey) {
-    this.errorKey = errorKey;
-    warnings = new ArrayList<>();
+    this.reason =
+        errorKey
+            .getMeta("error/reason")
+            .map(ReadableKey::getString)
+            .orElse(VALUE_META_KEY_NOT_FOUND);
+    this.number =
+        errorKey
+            .getMeta("error/number")
+            .map(ReadableKey::getString)
+            .orElse(VALUE_META_KEY_NOT_FOUND);
+    this.mountpoint =
+        errorKey
+            .getMeta("error/mountpoint")
+            .map(ReadableKey::getString)
+            .orElse(VALUE_META_KEY_NOT_FOUND);
+    this.configFile =
+        errorKey
+            .getMeta("error/configfile")
+            .map(ReadableKey::getString)
+            .filter(s -> !s.isEmpty())
+            .orElse(VALUE_META_KEY_NOT_FOUND);
+    this.debugInformation =
+        String.format(
+            MSG_DEBUGINFO,
+            errorKey
+                .getMeta("error/file")
+                .map(ReadableKey::getString)
+                .orElse(VALUE_META_KEY_NOT_FOUND),
+            errorKey
+                .getMeta("error/line")
+                .map(ReadableKey::getString)
+                .orElse(VALUE_META_KEY_NOT_FOUND));
+    this.module =
+        errorKey
+            .getMeta("error/module")
+            .map(ReadableKey::getString)
+            .orElse(VALUE_META_KEY_NOT_FOUND);
 
+    var tmpWarnings = new ArrayList<KDBException.WarningEntry>();
     Optional<String> oWarningsKeyValue = errorKey.getMeta("warnings").map(ReadableKey::getString);
     if (oWarningsKeyValue.isPresent()) {
       String lastArrayIndex = oWarningsKeyValue.get();
       int arraySize = Integer.parseInt(lastArrayIndex.replaceAll("^#_*", ""));
       for (int i = 0; i <= arraySize; i++) {
-        warnings.add(new WarningEntry(errorKey, i));
+        tmpWarnings.add(new WarningEntry(errorKey, i));
       }
     }
-  }
-
-  /**
-   * Release the key backing this {@link KDBException}
-   *
-   * @throws IllegalStateException if this error key backing this {@link KDBException} has already
-   *     been released
-   * @apiNote If this exception does not terminate your process, consider releasing the backing
-   *     error key after processing it
-   */
-  public void releaseErrorKey() {
-    errorKey.release();
-  }
-
-  /**
-   * @return Key containing {@code error/*} and {@code warnings/*} meta keys backing this exception
-   */
-  @Nonnull
-  public Key getErrorKey() {
-    return errorKey;
+    warnings = List.copyOf(tmpWarnings);
   }
 
   /**
@@ -130,10 +150,7 @@ public abstract class KDBException extends Exception {
    */
   @Nonnull
   public String getErrorNumber() {
-    return errorKey
-        .getMeta("error/number")
-        .map(ReadableKey::getString)
-        .orElse(VALUE_META_KEY_NOT_FOUND);
+    return number;
   }
 
   /**
@@ -144,11 +161,7 @@ public abstract class KDBException extends Exception {
    */
   @Nonnull
   public String getConfigFile() {
-    return errorKey
-        .getMeta("error/configfile")
-        .map(ReadableKey::getString)
-        .filter(s -> !s.isEmpty())
-        .orElseGet(errorKey::getName);
+    return configFile;
   }
 
   /**
@@ -158,10 +171,7 @@ public abstract class KDBException extends Exception {
    */
   @Nonnull
   public String getMountpoint() {
-    return errorKey
-        .getMeta("error/mountpoint")
-        .map(ReadableKey::getString)
-        .orElse(VALUE_META_KEY_NOT_FOUND);
+    return mountpoint;
   }
 
   /**
@@ -171,13 +181,7 @@ public abstract class KDBException extends Exception {
    */
   @Nonnull
   public String getDebugInformation() {
-    return String.format(
-        MSG_DEBUGINFO,
-        errorKey.getMeta("error/file").map(ReadableKey::getString).orElse(VALUE_META_KEY_NOT_FOUND),
-        errorKey
-            .getMeta("error/line")
-            .map(ReadableKey::getString)
-            .orElse(VALUE_META_KEY_NOT_FOUND));
+    return debugInformation;
   }
 
   /**
@@ -187,10 +191,7 @@ public abstract class KDBException extends Exception {
    */
   @Nonnull
   public String getModule() {
-    return errorKey
-        .getMeta("error/module")
-        .map(ReadableKey::getString)
-        .orElse(VALUE_META_KEY_NOT_FOUND);
+    return module;
   }
 
   /**
@@ -200,10 +201,7 @@ public abstract class KDBException extends Exception {
    */
   @Nonnull
   public String getReason() {
-    return errorKey
-        .getMeta("error/reason")
-        .map(ReadableKey::getString)
-        .orElse(VALUE_META_KEY_NOT_FOUND);
+    return reason;
   }
 
   /**
@@ -220,12 +218,8 @@ public abstract class KDBException extends Exception {
         .append("\n");
     builder.append(getReason()).append("\n");
     builder.append(MSG_CONFIGFILE).append(getConfigFile()).append("\n");
-    errorKey
-        .getMeta("error/mountpoint")
-        .ifPresent(s -> builder.append(MSG_MOUNTPOINT).append(getMountpoint()).append("\n"));
-    errorKey
-        .getMeta("error/file")
-        .ifPresent(s -> builder.append(getDebugInformation()).append("\n"));
+    builder.append(MSG_MOUNTPOINT).append(getMountpoint()).append("\n");
+    builder.append(getDebugInformation()).append("\n");
     return builder.toString();
   }
 

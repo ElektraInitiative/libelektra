@@ -415,7 +415,7 @@ public class ReadableKey implements Comparable<ReadableKey> {
   @Nonnull
   protected Pointer getPointer() {
     if (pointer == null) {
-      throw new IllegalStateException();
+      throw new IllegalStateException("Native resource pointer is null.");
     }
     return pointer;
   }

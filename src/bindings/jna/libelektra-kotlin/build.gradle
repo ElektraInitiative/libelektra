@@ -1,6 +1,10 @@
 plugins {
-    id "org.jetbrains.kotlin.jvm" version "1.6.21"
-    id "org.jetbrains.kotlin.plugin.serialization" version "1.6.21"
+    id "org.jetbrains.kotlin.jvm" version "$kotlinPluginVersion"
+    id "org.jetbrains.kotlin.plugin.serialization" version "$kotlinPluginVersion"
+}
+
+compileKotlin {
+    compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
 }
 
 apply from: "$rootProject.projectDir/java-library.gradle"

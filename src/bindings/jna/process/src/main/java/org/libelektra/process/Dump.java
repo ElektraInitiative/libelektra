@@ -32,111 +32,112 @@ class Dump {
     String line;
     Key key = null;
     while ((line = processProtocol.readLine()) != null) {
-      var scanner = new Scanner(line);
-      scanner.useDelimiter(" ");
-      var cmd = scanner.next();
-      switch (cmd) {
-        case "$key":
-          {
-            var type = scanner.next();
-            var nameSize = scanner.nextInt();
-            var valueSize = scanner.nextInt();
+      try (var scanner = new Scanner(line)) {
+        scanner.useDelimiter(" ");
+        var cmd = scanner.next();
+        switch (cmd) {
+          case "$key":
+            {
+              var type = scanner.next();
+              var nameSize = scanner.nextInt();
+              var valueSize = scanner.nextInt();
 
-            var buffer = processProtocol.inputStream.readNBytes(nameSize);
-            if (buffer == null || buffer.length != nameSize) {
-              return null;
-            }
-            if (processProtocol.inputStream.read() != '\n') {
-              return null;
-            }
-            var name = new String(buffer, StandardCharsets.UTF_8);
+              var buffer = processProtocol.inputStream.readNBytes(nameSize);
+              if (buffer == null || buffer.length != nameSize) {
+                return null;
+              }
+              if (processProtocol.inputStream.read() != '\n') {
+                return null;
+              }
+              var name = new String(buffer, StandardCharsets.UTF_8);
 
-            buffer = processProtocol.inputStream.readNBytes(valueSize);
-            if (buffer == null || buffer.length != valueSize) {
-              return null;
-            }
-            if (processProtocol.inputStream.read() != '\n') {
-              return null;
-            }
+              buffer = processProtocol.inputStream.readNBytes(valueSize);
+              if (buffer == null || buffer.length != valueSize) {
+                return null;
+              }
+              if (processProtocol.inputStream.read() != '\n') {
+                return null;
+              }
 
-            key = Key.create(name);
-            if (Objects.equals(type, "string")) {
-              var value = new String(buffer);
-              key.setString(value);
-            } else {
-              key.setBinary(buffer);
+              key = Key.create(name);
+              if (Objects.equals(type, "string")) {
+                var value = new String(buffer);
+                key.setString(value);
+              } else {
+                key.setBinary(buffer);
+              }
+              ks.append(key);
             }
-            ks.append(key);
-          }
-          break;
-        case "$meta":
-          {
-            var nameSize = scanner.nextInt();
-            var valueSize = scanner.nextInt();
+            break;
+          case "$meta":
+            {
+              var nameSize = scanner.nextInt();
+              var valueSize = scanner.nextInt();
 
-            var buffer = processProtocol.inputStream.readNBytes(nameSize);
-            if (buffer == null || buffer.length != nameSize) {
-              return null;
-            }
-            if (processProtocol.inputStream.read() != '\n') {
-              return null;
-            }
-            var name = new String(buffer, StandardCharsets.UTF_8);
+              var buffer = processProtocol.inputStream.readNBytes(nameSize);
+              if (buffer == null || buffer.length != nameSize) {
+                return null;
+              }
+              if (processProtocol.inputStream.read() != '\n') {
+                return null;
+              }
+              var name = new String(buffer, StandardCharsets.UTF_8);
 
-            buffer = processProtocol.inputStream.readNBytes(valueSize);
-            if (buffer == null || buffer.length != valueSize) {
-              return null;
-            }
-            if (processProtocol.inputStream.read() != '\n') {
-              return null;
-            }
-            var value = new String(buffer, StandardCharsets.UTF_8);
+              buffer = processProtocol.inputStream.readNBytes(valueSize);
+              if (buffer == null || buffer.length != valueSize) {
+                return null;
+              }
+              if (processProtocol.inputStream.read() != '\n') {
+                return null;
+              }
+              var value = new String(buffer, StandardCharsets.UTF_8);
 
-            if (key == null) {
-              return null;
+              if (key == null) {
+                return null;
+              }
+              key.setMeta(name, value);
             }
-            key.setMeta(name, value);
-          }
-          break;
-        case "$copymeta":
-          {
-            var keyNameSize = scanner.nextInt();
-            var metaNameSize = scanner.nextInt();
+            break;
+          case "$copymeta":
+            {
+              var keyNameSize = scanner.nextInt();
+              var metaNameSize = scanner.nextInt();
 
-            var buffer = processProtocol.inputStream.readNBytes(keyNameSize);
-            if (buffer == null || buffer.length != keyNameSize) {
-              return null;
-            }
-            if (processProtocol.inputStream.read() != '\n') {
-              return null;
-            }
-            var keyName = new String(buffer, StandardCharsets.UTF_8);
+              var buffer = processProtocol.inputStream.readNBytes(keyNameSize);
+              if (buffer == null || buffer.length != keyNameSize) {
+                return null;
+              }
+              if (processProtocol.inputStream.read() != '\n') {
+                return null;
+              }
+              var keyName = new String(buffer, StandardCharsets.UTF_8);
 
-            buffer = processProtocol.inputStream.readNBytes(metaNameSize);
-            if (buffer == null || buffer.length != metaNameSize) {
-              return null;
-            }
-            if (processProtocol.inputStream.read() != '\n') {
-              return null;
-            }
-            var metaName = new String(buffer, StandardCharsets.UTF_8);
+              buffer = processProtocol.inputStream.readNBytes(metaNameSize);
+              if (buffer == null || buffer.length != metaNameSize) {
+                return null;
+              }
+              if (processProtocol.inputStream.read() != '\n') {
+                return null;
+              }
+              var metaName = new String(buffer, StandardCharsets.UTF_8);
 
-            if (key == null) {
-              return null;
-            }
+              if (key == null) {
+                return null;
+              }
 
-            Optional<Key> source = ks.lookup(keyName);
-            if (source.isEmpty()) {
-              return null;
-            }
+              Optional<Key> source = ks.lookup(keyName);
+              if (source.isEmpty()) {
+                return null;
+              }
 
-            key.copyMeta(source.get(), metaName);
-          }
-          break;
-        case "$end":
-          return ks;
-        default:
-          return null;
+              key.copyMeta(source.get(), metaName);
+            }
+            break;
+          case "$end":
+            return ks;
+          default:
+            return null;
+        }
       }
     }
     return null;

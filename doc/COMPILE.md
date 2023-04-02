@@ -106,7 +106,7 @@ A small subset of build dependencies to get you started:
   ```sh
   sudo yum install -y libdb-devel GConf2-devel libxml2-devel yajl-devel   \
   libcurl-devel augeas-devel libgit2-devel lua-devel swig python34-devel python-devel \
-  java-1.8.0-openjdk-devel jna ruby-devel byacc
+  java-17-openjdk-devel jna ruby-devel byacc
   ```
 
 - on APT-based systems (Ubuntu, Debian):

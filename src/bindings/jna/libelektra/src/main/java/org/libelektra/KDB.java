@@ -307,7 +307,6 @@ public class KDB implements AutoCloseable {
     return this;
   }
 
-  @Nonnull
   private static void checkKDBReturnValue(int returnValue, Key errorKey) throws KDBException {
     if (returnValue < 0) {
       throw KDBException.getMappedException(errorKey);
