@@ -660,21 +660,40 @@ static gboolean g_value_equal (gconstpointer g0, gconstpointer g1)
 	return strcmp (g_value_to_string (g_val0), g_value_to_string (g_val1)) == 0;
 }
 
+const gchar * findChannelStart (const gchar * keyName)
+{
+	const gchar * trimmed = keyName;
+	if (strncmp (trimmed, XFCONF_NAMESPACE, strlen (XFCONF_NAMESPACE)) == 0)
+	{
+		trimmed = &trimmed[strlen (XFCONF_NAMESPACE)];
+	}
+	else
+	{
+		return trimmed;
+	}
+	if (strncmp (trimmed, XFCONF_ROOT, strlen (XFCONF_ROOT)) == 0)
+	{
+		trimmed = &trimmed[strlen (XFCONF_ROOT)];
+	}
+	return trimmed;
+}
+
 GHashTable * xfconf_channel_get_properties (XfconfChannel * channel, const gchar * property_base)
 {
 	trace ();
 	g_debug ("Fetch properties of channel %s with base %s", channel->channel_name, property_base);
 	GHashTable * properties = g_hash_table_new (g_value_hash, g_value_equal);
-	KeySet * ks = keySet_from_channel (channel->channel_name, 1,
-					   0); // todo: wrong key set seems to be returned, it contains keys from other channels
+	KeySet * ks = keySet_from_channel (channel->channel_name, 1, 0);
 	const Key * key;
-	unsigned long propertyBaseLength = strlen (property_base);
+	unsigned long propertyBaseLength = property_base == NULL ? 0 : strlen (property_base);
 	require_channel_read_lock () for (elektraCursor i = 0; i < ksGetSize (ks); i++)
 	{
 		key = ksAtCursor (ks, i);
-		const char * keyNameWithoutPrefix =
-			&keyName (key)[strlen (XFCONF_ROOT) + strlen (XFCONF_NAMESPACE) + strlen (channel->channel_name) + 1];
-		if (strncmp (property_base, keyNameWithoutPrefix, propertyBaseLength) == 0)
+		const gchar * channelStart = findChannelStart (keyName (key));
+		g_debug ("trimmed the key until the channel start: %s", channelStart);
+		const char * keyNameWithoutPrefix = &channelStart[strlen (channel->channel_name) + 1];
+		if (strncmp (&channelStart[1], channel->channel_name, strlen (channel->channel_name)) == 0 &&
+		    (property_base == NULL || strncmp (property_base, keyNameWithoutPrefix, propertyBaseLength) == 0))
 		{
 			g_debug ("key %s starts with property base %s", keyNameWithoutPrefix, property_base);
 			GValue * g_value = calloc (1, sizeof (GValue));
