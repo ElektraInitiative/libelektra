@@ -64,20 +64,70 @@ gulong xfconf_g_property_bind_gdkrgba (XfconfChannel * channel, const gchar * xf
 	return 0;
 }
 
+static gint find_by_id (gconstpointer a, gconstpointer b)
+{
+	const gulong id = (*(gulong *) a);
+	const propertyBinding * binding = (propertyBinding *) b;
+	return id == binding->id;
+}
+
 void xfconf_g_property_unbind (gulong id)
 {
-	unimplemented ();
+	trace ();
+	require_binding_write_lock () GList * item = g_list_find_custom (property_bindings, &id, &find_by_id);
+	if (item == NULL)
+	{
+		g_info ("no binding with such id: %ld", id);
+	}
+	else
+	{
+		property_bindings = g_list_remove_link (property_bindings, item);
+		g_list_free_full (item, &free);
+	}
+	release_binding_lock ()
 }
 
 void xfconf_g_property_unbind_by_property (XfconfChannel * channel, const gchar * xfconf_property, gpointer object,
 					   const gchar * object_property)
 {
-	unimplemented ();
+	trace ();
+	require_binding_write_lock () GList * cur = property_bindings;
+	GList * nextItem;
+	propertyBinding * current_binding;
+	while (cur != NULL)
+	{
+		current_binding = cur->data;
+		nextItem = cur->next;
+		if (current_binding->channel == channel && current_binding->object == object &&
+		    strcmp (current_binding->xfconf_property, xfconf_property) == 0 &&
+		    strcmp (current_binding->object_property, object_property) == 0)
+		{
+			property_bindings = g_list_remove_link (property_bindings, cur);
+			g_list_free_full (cur, &free);
+		}
+		cur = nextItem;
+	}
+	release_binding_lock ()
 }
 
 void xfconf_g_property_unbind_all (gpointer channel_or_object)
 {
-	unimplemented ();
+	trace ();
+	require_binding_write_lock () GList * cur = property_bindings;
+	GList * nextItem;
+	propertyBinding * current_binding;
+	while (cur != NULL)
+	{
+		current_binding = cur->data;
+		nextItem = cur->next;
+		if (current_binding->channel == channel_or_object || current_binding->object == channel_or_object)
+		{
+			property_bindings = g_list_remove_link (property_bindings, cur);
+			g_list_free_full (cur, &free);
+		}
+		cur = nextItem;
+	}
+	release_binding_lock ()
 }
 
 void notify_property_changed (XfconfChannel * channel, const gchar * property_name)
