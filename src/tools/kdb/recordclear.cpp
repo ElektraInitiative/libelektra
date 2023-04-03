@@ -30,5 +30,7 @@ int RecordClearCommand::execute (const Cmdline & cmdline)
 		return 1;
 	}
 
+	printWarnings (cerr, errorKey, cmdline.verbose, cmdline.debug);
+
 	return 0;
 }
