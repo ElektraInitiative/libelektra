@@ -18,6 +18,11 @@ bool elektraRecordEnableRecording (KDB * handle, const Key * parentKey, Key * er
 		return false;
 	}
 
+	if (handle->hooks.record.plugin == NULL)
+	{
+		ELEKTRA_ADD_RESOURCE_WARNING (errorKey, "There is no record plugin present. Session recording will not work for the current KDB instance.");
+	}
+
 	Key * configKey = keyNew (ELEKTRA_RECORD_CONFIG_KEY, KEY_END);
 
 	KeySet * config = ksNew (0, KS_END);
@@ -33,6 +38,7 @@ bool elektraRecordEnableRecording (KDB * handle, const Key * parentKey, Key * er
 	Key * activeKey = ksLookupByName (config, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, KDB_O_POP);
 	if (activeKey != NULL)
 	{
+		ELEKTRA_ADD_RESOURCE_WARNINGF (errorKey, "There is already a session active with parent key \"%s\". Replacing it with new parent key \"%s\".", keyString (activeKey), keyName (parentKey));
 		ns = keyGetNamespace (activeKey);
 		keyDel (activeKey);
 	}
