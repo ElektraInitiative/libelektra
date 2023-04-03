@@ -4,6 +4,17 @@
 #include <kdbprivate.h>
 #include <kdbrecord.h>
 
+/**
+ * Enable session recording.
+ * This affects both the given @p handle as well as every KDB instance that will be created after this method has been called.
+ *
+ * @param handle the KDB instance to use
+ * @param parentKey recording will be enabled for every key that is same or below this key
+ * @param errorKey used for reporting errors and warnings.
+ *                 As usual, they will be found as meta keys attached to this key.
+ * @retval true - recording has been enabled successfully
+ * @retfal false - there was an error enabling recording - see @p errorKey for further details
+ */
 bool elektraRecordEnableRecording (KDB * handle, const Key * parentKey, Key * errorKey)
 {
 	if (handle == NULL)
@@ -65,6 +76,16 @@ bool elektraRecordEnableRecording (KDB * handle, const Key * parentKey, Key * er
 	return true;
 }
 
+/**
+ * Disable session recording.
+ * This affects both the given @p handle as well as every KDB instance that will be created after this method has been called.
+ *
+ * @param handle the KDB instance to use
+ * @param errorKey used for reporting errors and warnings.
+ *                 As usual, they will be found as meta keys attached to this key.
+ * @retval true - recording has been disabled successfully
+ * @retfal false - there was an error disabling recording - see @p errorKey for further details
+ */
 bool elektraRecordDisableRecording (KDB * handle, Key * errorKey)
 {
 	if (handle == NULL)
@@ -110,6 +131,15 @@ bool elektraRecordDisableRecording (KDB * handle, Key * errorKey)
 	return true;
 }
 
+/**
+ * Clears all recorded data.
+ *
+ * @param handle
+ * @param errorKey used for reporting errors and warnings.
+ *                 As usual, they will be found as meta keys attached to this key.
+ * @retval true - recording session has been cleared successfully
+ * @retfal false - there was an error clearing the recording session - see @p errorKey for further details
+ */
 bool elektraRecordClearSession (KDB * handle, Key * errorKey)
 {
 	if (handle == NULL)
@@ -145,6 +175,14 @@ bool elektraRecordClearSession (KDB * handle, Key * errorKey)
 	return true;
 }
 
+/**
+ * Check whether session recording is active in the given KDB instance
+ *
+ * @param handle the KDB instance to check
+ * @retval @p true if session recording is active in @p handle
+ * @retval @p false if session recording is not active in @p handle
+ * @retval @p false if @p handle is @p NULL
+ */
 bool elektraRecordIsActive (KDB * handle)
 {
 	if (handle == NULL)
@@ -161,8 +199,24 @@ bool elektraRecordIsActive (KDB * handle)
 	return true;
 }
 
+/**
+ * @internal
+ *
+ * Replace the @p oldPrefix in all namespaces with @p newPrefix in a given KeySet
+ *
+ * @param oldPrefix the prefix to remove
+ * @param newPrefix the prefix @p oldPrefix should be replaced with
+ * @param ks the keyset in which the operation should be carried out
+ * @retval @p NULL if any of @p oldPrefix, @p newPrefix or @p ks is @p NULL
+ * @retval @p ks if the operation succeeded
+ */
 static KeySet * renameKeysInAllNamespaces (const char * oldPrefix, const char * newPrefix, KeySet * ks)
 {
+	if (oldPrefix == NULL || newPrefix == NULL || ks == NULL)
+	{
+		return NULL;
+	}
+
 	Key * prefixKey = keyNew (oldPrefix, KEY_END);
 	Key * newRootKey = keyNew (newPrefix, KEY_END);
 
@@ -179,8 +233,24 @@ static KeySet * renameKeysInAllNamespaces (const char * oldPrefix, const char * 
 	return ks;
 }
 
+/**
+ * @internal
+ *
+ * Converts a KeySet in session recording format into an @p ElektraDiff.
+ *
+ * @param recordStorage the KeySet that contains the session diff
+ * @param sessionRecordingParentKey the parent key of the recording session
+ *
+ * @retval an instance of @p ElektraDiff representing the session diff
+ * @retval @p NULL if @p recordStorage is @p NULL
+ */
 static ElektraDiff * getDiffFromSessionStorage (KeySet * recordStorage, Key * sessionRecordingParentKey)
 {
+	if (recordStorage == NULL)
+	{
+		return NULL;
+	}
+
 	Key * sessionDiffAddedKey = keyNew (ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY, KEY_END);
 	Key * sessionDiffModifiedKey = keyNew (ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY, KEY_END);
 	Key * sessionDiffRemovedKey = keyNew (ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY, KEY_END);
@@ -199,6 +269,14 @@ static ElektraDiff * getDiffFromSessionStorage (KeySet * recordStorage, Key * se
 	return sessionDiff;
 }
 
+/**
+ * @internal
+ *
+ * Adds a session storage format representation of the given session diff to the provided KeySet
+ *
+ * @param recordStorage the KeySet where the keys should be added
+ * @param sessionDiff the diff to add
+ */
 static void putDiffIntoSessionStorage (KeySet * recordStorage, ElektraDiff * sessionDiff)
 {
 	KeySet * addedKeys = renameKeysInAllNamespaces ("/", ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY, elektraDiffGetAddedKeys (sessionDiff));
@@ -216,6 +294,20 @@ static void putDiffIntoSessionStorage (KeySet * recordStorage, ElektraDiff * ses
 	ksDel (removedKeys);
 }
 
+/**
+ * Diff and record changes to the KDB instance in @p handle.
+ * This function is mainly intended for use in the recorder plugin.
+ *
+ * @param handle the KDB instance that changes occured on
+ * @param sessionStorageHandle the KDB instances that shall be used to persist the session diff.
+ *                             You can use the same as for @p handle.
+ * @param newKeys the keyset with changed keys
+ * @param parentKey only changes same or below this key will be determined
+ * @param errorKey used for reporting errors and warnings.
+ *                 As usual, they will be found as meta keys attached to this key.
+ * @retval true - changes were recorded successfully
+ * @retfal false - there was an error during recording - see @p errorKey for further details
+ */
 bool elektraRecordRecord (KDB * handle, KDB * sessionStorageHandle, KeySet * newKeys, Key * parentKey, Key * errorKey)
 {
 	if (handle == NULL)
@@ -349,6 +441,19 @@ cleanup:
 	return successful;
 }
 
+/**
+ * Undo changes that were recorded in the current recording session.
+ * After executing this function, the state of KDB should be the same as it was before starting the recording session.
+ *
+ * @param handle the KDB instance to use for accessing configuration data
+ * @param sessionStorageHandle the KDB instance to use for accessing recording data.
+ *                             This can be the same as for @p handle
+ * @param parentKey only changes same or below this key are undone.
+ * @param errorKey used for reporting errors and warnings.
+ *                 As usual, they will be found as meta keys attached to this key.
+ * @retval true - changes were undone successfully
+ * @retfal false - there was an error during the undo operation - see @p errorKey for further details
+*/
 bool elektraRecordUndo (KDB * handle, KDB * sessionStorageHandle, Key * parentKey, Key * errorKey)
 {
 	if (handle == NULL)
