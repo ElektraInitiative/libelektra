@@ -5,6 +5,6 @@ if (GO_EXECUTABLE)
 
 	add_custom_command (COMMAND ${GO_EXECUTABLE} build ./kdb WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 else ()
-	exclude_binding (go-elektra, "elektra not found")
+	exclude_binding (go-elektra, "go not found")
 	return ()
 endif ()
