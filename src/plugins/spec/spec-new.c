@@ -1,9 +1,10 @@
 #include "spec-new.h"
-#include "../../../tests/cframework/tests.h"
 #include "kdberrors.h"
 #include "kdbglobbing.h"
 
+#include <ctype.h>
 #include <kdbhelper.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -98,9 +99,9 @@ static void addDefaultKey (KeySet * ks, Key * parentKey, Key * specKey)
 }
 
 /**
- * Check if the specification key has a meta key `required`.
+ * Check if the specification key has a meta key `require`.
  *
- * @param specKey the specification key to check for the required meta key
+ * @param specKey the specification key to check for the require meta key
  * @return true - if the specification key contains a meta key required
  * 	   false - if the specification key does not contain a meta key required
  */
@@ -142,25 +143,12 @@ static bool hasDefault (Key * specKey)
  */
 static KeySet * extractSpecKeys (KeySet * ks)
 {
-	KeySet * specKeys = ksNew (0, KS_END);
-	for (elektraCursor it = 0; it < ksGetSize (ks); it++)
-	{
-		Key * current = ksAtCursor (ks, it);
-		if (keyGetNamespace (current) == KEY_NS_SPEC)
-		{
-			ksAppendKey (specKeys, current);
-		}
-	}
-
 	Key * specKey = keyNew ("spec:/", KEY_END);
-	ksDel (ksCut (ks, specKey));
-	keyDel (specKey);
-
-	return specKeys;
+	return ksCut (ks, specKey);
 }
 
 /**
- * Checks if the {@link specKey} is a array specification key.
+ * Checks if the {@link specKey} is an array specification key.
  *
  * @param specKey the specification key to check if it is an array specification
  * @return true  - if it is an array specification
@@ -168,17 +156,7 @@ static KeySet * extractSpecKeys (KeySet * ks)
  */
 static bool isArraySpecification (Key * specKey)
 {
-	const char * keyWithoutNamespace = strchr (keyName (specKey), '/');
-
-	for (size_t i = 0; i < elektraStrLen (keyWithoutNamespace); i++)
-	{
-		if (keyWithoutNamespace[i] == '#')
-		{
-			return true;
-		}
-	}
-
-	return false;
+	return strchr (keyName (specKey), '#') != NULL;
 }
 
 /**
@@ -190,18 +168,7 @@ static bool isArraySpecification (Key * specKey)
  */
 static bool containsUnderlineInArraySpec (Key * specKey)
 {
-	const char * keyWithoutNamespace = strchr (keyName (specKey), '/');
-	size_t len = elektraStrLen (keyWithoutNamespace);
-
-	for (size_t i = 0; i < len; i++)
-	{
-		if (keyWithoutNamespace[i] == '#' && (i != len && keyWithoutNamespace[i + 1] == '_'))
-		{
-			return true;
-		}
-	}
-
-	return false;
+	return strchr (keyName (specKey), '_') != NULL;
 }
 
 /**
@@ -244,18 +211,27 @@ static bool isWildcardSpecification (Key * specKey)
  *
  * 	arrayElement = #__100
  *
- * @param arrayElement the element to store the name in
  * @param arrayNumber the array element number
- * @param size the size of array
+ * @return the created array element e.g. #0, #_10, #_100
  */
-static void createArrayElementName (char * arrayElement, int arrayNumber, int size)
+static char * createArrayElementName (int arrayNumber)
 {
-	arrayElement[0] = '#';
-	for (int j = 1; j < (arrayNumber % 10); j++)
+	// number of digits in arrayNumber
+	int nDigits = arrayNumber == 0 ? 1 : floor (log10 (abs (arrayNumber))) + 1;
+
+	// allocate enough space for #, the digits and \0
+	char * name = elektraCalloc ((nDigits + 1) * sizeof (char));
+
+	name[0] = '#';
+
+	for (int j = 1; j < nDigits; j++)
 	{
-		arrayElement[j] = '_';
+		name[j] = '_';
 	}
-	sprintf (&arrayElement[size], "%d", arrayNumber);
+
+	sprintf (&name[nDigits], "%d", arrayNumber);
+
+	return name;
 }
 
 /**
@@ -279,11 +255,10 @@ static void instantiateArraySpecificationAndCopyMeta (Key * specKey, KeySet * ks
 
 		size_t keyNameSize = elektraStrLen (keyNameWithoutNamespace);
 		char * strAfterArrayElement = elektraMalloc (keyNameSize + 1);
-		memcpy (strAfterArrayElement, &keyNameWithoutNamespace[pos], keyNameSize);
+		memcpy (strAfterArrayElement, &keyNameWithoutNamespace[pos + 1], keyNameSize);
 		strAfterArrayElement[keyNameSize + 1] = '\0';
 
-		char * arrayElementName = elektraMalloc (1 + (i % 10) + i);
-		createArrayElementName (arrayElementName, i, 1 + (i % 10) + i);
+		char * arrayElementName = createArrayElementName (i);
 
 		char * formattedKeyName = elektraFormat ("default:/%s/%s/%s", strUntilArrayElement, arrayElementName, strAfterArrayElement);
 		Key * key = keyNew (formattedKeyName, KEY_END);
@@ -403,7 +378,8 @@ static Key * getArraySizeOfArrayParent (KeySet * specKeys, Key * specKey)
 	char * copiedKeyName = elektraMalloc (elektraStrLen (specKeyName) + 1);
 	strcpy (copiedKeyName, (char *) specKeyName);
 
-	char * arrayParent = strtok (copiedKeyName, "#");
+	char * rest = NULL;
+	char * arrayParent = strtok_r (copiedKeyName, "#", &rest);
 	arrayParent[strlen (arrayParent) - 1] = '\0';
 
 	Key * key = getMatchingKeyFromKeySet (specKeys, strchr (arrayParent, '/'));
@@ -446,11 +422,11 @@ static int getNumberOfArrayCharactersInSpecName (Key * specKey)
 static void setArrayPositions (const char * keyNameWithoutNamespace, int * arrayPositions)
 {
 	int arrPos = 0;
-	for (size_t i = 0; i < elektraStrLen (keyNameWithoutNamespace); i++)
+	for (int i = 0; i < (int) elektraStrLen (keyNameWithoutNamespace); i++)
 	{
 		if (keyNameWithoutNamespace[i] == '#')
 		{
-			arrayPositions[arrPos++] = (int) i;
+			arrayPositions[arrPos++] = i;
 		}
 	}
 }
@@ -500,10 +476,15 @@ static bool isArrayEmpty (KeySet * ks, int arrayPosition)
 		Key * current = ksAtCursor (ks, it);
 		char * withoutNamespace = strchr (keyName (current), '/');
 
-		size_t len = elektraStrLen (withoutNamespace);
+		int len = elektraStrLen (withoutNamespace);
+		if (arrayPosition > len)
+		{
+			continue;
+		}
+
 		if (withoutNamespace[arrayPosition] == '#' &&
-		    ((int) len != arrayPosition + 1 &&
-		     (withoutNamespace[arrayPosition + 1] == '_' || withoutNamespace[arrayPosition + 1] != '/')))
+		    (arrayPosition < len && (withoutNamespace[arrayPosition + 1] == '_' || withoutNamespace[arrayPosition + 1] != '/' ||
+					     isdigit (withoutNamespace[arrayPosition + 1]))))
 		{
 			return false;
 		}
@@ -614,8 +595,10 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * specKeys, KeyS
 		else
 		{
 			char * msg = elektraFormat ("Key for specification %s does not exist", keyName (specKey));
-			keySetMeta (parentKey, elektraFormat ("%s/%s", INFO_KEY, "description"), msg);
+			char * formattedInfoMessage = elektraFormat ("%s/%s", INFO_KEY, "description");
+			keySetMeta (parentKey, formattedInfoMessage, msg);
 			elektraFree (msg);
+			elektraFree (formattedInfoMessage);
 			return 0;
 		}
 	}
@@ -670,6 +653,7 @@ int elektraSpecCopy (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * pa
 				}
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
+			elektraFree (cascadingKey);
 		}
 
 		if (copyMetaData (parentKey, current, specKeys, returned, isKdbGet) != 0)

@@ -582,8 +582,13 @@ static void test_hook_copy_with_array_specification_without_default_meta_key_sho
 
 /**
  * This test should verify if a array specification exists and has default meta key and no configuration for this specification key exists
- * it creates
+ * it creates all the necessary array keys.
  *
+ * Sample:
+ * 	spec:/sw/org/server/#/name => meta:/default = mail, meta:/description = The name of the server
+ * 	spec:/sw/org/server => meta:/array = 4
+ *
+ * No configuration. Should instantiate array keys from #0-#3 with all meta keys copied to each of these elements.
  *
  * @param isKdbGet boolean value indicating if it is a kdb get call
  */
