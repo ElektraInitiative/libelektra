@@ -255,6 +255,7 @@ binding during run-time:
 - [gopts](gopts/) global plugin to automatically call `elektraGetOpts`
 - [process](process/) proxy plugin that uses separate executables as plugin implementations
 - [backend](backend/) is the default plugin implementing backend functionality for configuration files
+- [recorder](recorder/) is the plugin used to implement session recording
 
 ### Plugins for Development
 
