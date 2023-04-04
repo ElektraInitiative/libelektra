@@ -55,7 +55,7 @@
 /** All keys below this are used for cache metadata in the global keyset */
 #define KDB_CACHE_PREFIX "system:/elektra/cache"
 
-#define ELEKTRA_RECORD_CONFIG_KEY "/elektra/record"
+#define ELEKTRA_RECORD_CONFIG_KEY "/elektra/record/config"
 #define ELEKTRA_RECORD_CONFIG_ACTIVE_KEY "/elektra/record/config/active"
 #define ELEKTRA_RECORD_SESSION_KEY "/elektra/record/session"
 #define ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/elektra/record/session/diff/added"
