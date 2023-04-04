@@ -66,6 +66,7 @@ RUN apt-get update && apt-get -y install \
         unzip \
         valgrind \
         wget \
+    	golang \
     && rm -rf /var/lib/apt/lists/*
 
 # Add Clang 15 to path
@@ -73,6 +74,12 @@ ENV PATH="/usr/lib/llvm-15/bin:$PATH"
 
 # Update cache for shared libraries
 RUN ldconfig
+
+# see https://github.com/docker-library/golang/issues/225
+ENV XDG_CACHE_HOME=/tmp/.cache
+
+# see https://github.com/golang/go/wiki/InvalidFlag
+ENV CGO_CFLAGS_ALLOW="(directory/src/include|directory/lib)"
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest

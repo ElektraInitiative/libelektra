@@ -50,6 +50,7 @@ RUN dnf upgrade -y && dnf install -y \
         yaml-cpp-devel \
         zlib-devel \
         python3-pip \
+    	golang \
     && dnf debuginfo-install -y \
         bison \
         flex \
@@ -62,6 +63,12 @@ RUN dnf upgrade -y && dnf install -y \
 
 # Build dependency for libelektra-fuse
 RUN pip3 install wheel
+
+# see https://github.com/docker-library/golang/issues/225
+ENV XDG_CACHE_HOME=/tmp/.cache
+
+# see https://github.com/golang/go/wiki/InvalidFlag
+ENV CGO_CFLAGS_ALLOW="(directory/src/include|directory/lib)"
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest

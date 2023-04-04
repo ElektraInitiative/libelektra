@@ -48,7 +48,14 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         yajl-devel \
         yaml-cpp-devel \
         zlib-devel \
+    	golang \
     && dnf clean all -y
+
+# see https://github.com/docker-library/golang/issues/225
+ENV XDG_CACHE_HOME=/tmp/.cache
+
+# see https://github.com/golang/go/wiki/InvalidFlag
+ENV CGO_CFLAGS_ALLOW="(directory/src/include|directory/lib)"
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest

@@ -52,7 +52,7 @@ go test ./kdb -bench="^(BenchmarkKeySetSliceRangeIterator)\$"
 
 ### In your Application
 
-First _go get_ the package like you are used to with Go.
+First `go get` the package like you are used to with Go.
 
 `go get go.libelektra.org`
 

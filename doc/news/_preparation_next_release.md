@@ -284,6 +284,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - add merging based on elektraMerge _(Maximilian Irlinger @atmaxinger)_
 - Added support for `ksIncRef` for `KeySet` _(Michael Tucek @tucek)_
 - Enabled `ReferenceCleaner` _(Michael Tucek @tucek)_
+
 ### go-elektra
 
 - Move `go-elektra` binding from repository into bindings folder of `libelektra` _(Tomislav Makar @tmakar)_
@@ -336,7 +337,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 
-### <<TODO>>
+### <<Tool>>
 
 - <<TODO>>
 - <<TODO>>
