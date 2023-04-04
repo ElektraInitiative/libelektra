@@ -78,18 +78,16 @@ static void replaceCharacter (const char * str, char * newStr, const char search
  * The default key is added to the `default:/` namespace.
  *
  * @param ks the key store to append the new default key to
- * @param parentKey of the key to appended
  * @param specKey specification key with meta data of the new default key
  */
-static void addDefaultKey (KeySet * ks, Key * parentKey, Key * specKey)
+static void addDefaultKey (KeySet * ks, Key * specKey)
 {
 	const Key * defaultMetaKey = keyGetMeta (specKey, "default");
 	const char * defaultValue = keyString (defaultMetaKey);
 
-	const char * parentKeyName = strchr (keyName (parentKey), '/');
-	const char * specKeyName = keyBaseName (specKey);
+	const char * specKeyName = strchr (keyName (specKey), '/');
 
-	char * formattedKeyName = elektraFormat ("default:/%s/%s", parentKeyName, specKeyName);
+	char * formattedKeyName = elektraFormat ("default:/%s", specKeyName);
 	Key * newDefaultKey = keyNew (formattedKeyName, KEY_VALUE, defaultValue, KEY_END);
 	keyCopyAllMeta (newDefaultKey, specKey);
 
@@ -235,6 +233,36 @@ static char * createArrayElementName (int arrayNumber)
 }
 
 /**
+ * Creating a formatted array key name in the default namespace.
+ *
+ * @param keyNameWithoutNamespace the key name without the namespace
+ * @param arrayNumber the array element number e.g. #1 => array number is 1
+ * @param pos the position of the # character
+ * @return the formatted array key name in the default namespace
+ */
+static char * createFormattedArrayKeyNameInDefaultNamespace (char * keyNameWithoutNamespace, int arrayNumber, int pos)
+{
+	char * strUntilArrayElement = elektraMalloc (pos);
+	memcpy (strUntilArrayElement, &keyNameWithoutNamespace[0], pos - 1);
+	strUntilArrayElement[pos] = '\0';
+
+	size_t keyNameSize = elektraStrLen (keyNameWithoutNamespace);
+	char * strAfterArrayElement = elektraMalloc (keyNameSize + 1);
+	memcpy (strAfterArrayElement, &keyNameWithoutNamespace[pos + 1], keyNameSize);
+	strAfterArrayElement[keyNameSize + 1] = '\0';
+
+	char * arrayElementName = createArrayElementName (arrayNumber);
+
+	char * formattedKeyName = elektraFormat ("default:/%s/%s/%s", strUntilArrayElement, arrayElementName, strAfterArrayElement);
+
+	elektraFree (strUntilArrayElement);
+	elektraFree (strAfterArrayElement);
+	elektraFree (arrayElementName);
+
+	return formattedKeyName;
+}
+
+/**
  * Creates the corresponding array element keys and copies all the meta data keys from {@link specKey}.
  *
  * @param specKey the specification key to copy the meta data from
@@ -249,26 +277,12 @@ static void instantiateArraySpecificationAndCopyMeta (Key * specKey, KeySet * ks
 	{
 		char * keyNameWithoutNamespace = strchr (keyName (specKey), '/');
 
-		char * strUntilArrayElement = elektraMalloc (pos);
-		memcpy (strUntilArrayElement, &keyNameWithoutNamespace[0], pos - 1);
-		strUntilArrayElement[pos] = '\0';
-
-		size_t keyNameSize = elektraStrLen (keyNameWithoutNamespace);
-		char * strAfterArrayElement = elektraMalloc (keyNameSize + 1);
-		memcpy (strAfterArrayElement, &keyNameWithoutNamespace[pos + 1], keyNameSize);
-		strAfterArrayElement[keyNameSize + 1] = '\0';
-
-		char * arrayElementName = createArrayElementName (i);
-
-		char * formattedKeyName = elektraFormat ("default:/%s/%s/%s", strUntilArrayElement, arrayElementName, strAfterArrayElement);
+		char * formattedKeyName = createFormattedArrayKeyNameInDefaultNamespace (keyNameWithoutNamespace, i, pos);
 		Key * key = keyNew (formattedKeyName, KEY_END);
 		keyCopyAllMeta (key, specKey);
 
 		ksAppendKey (instantiatedArraySpecs, key);
 
-		elektraFree (strUntilArrayElement);
-		elektraFree (strAfterArrayElement);
-		elektraFree (arrayElementName);
 		elektraFree (formattedKeyName);
 	}
 
@@ -542,6 +556,12 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * specKeys, KeyS
 			Key * arraySizeKeyToInstantiate = getMatchingKeyFromKeySet (specKeys, untilArrayElementAtPositionI);
 			const char * arraySizeToInstantiate = keyString (keyGetMeta (arraySizeKeyToInstantiate, "array"));
 
+			if (arraySizeKeyToInstantiate == NULL)
+			{
+				addDefaultKey (ks, specKey);
+				continue;
+			}
+
 			if (!isArrayEmpty (ks, arrayPositions[i]))
 			{
 				continue;
@@ -589,7 +609,7 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * specKeys, KeyS
 	{
 		if (hasDefault (specKey))
 		{
-			addDefaultKey (ks, parentKey, specKey);
+			addDefaultKey (ks, specKey);
 			return 0;
 		}
 		else
