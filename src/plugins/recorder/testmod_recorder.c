@@ -90,7 +90,7 @@ static void test_isNotActive_shouldStillReturnSuccessful (void)
 	PLUGIN_CLOSE ();
 }
 
-static void test_isNotActive_recordSuccess_shouldReturnSuccess (void)
+static void test_isActive_recordSuccess_shouldReturnSuccess (void)
 {
 	printf ("Test %s\n", __func__);
 
@@ -116,7 +116,7 @@ static void test_isNotActive_recordSuccess_shouldReturnSuccess (void)
 	PLUGIN_CLOSE ();
 }
 
-static void test_isNotActive_recordNotSuccess_shouldReturnNotSuccess (void)
+static void test_recordNotSuccess_shouldReturnNotSuccess (void)
 {
 	printf ("Test %s\n", __func__);
 
@@ -154,8 +154,8 @@ int main (int argc, char ** argv)
 	test_basics ();
 	test_noKdbInGlobalKeySet_shouldReturnError ();
 	test_isNotActive_shouldStillReturnSuccessful ();
-	test_isNotActive_recordSuccess_shouldReturnSuccess ();
-	test_isNotActive_recordNotSuccess_shouldReturnNotSuccess ();
+	test_isActive_recordSuccess_shouldReturnSuccess ();
+	test_recordNotSuccess_shouldReturnNotSuccess ();
 
 	print_result ("testmod_recorder");
 
