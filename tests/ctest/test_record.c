@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <tests.h>
 
-static char * appendString (const char *s1, const char *s2)
+static char * appendString (const char * s1, const char * s2)
 {
 	size_t newPathLength = strlen (s1) + strlen (s2) + 1;
 	char * newPath = elektraMalloc (newPathLength * sizeof (char));
@@ -116,7 +116,7 @@ static void test_elektraRecordEnableRecording_isActive_Disable_shouldWork (void)
 	closePrefixedKdbInstance (kdb, parentKey, false);
 
 	// Create new instance and see if it's active
-	kdb = openPrefixedKdbInstance (contract, parentKey, __func__ );
+	kdb = openPrefixedKdbInstance (contract, parentKey, __func__);
 	KeySet * tmp = ksNew (0, KS_END);
 	Key * recordingConfigKey = keyNew (ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, KEY_END);
 	kdbGet (kdb, tmp, recordingConfigKey);
@@ -128,18 +128,20 @@ static void test_elektraRecordEnableRecording_isActive_Disable_shouldWork (void)
 	closePrefixedKdbInstance (kdb, parentKey, false);
 
 	// Create new instance and disable
-	kdb = openPrefixedKdbInstance (contract, parentKey, __func__ );
+	kdb = openPrefixedKdbInstance (contract, parentKey, __func__);
 	success = elektraRecordDisableRecording (kdb, recordingParentKey);
 	succeed_if (success == true, "call should be successful");
-	succeed_if (ksLookupByName (kdb->global, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, 0) == NULL, "global keyset should not contain active key");
+	succeed_if (ksLookupByName (kdb->global, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, 0) == NULL,
+		    "global keyset should not contain active key");
 	closePrefixedKdbInstance (kdb, parentKey, false);
 
 	// Create new instance and see if it's active
-	kdb = openPrefixedKdbInstance (contract, parentKey, __func__ );
+	kdb = openPrefixedKdbInstance (contract, parentKey, __func__);
 	tmp = ksNew (0, KS_END);
 	recordingConfigKey = keyNew (ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, KEY_END);
 	kdbGet (kdb, tmp, recordingConfigKey);
-	succeed_if (ksLookupByName (kdb->global, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, 0) == NULL, "global keyset should not contain active key");
+	succeed_if (ksLookupByName (kdb->global, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, 0) == NULL,
+		    "global keyset should not contain active key");
 	succeed_if (ksLookupByName (tmp, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, 0) == NULL, "should not contain active key");
 	ksDel (tmp);
 	keyDel (recordingConfigKey);
@@ -156,7 +158,7 @@ static void test_elektraRecordRecord_notActive_shouldAddWarningIfNotActive (void
 	printf ("Executing %s\n", __func__);
 
 	// Arrange
- 	KeySet * contract = ksNew (0, KS_END);
+	KeySet * contract = ksNew (0, KS_END);
 	Key * parentKey = keyNew ("/", KEY_END);
 	Key * errorKey = keyNew ("/", KEY_END);
 	KDB * kdb = openPrefixedKdbInstance (contract, parentKey, __func__);
@@ -296,7 +298,8 @@ static void test_elektraRecordRecord_withParentKeySet_shouldRecordOnlyChangesBel
 
 	succeed_if_fmt (ksGetSize (sessionStorage) == 2, "expected 3 keys, was %zu", ksGetSize (sessionStorage));
 	succeed_if_keyset_contains_key_with_value (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/filter/filterkey2", "2");
-	succeed_if_keyset_contains_key_with_value (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/filter/filterkey1", "1");
+	succeed_if_keyset_contains_key_with_value (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/filter/filterkey1",
+						   "1");
 
 	ksDel (sessionStorage);
 	keyDel (sessionStorageKey);

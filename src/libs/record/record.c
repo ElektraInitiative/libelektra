@@ -31,7 +31,8 @@ bool elektraRecordEnableRecording (KDB * handle, const Key * parentKey, Key * er
 
 	if (handle->hooks.record.plugin == NULL)
 	{
-		ELEKTRA_ADD_RESOURCE_WARNING (errorKey, "There is no record plugin present. Session recording will not work for the current KDB instance.");
+		ELEKTRA_ADD_RESOURCE_WARNING (
+			errorKey, "There is no record plugin present. Session recording will not work for the current KDB instance.");
 	}
 
 	Key * configKey = keyNew (ELEKTRA_RECORD_CONFIG_KEY, KEY_END);
@@ -49,7 +50,9 @@ bool elektraRecordEnableRecording (KDB * handle, const Key * parentKey, Key * er
 	Key * activeKey = ksLookupByName (config, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, KDB_O_POP);
 	if (activeKey != NULL)
 	{
-		ELEKTRA_ADD_RESOURCE_WARNINGF (errorKey, "There is already a session active with parent key \"%s\". Replacing it with new parent key \"%s\".", keyString (activeKey), keyName (parentKey));
+		ELEKTRA_ADD_RESOURCE_WARNINGF (
+			errorKey, "There is already a session active with parent key \"%s\". Replacing it with new parent key \"%s\".",
+			keyString (activeKey), keyName (parentKey));
 		ns = keyGetNamespace (activeKey);
 		keyDel (activeKey);
 	}
@@ -454,7 +457,7 @@ cleanup:
  *                 As usual, they will be found as meta keys attached to this key.
  * @retval true - changes were undone successfully
  * @retfal false - there was an error during the undo operation - see @p errorKey for further details
-*/
+ */
 bool elektraRecordUndo (KDB * handle, KDB * sessionStorageHandle, Key * parentKey, Key * errorKey)
 {
 	if (handle == NULL)
