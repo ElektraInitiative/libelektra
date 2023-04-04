@@ -337,6 +337,7 @@ bool elektraRecordRecord (KDB * handle, KDB * sessionStorageHandle, KeySet * new
 	const Key * activeKey = ksLookupByName (handle->global, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, 0);
 	if (activeKey == NULL)
 	{
+		ELEKTRA_ADD_RESOURCE_WARNINGF (errorKey, "%s called but recording is not enabled.", __func__);
 		// recording is not activated --> do nothing, but still successful
 		return true;
 	}
