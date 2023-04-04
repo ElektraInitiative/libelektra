@@ -7,8 +7,8 @@
  *
  */
 
-#include <stdlib.h>
 #include <kdbprivate.h>
+#include <stdlib.h>
 #include <tests_plugin.h>
 
 static void test_basics (void)
@@ -58,7 +58,7 @@ static void test_noKdbInGlobalKeySet_shouldReturnError (void)
 
 	KeySet * returned = ksNew (0, KS_END);
 	Key * parentKey = keyNew ("user:/tests/recorder", KEY_END);
-	succeed_if (getRecordFunction (plugin)(plugin, returned, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "call should return error");
+	succeed_if (getRecordFunction (plugin) (plugin, returned, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "call should return error");
 
 	ksDel (returned);
 	keyDel (parentKey);
@@ -75,13 +75,12 @@ static void test_isNotActive_shouldStillReturnSuccessful (void)
 	PLUGIN_OPEN ("recorder");
 
 	KDB * handle = kdbOpen (NULL, parentKey);
-	plugin->global = ksNew (1,
-				keyNew ("system:/elektra/kdb", KEY_BINARY, KEY_SIZE, sizeof (handle), KEY_VALUE, &handle, KEY_END),
-				KS_END);
+	plugin->global =
+		ksNew (1, keyNew ("system:/elektra/kdb", KEY_BINARY, KEY_SIZE, sizeof (handle), KEY_VALUE, &handle, KEY_END), KS_END);
 
 	isActiveResult = false;
 	KeySet * returned = ksNew (0, KS_END);
-	succeed_if (getRecordFunction (plugin)(plugin, returned, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call should be successful");
+	succeed_if (getRecordFunction (plugin) (plugin, returned, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call should be successful");
 
 	kdbClose (handle, parentKey);
 	keyDel (parentKey);
@@ -100,15 +99,14 @@ static void test_isNotActive_recordSuccess_shouldReturnSuccess (void)
 	PLUGIN_OPEN ("recorder");
 
 	KDB * handle = kdbOpen (NULL, parentKey);
-	plugin->global = ksNew (1,
-				keyNew ("system:/elektra/kdb", KEY_BINARY, KEY_SIZE, sizeof (handle), KEY_VALUE, &handle, KEY_END),
-				KS_END);
+	plugin->global =
+		ksNew (1, keyNew ("system:/elektra/kdb", KEY_BINARY, KEY_SIZE, sizeof (handle), KEY_VALUE, &handle, KEY_END), KS_END);
 
 	isActiveResult = true;
 	recordResult = true;
 
 	KeySet * returned = ksNew (0, KS_END);
-	succeed_if (getRecordFunction (plugin)(plugin, returned, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call should be successful");
+	succeed_if (getRecordFunction (plugin) (plugin, returned, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call should be successful");
 
 	kdbClose (handle, parentKey);
 	keyDel (parentKey);
@@ -127,15 +125,15 @@ static void test_isNotActive_recordNotSuccess_shouldReturnNotSuccess (void)
 	PLUGIN_OPEN ("recorder");
 
 	KDB * handle = kdbOpen (NULL, parentKey);
-	plugin->global = ksNew (1,
-				keyNew ("system:/elektra/kdb", KEY_BINARY, KEY_SIZE, sizeof (handle), KEY_VALUE, &handle, KEY_END),
-				KS_END);
+	plugin->global =
+		ksNew (1, keyNew ("system:/elektra/kdb", KEY_BINARY, KEY_SIZE, sizeof (handle), KEY_VALUE, &handle, KEY_END), KS_END);
 
 	isActiveResult = true;
 	recordResult = false;
 
 	KeySet * returned = ksNew (0, KS_END);
-	succeed_if (getRecordFunction (plugin)(plugin, returned, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "call should not be successful");
+	succeed_if (getRecordFunction (plugin) (plugin, returned, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR,
+		    "call should not be successful");
 
 	kdbClose (handle, parentKey);
 	keyDel (parentKey);
