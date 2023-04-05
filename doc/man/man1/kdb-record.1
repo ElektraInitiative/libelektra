@@ -1,0 +1,31 @@
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.TH "KDB\-RECORD" "1" "March 2023" ""
+.SH "NAME"
+\fBkdb\-record\fR \- Session recording for Elektra
+.SH "SYNOPSIS"
+\fBkdb record\-<COMMAND>\fR
+.P
+Where \fB<COMMAND>\fR is one of the following:
+.IP "\(bu" 4
+\fBstart [parent_key]\fR: start recording\. Will not clear existing recording data\.
+.IP "\(bu" 4
+\fBstop\fR: stop recording\.
+.IP "\(bu" 4
+\fBclear\fR: clear existing recording data\.
+.IP "\(bu" 4
+\fBundo [parent_key]\fR: undoes everything that has been recorded\.
+.IP "\(bu" 4
+\fBassert [\-\-meta meta_name] <key_name>\fR: marks a key to be used for value\-based validation during import\.
+.IP "\(bu" 4
+\fBremove\-assert <key_name>\fR: unmarks a key to be used for value\-based validation during import\.
+.IP "\(bu" 4
+\fBexport <commands|ansible>\fR: outputs the changes in the specified format\.
+.IP "\(bu" 4
+\fBcommands\fR: a list of \fBkdb\fR commands to reproduce the current recorded state
+.IP "\(bu" 4
+\fBansible\fR: an Ansible playbook to reproduce the current recorded state
+.IP "" 0
+
+.IP "" 0
+
