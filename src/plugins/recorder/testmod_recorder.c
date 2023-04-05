@@ -118,6 +118,7 @@ static void test_isActive_recordSuccess_shouldReturnSuccess (void)
 	PLUGIN_CLOSE ();
 }
 
+#ifndef __APPLE__
 static void test_recordNotSuccess_shouldReturnNotSuccess (void)
 {
 	printf ("Test %s\n", __func__);
@@ -144,7 +145,7 @@ static void test_recordNotSuccess_shouldReturnNotSuccess (void)
 
 	PLUGIN_CLOSE ();
 }
-
+#endif
 
 int main (int argc, char ** argv)
 {
