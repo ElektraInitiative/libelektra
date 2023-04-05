@@ -22,14 +22,14 @@ static void test_elektraSetErrorINTERNAL_shouldAddError (void)
 	// Assert
 	KeySet * meta = keyMeta (errorKey);
 	succeed_if (keyGetMeta (errorKey, "meta:/error") != NULL, "expected meta:/error to be present");
-	succeed_if_keyset_contains_key_with_value (meta, "meta:/error/number", "C01310");
-	succeed_if_keyset_contains_key_with_value (meta, "meta:/error/description", "Internal");
-	succeed_if_keyset_contains_key_with_value (meta, "meta:/error/module", "mymodule");
-	succeed_if_keyset_contains_key_with_value (meta, "meta:/error/file", "myfile.c");
-	succeed_if_keyset_contains_key_with_value (meta, "meta:/error/line", "117");
-	succeed_if_keyset_contains_key_with_value (meta, "meta:/error/mountpoint", "/root");
-	succeed_if_keyset_contains_key_with_value (meta, "meta:/error/configfile", "value");
-	succeed_if_keyset_contains_key_with_value (meta, "meta:/error/reason", "test error");
+	succeed_if_keyset_contains_key_with_string (meta, "meta:/error/number", "C01310");
+	succeed_if_keyset_contains_key_with_string (meta, "meta:/error/description", "Internal");
+	succeed_if_keyset_contains_key_with_string (meta, "meta:/error/module", "mymodule");
+	succeed_if_keyset_contains_key_with_string (meta, "meta:/error/file", "myfile.c");
+	succeed_if_keyset_contains_key_with_string (meta, "meta:/error/line", "117");
+	succeed_if_keyset_contains_key_with_string (meta, "meta:/error/mountpoint", "/root");
+	succeed_if_keyset_contains_key_with_string (meta, "meta:/error/configfile", "value");
+	succeed_if_keyset_contains_key_with_string (meta, "meta:/error/reason", "test error");
 
 	keyDel (errorKey);
 }
@@ -51,14 +51,14 @@ static void test_elektraErrorCopy_shouldCopyError (void)
 	// Assert
 	KeySet * meta = keyMeta (copyKey);
 	succeed_if (keyGetMeta (copyKey, "meta:/error") != NULL, "expected meta:/error to be present");
-	succeed_if_keyset_contains_key_with_value (meta, "meta:/error/number", "C01310");
-	succeed_if_keyset_contains_key_with_value (meta, "meta:/error/description", "Internal");
-	succeed_if_keyset_contains_key_with_value (meta, "meta:/error/module", "mymodule");
-	succeed_if_keyset_contains_key_with_value (meta, "meta:/error/file", "myfile.c");
-	succeed_if_keyset_contains_key_with_value (meta, "meta:/error/line", "117");
-	succeed_if_keyset_contains_key_with_value (meta, "meta:/error/mountpoint", "/root");
-	succeed_if_keyset_contains_key_with_value (meta, "meta:/error/configfile", "value");
-	succeed_if_keyset_contains_key_with_value (meta, "meta:/error/reason", "test error");
+	succeed_if_keyset_contains_key_with_string (meta, "meta:/error/number", "C01310");
+	succeed_if_keyset_contains_key_with_string (meta, "meta:/error/description", "Internal");
+	succeed_if_keyset_contains_key_with_string (meta, "meta:/error/module", "mymodule");
+	succeed_if_keyset_contains_key_with_string (meta, "meta:/error/file", "myfile.c");
+	succeed_if_keyset_contains_key_with_string (meta, "meta:/error/line", "117");
+	succeed_if_keyset_contains_key_with_string (meta, "meta:/error/mountpoint", "/root");
+	succeed_if_keyset_contains_key_with_string (meta, "meta:/error/configfile", "value");
+	succeed_if_keyset_contains_key_with_string (meta, "meta:/error/reason", "test error");
 	succeed_if (keyGetMeta (copyKey, "meta:/other") == NULL, "should not contain meta:/other");
 
 	keyDel (errorKey);

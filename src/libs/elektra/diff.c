@@ -307,7 +307,7 @@ ElektraDiff * elektraDiffCalculate (KeySet * newKeys, KeySet * oldKeys, Key * pa
  * @param parentKey the parent key
  * @return ElektraDiff with the provided parameters
  */
-ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKey, KeySet * modifiedKeyNew, Key * parentKey)
+ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKey, KeySet * modifiedNewKeys, Key * parentKey)
 {
 	ElektraDiff * ksd = elektraCalloc (sizeof (ElektraDiff));
 
@@ -325,10 +325,10 @@ ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet *
 	ksIncRef (modifiedKey);
 	ksd->modifiedKeys = modifiedKey;
 
-	if (modifiedKeyNew != NULL)
+	if (modifiedNewKeys != NULL)
 	{
-		ksIncRef (modifiedKeyNew);
-		ksd->modifiedNewKeys = modifiedKeyNew;
+		ksIncRef (modifiedNewKeys);
+		ksd->modifiedNewKeys = modifiedNewKeys;
 	}
 
 	return ksd;
@@ -422,7 +422,18 @@ ElektraDiff * elektraDiffCut (ElektraDiff * original, const Key * cutpoint)
 	return new;
 }
 
-static void cutOthers (KeySet ** ks, const Key * cutpoint)
+/**
+ * @internal
+ *
+ * Removes all keys that are not at or below @p cutpoint form the keyset
+ * After execution, @p ks will point to another keyset!
+ *
+ * @param ks the keyset that shall be cut.
+ *           It will be pointed to another keyset!
+ *           The original keyset will be deleted.
+ * @param cutpoint the point to preserve
+ */
+static void cutOtherKeys (KeySet ** ks, const Key * cutpoint)
 {
 	KeySet * below = ksCut (*ks, cutpoint);
 
@@ -453,10 +464,10 @@ void elektraDiffRemoveOther (ElektraDiff * ksd, const Key * parentKey)
 
 	ksd->parentKey = keyDup (parentKey, KEY_CP_ALL);
 
-	if (ksd->addedKeys) cutOthers (&ksd->addedKeys, parentKey);
-	if (ksd->removedKeys) cutOthers (&ksd->removedKeys, parentKey);
-	if (ksd->modifiedKeys) cutOthers (&ksd->modifiedKeys, parentKey);
-	if (ksd->modifiedNewKeys) cutOthers (&ksd->modifiedNewKeys, parentKey);
+	if (ksd->addedKeys) cutOtherKeys (&ksd->addedKeys, parentKey);
+	if (ksd->removedKeys) cutOtherKeys (&ksd->removedKeys, parentKey);
+	if (ksd->modifiedKeys) cutOtherKeys (&ksd->modifiedKeys, parentKey);
+	if (ksd->modifiedNewKeys) cutOtherKeys (&ksd->modifiedNewKeys, parentKey);
 }
 
 /**

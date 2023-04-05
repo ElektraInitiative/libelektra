@@ -155,13 +155,15 @@ int elektraGOptsContractFromStrings (KeySet * contract, size_t argsSize, const c
  * This can be useful in tests.
  *
  * @param contract    The KeySet into which the contract will be written.
- * @param path        The path
- * @retval -1 if any of @p contract or @p path is NULL
+ * @param path        The path and name for the elektra.cfg file.
+ * @retval -1 if @p contract is NULL
+ * @retval -1 if @p path is NULL
+ * @retval -1 if @p path is an empty string
  * @retval  0 on success
  */
 int elektraBootstrapPathContract (KeySet * contract, const char * path)
 {
-	if (contract == NULL || path == NULL)
+	if (contract == NULL || path == NULL || *path == '\0')
 	{
 		return -1;
 	}

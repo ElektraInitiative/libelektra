@@ -395,7 +395,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- Add macro `succeed_if_keyset_contains_key_with_value` to assert that a certain key with a certain value must exist. _(Maximilian Irlinger @atmaxinger)_
+- Add macro `succeed_if_keyset_contains_key_with_string` to assert that a certain key with a certain value must exist. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

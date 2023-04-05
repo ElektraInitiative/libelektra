@@ -112,7 +112,7 @@ static void test_elektraRecordEnableRecording_isActive_Disable_shouldWork (void)
 	KDB * kdb = openPrefixedKdbInstance (contract, parentKey, __func__);
 	bool success = elektraRecordEnableRecording (kdb, recordingParentKey, parentKey);
 	succeed_if (success == true, "call should be successful");
-	succeed_if_keyset_contains_key_with_value (kdb->global, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, "user:/my/test");
+	succeed_if_keyset_contains_key_with_string (kdb->global, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, "user:/my/test");
 	closePrefixedKdbInstance (kdb, parentKey, false);
 
 	// Create new instance and see if it's active
@@ -120,8 +120,8 @@ static void test_elektraRecordEnableRecording_isActive_Disable_shouldWork (void)
 	KeySet * tmp = ksNew (0, KS_END);
 	Key * recordingConfigKey = keyNew (ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, KEY_END);
 	kdbGet (kdb, tmp, recordingConfigKey);
-	succeed_if_keyset_contains_key_with_value (kdb->global, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, "user:/my/test");
-	succeed_if_keyset_contains_key_with_value (tmp, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, "user:/my/test");
+	succeed_if_keyset_contains_key_with_string (kdb->global, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, "user:/my/test");
+	succeed_if_keyset_contains_key_with_string (tmp, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, "user:/my/test");
 	ksDel (tmp);
 	keyDel (recordingConfigKey);
 	succeed_if (elektraRecordIsActive (kdb) == true, "elektraRecordIsActive should report true");
@@ -228,9 +228,9 @@ static void test_elektraRecordRecord_shouldRecordChanges (void)
 	kdbGet (sessionStorageKdb, sessionStorage, sessionStorageKey);
 
 	succeed_if_fmt (ksGetSize (sessionStorage) == 3, "expected 3 keys, was %zu", ksGetSize (sessionStorage));
-	succeed_if_keyset_contains_key_with_value (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/test/key3", "2");
-	succeed_if_keyset_contains_key_with_value (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/test/key1", "1");
-	succeed_if_keyset_contains_key_with_value (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY "/test/key2", "1");
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/test/key3", "2");
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/test/key1", "1");
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY "/test/key2", "1");
 
 	ksDel (sessionStorage);
 	keyDel (sessionStorageKey);
@@ -297,8 +297,8 @@ static void test_elektraRecordRecord_withParentKeySet_shouldRecordOnlyChangesBel
 	kdbGet (sessionStorageKdb, sessionStorage, sessionStorageKey);
 
 	succeed_if_fmt (ksGetSize (sessionStorage) == 2, "expected 3 keys, was %zu", ksGetSize (sessionStorage));
-	succeed_if_keyset_contains_key_with_value (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/filter/filterkey2", "2");
-	succeed_if_keyset_contains_key_with_value (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/filter/filterkey1",
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/filter/filterkey2", "2");
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/filter/filterkey1",
 						   "1");
 
 	ksDel (sessionStorage);
@@ -360,8 +360,8 @@ static void test_elektraRecordRecord_removeEverything_shouldRecordChanges (void)
 	kdbGet (sessionStorageKdb, sessionStorage, sessionStorageKey);
 
 	succeed_if_fmt (ksGetSize (sessionStorage) == 2, "expected 2 keys, was %zu", ksGetSize (sessionStorage));
-	succeed_if_keyset_contains_key_with_value (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/test/key1", "1");
-	succeed_if_keyset_contains_key_with_value (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/test/key2", "1");
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/test/key1", "1");
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/test/key2", "1");
 
 	ksDel (sessionStorage);
 	keyDel (sessionStorageKey);
@@ -428,8 +428,8 @@ static void test_elektraRecordUndo_shouldUndoChanges (void)
 	kdb = openPrefixedKdbInstance (contract, parentKey, __func__);
 	ksClear (keys);
 	kdbGet (kdb, keys, parentKey);
-	succeed_if_keyset_contains_key_with_value (keys, "user:/test/key3", "3");
-	succeed_if_keyset_contains_key_with_value (keys, "user:/test/key2", "1");
+	succeed_if_keyset_contains_key_with_string (keys, "user:/test/key3", "3");
+	succeed_if_keyset_contains_key_with_string (keys, "user:/test/key2", "1");
 	succeed_if (ksLookupByName (keys, "user:/test/key1", 0) == NULL, "user:/test/key1 should not have been found");
 
 	closePrefixedKdbInstance (kdb, parentKey, false);

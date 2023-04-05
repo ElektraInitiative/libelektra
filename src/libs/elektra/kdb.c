@@ -797,9 +797,7 @@ static bool addRootMountpoint (KeySet * backends, elektraNamespace ns, KeySet * 
 	Key * rootKey = keyNew ("/", KEY_END);
 	keySetNamespace (rootKey, ns);
 
-	bool ret = addBasicMountpoint (backends, keyDup (rootKey, KEY_CP_ALL), KDB_DB_FILE, modules, global, errorKey);
-
-	keyDel (rootKey);
+	bool ret = addBasicMountpoint (backends, rootKey, KDB_DB_FILE, modules, global, errorKey);
 
 	return ret;
 }
@@ -809,9 +807,7 @@ static bool addRecordingMountpoint (KeySet * backends, elektraNamespace ns, KeyS
 	Key * rootKey = keyNew (ELEKTRA_RECORD_SESSION_KEY, KEY_END);
 	keySetNamespace (rootKey, ns);
 
-	bool ret = addBasicMountpoint (backends, keyDup (rootKey, KEY_CP_ALL), "record-session.cfg", modules, global, errorKey);
-
-	keyDel (rootKey);
+	bool ret = addBasicMountpoint (backends, rootKey, "record-session.cfg", modules, global, errorKey);
 
 	return ret;
 }

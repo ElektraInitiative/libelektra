@@ -447,7 +447,7 @@ struct _ElektraDiff
 	uint16_t refs;
 };
 
-struct _ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKey, KeySet * modifiedKeyNew,
+struct _ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedNewKeys, KeySet * modifiedKeyNew,
 				      Key * parentKey);
 void elektraDiffAppend (struct _ElektraDiff * target, const struct _ElektraDiff * source, Key * parentKey);
 
