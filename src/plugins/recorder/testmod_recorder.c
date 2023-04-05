@@ -40,12 +40,14 @@ static bool recordResult = false;
 
 bool elektraRecordIsActive (KDB * handle ELEKTRA_UNUSED)
 {
+	printf ("%s: returning %s\n", __func__, isActiveResult ? "true" : "false");
 	return isActiveResult;
 }
 
 bool elektraRecordRecord (KDB * handle ELEKTRA_UNUSED, KDB * sessionStorageHandle ELEKTRA_UNUSED, KeySet * newKeys ELEKTRA_UNUSED,
 			  Key * parentKey ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
+	printf ("%s: returning %s\n", __func__, recordResult ? "true" : "false");
 	return recordResult;
 }
 
