@@ -261,7 +261,7 @@ int init (int argc, char ** argv);
 		ELEKTRA_DIAG_RESTORE                                                                                                       \
 	}
 
-#define succeed_if_keyset_contains_key_with_string(pks, pkn, pv)                                                                            \
+#define succeed_if_keyset_contains_key_with_string(pks, pkn, pv)                                                                           \
 	{                                                                                                                                  \
 		nbTest++;                                                                                                                  \
 		KeySet * ks = pks;                                                                                                         \

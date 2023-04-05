@@ -297,9 +297,10 @@ static void test_elektraRecordRecord_withParentKeySet_shouldRecordOnlyChangesBel
 	kdbGet (sessionStorageKdb, sessionStorage, sessionStorageKey);
 
 	succeed_if_fmt (ksGetSize (sessionStorage) == 2, "expected 3 keys, was %zu", ksGetSize (sessionStorage));
-	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/filter/filterkey2", "2");
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/filter/filterkey2",
+						    "2");
 	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/filter/filterkey1",
-						   "1");
+						    "1");
 
 	ksDel (sessionStorage);
 	keyDel (sessionStorageKey);
