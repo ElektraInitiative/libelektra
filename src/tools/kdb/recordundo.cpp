@@ -23,7 +23,7 @@ int RecordUndoCommand::execute (const Cmdline & cmdline)
 {
 	if (cmdline.arguments.size () > 1)
 	{
-		throw invalid_argument ("at max 1 argument needed");
+		throw invalid_argument ("max 1 argument needed");
 	}
 
 	Key parentKey ("/");

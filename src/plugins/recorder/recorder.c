@@ -59,7 +59,7 @@ int elektraRecorderRecord (Plugin * handle, KeySet * returned, Key * parentKey)
 	Key * kdbKey = ksLookupByName (global, "system:/elektra/kdb", 0);
 	if (kdbKey == NULL)
 	{
-		ELEKTRA_SET_INTERNAL_ERROR (parentKey, "Keys system:/elektra/kdb was not present in global keyset");
+		ELEKTRA_SET_INTERNAL_ERROR (parentKey, "Key system:/elektra/kdb was not present in global keyset");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 

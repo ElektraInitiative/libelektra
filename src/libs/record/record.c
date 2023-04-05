@@ -137,7 +137,7 @@ bool elektraRecordDisableRecording (KDB * handle, Key * errorKey)
 /**
  * Clears all recorded data.
  *
- * @param handle
+ * @param handle the KDB instance to use
  * @param errorKey used for reporting errors and warnings.
  *                 As usual, they will be found as meta keys attached to this key.
  * @retval true - recording session has been cleared successfully

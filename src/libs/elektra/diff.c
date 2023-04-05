@@ -303,6 +303,7 @@ ElektraDiff * elektraDiffCalculate (KeySet * newKeys, KeySet * oldKeys, Key * pa
  * @param addedKeys the added keys
  * @param removedKeys the removed keys
  * @param modifiedKey the modified keys
+ * @param modifiedNewKeys the modified keys with the new values
  * @param parentKey the parent key
  * @return ElektraDiff with the provided parameters
  */
@@ -394,7 +395,7 @@ void elektraDiffRemoveSameOrBelow (ElektraDiff * ksd, const Key * cutpoint)
  *
  * @param original the original diff
  * @param cutpoint the cutpoint
- * @return new diff with all the keys same or beloq @p cutpoint,
+ * @return new diff with all the keys same or below @p cutpoint,
  *         OR @p NULL if @p original is @p NULL
  *         OR @p NULL if @p cutpoint is @p NULL
  */
@@ -448,7 +449,6 @@ void elektraDiffRemoveOther (ElektraDiff * ksd, const Key * parentKey)
 	if (ksd->parentKey != NULL)
 	{
 		keyDel (ksd->parentKey);
-		ksd->parentKey = NULL;
 	}
 
 	ksd->parentKey = keyDup (parentKey, KEY_CP_ALL);

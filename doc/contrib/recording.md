@@ -89,7 +89,7 @@ We provide the following export formats:
 
 ### Commands format
 
-Should be self-explaintatory. Will look something like this:
+Should be self-explanatory. Will look like this:
 
 ```
 kdb set user:/my/modified/value 123
