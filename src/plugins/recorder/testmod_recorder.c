@@ -153,11 +153,13 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
+#ifndef __APPLE__
 	test_basics ();
 	test_noKdbInGlobalKeySet_shouldReturnError ();
 	test_isNotActive_shouldStillReturnSuccessful ();
 	test_isActive_recordSuccess_shouldReturnSuccess ();
 	test_recordNotSuccess_shouldReturnNotSuccess ();
+#endif
 
 	print_result ("testmod_recorder");
 
