@@ -8,10 +8,10 @@
  */
 
 #include "ansible_delegate.hpp"
-#include <yaml-cpp/yaml.h>
 #include <fstream>
-#include <sstream>
 #include <kdbprivate.h> // ksBelow
+#include <sstream>
+#include <yaml-cpp/yaml.h>
 
 using kdb::Key;
 using kdb::KeySet;
@@ -56,21 +56,21 @@ kdb::KeySet AnsibleDelegate::getConfig (Key const & parent)
 
 void addKey (YAML::Node & parent, kdb::Key const & key, kdb::NameIterator & nameIterator)
 {
-	if (nameIterator == key.end())
+	if (nameIterator == key.end ())
 	{
 		std::string value = key.getString ();
-		if (key.getNamespace() != kdb::ElektraNamespace::META && key.hasMeta ("meta:/elektra/export/variable"))
+		if (key.getNamespace () != kdb::ElektraNamespace::META && key.hasMeta ("meta:/elektra/export/variable"))
 		{
-			auto variableName = key.getMeta<std::string>("meta:/elektra/export/variable");
+			auto variableName = key.getMeta<std::string> ("meta:/elektra/export/variable");
 			std::stringstream ansibleVariableStream;
 			ansibleVariableStream << "{{ " << variableName << " | default('" << value << "') }}";
-			value = ansibleVariableStream.str();
+			value = ansibleVariableStream.str ();
 		}
 
 		ckdb::KeySet * metaKeys = ckdb::keyMeta (*key);
 
 		// Set value of the node
-		bool needsValueNode = key.getNamespace() != kdb::ElektraNamespace::META;
+		bool needsValueNode = key.getNamespace () != kdb::ElektraNamespace::META;
 
 		if (needsValueNode)
 		{
@@ -89,7 +89,7 @@ void addKey (YAML::Node & parent, kdb::Key const & key, kdb::NameIterator & name
 			for (ssize_t it = 0; it < ckdb::ksGetSize (metaKeys); ++it)
 			{
 				const kdb::Key curMeta = ckdb::ksAtCursor (metaKeys, it);
-				auto metaIterator = curMeta.begin();
+				auto metaIterator = curMeta.begin ();
 				metaIterator++;
 				addKey (metaNode, curMeta, metaIterator);
 			}
@@ -107,23 +107,23 @@ void addKey (YAML::Node & parent, kdb::Key const & key, kdb::NameIterator & name
 void addMountpoint (YAML::Emitter & out, kdb::KeySet const & keySet, kdb::Key const & parentKey)
 {
 	std::stringstream taskNameStream;
-	taskNameStream  << "Set Elektra Keys (" << parentKey.getName().substr (0, parentKey.getName().find (':')) << ")";
-	auto taskName = taskNameStream.str();
+	taskNameStream << "Set Elektra Keys (" << parentKey.getName ().substr (0, parentKey.getName ().find (':')) << ")";
+	auto taskName = taskNameStream.str ();
 
 	out << YAML::BeginMap;
 	out << YAML::Key << "name";
 	out << YAML::Value << taskName;
 	out << YAML::Key << "mountpoint";
-	out << YAML::Value << parentKey.getName();
+	out << YAML::Value << parentKey.getName ();
 	out << YAML::Key << "keys";
 
 	YAML::Node keysNode;
 
 	for (const auto & key : keySet)
 	{
-		if (key.isString())
+		if (key.isString ())
 		{
-			auto nameIterator = key.begin();
+			auto nameIterator = key.begin ();
 			nameIterator++;
 			addKey (keysNode, key, nameIterator);
 		}
@@ -139,13 +139,13 @@ void AnsibleDelegate::createPlaybook (kdb::KeySet const & keySet, kdb::Key const
 	std::string hosts = "all";
 	if (parentKey.hasMeta ("meta:/ansible/hosts"))
 	{
-		hosts = parentKey.getMeta<std::string>("meta:/ansible/hosts");
+		hosts = parentKey.getMeta<std::string> ("meta:/ansible/hosts");
 	}
 
 	std::string name = "My Elektra Ansible Playbook";
 	if (parentKey.hasMeta ("meta:/ansible/name"))
 	{
-		hosts = parentKey.getMeta<std::string>("meta:/ansible/name");
+		hosts = parentKey.getMeta<std::string> ("meta:/ansible/name");
 	}
 
 	YAML::Emitter out;
@@ -174,8 +174,8 @@ void AnsibleDelegate::createPlaybook (kdb::KeySet const & keySet, kdb::Key const
 	for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ns++)
 	{
 		ckdb::keySetNamespace (*namespaceKey, ns);
-		kdb::KeySet below = ckdb::ksBelow (keySet.getKeySet(), *namespaceKey);
-		if (below.size() > 0)
+		kdb::KeySet below = ckdb::ksBelow (keySet.getKeySet (), *namespaceKey);
+		if (below.size () > 0)
 		{
 			addMountpoint (out, below, namespaceKey);
 		}
@@ -188,7 +188,7 @@ void AnsibleDelegate::createPlaybook (kdb::KeySet const & keySet, kdb::Key const
 	out << YAML::EndDoc;
 
 	std::ofstream output (parentKey.getString ());
-	output << out.c_str() << std::endl;
+	output << out.c_str () << std::endl;
 }
 
 

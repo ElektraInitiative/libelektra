@@ -1,10 +1,10 @@
 /**
-* @file
-*
-* @brief
-*
-* @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
-*/
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
 
 #ifndef ELEKTRA_RECORDEXPORT_HPP
 #define ELEKTRA_RECORDEXPORT_HPP
@@ -41,7 +41,6 @@ public:
 
 	virtual int execute (Cmdline const & cmdline) override;
 };
-
 
 
 #endif // ELEKTRA_RECORDEXPORT_HPP

@@ -1,10 +1,10 @@
 /**
-* @file
-*
-* @brief
-*
-* @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
-*/
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
 
 #include "recordexport.hpp"
 #include "coloredkdbio.hpp"
@@ -25,35 +25,35 @@ RecordExportCommand::~RecordExportCommand () = default;
 
 int RecordExportCommand::execute (const Cmdline & cmdline)
 {
-       KDB kdb;
-       Key errorKey ("/");
+	KDB kdb;
+	Key errorKey ("/");
 
 #ifdef _WIN32
-       string file = "CON";
+	string file = "CON";
 #else
-       string file = "/dev/stdout";
+	string file = "/dev/stdout";
 #endif
-       std::string format = "ansible";
+	std::string format = "ansible";
 
-       ModulesPluginDatabase pluginDatabase;
-       PluginSpec provides = pluginDatabase.lookupProvides (format);
+	ModulesPluginDatabase pluginDatabase;
+	PluginSpec provides = pluginDatabase.lookupProvides (format);
 
-       if (cmdline.verbose) std::cout << "found provider: " << provides.getName () << endl;
+	if (cmdline.verbose) std::cout << "found provider: " << provides.getName () << endl;
 
-       Modules modules;
-       PluginPtr plugin = modules.load (provides.getName (), cmdline.getPluginsConfig ());
+	Modules modules;
+	PluginPtr plugin = modules.load (provides.getName (), cmdline.getPluginsConfig ());
 
-       Key parentKey;
-       parentKey.setString (file);
+	Key parentKey;
+	parentKey.setString (file);
 
 
-       if (!ckdb::elektraRecordExportSession (*kdb, plugin->operator->(), *parentKey, *errorKey))
-       {
-	       printError (cerr, errorKey, cmdline.verbose, cmdline.debug);
-	       return 1;
-       }
+	if (!ckdb::elektraRecordExportSession (*kdb, plugin->operator->(), *parentKey, *errorKey))
+	{
+		printError (cerr, errorKey, cmdline.verbose, cmdline.debug);
+		return 1;
+	}
 
-       printWarnings (cerr, errorKey, cmdline.verbose, cmdline.debug);
+	printWarnings (cerr, errorKey, cmdline.verbose, cmdline.debug);
 
-       return 0;
+	return 0;
 }
