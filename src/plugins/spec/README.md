@@ -13,11 +13,12 @@ The spec plugin is a global plugin that copies metadata from the `spec`-namespac
 expressions. Globbing resembles regular expressions. They do not have the same expressive power, but are easier to use. The semantics are
 more suitable to match path names:
 
-- `#` matches Elektra array elements. (e.g. `#0`, `#_10`, `#__987`)
+- `*` matches any key name of just one hierarchy. This means it complies with any character except slash or null.
+- `#` matches Elektra array elements. (e.g. `#0`, `#_10`, `#__987`).
 - `_` matches anything that `*` matches, except array elements.
 
-The plugin copies the metadata of the corresponding `spec` key to every matching (see below) key in the other namespaces. The copied metadata
-is removed again during `kdbSet` (if remained unchanged).
+The plugin copies the metadata of the corresponding `spec` key to every matching (see below) key in the other namespaces.
+The copied metadata is removed again during `kdbSet` (if remained unchanged).
 
 The spec plugin also provides basic validation and structural checking.
 Specifically it supports:
@@ -32,34 +33,37 @@ Specifically it supports:
 The matching of the spec (globbing) keys to the keys in the other namespaces is based on `elektraKeyGlob()`, which in turn is based on the
 well known `fnmatch(3)`. However, there is special handling for array specifications (`#`) and wildcard specifications (`_`).
 
+### Default Values
+
+If a spec key has the metakey `default` set and the key does not exist in other namespaces, we create a key in the `default:/` namespace.
+This key has the `default` value as its value. We also copy over metadata as always.
+
 ### Array Specifications
 
-Keys which contain a part that is exactly `#` (e.g. `my/#/key` or `my/#`) are called array specifications. These keys are instantiated
-in order to support `default` values. If the key does not exist and `default` is specified in the spec namespace, the key is created under
-the `default` namespace. We also lookup the array size (defined by the `array` metakey) using a cascading `ksLookup`. This only looks at
-non-spec namespaces, if we don't find an array size their, we check the array parent in the spec namespace. If we still have no array size,
-the array is deemed to be empty. For empty arrays, we will simply validate that they are indeed empty.
+Keys which contain a part that is exactly `#` (e.g. `my/#/key` or `my/#`) are called array specifications.
+These keys are instantiated in order to support `default` values.
+If the key does not exist and `default` is specified in the spec namespace, the key is created in the `default` namespace.
+We also lookup the array size (defined by the `array` metakey) using a cascading `ksLookup`.
+This only looks at non-spec namespaces, if we don't find an array size their, we check the array parent in the spec namespace.
+If we still have no array size, the array is deemed to be empty. For empty arrays, we will simply validate that they are indeed empty.
 
 ### Wildcard Specifications
 
-Keys which contain a part that is exactly `_` (e.g. `my/_/key` or `my/_`) are called wildcard specifications. It would be nice to have
-an "instantiation" procedure for `_` similar to the one for arrays. However, this is not possible with the current implementation, since
-there is no way of knowing in advance, which keys matching the globbing expression may be requested via `ksLookup`.
+Keys which contain a part that is exactly `_` (e.g. `my/_/key` or `my/_`) are called wildcard specifications.
+It would be nice to have an "instantiation" procedure for `_` similar to the one for arrays.
+However, this is not possible with the current implementation, since there is no way of knowing in advance, which keys matching the globbing
+expression may be requested via `ksLookup`.
 
 Instead `_` is simply treated like `*` during matching. Afterwards we check that no array elements were matched.
 
 ## Specification and Validation
 
 The basic functionality of the plugin is to just copy (using `keyCopyMeta()` so we don't waste memory) the metadata of spec keys to all
-matching (as described above) keys in other namespaces. This ensures that other plugins can do their work as expected, without manually
-setting metadata on every key. If a metakey on a target key already exists with different value, it gets overridden.
+matching (as described above) keys in other namespaces.
+This ensures that other plugins can do their work as expected, without manually setting metadata on every key.
+If a metakey on a target key already exists with different value, it gets overridden.
 
 In addition to the basic functionality, the plugin does some validation itself.
-
-### Default Values
-
-If a spec key has the metakey `default` set and the key does not exist in other namespaces, we create a key in the
-`default:/` namespace. This key has the `default` value as its value. We also copy over metadata as always.
 
 ### Required Keys
 
@@ -69,13 +73,14 @@ one other namespace, i.e. it can be found using a cascading `ksLookup`. If the k
 ### Array Size Validation
 
 As hinted to above, we validate array sizes. If a spec key `x/#` is given, and the spec key `x` has the metakey `array/min` or `array/max`
-set, we validate the array size (given as metakey `array` on `x`) is within the limits of `array/min` and `array/max`. Both `array/min` and
-`array/max` have to be valid array-elements similar to `array`. If the array size is out of bounds, this causes an `error`. If it is a
-`kdbGet` it is a `warning`.
+set, we validate the array size (given as metakey `array` on `x`) is within the limits of `array/min` and `array/max`.
+Both `array/min` and `array/max` have to be valid array-elements similar to `array`.
+If the array size is out of bounds, this causes an `error`.
+If it is a `kdbGet` it is a `warning`.
 
-Note: We don't actually validate that the array doesn't contain elements above the given array size. This is because it doesn't have
-anything to do with the specification, whether the array contains additional elements. Note also that we only copy metadata onto elements
-within the bounds of the array size.
+Note: We don't actually validate that the array doesn't contain elements above the given array size.
+This is because it doesn't have anything to do with the specification, whether the array contains additional elements.
+Note also that we only copy metadata onto elements within the bounds of the array size.
 
 ### Array Specification and Wildcard Specification (Collision)
 
