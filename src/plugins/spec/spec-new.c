@@ -34,8 +34,8 @@ static bool specMatches (Key * specKey, Key * otherKey)
  *
  * @param specKey specification key
  * @param otherKey the other key to match the specification key with
- * @return 1 - if the keys match
- * 	   0 - if the keys do not match
+ * @retval 1 - if the keys match
+ * @retval 0 - if the keys do not match
  */
 static bool specMatches (Key * specKey, Key * otherKey)
 {
@@ -100,8 +100,8 @@ static void addDefaultKey (KeySet * ks, Key * specKey)
  * Check if the specification key has a meta key `require`.
  *
  * @param specKey the specification key to check for the require meta key
- * @return true - if the specification key contains a meta key required
- * 	   false - if the specification key does not contain a meta key required
+ * @retval true - if the specification key contains a meta key required
+ * @retval false - if the specification key does not contain a meta key required
  */
 static bool isRequired (Key * specKey)
 {
@@ -121,8 +121,8 @@ static bool isRequired (Key * specKey)
  * Check if the specification key has a meta key `default`.
  *
  * @param specKey the specification key to check for the default meta key
- * @return true - if the specification key contains a meta key default
- * 	   false - if the specification key does not contain the meta key default
+ * @retval true - if the specification key contains a meta key default
+ * @retval false - if the specification key does not contain the meta key default
  */
 static bool hasDefault (Key * specKey)
 {
@@ -137,7 +137,7 @@ static bool hasDefault (Key * specKey)
  *
  * @param ks the KeySet to extract specification keys from
  *
- * @return the extracted specification keys
+ * @retval the extracted specification keys
  */
 static KeySet * extractSpecKeys (KeySet * ks)
 {
@@ -149,8 +149,8 @@ static KeySet * extractSpecKeys (KeySet * ks)
  * Checks if the {@link specKey} is an array specification key.
  *
  * @param specKey the specification key to check if it is an array specification
- * @return true  - if it is an array specification
- * 	   false - if it is no array specification
+ * @retval true  - if it is an array specification
+ * @retval false - if it is no array specification
  */
 static bool isArraySpecification (Key * specKey)
 {
@@ -161,8 +161,8 @@ static bool isArraySpecification (Key * specKey)
  * Checks if this specification key contains an `_` in the array specification.
  *
  * @param specKey the specification key to check for underline if it is array specification
- * @return true - if the array specification contains an `_`
- * 	   false - if the array specification does not contain an `_`
+ * @retval true - if the array specification contains an `_`
+ * @retval false - if the array specification does not contain an `_`
  */
 static bool containsUnderlineInArraySpec (Key * specKey)
 {
@@ -173,8 +173,8 @@ static bool containsUnderlineInArraySpec (Key * specKey)
  * Checks if this specification key has a wildcard character in the key name.
  *
  * @param specKey the specification to check for if it has a wildcard character
- * @return true - if the specification key has a wildcard character in the key name
- * 	   false - if the specification does not contain a wildcard character
+ * @retval true - if the specification key has a wildcard character in the key name
+ * @retval false - if the specification does not contain a wildcard character
  */
 static bool isWildcardSpecification (Key * specKey)
 {
@@ -210,7 +210,8 @@ static bool isWildcardSpecification (Key * specKey)
  * 	arrayElement = #__100
  *
  * @param arrayNumber the array element number
- * @return the created array element e.g. #0, #_10, #_100
+ * @return the created array element allocated with {@code elektraCalloc} e.g. #0, #_10, #_100
+ * 	   Make sure to free the memory with {@code elektraFree}.
  */
 static char * createArrayElementName (int arrayNumber)
 {
@@ -294,8 +295,8 @@ static void instantiateArraySpecificationAndCopyMeta (Key * specKey, KeySet * ks
  *
  * @param key the key to fetch the array size from
  * @param specKey the specification key to validate the array size from
- * @return true - if the array size is valid
- * 	   false - if the array size is not valid
+ * @retval true - if the array size is valid
+ * @retval false - if the array size is not valid
  */
 static bool validateArraySize (Key * key, Key * specKey)
 {
@@ -320,8 +321,8 @@ static bool validateArraySize (Key * key, Key * specKey)
  * 	spec:/server/#/name => meta:/description = value2
  *
  * @param specKeys specification keys to check for collision
- * @return 0 - if no collision was found
- * 	   pointer to the key which caused collision
+ * @return pointer to the key which caused collision
+ * @retval 0 - if no collision was found
  */
 static Key * specCollision (KeySet * specKeys)
 {
@@ -383,8 +384,8 @@ static Key * getMatchingKeyFromKeySet (KeySet * ks, char * name)
  *
  * @param specKeys the specification keys
  * @param specKey the specification key to use for lookup
- * @return 0 - if the key was not found
- * 	   key - the key which contains the array size
+ * @return the key which contains the array size
+ * @retval 0 - if the key was not found
  */
 static Key * getArraySizeOfArrayParent (KeySet * specKeys, Key * specKey)
 {
@@ -451,9 +452,9 @@ static void setArrayPositions (const char * keyNameWithoutNamespace, int * array
  * @param ks the key set to look for the key
  * @param specKeys the specification keys
  * @param specKey the array specification key
- * @return true - if the array size is valid
- *         false - if the array size was not found
- *               - if the array size is not valid
+ * @retval true - if the array size is valid
+ * @retval false - if the array size was not found
+ * @retval false - if the array size is not valid
  */
 static bool isValidArraySize (KeySet * ks, KeySet * specKeys, Key * specKey)
 {
@@ -480,8 +481,8 @@ static bool isValidArraySize (KeySet * ks, KeySet * specKeys, Key * specKey)
  *
  * @param ks the KeySet with all keys
  * @param arrayPosition the position of the array character
- * @return true - if the array is empty
- * 	   false - if the array is not empty
+ * @retval true - if the array is empty
+ * @retval false - if the array is not empty
  */
 static bool isArrayEmpty (KeySet * ks, int arrayPosition)
 {
@@ -521,10 +522,10 @@ static bool isArrayEmpty (KeySet * ks, int arrayPosition)
  * @param specKeys the specification keys in this {@link ks}
  * @param ks the KeySet to search for the key
  * @param isKdbGet
- * @return 0 - if the meta data was copied successfully
- * 	  -1 - if the metadata could not be copied (error is also added there)
- * 	       if the key was not found but has meta:/require and no meta:/default in {@link specKey}
- * 	       if the array specification is not valid
+ * @retval 0 - if the meta data was copied successfully
+ * @retval -1 - if the metadata could not be copied (error is also added there)
+ * @retval -1 - if the key was not found but has meta:/require and no meta:/default in {@link specKey}
+ * @retval -1 - if the array specification is not valid
  */
 static int copyMetaData (Key * parentKey, Key * specKey, KeySet * specKeys, KeySet * ks, bool isKdbGet)
 {
@@ -671,9 +672,12 @@ int elektraSpecCopy (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * pa
 					ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey, "Key for specification %s does not exist",
 									       keyName (current));
 				}
+
+				keyDel (cascadingKey);
+
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
-			elektraFree (cascadingKey);
+			keyDel (cascadingKey);
 		}
 
 		if (copyMetaData (parentKey, current, specKeys, returned, isKdbGet) != 0)
