@@ -113,7 +113,7 @@ public abstract class KDBException extends Exception {
             .getMeta("error/configfile")
             .map(ReadableKey::getString)
             .filter(s -> !s.isEmpty())
-            .orElse(VALUE_META_KEY_NOT_FOUND);
+            .orElseGet(errorKey::getName);
     this.debugInformation =
         String.format(
             MSG_DEBUGINFO,
