@@ -88,6 +88,13 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 
 ### <<Plugin>>
+### ansible
+
+- Add `ansible` plugin for exporting keysets as [ansible-libelektra](https://galaxy.ansible.com/elektra_initiative/libelektra) playbooks. _(Maximilian Irlinger @atmaxinger)_
+- <<TODO>>
+- <<TODO>>
+
+### logchange
 
 - <<TODO>>
 - <<TODO>>
