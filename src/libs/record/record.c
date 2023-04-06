@@ -564,3 +564,70 @@ cleanup:
 
 	return successful;
 }
+
+static KeySet * buildExportKeySet (ElektraDiff * diff)
+{
+	KeySet * ks = ksNew (0, KS_END);
+
+	KeySet * addedKeys = elektraDiffGetAddedKeys (diff);
+	ksAppend (ks, addedKeys);
+	ksDel (addedKeys);
+
+	KeySet * modifiedKeys = elektraDiffGetModifiedKeys (diff);
+	ksAppend (ks, modifiedKeys);
+	ksDel (addedKeys);
+
+	KeySet * removedKeys = elektraDiffGetRemovedKeys (diff);
+	for (elektraCursor i = 0; i < ksGetSize (removedKeys); i++)
+	{
+		Key * k = ksAtCursor (removedKeys, i);
+		keySetMeta (k, "meta:/elektra/deleted", "true");
+	}
+	ksAppend (ks, removedKeys);
+	ksDel (removedKeys);
+
+	return ks;
+}
+
+bool elektraRecordExportSession (KDB * handle, Plugin * plugin, Key * parentKey, Key * errorKey)
+{
+	if (handle == NULL)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "NULL pointer passed for KDB handle");
+		return false;
+	}
+
+	if (plugin == NULL)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "NULL pointer passed for plugin");
+		return false;
+	}
+
+	Key * sessionKey = keyNew (ELEKTRA_RECORD_SESSION_KEY, KEY_END);
+	KeySet * sessionStorage = ksNew (0, KS_END);
+	if (kdbGet (handle, sessionStorage, sessionKey) == -1)
+	{
+		elektraCopyError (errorKey, sessionKey);
+		keyDel (sessionKey);
+		ksDel (sessionStorage);
+		return false;
+	}
+
+	ElektraDiff * sessionDiff = getDiffFromSessionStorage (sessionStorage, parentKey);
+	KeySet * exportKs = buildExportKeySet (sessionDiff);
+	int result = plugin->kdbSet (plugin, exportKs, parentKey);
+	bool successful = true;
+	if (result == ELEKTRA_PLUGIN_STATUS_ERROR)
+	{
+		elektraCopyError (errorKey, parentKey);
+		successful = false;
+	}
+
+	elektraDiffDel (sessionDiff);
+	keyDel (parentKey);
+	keyDel (sessionKey);
+	ksDel (sessionStorage);
+	ksDel (exportKs);
+
+	return successful;
+}

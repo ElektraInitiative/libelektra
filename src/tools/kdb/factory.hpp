@@ -52,6 +52,7 @@
 #include <plugininfo.hpp>
 #include <pluginlist.hpp>
 #include <recordclear.hpp>
+#include <recordexport.hpp>
 #include <recordstart.hpp>
 #include <recordstop.hpp>
 #include <recordundo.hpp>
@@ -130,6 +131,7 @@ public:
 		m_factory.insert (std::make_pair ("dirname", std::make_shared<Cnstancer<DirnameCommand>> ()));
 		m_factory.insert (std::make_pair ("validate", std::make_shared<Cnstancer<ValidateCommand>> ()));
 		m_factory.insert (std::make_pair ("record-clear", std::make_shared<Cnstancer<RecordClearCommand>> ()));
+		m_factory.insert (std::make_pair ("record-export", std::make_shared<Cnstancer<RecordExportCommand>> ()));
 		m_factory.insert (std::make_pair ("record-start", std::make_shared<Cnstancer<RecordStartCommand>> ()));
 		m_factory.insert (std::make_pair ("record-stop", std::make_shared<Cnstancer<RecordStopCommand>> ()));
 		m_factory.insert (std::make_pair ("record-undo", std::make_shared<Cnstancer<RecordUndoCommand>> ()));

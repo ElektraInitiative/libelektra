@@ -3,6 +3,7 @@ libelektra_0.9 {
 	elektraRecordEnableRecording;
 	elektraRecordDisableRecording;
 	elektraRecordClearSession;
+	elektraRecordExportSession;
 	elektraRecordRecord;
 	elektraRecordUndo;
 	elektraRecordIsActive;

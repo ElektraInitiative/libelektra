@@ -10,6 +10,7 @@
 
 #include <kdb.h>
 #include <kdbtypes.h>
+#include <kdbplugin.h>
 
 #ifdef __cplusplus
 namespace ckdb
@@ -20,6 +21,7 @@ extern "C" {
 bool elektraRecordEnableRecording (KDB * handle, const Key * parentKey, Key * errorKey);
 bool elektraRecordDisableRecording (KDB * handle, Key * errorKey);
 bool elektraRecordClearSession (KDB * handle, Key * errorKey);
+bool elektraRecordExportSession (KDB * handle, Plugin * plugin, Key * parentKey, Key * errorKey);
 
 bool elektraRecordRecord (KDB * handle, KDB * sessionStorageHandle, KeySet * newKeys, Key * parentKey, Key * errorKey) ELEKTRA_WEAK;
 bool elektraRecordUndo (KDB * handle, KDB * sessionStorageHandle, Key * parentKey, Key * errorKey);
