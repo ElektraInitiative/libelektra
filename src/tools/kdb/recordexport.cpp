@@ -26,7 +26,7 @@ RecordExportCommand::~RecordExportCommand () = default;
 int RecordExportCommand::execute (const Cmdline & cmdline)
 {
 	KDB kdb;
-	Key errorKey ("/");
+	Key errorKey;
 
 #ifdef _WIN32
 	string file = "CON";

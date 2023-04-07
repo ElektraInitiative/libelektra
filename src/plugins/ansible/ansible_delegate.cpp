@@ -170,7 +170,7 @@ void AnsibleDelegate::createPlaybook (kdb::KeySet const & keySet, kdb::Key const
 	out << YAML::Value;
 	out << YAML::BeginSeq;
 
-	kdb::Key namespaceKey ("/");
+	kdb::Key namespaceKey;
 	for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ns++)
 	{
 		ckdb::keySetNamespace (*namespaceKey, ns);

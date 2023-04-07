@@ -575,7 +575,7 @@ static KeySet * buildExportKeySet (ElektraDiff * diff)
 
 	KeySet * modifiedKeys = elektraDiffGetModifiedKeys (diff);
 	ksAppend (ks, modifiedKeys);
-	ksDel (addedKeys);
+	ksDel (modifiedKeys);
 
 	KeySet * removedKeys = elektraDiffGetRemovedKeys (diff);
 	for (elektraCursor i = 0; i < ksGetSize (removedKeys); i++)
