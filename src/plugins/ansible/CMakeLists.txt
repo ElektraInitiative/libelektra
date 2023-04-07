@@ -22,7 +22,7 @@ if (DEPENDENCY_PHASE)
 		9)
 	if (${DISABLE_PLUGIN_ASAN})
 		remove_plugin (ansible "ASan enabled GCC builds of the plugin report member calls on addresses, "
-			"which do not point to an object of type `_Sp_counted_base`")
+			       "which do not point to an object of type `_Sp_counted_base`")
 	endif (${DISABLE_PLUGIN_ASAN})
 endif (DEPENDENCY_PHASE)
 
@@ -30,5 +30,4 @@ add_plugin (
 	ansible CPP ADD_TEST CPP_TEST TEST_README
 	SOURCES ansible.hpp ansible.cpp ansible_delegate.hpp ansible_delegate.cpp
 	INCLUDE_SYSTEM_DIRECTORIES ${yaml-cpp_INCLUDE_DIRS}
-	LINK_LIBRARIES ${yaml-cpp_LIBRARIES}
-	COMPONENT libelektra${SO_VERSION})
+	LINK_LIBRARIES ${yaml-cpp_LIBRARIES} COMPONENT libelektra${SO_VERSION})
