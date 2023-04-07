@@ -10,10 +10,8 @@ libelektra_0.8 {
 	elektraPluginOpen;
 
 	# kdbmount.h
-	cProcessArguments;
-	cGetMountpoint;
-	cBuildBackend;
-	cOutputMtab;
+	buildBackend;
+	outputMtab;
 	getMountConfig;
 
 	# kdbhelper.h

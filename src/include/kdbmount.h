@@ -15,28 +15,10 @@ extern "C" {
 #define DEFAULT_MOUNTPOINTS_PATH "system:/elektra/mountpoints"
 
 /* Actual mounting functionality */
-/* TODO: from mountbase.cpp */
-KeySet * getMountConfig (KDB * handle, const char * const mountpointsPath);
-const char * cGetMountpoint (const KeySet * const mountconf, bool clInteractive);
-
-/* TODO: from mount.cpp */
-void cOutputMtab (KeySet * mountConf, bool clFirst, bool clSecond, bool clNull);
-void cProcessArguments (bool clInteractive, int numArgs);
-void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, char * pluginsConfig, bool clForce, bool clDebug,
+void outputMtab (KeySet * ksMountConf, bool clFirst, bool clSecond, bool clNull);
+void buildBackend (KeySet * mountConf, const char * mountPoint, char * pluginsConfig, bool clForce, bool clDebug,
 		    int mergeStrategy, char * resolverName, const char * path, const KeySet * plugins, bool withRecommends);
-
-
-/* Backend related stuff */
-bool isValidMountPoint (Key * mountPoint, KeySet * mountConf);
-
-/* TODO: from backendparser.cpp */
-KeySet * cParsePluginArguments (char * pluginArguments, const char * basepath);
-
-
-/* Helper functions, TODO: refactor */
-void cPrintWarnings (Key * error, bool printVerbose, bool printDebug);
-void freeListBackendInfo (struct cListBackendInfo * const first);
-
+KeySet * getMountConfig (KDB * handle, const char * mountpointsPath);
 
 #ifdef __cplusplus
 }

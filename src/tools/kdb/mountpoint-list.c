@@ -71,10 +71,11 @@ int execMountpointList (KeySet * options, Key * errorKey)
 	KDB * const kdbHandle = kdbOpen (0, errorKey);
 	if (kdbHandle)
 	{
-		const KeySet * const mountConf = getMountConfig (kdbHandle, errorKey, NULL);
-		if (mountConf)
+		KeySet * const ksMountConf = getMountConfig (kdbHandle, NULL);
+		if (ksMountConf)
 		{
-			cOutputMtab (mountConf, optSuppressFirstColumn, optSuppressSecondColumn, optUseBinaryNullTermination);
+			outputMtab (ksMountConf, optSuppressFirstColumn, optSuppressSecondColumn, optUseBinaryNullTermination);
+			ksDel (ksMountConf);
 			kdbClose (kdbHandle, errorKey);
 			return 0;
 		}

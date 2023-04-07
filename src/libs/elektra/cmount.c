@@ -657,6 +657,34 @@ char * getBasePath (const char * mp)
  * PART IV: functions for mounting                  *
  *****************************************************/
 
+
+/* Read mount configuration from the KDB
+ * Make sure to ksDel(...) the returned KeySet */
+// C++: MountBaseCommand::readMountConf in mountbase.cpp[31-41]
+KeySet * getMountConfig (KDB * handle, const char * const mountpointsPath)
+{
+	Key * parent = NULL;
+
+	if (!mountpointsPath || !(*mountpointsPath))
+		parent = keyNew (DEFAULT_MOUNTPOINTS_PATH, KEY_END);
+	else
+		parent = keyNew (mountpointsPath, KEY_END);
+
+	KeySet * mountInfo = ksNew (0, KS_END);
+	if (kdbGet (handle, mountInfo, parent) == -1)
+	{
+		/* TODO: Implement error handling */
+		fprintf (stderr, "Could not get mount config (kdbGet returned error)!\n");
+		keyDel (parent);
+		ksDel (mountInfo);
+		return NULL;
+	}
+
+	keyDel (parent);
+	return mountInfo;
+}
+
+
 /**
  * @brief give info about current mounted backends
  *
@@ -738,7 +766,7 @@ struct BackendInfo * getBackendInfo (KeySet * ksMountConf)
 }
 
 /* Print the currently mounted resources (mounting table) */
-void cOutputMtab (KeySet * ksMountConf, bool clFirst, bool clSecond, bool clNull)
+void outputMtab (KeySet * ksMountConf, bool clFirst, bool clSecond, bool clNull)
 {
 	// in c++: Vector with BackendInfo-structs
 	struct BackendInfo * mtab = getBackendInfo (ksMountConf);
@@ -769,32 +797,6 @@ void cOutputMtab (KeySet * ksMountConf, bool clFirst, bool clSecond, bool clNull
 		elektraFree (mtab);
 		mtab = nextNode;
 	}
-}
-
-/* Read mount configuration from the KDB
- * Make sure to ksDel(...) the returned KeySet */
-// C++: MountBaseCommand::readMountConf in mountbase.cpp[31-41]
-KeySet * getMountConfig (KDB * handle, const char * const mountpointsPath)
-{
-	Key * parent = NULL;
-
-	if (!mountpointsPath || !(*mountpointsPath))
-		parent = keyNew (DEFAULT_MOUNTPOINTS_PATH, KEY_END);
-	else
-		parent = keyNew (mountpointsPath, KEY_END);
-
-	KeySet * mountInfo = ksNew (0, KS_END);
-	if (kdbGet (handle, mountInfo, parent) == -1)
-	{
-		/* TODO: Implement error handling */
-		fprintf (stderr, "Could not get mount config (kdbGet returned error)!\n");
-		keyDel (parent);
-		ksDel (mountInfo);
-		return NULL;
-	}
-
-	keyDel (parent);
-	return mountInfo;
 }
 
 
@@ -2527,7 +2529,7 @@ struct PluginSpec backendBuilderAddPlugin (struct PluginSpecNode * existingSpecs
 
 	/* If the plugin is actually a provider use it (otherwise we will get our name back) */
 	/* The returned struct 'provides' has only ps.name set, this string must be freed! */
-	struct PluginSpec provides = lookupProvides (ps.name, ksModules);
+	struct PluginSpec psProvides = lookupProvides (ps.name, ksModules);
 
 
 	//if (!provides.name)
@@ -2536,27 +2538,27 @@ struct PluginSpec backendBuilderAddPlugin (struct PluginSpecNode * existingSpecs
 	//	fprintf (stderr, "Lookup provides returned an error!\n");
 	//}
 
-	if (provides.name && elektraStrCmp (provides.name, ps.name) != 0)
+	if (psProvides.name && elektraStrCmp (psProvides.name, ps.name) != 0)
 	{
 		/* Keep our config and refname */
 		elektraFree (ps.name);
-		ps.name = provides.name;
+		ps.name = psProvides.name;
 
-		if (ksGetSize(provides.config) > 0)
+		if (ksGetSize(psProvides.config) > 0)
 		{
 			if (!ps.config)
 			{
 				ps.config = ksNew (0, KS_END);
 			}
 
-			ksAppend (ps.config, provides.config);
-			ksDel (provides.config);
+			ksAppend (ps.config, psProvides.config);
+			ksDel (psProvides.config);
 		}
 	}
 	else
 	{
-		elektraFree (provides.name);
-		ksDel (provides.config);
+		elektraFree (psProvides.name);
+		ksDel (psProvides.config);
 	}
 
 	/* Call the checkconf-function of the plugin (if provided)
@@ -3910,7 +3912,7 @@ void serialize (KeySet * ksMountConf, const char * mp, const char * configFile, 
  * PART VII: Start-function that should be called from tools / other code *
  **************************************************************************/
 
-void cBuildBackend (KeySet * const ksMountConf, const char * const mountPoint, char * pluginsConfig, bool clForce, bool clDebug,
+void buildBackend (KeySet * const ksMountConf, const char * const mountPoint, char * pluginsConfig, bool clForce, bool clDebug,
 		    int mergeStrategy, char * resolverName, const char * path, const KeySet * ksPlugins, bool withRecommends)
 {
 	if (!path || !(*path))
@@ -3980,7 +3982,7 @@ void cBuildBackend (KeySet * const ksMountConf, const char * const mountPoint, c
 	}
 
 	/* from modules.hpp */
-	KeySet * ksModules;
+	KeySet * ksModules = ksNew (0, KS_END);
 
 	/* 2nd parameter is unused in function implementation, therefore we use NULL here */
 	elektraModulesInit (ksModules, NULL);

@@ -54,4 +54,5 @@ int execMountpoint (KeySet * options, Key * errorKey)
 			return mountSubcommands[i].exec (options, errorKey);
 		}
 	}
+	return 0;
 }

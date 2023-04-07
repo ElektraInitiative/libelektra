@@ -68,7 +68,6 @@ int execMount (KeySet * options, Key * errorKey)
 	/* 2. Command-specific options */
 	bool optForce = false;
 	bool optQuiet = false;
-	bool optInteractive = false;
 	bool optWithRecommends = false;
 	/* TODO: Decide where to put code for evaluation of option (currently also in cmerge.c) */
 	const char * optStrategy = NULL;
@@ -90,7 +89,6 @@ int execMount (KeySet * options, Key * errorKey)
 	/* command-specific options */
 	if ((tmp = GET_OPTION_KEY (options, "force"))) elektraKeyToBoolean (tmp, &optForce);
 	if ((tmp = GET_OPTION_KEY (options, "quiet"))) elektraKeyToBoolean (tmp, &optQuiet);
-	if ((tmp = GET_OPTION_KEY (options, "interactive"))) elektraKeyToBoolean (tmp, &optInteractive);
 	if ((tmp = GET_OPTION_KEY (options, "with-recommends"))) elektraKeyToBoolean (tmp, &optWithRecommends);
 
 	/* TODO: Remove code duplication (code for processing strategy-parameter is also present in cmerge.c */
@@ -137,30 +135,30 @@ int execMount (KeySet * options, Key * errorKey)
 	}
 
 	Key * pluginsArrayParent = GET_OPTION_KEY (options, "plugins");
-	KeySet * plugins = elektraArrayGet (pluginsArrayParent, options);
+	KeySet * ksPlugins = elektraArrayGet (pluginsArrayParent, options);
 	keyDel (pluginsArrayParent);
-	if (!plugins)
+	if (!ksPlugins)
 	{
 		elektraFree ((void *) argMountpoint);
 		return -1;
 	}
 
-	for (elektraCursor it = 0; optVerbose && it < ksGetSize (plugins); ++it)
+	for (elektraCursor it = 0; optVerbose && it < ksGetSize (ksPlugins); ++it)
 	{
-		printf ("PLUGIN ->  %s\n", keyString (ksAtCursor (plugins, it)));
+		printf ("PLUGIN ->  %s\n", keyString (ksAtCursor (ksPlugins, it)));
 	}
 
 	// 1. C++: void MountBaseCommand::readMountConf
 	KDB * const kdbHandle = kdbOpen (0, errorKey);
 	// C++: mountConf is protected member variable of class 'MountBaseCommand'
-	KeySet * const mountConf = getMountConfig (kdbHandle, errorKey, NULL);
+	KeySet * const ksMountConf = getMountConfig (kdbHandle, NULL);
 
-	if (!kdbHandle || !mountConf)
+	if (!kdbHandle || !ksMountConf)
 	{
 		elektraFree ((void *) argMountpoint);
 		/* argPath must not be freed! (directly taken from Keyset, not dupped) */
 
-		if (mountConf) ksDel (mountConf);
+		if (ksMountConf) ksDel (ksMountConf);
 		if (kdbHandle) kdbClose (kdbHandle, errorKey);
 
 		return -1;
@@ -170,8 +168,8 @@ int execMount (KeySet * options, Key * errorKey)
 	// 3. C++: MountBaseCommand::getMountpoint --> result already in argMountpoint
 	// 4: C++: MountCommand::buildBackend
 	/* TODO: give full plugins config */
-	cBuildBackend (mountConf, argMountpoint, 0, optForce, mergeStrategy, optInteractive, NULL, argPath, plugins, optWithRecommends);
-	ksDel (plugins);
+	buildBackend (ksMountConf, argMountpoint, "resolver", optForce, optDebug, mergeStrategy, NULL, argPath, ksPlugins, optWithRecommends);
+	ksDel (ksPlugins);
 
 
 
@@ -189,9 +187,9 @@ int execMount (KeySet * options, Key * errorKey)
 	if (optDebug)
 	{
 		printf ("The configuration which will be set is:\n");
-		for (elektraCursor it = 0; it < ksGetSize (mountConf); ++it)
+		for (elektraCursor it = 0; it < ksGetSize (ksMountConf); ++it)
 		{
-			Key * cur = ksAtCursor (mountConf, it);
+			Key * cur = ksAtCursor (ksMountConf, it);
 			printf ("%s %s\n", keyName (cur), keyString (cur));
 		}
 		printf ("Now writing the mountpoint configuration.");
@@ -200,20 +198,20 @@ int execMount (KeySet * options, Key * errorKey)
 	/* Finally really write out the mountpoint config */
 	Key * parent = keyNew (DEFAULT_MOUNTPOINTS_PATH, KEY_END);
 
-	if (kdbSet (kdbHandle, mountConf, parent) < 0)
+	if (kdbSet (kdbHandle, ksMountConf, parent) < 0)
 	{
 		fprintf (stderr, "IMPORTANT: Sorry, I am unable to write your requested mountpoint to system:/elektra/mountpoints.\n");
 		fprintf (stderr, "           You can get the problematic file name by reading the elektra system file (kdb file %s).\n",
 			 DEFAULT_MOUNTPOINTS_PATH);
 		fprintf (stderr, "           Usually you need to be root for this operation (try `sudo !!`).\n");
 
-		ksDel (mountConf);
+		ksDel (ksMountConf);
 		kdbClose (kdbHandle, errorKey);
 		return -1;
 	}
 
 	/* cleanup */
-	ksDel (mountConf);
+	ksDel (ksMountConf);
 	kdbClose (kdbHandle, errorKey);
 
 	return 0;

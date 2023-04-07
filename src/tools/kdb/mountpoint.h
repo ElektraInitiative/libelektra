@@ -24,7 +24,7 @@ void addMountpointSpec (KeySet * spec);
  * @param options cli options and arguments as specified in @addMountpointSpec()
  * @param errorKey key where errors and warnings should be saved
  *
- * @retval 0 ls command ran without errors
+ * @retval 0 mountpoint command ran without errors
  * @retval 1 errors occurred, keyGetMeta (errorKey, "error/reason") for info
  *
  */
