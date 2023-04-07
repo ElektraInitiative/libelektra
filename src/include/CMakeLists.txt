@@ -195,6 +195,7 @@ install (
 	      kdbmacros.h
 	      kdbmerge.h
 	      kdbgopts.h
+	      kdbmount.h
 	DESTINATION include/${TARGET_INCLUDE_FOLDER}
 	COMPONENT libelektra-dev)
 

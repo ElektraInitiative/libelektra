@@ -7,6 +7,7 @@
  */
 
 #include <command.h>
+#include <mountpoint-list.h>
 #include <mountpoint-mount.h>
 #include <mountpoint-remount.h>
 #include <mountpoint-umount.h>
@@ -17,6 +18,7 @@
 #include <kdbease.h>
 #include <kdberrors.h>
 #include <kdbmerge.h>
+#include <kdbmount.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -25,11 +27,10 @@
 #define GET_OPTION_KEY(options, name) GET_OPT_KEY (options, COMMAND_BASE_KEY (COMMAND_NAME) "/" name)
 #define GET_OPTION(options, name) GET_OPT (options, COMMAND_BASE_KEY (COMMAND_NAME) "/" name)
 
-command mountSubcommands[] = {
-	{ "mount", addMountSpec, execMount },
-	{ "remount", addRemountSpec, execRemount },
-	{ "umount", addUmountSpec, execUmount },
-};
+command mountSubcommands[] = { { "mount", addMountSpec, execMount },
+			       { "remount", addRemountSpec, execRemount },
+			       { "umount", addUmountSpec, execUmount },
+			       { "list", addMountpointListSpec, execMountpointList } };
 
 void addMountpointSpec (KeySet * spec)
 {
@@ -53,16 +54,5 @@ int execMountpoint (KeySet * options, Key * errorKey)
 			return mountSubcommands[i].exec (options, errorKey);
 		}
 	}
-}
-
-KeySet * getMountConfig (KDB * handle, Key * errorKey)
-{
-	Key * parent = keyNew (MOUNTPOINTS_PATH, KEY_END);
-	KeySet * mountInfo = ksNew (0, KS_END);
-	kdbGet (handle, mountInfo, parent);
-
-	// TODO: maybe print warnings(or add them to error key)
-
-	keyDel (parent);
-	return mountInfo;
+	return 0;
 }

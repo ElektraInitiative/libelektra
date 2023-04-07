@@ -11,8 +11,6 @@
 
 #include <kdb.h>
 
-#define MOUNTPOINTS_PATH "system:/elektra/mountpoints"
-
 /**
  * Adds options specification of mountpoint command to @spec
  *
@@ -26,13 +24,10 @@ void addMountpointSpec (KeySet * spec);
  * @param options cli options and arguments as specified in @addMountpointSpec()
  * @param errorKey key where errors and warnings should be saved
  *
- * @retval 0 ls command ran without errors
+ * @retval 0 mountpoint command ran without errors
  * @retval 1 errors occurred, keyGetMeta (errorKey, "error/reason") for info
  *
  */
 int execMountpoint (KeySet * options, Key * errorKey);
-
-// helper functions
-KeySet * getMountConfig (KDB * handle, Key *);
 
 #endif // ELEKTRA_KDB_MOUNTPOINT_H

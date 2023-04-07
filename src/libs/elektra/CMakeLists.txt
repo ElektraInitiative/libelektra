@@ -61,7 +61,7 @@ if (BUILD_SHARED)
 		GLOB
 		KDB_FILES
 		kdb.c
-		mount.c
+		cmount.c
 		hooks.c
 		backends.c
 		plugin.c
@@ -82,7 +82,7 @@ if (BUILD_SHARED)
 
 	add_library (elektra-kdb SHARED ${KDB_FILES})
 	add_dependencies (elektra-kdb generate_version_script)
-	target_link_libraries (elektra-kdb elektra-core)
+	target_link_libraries (elektra-kdb elektra-core elektra-meta)
 
 	get_property (elektra-extension_LIBRARIES GLOBAL PROPERTY elektra-extension_LIBRARIES)
 
