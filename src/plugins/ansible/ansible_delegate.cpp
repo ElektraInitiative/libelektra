@@ -113,6 +113,9 @@ void addMountpoint (YAML::Emitter & out, kdb::KeySet const & keySet, kdb::Key co
 	out << YAML::BeginMap;
 	out << YAML::Key << "name";
 	out << YAML::Value << taskName;
+	out << YAML::Key << "elektra";
+
+	out << YAML::BeginMap;
 	out << YAML::Key << "mountpoint";
 	out << YAML::Value << parentKey.getName ();
 	out << YAML::Key << "keys";
@@ -131,6 +134,7 @@ void addMountpoint (YAML::Emitter & out, kdb::KeySet const & keySet, kdb::Key co
 
 	out << keysNode;
 
+	out << YAML::EndMap;
 	out << YAML::EndMap;
 }
 
