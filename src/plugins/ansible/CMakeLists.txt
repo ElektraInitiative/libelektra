@@ -29,5 +29,6 @@ endif (DEPENDENCY_PHASE)
 add_plugin (
 	ansible CPP ADD_TEST CPP_TEST TEST_README
 	SOURCES ansible.hpp ansible.cpp ansible_delegate.hpp ansible_delegate.cpp
+	INCLUDE_SYSTEM_DIRECTORIES ${yaml-cpp_INCLUDE_DIRS}
 	LINK_LIBRARIES ${yaml-cpp_LIBRARIES}
 	COMPONENT libelektra${SO_VERSION})
