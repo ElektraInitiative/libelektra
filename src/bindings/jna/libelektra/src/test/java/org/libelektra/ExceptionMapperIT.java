@@ -84,10 +84,6 @@ public class ExceptionMapperIT {
     var errorKey = Key.create("user:/tests/myError").setMeta(errorMeta, exception.getErrorNumber());
     var keySet = KeySet.create(errorKey);
     errorPlugin.set(keySet, parentKey);
-
-    // optional clean-up
-    keySet.release();
-    errorKey.release();
   }
 
   @Test
@@ -103,10 +99,6 @@ public class ExceptionMapperIT {
         Key.create("user:/tests/myError").setMeta(warningMeta, ResourceException.ERROR_NUMBER);
     var keySet = KeySet.create(warningKey);
     errorPlugin.set(keySet, parentKey);
-
-    // optional clean-up
-    keySet.release();
-    warningKey.release();
   }
 
   @Test
@@ -133,11 +125,6 @@ public class ExceptionMapperIT {
           SemanticValidationException.ERROR_NUMBER,
           e.getWarnings().iterator().next().getWarningNumber());
       return;
-    } finally {
-      // optional clean-up
-      keySet.release();
-      warningKey.release();
-      errorKey.release();
     }
     throw new RuntimeException("Exception did not trigger");
   }

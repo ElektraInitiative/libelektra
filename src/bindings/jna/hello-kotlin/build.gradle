@@ -3,8 +3,11 @@ plugins {
     id "org.jetbrains.kotlin.plugin.serialization" version "$kotlinPluginVersion"
 }
 
-compileKotlin {
-    compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
+tasks
+    .withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask.class)
+    .configureEach {
+        compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
+        kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
 }
 
 // apply project configuration for java libraries
