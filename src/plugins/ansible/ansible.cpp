@@ -109,7 +109,7 @@ int elektraAnsibleSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	parent.release ();
 	keys.release ();
 
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
 /** @see elektraDocError */
