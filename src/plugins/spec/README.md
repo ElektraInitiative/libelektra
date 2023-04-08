@@ -44,7 +44,7 @@ Keys which contain a part that is exactly `#` (e.g. `my/#/key` or `my/#`) are ca
 These keys are instantiated in order to support `default` values.
 If the key does not exist and `default` is specified in the spec namespace, the key is created in the `default` namespace.
 We also lookup the array size (defined by the `array` metakey) using a cascading `ksLookup`.
-This only looks at non-spec namespaces, if we don't find an array size their, we check the array parent in the spec namespace.
+This only looks at non-spec namespaces, if we don't find an array size there, we check the array parent in the spec namespace.
 If we still have no array size, the array is deemed to be empty. For empty arrays, we will simply validate that they are indeed empty.
 
 ### Wildcard Specifications
@@ -75,8 +75,7 @@ one other namespace, i.e. it can be found using a cascading `ksLookup`. If the k
 As hinted to above, we validate array sizes. If a spec key `x/#` is given, and the spec key `x` has the metakey `array/min` or `array/max`
 set, we validate the array size (given as metakey `array` on `x`) is within the limits of `array/min` and `array/max`.
 Both `array/min` and `array/max` have to be valid array-elements similar to `array`.
-If the array size is out of bounds, this causes an `error`.
-If it is a `kdbGet` it is a `warning`.
+If the array size is out of bounds, this causes an `error` for `kdbSet` or a warning for `kdbGet`.
 
 Note: We don't actually validate that the array doesn't contain elements above the given array size.
 This is because it doesn't have anything to do with the specification, whether the array contains additional elements.
@@ -93,7 +92,7 @@ spec:/server/_/name => meta:/description = value1
 spec:/server/#/name => meta:/description = value2
 ```
 
-Spec plugin does not know what specification to take in this case, so it appends an `error` or `warning` (if kdbGet).
+The spec plugin does not know what specification to take in this case, so it appends an `error` or `warning` (if kdbGet).
 
 ## Error Handling
 
@@ -114,7 +113,7 @@ system:/sw/org/warning/...
 system:/sw/org/info/description
 ```
 
-If there is an error, the `spec` plugin exists with `ELEKTRA_PLUGIN_STATUS_ERROR` otherwise with `ELEKTRA_PLUGIN_STATUS_SUCCESS`.
+If there is an error, the `spec` plugin returns `ELEKTRA_PLUGIN_STATUS_ERROR`, otherwise `ELEKTRA_PLUGIN_STATUS_SUCCESS`.
 
 ### Cases
 
