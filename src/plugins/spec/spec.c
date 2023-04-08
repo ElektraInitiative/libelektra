@@ -1,4 +1,4 @@
-#include "spec-new.h"
+#include "spec.h"
 #include "kdberrors.h"
 #include "kdbglobbing.h"
 

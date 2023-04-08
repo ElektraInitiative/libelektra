@@ -6,7 +6,7 @@
  * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  */
 
-#include "spec-new.h"
+#include "spec.h"
 
 #include "kdb.h"
 
