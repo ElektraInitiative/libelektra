@@ -1,3 +1,11 @@
+/**
+* @file
+*
+* @brief
+*
+* @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+*/
+
 #include "spec-new.h"
 
 #include "kdb.h"
@@ -60,7 +68,10 @@ static int output_info (Key * parentKey)
 		return 0;
 	}
 
-	const Key * infoDescription = keyGetMeta (parentKey, elektraFormat ("%s/%s", INFO_KEY, "description"));
+	char * metaName = elektraFormat ("%s/%s", INFO_KEY, "description");
+	const Key * infoDescription = keyGetMeta (parentKey, metaName);
+	elektraFree (metaName);
+
 	printf ("info with description on key %s: %s\n", keyName (parentKey), keyString (infoDescription));
 
 	return 1;
@@ -145,7 +156,7 @@ static void test_hook_copy_with_default_meta_key_and_missing_key_should_create_k
  *
  * Sample:
  * 	spec:/sw/org/a => meta:/default = 17
- * 	user:/sw/org/a => matches and will copied to this key
+ * 	user:/sw/org/a => matches and will be copied to this key
  * 	user:/sw/org/b => does not match and will not be copied
  *
  * @param isKdbGet boolean value indicating if it is a kdb get call
@@ -247,6 +258,9 @@ static void test_hook_copy_with_parent_key_containing_namespace_should_succeed (
 			}
 		}
 
+		elektraFree (keyNameToMatch);
+		ksDel (ks);
+
 		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
 	}
 	TEST_END
@@ -293,6 +307,9 @@ static void test_hook_copy_with_wildcard_specification_only_one_underline_should
 			}
 		}
 
+		elektraFree (keyNameToMatch);
+		ksDel (ks);
+
 		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
 	}
 	TEST_END
@@ -321,6 +338,8 @@ static void test_hook_copy_with_wildcard_specification_and_required_no_match_sho
 		succeed_if (output_error (parentKey) == 0, "no errors found");
 
 		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_ERROR, "plugin should have failed");
+
+		ksDel (ks);
 	}
 	TEST_END
 }
@@ -362,6 +381,9 @@ static void test_hook_copy_with_wildcard_two_underlines_should_succeed (bool isK
 		}
 
 		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
+
+		elektraFree (keyname);
+		ksDel (ks);
 	}
 	TEST_END
 }
@@ -413,6 +435,8 @@ static void test_hook_copy_with_wildcard_with_trailing_underline (bool isKdbGet)
 		}
 
 		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
+
+		ksDel (ks);
 	}
 	TEST_END
 }
@@ -461,6 +485,8 @@ static void test_hook_copy_with_just_wildcard (bool isKdbGet)
 
 
 		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
+
+		ksDel (ks);
 	}
 	TEST_END
 }
@@ -492,6 +518,8 @@ static void test_hook_copy_with_wildcard_array_specification_collision_should_fa
 		succeed_if (output_error (parentKey) == 0, "no errors found");
 
 		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_ERROR, "plugin should have failed");
+
+		ksDel (ks);
 	}
 	TEST_END
 }
@@ -540,12 +568,14 @@ static void test_hook_copy_with_array_specification_should_copy_to_correct_confi
 		}
 
 		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
+
+		ksDel (ks);
 	}
 	TEST_END
 }
 
 /**
- * This test should verify that if a array specification exists and an array size as well, but no default value it
+ * This test should verify that if an array specification exists and an array size as well, but no default value it
  * does not instantiate the array elements.
  *
  * Sample:
@@ -576,12 +606,14 @@ static void test_hook_copy_with_array_specification_without_default_meta_key_sho
 		}
 
 		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
+
+		ksDel (ks);
 	}
 	TEST_END
 }
 
 /**
- * This test should verify if a array specification exists and has default meta key and no configuration for this specification key exists
+ * This test should verify if an array specification exists and has default meta key and no configuration for this specification key exists
  * it creates all the necessary array keys.
  *
  * Sample:
@@ -618,13 +650,15 @@ static void test_hook_copy_with_array_specification_with_default_meta_key_should
 				{
 					count++;
 				}
-				succeed_if (keyGetNamespace (current) == KEY_NS_DEFAULT, "should not contain default");
+				succeed_if (keyGetNamespace (current) == KEY_NS_DEFAULT, "should not contain other namespaces than default and spec");
 			}
 		}
 
 		succeed_if (count == 4, "not enough array keys created");
 
 		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
+
+		ksDel (ks);
 	}
 	TEST_END
 }
@@ -647,7 +681,7 @@ static void test_hook_remove_spec_keys_should_succeed (bool isKdbGet)
 
 		int resultCopy = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
-		// check if neta keys were copied
+		// check if meta keys were copied
 		for (elektraCursor it = 0; it < ksGetSize (ks); it++)
 		{
 			Key * current = ksAtCursor (ks, it);
@@ -673,6 +707,8 @@ static void test_hook_remove_spec_keys_should_succeed (bool isKdbGet)
 
 		TEST_CHECK (resultCopy == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
 		TEST_CHECK (resultRemove == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
+
+		ksDel (ks);
 	}
 	TEST_END
 }
