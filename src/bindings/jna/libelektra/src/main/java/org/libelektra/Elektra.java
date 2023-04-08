@@ -228,6 +228,10 @@ interface Elektra extends Library {
 
   int keyDecRef(Pointer key);
 
+  int ksIncRef(Pointer ks);
+
+  int ksDecRef(Pointer ks);
+
   // int keyGetRef (Pointer key);
 
   /* Meta Info */

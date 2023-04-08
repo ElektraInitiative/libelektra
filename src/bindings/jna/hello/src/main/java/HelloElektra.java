@@ -165,7 +165,6 @@ public class HelloElektra {
                 + " is present and its value "
                 + loadedExistingKey.getString()
                 + " loaded.");
-        ek.get().release();
       } else {
         System.out.println(existingKey + " is not present. Setting key.");
         keySet.append(existingKey);
@@ -181,7 +180,6 @@ public class HelloElektra {
                 + " is present and its value "
                 + nek.get().getString()
                 + " loaded.");
-        nek.get().release();
       } else {
         System.out.println(notExistingKey + " is not present. Setting key.");
         keySet.append(notExistingKey);

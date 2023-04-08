@@ -254,27 +254,15 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme).
 This section keeps you up-to-date with the multi-language support provided by Elektra.
 
-### <<Binding>>
+### jna
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Binding>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Binding>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Binding>>
-
-- <<TODO>>
+- Updated Java binding related dependencies. _(Michael Tucek @tucek)_
+- Updated `KDBException` to only access error key at construction time. _(Michael Tucek @tucek)_
+- Removed public naive resource release API. To migrate just remove calls to the affected methods `Key#release()`, `KeySet#release()` and `KDBException#releaseErrorKey()` _(Michael Tucek @tucek)_
+- Enabled strict javadoc checking for Gradle build _(Michael Tucek @tucek)_
+- add merging based on elektraMerge _(Maximilian Irlinger @atmaxinger)_
+- Added support for `ksIncRef` for `KeySet` _(Michael Tucek @tucek)_
+- Enabled `ReferenceCleaner` _(Michael Tucek @tucek)_
 - <<TODO>>
 - <<TODO>>
 

@@ -2,6 +2,7 @@ package org.libelektra;
 
 import static org.junit.Assert.*;
 
+import com.sun.jna.Pointer;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Optional;
@@ -45,6 +46,17 @@ public class KeySetTest {
     var ks = KeySet.create(6, key, key2, key3, key4, key5, key6);
 
     assertEquals(6, ks.size());
+  }
+
+  @Test
+  public void test_keySetRefCntDelProtection_shouldPass() {
+    var ks = KeySet.create();
+    Pointer nativePointer = ks.getPointer();
+    Elektra.INSTANCE.ksDel(nativePointer);
+    // manual decreasing the reference count would potentially break cleaner
+    Elektra.INSTANCE.ksDel(nativePointer);
+    // no assertion since this tests a native library precondition
+    // testing the native library's reference counter via direct calls to C API is out of scope
   }
 
   @Test

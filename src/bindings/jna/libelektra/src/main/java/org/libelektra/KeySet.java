@@ -28,7 +28,6 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
    * @param keys List of initial keys for the key set
    * @return New key set containing the specified initial keys
    * @throws KeySetException on allocation problems
-   * @see #release()
    */
   @Nonnull
   public static KeySet create(Key... keys) {
@@ -44,7 +43,6 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
    * @param keys List of initial keys for the key set
    * @return New key set containing the specified initial keys
    * @throws KeySetException on allocation problems
-   * @see #release()
    */
   @Nonnull
   public static KeySet create(int allocationHint, Key... keys) {
@@ -61,7 +59,6 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
    *
    * @return Newly allocated key set
    * @throws KeySetException on allocation problems
-   * @see #release()
    */
   @Nonnull
   public static KeySet create() {
@@ -86,7 +83,6 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
    * @param nativePointer Native pointer to key set in long format
    * @param suppressCleanUp True to suppress native reference clean-up as soon as this {@link
    *     KeySet} instance becomes phantom reachable, false otherwise
-   * @see #release()
    */
   protected KeySet(long nativePointer, boolean suppressCleanUp) {
     pointer = new Pointer(nativePointer);
@@ -99,7 +95,6 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
    *
    * @param pointer JNA {@link Pointer} to key set
    * @throws IllegalArgumentException if {@code pointer} is {@code null}
-   * @see #release()
    */
   protected KeySet(Pointer pointer) {
     this.pointer = argNotNull(pointer, "Pointer 'pointer'");
@@ -109,13 +104,10 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
   /**
    * Clean-up method to release key set reference by trying to free the native reference<br>
    * <br>
-   * Call this method if you have obtained a {@link KeySet} via any of its public methods or {@link
-   * KDB#get(Key)} and you do not longer need it. If you do not manually release such {@link KeySet
-   * key sets}, they will get cleaned up by garbage collection as soon as they get phantom
-   * reachable. Therefore its encouraged to release {@link KeySet key set instances} as soon as you
-   * do not use them anymore.
+   * {@link KeySet key sets}, will get cleaned up by garbage collection as soon as they get phantom
+   * reachable.
    */
-  public void release() {
+  protected void release() {
     if (cleanable != null) {
       cleanable.clean();
       cleanable = null;
@@ -128,7 +120,6 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
    *
    * @return New {@link KeySet} containing the same key references as this {@link KeySet} does
    * @throws IllegalStateException if this {@link KeySet} has already been released
-   * @see #release()
    */
   @Nonnull
   public KeySet dup() {
@@ -197,7 +188,6 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
    * @throws IllegalStateException if this {@link KeySet} has already been released
    * @throws IllegalArgumentException if {@code cutpoint} is {@code null}
    * @throws KeySetException if {@code cutpoint} is missing a key name or on allocation problems
-   * @see #release()
    */
   @Nonnull
   public KeySet cut(Key cutpoint) {
@@ -247,7 +237,6 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
    * @return Key found at given cursor position
    * @throws IllegalStateException if this {@link KeySet} has already been released
    * @throws IndexOutOfBoundsException if position is out of bounds
-   * @see Key#release()
    */
   @Nonnull
   public Key remove(int cursor) {
@@ -264,7 +253,6 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
    * @return Key found at specified cursor position
    * @throws IllegalStateException if this {@link KeySet} has already been released
    * @throws IndexOutOfBoundsException if position is out of bounds
-   * @see Key#release()
    */
   @Nonnull
   public Key at(int cursor) {
@@ -309,7 +297,6 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
    * @return Key if search successful, {@link Optional#empty()} otherwise
    * @throws IllegalStateException if this {@link KeySet} has already been released
    * @throws IllegalArgumentException if {@code key} is {@code null}
-   * @see Key#release()
    * @see #contains(Object)
    */
   @Nonnull
@@ -325,7 +312,6 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
    * @return Key if search successful, {@link Optional#empty()} otherwise
    * @throws IllegalStateException if this {@link KeySet} has already been released
    * @throws IllegalArgumentException if {@code find} is {@link String#isBlank() blank}
-   * @see Key#release()
    */
   @Nonnull
   public Optional<Key> lookup(String find) {
@@ -760,7 +746,6 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
    *
    * @throws IllegalStateException if this {@link KeySet} has already been released
    * @throws NoSuchElementException {@inheritDoc}
-   * @see Key#release()
    */
   @Nonnull
   public Key first() {
@@ -773,7 +758,6 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
    *
    * @throws IllegalStateException if this {@link KeySet} has already been released
    * @throws NoSuchElementException {@inheritDoc}
-   * @see Key#release()
    */
   @Nonnull
   public Key last() {
@@ -899,7 +883,6 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
      * @throws IllegalStateException if the {@link KeySet} backing this {@link KeySetView} has
      *     already been released
      * @throws IndexOutOfBoundsException if position is out of bounds
-     * @see Key#release()
      */
     @Nonnull
     public Key at(int cursor) {
@@ -1360,7 +1343,6 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
      *
      * @throws IllegalStateException if this {@link KeySet} has already been released
      * @throws NoSuchElementException {@inheritDoc}
-     * @see Key#release()
      */
     @Override
     public Key first() {
@@ -1375,7 +1357,6 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
      *
      * @throws IllegalStateException if this {@link KeySet} has already been released
      * @throws NoSuchElementException {@inheritDoc}
-     * @see Key#release()
      */
     @Override
     public Key last() {
@@ -1593,7 +1574,6 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
      *
      * @throws IllegalStateException if this {@link KeySet} has already been released
      * @throws NoSuchElementException {@inheritDoc}
-     * @see Key#release()
      */
     @Override
     public Key first() {
@@ -1605,7 +1585,6 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
      *
      * @throws IllegalStateException if this {@link KeySet} has already been released
      * @throws NoSuchElementException {@inheritDoc}
-     * @see Key#release()
      */
     @Override
     public Key last() {

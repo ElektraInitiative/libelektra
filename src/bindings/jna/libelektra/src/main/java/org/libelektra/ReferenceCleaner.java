@@ -5,34 +5,13 @@ import java.lang.ref.Cleaner;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Reference clean-up helper for Java representations with references to native Elektra resources
  */
 class ReferenceCleaner {
 
-  /**
-   * #3868 TODO This constant can be used to disable automated native reference clean-up and is
-   * intended to be removed after no more occasional segfaults have appeared in ci for some time
-   *
-   * <p>If set to {@code false}:
-   *
-   * <ul>
-   *   <li>automated release for Key and KeySet via Cleaner triggered by garbage collection is
-   *       disabled
-   *   <li>increasing a key's reference counter when a Java Key representation is created is
-   *       disabled
-   *   <li>decreasing a key's reference counter and calling keyDel when a Java Key representation is
-   *       released is disabled
-   * </ul>
-   */
-  @Deprecated(forRemoval = true)
-  private static final boolean ENABLE_AUTO_NATIVE_REF_CLEANUP = false;
-
-  @Nullable
-  private static final Cleaner CLEANER_INSTANCE =
-      ENABLE_AUTO_NATIVE_REF_CLEANUP ? Cleaner.create() : null;
+  private static final Cleaner CLEANER_INSTANCE = Cleaner.create();
 
   /**
    * The garbage collector may call multiple cleanables in parallel. This {@link ReadWriteLock} is
@@ -43,20 +22,10 @@ class ReferenceCleaner {
   private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
   /**
-   * Depending on whether {@link #ENABLE_AUTO_NATIVE_REF_CLEANUP} is {@code true}, {@link
-   * Elektra#keyIncRef(Pointer)} is called for {@code newKey}.
-   *
-   * @param newKey Newly created {@link ReadableKey} object wrapping native key resource.
-   */
-  static void keyWrapperCreated(ReadableKey newKey) {
-    if (ENABLE_AUTO_NATIVE_REF_CLEANUP) {
-      Elektra.INSTANCE.keyIncRef(newKey.getPointer());
-    }
-  }
-
-  /**
    * Registers a {@link Key} for informing the underlying native library about the release of the
    * key set reference as soon as the specified {@code key} becomes phantom reachable.
+   *
+   * <p>{@link Elektra#keyIncRef(Pointer)} is called for {@code key}.
    *
    * @param key {@link Key} to be cleaned up
    * @return {@link Cleaner.Cleanable} for releasing the resource manually before garbage collection
@@ -64,13 +33,17 @@ class ReferenceCleaner {
    */
   @Nonnull
   static Cleaner.Cleanable registerKeyCleanUp(ReadableKey key) {
-    KeyCleanupTask task = new KeyCleanupTask(key.getPointer());
-    return ENABLE_AUTO_NATIVE_REF_CLEANUP ? CLEANER_INSTANCE.register(key, task) : task::run;
+    Pointer keyPointer = key.getPointer();
+    Elektra.INSTANCE.keyIncRef(keyPointer);
+    KeyCleanupTask task = new KeyCleanupTask(keyPointer);
+    return CLEANER_INSTANCE.register(key, task);
   }
 
   /**
    * Registers a {@link KeySet} for informing the underlying native library about the release of the
    * key set reference as soon as the specified {@code keySet} becomes phantom reachable.
+   *
+   * <p>{@link Elektra#ksIncRef(Pointer)} is called for {@code keySet}.
    *
    * @param keySet {@link KeySet} to be cleaned up
    * @return {@link Cleaner.Cleanable} for releasing the resource manually before garbage collection
@@ -78,8 +51,10 @@ class ReferenceCleaner {
    */
   @Nonnull
   static Cleaner.Cleanable registerKeySetCleanUp(KeySet keySet) {
-    KeySetCleanupTask task = new KeySetCleanupTask(keySet.getPointer());
-    return ENABLE_AUTO_NATIVE_REF_CLEANUP ? CLEANER_INSTANCE.register(keySet, task) : task::run;
+    Pointer keySetPointer = keySet.getPointer();
+    Elektra.INSTANCE.ksIncRef(keySetPointer);
+    KeySetCleanupTask task = new KeySetCleanupTask(keySetPointer);
+    return CLEANER_INSTANCE.register(keySet, task);
   }
 
   private static class KeyCleanupTask implements Runnable {
@@ -110,11 +85,8 @@ class ReferenceCleaner {
      *     references to the native resource and therefore it was not freed
      */
     private boolean releaseKey() {
-      if (ENABLE_AUTO_NATIVE_REF_CLEANUP) {
-        Elektra.INSTANCE.keyDecRef(keyPointer);
-        return (Elektra.INSTANCE.keyDel(keyPointer) == 0);
-      }
-      return false;
+      Elektra.INSTANCE.keyDecRef(keyPointer);
+      return (Elektra.INSTANCE.keyDel(keyPointer) == 0);
     }
   }
 
@@ -144,6 +116,7 @@ class ReferenceCleaner {
      * @return True, if the native reference actually has been freed
      */
     private boolean releaseKeySet() {
+      Elektra.INSTANCE.ksDecRef(keySetPointer);
       return (Elektra.INSTANCE.ksDel(keySetPointer) == 0);
     }
   }
