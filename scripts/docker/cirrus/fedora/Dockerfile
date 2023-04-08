@@ -55,7 +55,7 @@ RUN dnf upgrade --refresh -y && dnf install -y \
 ENV XDG_CACHE_HOME=/tmp/.cache
 
 # see https://github.com/golang/go/wiki/InvalidFlag
-ENV CGO_CFLAGS_ALLOW="(directory/src/include|directory/lib)"
+ENV CGO_CFLAGS_ALLOW="directory.*"
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest

@@ -67,7 +67,7 @@ RUN pip3 install wheel
 ENV XDG_CACHE_HOME=/tmp/.cache
 
 # see https://github.com/golang/go/wiki/InvalidFlag
-ENV CGO_CFLAGS_ALLOW="(directory/src/include|directory/lib)"
+ENV CGO_CFLAGS_ALLOW="directory.*"
 
 # use lua5.4 since dh-lua installs liblua5.4-dev which sets the
 # dependency on the generated package to lua5.4

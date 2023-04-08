@@ -66,7 +66,7 @@ RUN pip3 install wheel
 ENV XDG_CACHE_HOME=/tmp/.cache
 
 # see https://github.com/golang/go/wiki/InvalidFlag
-ENV CGO_CFLAGS_ALLOW="(directory/src/include|directory/lib)"
+ENV CGO_CFLAGS_ALLOW="directory.*"
 
 RUN wget https://downloads.sourceforge.net/swig/swig-4.0.2.tar.gz && \
     tar -xvzf swig-4.0.2.tar.gz && \
