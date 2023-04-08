@@ -247,20 +247,18 @@ static char * createArrayElementName (int arrayNumber)
  */
 static char * createFormattedArrayKeyNameInDefaultNamespace (char * keyNameWithoutNamespace, int arrayNumber, int pos)
 {
-	char * strUntilArrayElement = elektraMalloc (pos + 1);
+	char * strUntilArrayElement = elektraMalloc (pos);
 	memcpy (strUntilArrayElement, &keyNameWithoutNamespace[0], pos - 1);
 	strUntilArrayElement[pos] = '\0';
 
-	size_t wholeKeyNameSize = elektraStrLen (keyNameWithoutNamespace);
-
 	size_t keyNameSize = elektraStrLen (&keyNameWithoutNamespace[pos + 1]);
 	char * strAfterArrayElement = elektraMalloc (keyNameSize);
-	memcpy (strAfterArrayElement, &keyNameWithoutNamespace[pos + 1], wholeKeyNameSize);
+	memcpy (strAfterArrayElement, &keyNameWithoutNamespace[pos + 1], keyNameSize);
 	strAfterArrayElement[keyNameSize] = '\0';
 
 	char * arrayElementName = createArrayElementName (arrayNumber);
 
-	char * formattedKeyName = elektraFormat ("default:/%s/%s/%s", strUntilArrayElement, arrayElementName, strAfterArrayElement);
+	char * formattedKeyName = elektraFormat ("default:%s/%s%s", strUntilArrayElement, arrayElementName, strAfterArrayElement);
 
 	elektraFree (strUntilArrayElement);
 	elektraFree (strAfterArrayElement);
@@ -294,6 +292,8 @@ static void instantiateArraySpecificationAndCopyMeta (Key * specKey, KeySet * ks
 	}
 
 	ksAppend (ks, instantiatedArraySpecs);
+
+	ksDel (instantiatedArraySpecs);
 }
 
 /**
