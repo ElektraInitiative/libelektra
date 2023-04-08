@@ -52,7 +52,9 @@ static bool specMatches (Key * specKey, Key * otherKey)
  * The {@link newStr} contains the string with the replaced character.
  *
  * @param str the old string
- * @param newStr the newly created string with the already replaced character
+ * @param[out] newStr the newly created string with the already replaced character
+ * 	       It has to provide enough allocated memory to store the
+ * 	       same size as in {@link str}.
  * @param searchFor the character to replace
  * @param c the character to use instead
  */
@@ -77,7 +79,7 @@ static void replaceCharacter (const char * str, char * newStr, const char search
  *
  * The default key is added to the `default:/` namespace.
  *
- * @param ks the key store to append the new default key to
+ * @param ks the KeySet to append the new default key to
  * @param specKey specification key with meta data of the new default key
  */
 static void addDefaultKey (KeySet * ks, Key * specKey)
@@ -97,11 +99,11 @@ static void addDefaultKey (KeySet * ks, Key * specKey)
 }
 
 /**
- * Check if the specification key has a meta key `require`.
+ * Check if the specification key has a meta key `require` with the value `true`.
  *
  * @param specKey the specification key to check for the require meta key
- * @retval true - if the specification key contains a meta key required
- * @retval false - if the specification key does not contain a meta key required
+ * @retval true - if the specification key contains a meta key require
+ * @retval false - if the specification key does not contain a meta key require
  */
 static bool isRequired (Key * specKey)
 {
@@ -142,7 +144,9 @@ static bool hasDefault (Key * specKey)
 static KeySet * extractSpecKeys (KeySet * ks)
 {
 	Key * specKey = keyNew ("spec:/", KEY_END);
-	return ksCut (ks, specKey);
+	KeySet * ksRet = ksCut (ks, specKey);
+	keyDel (specKey);
+	return ksRet;
 }
 
 /**
@@ -210,7 +214,7 @@ static bool isWildcardSpecification (Key * specKey)
  * 	arrayElement = #__100
  *
  * @param arrayNumber the array element number
- * @return the created array element allocated with {@code elektraCalloc} e.g. #0, #_10, #_100
+ * @return the created array element allocated with {@code elektraCalloc} e.g. #0, #_10, #__100
  * 	   Make sure to free the memory with {@code elektraFree}.
  */
 static char * createArrayElementName (int arrayNumber)
@@ -219,7 +223,7 @@ static char * createArrayElementName (int arrayNumber)
 	int nDigits = arrayNumber == 0 ? 1 : floor (log10 (abs (arrayNumber))) + 1;
 
 	// allocate enough space for #, the digits and \0
-	char * name = elektraCalloc ((nDigits + 1) * sizeof (char));
+	char * name = elektraCalloc ((nDigits + 2) * sizeof (char));
 
 	name[0] = '#';
 
@@ -243,14 +247,16 @@ static char * createArrayElementName (int arrayNumber)
  */
 static char * createFormattedArrayKeyNameInDefaultNamespace (char * keyNameWithoutNamespace, int arrayNumber, int pos)
 {
-	char * strUntilArrayElement = elektraMalloc (pos);
+	char * strUntilArrayElement = elektraMalloc (pos + 1);
 	memcpy (strUntilArrayElement, &keyNameWithoutNamespace[0], pos - 1);
 	strUntilArrayElement[pos] = '\0';
 
-	size_t keyNameSize = elektraStrLen (keyNameWithoutNamespace);
-	char * strAfterArrayElement = elektraMalloc (keyNameSize + 1);
-	memcpy (strAfterArrayElement, &keyNameWithoutNamespace[pos + 1], keyNameSize);
-	strAfterArrayElement[keyNameSize + 1] = '\0';
+	size_t wholeKeyNameSize = elektraStrLen (keyNameWithoutNamespace);
+
+	size_t keyNameSize = elektraStrLen (&keyNameWithoutNamespace[pos + 1]);
+	char * strAfterArrayElement = elektraMalloc (keyNameSize);
+	memcpy (strAfterArrayElement, &keyNameWithoutNamespace[pos + 1], wholeKeyNameSize);
+	strAfterArrayElement[keyNameSize] = '\0';
 
 	char * arrayElementName = createArrayElementName (arrayNumber);
 
@@ -366,6 +372,15 @@ static Key * specCollision (KeySet * specKeys)
 	return 0;
 }
 
+/**
+ * Check if the passed key name is located in the {@link ks}. If yes, return the key.
+ *
+ * @param ks the KeySet to search for the key name
+ * @param name the key name to search for
+ * @return a pointer to the key in the KeySet which matches the key name of {@link name}
+ * @retval key - pointer to the matching key
+ * @retval 0 - if no key was found with the given name {@link name}
+ */
 static Key * getMatchingKeyFromKeySet (KeySet * ks, char * name)
 {
 	for (elektraCursor it = 0; it < ksGetSize (ks); it++)
@@ -389,13 +404,10 @@ static Key * getMatchingKeyFromKeySet (KeySet * ks, char * name)
  */
 static Key * getArraySizeOfArrayParent (KeySet * specKeys, Key * specKey)
 {
-	const char * specKeyName = keyName (specKey);
-	char * copiedKeyName = elektraMalloc (elektraStrLen (specKeyName) + 1);
-	strcpy (copiedKeyName, (char *) specKeyName);
+	char * copiedKeyName = elektraStrDup (keyName (specKey));
 
 	char * rest = NULL;
 	char * arrayParent = strtok_r (copiedKeyName, "#", &rest);
-	arrayParent[strlen (arrayParent) - 1] = '\0';
 
 	Key * key = getMatchingKeyFromKeySet (specKeys, strchr (arrayParent, '/'));
 
@@ -431,7 +443,7 @@ static int getNumberOfArrayCharactersInSpecName (Key * specKey)
  * The positions of where the `#` occurs in the specification key.
  *
  * @param keyNameWithoutNamespace the key name without the namespace
- * @param arrayPositions the array to hold all the positions of the `#` in the specification key
+ * @param[out] arrayPositions the array to hold all the positions of the `#` in the specification key
  * @param arraySize number of `#` in the whole specification key
  */
 static void setArrayPositions (const char * keyNameWithoutNamespace, int * arrayPositions)
@@ -460,7 +472,7 @@ static bool isValidArraySize (KeySet * ks, KeySet * specKeys, Key * specKey)
 {
 	Key * key = ksLookupByName (ks, strchr (keyName (specKey), '/'), 0);
 	Key * keyToFetchArraySizeFrom = key == NULL ? getArraySizeOfArrayParent (specKeys, specKey) : key;
-	const Key * arrayMetaKey = key == NULL ? keyGetMeta (keyToFetchArraySizeFrom, "array") : keyGetMeta (key, "array");
+	const Key * arrayMetaKey = keyGetMeta (keyToFetchArraySizeFrom, "array");
 
 	if (arrayMetaKey == 0)
 	{
@@ -468,12 +480,7 @@ static bool isValidArraySize (KeySet * ks, KeySet * specKeys, Key * specKey)
 		return true;
 	}
 
-	if (!validateArraySize (keyToFetchArraySizeFrom, specKey))
-	{
-		return false;
-	}
-
-	return true;
+	return validateArraySize (keyToFetchArraySizeFrom, specKey);
 }
 
 /**
@@ -492,14 +499,15 @@ static bool isArrayEmpty (KeySet * ks, int arrayPosition)
 		char * withoutNamespace = strchr (keyName (current), '/');
 
 		int len = elektraStrLen (withoutNamespace);
-		if (arrayPosition > len)
+		if (arrayPosition >= len - 1)
 		{
 			continue;
 		}
 
 		if (withoutNamespace[arrayPosition] == '#' &&
-		    (arrayPosition < len && (withoutNamespace[arrayPosition + 1] == '_' || withoutNamespace[arrayPosition + 1] != '/' ||
-					     isdigit (withoutNamespace[arrayPosition + 1]))))
+		    (arrayPosition < (len - 1) &&
+		     (withoutNamespace[arrayPosition + 1] == '_' || withoutNamespace[arrayPosition + 1] != '/' ||
+		      isdigit (withoutNamespace[arrayPosition + 1]))))
 		{
 			return false;
 		}
@@ -515,7 +523,7 @@ static bool isArrayEmpty (KeySet * ks, int arrayPosition)
  * be created.
  *
  * In case the key is missing and has no meta key default the method returns -1 and it fails by
- * adding error.
+ * adding an error (or warning in the case of `kdbGet`).
  *
  * @param parentKey the parent key (primarily used to handle in case of error, warning, information)
  * @param specKey the specification key containing the meta data to be copied

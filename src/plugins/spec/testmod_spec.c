@@ -1,10 +1,10 @@
 /**
-* @file
-*
-* @brief
-*
-* @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
-*/
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ */
 
 #include "spec-new.h"
 
@@ -258,7 +258,7 @@ static void test_hook_copy_with_parent_key_containing_namespace_should_succeed (
 			}
 		}
 
-		elektraFree (keyNameToMatch);
+		elektraFree ((char *) keyNameToMatch);
 		ksDel (ks);
 
 		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
@@ -307,7 +307,7 @@ static void test_hook_copy_with_wildcard_specification_only_one_underline_should
 			}
 		}
 
-		elektraFree (keyNameToMatch);
+		elektraFree ((char *) keyNameToMatch);
 		ksDel (ks);
 
 		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
@@ -382,7 +382,7 @@ static void test_hook_copy_with_wildcard_two_underlines_should_succeed (bool isK
 
 		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
 
-		elektraFree (keyname);
+		elektraFree ((char *) keyname);
 		ksDel (ks);
 	}
 	TEST_END
@@ -650,7 +650,8 @@ static void test_hook_copy_with_array_specification_with_default_meta_key_should
 				{
 					count++;
 				}
-				succeed_if (keyGetNamespace (current) == KEY_NS_DEFAULT, "should not contain other namespaces than default and spec");
+				succeed_if (keyGetNamespace (current) == KEY_NS_DEFAULT,
+					    "should not contain other namespaces than default and spec");
 			}
 		}
 
