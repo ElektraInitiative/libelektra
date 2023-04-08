@@ -96,6 +96,8 @@ static void addDefaultKey (KeySet * ks, Key * specKey)
 	ksAppendKey (ks, newDefaultKey);
 
 	elektraFree (formattedKeyName);
+
+	keyDel (newDefaultKey);
 }
 
 /**
@@ -289,6 +291,8 @@ static void instantiateArraySpecificationAndCopyMeta (Key * specKey, KeySet * ks
 		ksAppendKey (instantiatedArraySpecs, key);
 
 		elektraFree (formattedKeyName);
+
+		keyDel (key);
 	}
 
 	ksAppend (ks, instantiatedArraySpecs);
