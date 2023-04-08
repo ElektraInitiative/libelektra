@@ -92,6 +92,7 @@ ENV XDG_CACHE_HOME=/tmp/.cache
 
 # see https://github.com/golang/go/wiki/InvalidFlag
 ENV CGO_CFLAGS_ALLOW="directory.*"
+ENV LD_LIBRARY_PATH=directory/lib:${LD_LIBRARY_PATH}
 
 # use lua5.3 since dh-lua installs liblua5.3-dev which sets the
 # dependency on the generated package to lua5.3

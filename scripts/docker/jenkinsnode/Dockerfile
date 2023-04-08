@@ -52,6 +52,7 @@ ENV XDG_CACHE_HOME=/tmp/.cache
 
 # see https://github.com/golang/go/wiki/InvalidFlag
 ENV CGO_CFLAGS_ALLOW="directory.*"
+ENV LD_LIBRARY_PATH=directory/lib:${LD_LIBRARY_PATH}
 
 # TODO use Elektra for the configuration steps below
 

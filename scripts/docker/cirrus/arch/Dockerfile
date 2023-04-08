@@ -27,6 +27,7 @@ ENV XDG_CACHE_HOME=/tmp/.cache
 
 # see https://github.com/golang/go/wiki/InvalidFlag
 ENV CGO_CFLAGS_ALLOW="directory.*"
+ENV LD_LIBRARY_PATH=directory/lib:${LD_LIBRARY_PATH}
 
 # The root user is not allowed to use `makepkg`. We therefore install software from Arch’s User Software repository as user `makepkg`.
 ARG ELEKTRA_USER=makepkg
