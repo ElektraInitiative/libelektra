@@ -546,7 +546,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ### Cirrus
 
-- <<TODO>>
+- Rename deprecated `d-bus` to `dbus` in `macOS.yml` and `.cirrus.yml` [Issue-#4900](https://github.com/ElektraInitiative/libelektra/issues/4900) _(Tomislav Makar @tmakar)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
