@@ -165,3 +165,8 @@ kdb meta-ls spec:/freedesktop/openicc/device/camera/#0/EXIF_serial   # seems lik
 kdb set "/freedesktop/openicc/device/camera/#0/EXIF_serial" 203     # success, is a long
 kdb set "/freedesktop/openicc/device/camera/#0/EXIF_serial" x   # fails, not a long
 ```
+
+### Known limitations
+
+- `#` and `_` keys do not work on MINGW
+- No defaults for `_` globbing character

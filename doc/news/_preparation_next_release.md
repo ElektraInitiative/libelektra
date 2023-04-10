@@ -45,7 +45,7 @@ docker run -it elektra/elektra
 ## Highlights
 
 - New Changetracking API
-- <<HIGHLIGHT>>
+- New spec plugin
 - <<HIGHLIGHT>>
 
 ### New Changetracking API
@@ -85,7 +85,22 @@ There seems to be about 10 % overhead, but we don't expect it to be noticeable i
 |          50000 |                        5730261920 |                        6340292587 |                  10,65 % |
 |         500000 |                      104614374974 |                      110702166761 |                   5,82 % |
 
-### <<HIGHLIGHT>>
+### New spec plugin
+
+The spec plugin was rewritten to use the standardized error handling in Elektra.
+It is now strictly defined that the `spec` plugin throws a warning on `kdbGet` and on any other call an error.
+
+Default values are now created in the `default` namespace.
+The instantiated array specifications are now also created in the `default` namespace.
+
+Keys with a require meta key and no default meta key do throw an error now.
+
+Known limitations:
+
+- `#` and `_` keys do not work on MINGW
+- No defaults for `_` globbing character
+
+For more information see [Spec Plugin](../../src/plugins/spec/README.md).
 
 ### <<HIGHLIGHT>>
 
