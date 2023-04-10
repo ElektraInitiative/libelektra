@@ -156,7 +156,6 @@ task:
       brew tap homebrew/services
       brew update # Work around for [Homebrew Services issue 206](https://github.com/Homebrew/homebrew-services/issues/206)
       brew postinstall dbus
-      brew services stop d-bus; brew services start d-bus # Workaround for dbus socket issues on cirrus
       # export DBUS_LAUNCHD_SESSION_BUS_SOCKET=$(find /private/tmp/com.apple.launchd*/unix_domain_listener | xargs ls -Art | tail -n1) # workaround for cirrus
       # launchctl setenv DBUS_LAUNCHD_SESSION_BUS_SOCKET $DBUS_LAUNCHD_SESSION_BUS_SOCKET
       echo $DBUS_LAUNCHD_SESSION_BUS_SOCKET
