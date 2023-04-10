@@ -728,7 +728,6 @@ static void test_hook_copy_with_array_specification_as_last_element_should_creat
 		for (elektraCursor it = 0; it < ksGetSize (ks); it++)
 		{
 			Key * current = ksAtCursor (ks, it);
-			output_key (current);
 			if (keyGetNamespace (current) == KEY_NS_DEFAULT)
 			{
 				succeed_if_same_string (keyString (current), metaKeyDefaultValue);
