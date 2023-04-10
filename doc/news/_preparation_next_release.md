@@ -204,7 +204,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 ### C++
 
 - Provide getter for the underlying C object of KDB _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
+- Add `ElektraDiff` binding for C++ _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 
 ### <<Binding>>
