@@ -16,11 +16,15 @@ TEST (diff, calculateDiff)
 	KeySet ksOld;
 	ksOld.append (Key ("user:/hello"));
 	ksOld.append (Key ("user:/goodbye"));
-	ksOld.append (Key ("user:/greeting", KEY_VALUE, "world", KEY_END));
+	Key oldKeyWithValue = Key ("user:/greeting");
+	oldKeyWithValue.setString ("world");
+	ksOld.append (oldKeyWithValue);
 
 	KeySet ksNew;
 	ksNew.append (Key ("user:/hello"));
-	ksNew.append (Key ("user:/greeting", KEY_VALUE, "elektra", KEY_END));
+	Key newKeyWithValue = Key ("user:/greeting");
+	newKeyWithValue.setString ("elektra");
+	ksNew.append (newKeyWithValue);
 	ksNew.append (Key ("user:/new"));
 
 	Key parentKey;
