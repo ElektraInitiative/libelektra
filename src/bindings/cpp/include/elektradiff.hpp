@@ -34,6 +34,7 @@ public:
 
 	inline ~ElektraDiff ();
 
+	inline static ElektraDiff calculateDiff (const KeySet & newKeys, const KeySet & oldKeys, const std::string & parentKeyName);
 	inline static ElektraDiff calculateDiff (const KeySet & newKeys, const KeySet & oldKeys, const Key & parentKey);
 
 	// reference handling
@@ -51,8 +52,13 @@ public:
 
 	inline uint16_t getReferenceCounter () const;
 
+	inline void removeOther (std::string const & parentKeyName);
 	inline void removeOther (const Key & parentKey);
+
+	inline void removeSameOrBelow (std::string const & cutpointName);
 	inline void removeSameOrBelow (const Key & cutpoint);
+
+	inline ElektraDiff cut (std::string const & cutpointName);
 	inline ElektraDiff cut (const Key & cutpoint);
 
 	inline ElektraDiff dup () const;
@@ -61,8 +67,14 @@ public:
 	inline KeySet getAddedKeys () const;
 	inline KeySet getModifiedKeys () const;
 	inline KeySet getRemovedKeys () const;
+
+	inline KeySet getAddedMetaKeys (std::string const & keyName) const;
 	inline KeySet getAddedMetaKeys (const Key & key) const;
+
+	inline KeySet getModifiedMetaKeys (std::string const & keyName) const;
 	inline KeySet getModifiedMetaKeys (const Key & key) const;
+
+	inline KeySet getRemovedMetaKeys (std::string const & keyName) const;
 	inline KeySet getRemovedMetaKeys (const Key & key) const;
 
 private:
@@ -121,6 +133,21 @@ inline ElektraDiff::~ElektraDiff ()
 
 	operator-- ();
 	ckdb::elektraDiffDel (diff);
+}
+
+/**
+ * Calculates the difference between the given keysets
+ * The diff will contain the keys that were added, modified and removed in @p newKeys.
+ *
+ * @param newKeys the new keyset
+ * @param oldKeys the old keyset
+ * @param parentKeyName only changes same or below this key will be calculated
+ * @return diff of the two given keysets
+ */
+inline ElektraDiff ElektraDiff::calculateDiff (const KeySet & newKeys, const KeySet & oldKeys, const std::string & parentKeyName)
+{
+	Key parentKey (parentKeyName, KEY_END);
+	return calculateDiff (newKeys, oldKeys, parentKey);
 }
 
 /**
@@ -231,6 +258,15 @@ inline ckdb::ElektraDiff * ElektraDiff::operator* () const
 /**
  * @copydoc elektraDiffRemoveOther
  */
+inline void ElektraDiff::removeOther (std::string const & parentKeyName)
+{
+	Key parentKey (parentKeyName, KEY_END);
+	return removeOther (parentKey);
+}
+
+/**
+ * @copydoc elektraDiffRemoveOther
+ */
 inline void ElektraDiff::removeOther (const Key & parentKey)
 {
 	ckdb::elektraDiffRemoveOther (diff, parentKey.getKey ());
@@ -239,9 +275,27 @@ inline void ElektraDiff::removeOther (const Key & parentKey)
 /**
  * @copydoc elektraDiffRemoveSameOrBelow
  */
+inline void ElektraDiff::removeSameOrBelow (std::string const & cutpointName)
+{
+	Key cutpoint (cutpointName, KEY_END);
+	return removeSameOrBelow (cutpoint);
+}
+
+/**
+ * @copydoc elektraDiffRemoveSameOrBelow
+ */
 inline void ElektraDiff::removeSameOrBelow (const Key & cutpoint)
 {
 	ckdb::elektraDiffRemoveSameOrBelow (diff, cutpoint.getKey ());
+}
+
+/**
+ * @copydoc elektraDiffCut
+ */
+inline ElektraDiff ElektraDiff::cut (std::string const & cutpointName)
+{
+	Key cutpoint (cutpointName, KEY_END);
+	return cut (cutpoint);
 }
 
 /**
@@ -295,6 +349,15 @@ inline KeySet ElektraDiff::getRemovedKeys () const
 /**
  * @copydoc elektraDiffGetAddedMetaKeys
  */
+inline KeySet ElektraDiff::getAddedMetaKeys (std::string const & keyName) const
+{
+	Key key (keyName, KEY_END);
+	return getAddedMetaKeys (key);
+}
+
+/**
+ * @copydoc elektraDiffGetAddedMetaKeys
+ */
 inline KeySet ElektraDiff::getAddedMetaKeys (const Key & key) const
 {
 	return { ckdb::elektraDiffGetAddedMetaKeys (diff, key.getKey ()) };
@@ -303,9 +366,27 @@ inline KeySet ElektraDiff::getAddedMetaKeys (const Key & key) const
 /**
  * @copydoc elektraDiffGetModifiedMetaKeys
  */
+inline KeySet ElektraDiff::getModifiedMetaKeys (std::string const & keyName) const
+{
+	Key key (keyName, KEY_END);
+	return getModifiedMetaKeys (key);
+}
+
+/**
+ * @copydoc elektraDiffGetModifiedMetaKeys
+ */
 inline KeySet ElektraDiff::getModifiedMetaKeys (const Key & key) const
 {
 	return { ckdb::elektraDiffGetModifiedMetaKeys (diff, key.getKey ()) };
+}
+
+/**
+ * @copydoc elektraDiffGetRemovedMetaKeys
+ */
+inline KeySet ElektraDiff::getRemovedMetaKeys (std::string const & keyName) const
+{
+	Key key (keyName, KEY_END);
+	return getRemovedMetaKeys (key);
 }
 
 /**

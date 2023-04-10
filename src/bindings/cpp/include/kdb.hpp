@@ -63,6 +63,7 @@ public:
 	virtual inline int set (KeySet & returned, std::string const & keyname);
 	virtual inline int set (KeySet & returned, Key & parentKey);
 
+	virtual inline ElektraDiff calculateChanges (KeySet & changedKeySet, std::string const & parentKeyName);
 	virtual inline ElektraDiff calculateChanges (KeySet & changedKeySet, Key & parentKey);
 
 	inline ckdb::KDB * getKdb () const;
@@ -293,6 +294,20 @@ inline int KDB::set (KeySet & returned, Key & parentKey)
 		throw KDBException (parentKey);
 	}
 	return ret;
+}
+
+/**
+ * Calculates the changes between the provided KeySet and the current state of the KDB
+ *
+ * @param changedKeySet the keyset that should be used to diff
+ * @param parentKeyName only changes same or below this keys are calculated
+ *
+ * @return a diff with all the changes
+ */
+inline ElektraDiff KDB::calculateChanges (KeySet & changedKeySet, std::string const & parentKeyName)
+{
+	Key parentKey (parentKeyName, KEY_END);
+	return calculateChanges (changedKeySet, parentKey);
 }
 
 /**

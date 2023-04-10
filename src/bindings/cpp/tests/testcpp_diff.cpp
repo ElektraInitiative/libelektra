@@ -14,23 +14,17 @@ TEST (diff, calculateDiff)
 {
 	// Arrange
 	KeySet ksOld;
-	ksOld.append (Key ("user:/hello"));
-	ksOld.append (Key ("user:/goodbye"));
-	Key oldKeyWithValue = Key ("user:/greeting");
-	oldKeyWithValue.setString ("world");
-	ksOld.append (oldKeyWithValue);
+	ksOld.append (Key ("user:/hello", KEY_END));
+	ksOld.append (Key ("user:/goodbye", KEY_END));
+	ksOld.append (Key ("user:/greeting", KEY_VALUE, "world", KEY_END));
 
 	KeySet ksNew;
-	ksNew.append (Key ("user:/hello"));
-	Key newKeyWithValue = Key ("user:/greeting");
-	newKeyWithValue.setString ("elektra");
-	ksNew.append (newKeyWithValue);
-	ksNew.append (Key ("user:/new"));
-
-	Key parentKey;
+	ksNew.append (Key ("user:/hello", KEY_END));
+	ksNew.append (Key ("user:/greeting", KEY_VALUE, "elektra", KEY_END));
+	ksNew.append (Key ("user:/new", KEY_END));
 
 	// Act
-	ElektraDiff diff = ElektraDiff::calculateDiff (ksNew, ksOld, parentKey);
+	ElektraDiff diff = ElektraDiff::calculateDiff (ksNew, ksOld, "/");
 
 	// Assert
 	EXPECT_TRUE (diff.getRemovedKeys ().lookup ("user:/goodbye").isValid ());
@@ -42,23 +36,21 @@ TEST (diff, meta)
 {
 	// Arrange
 	KeySet ksOld;
-	Key oldKey ("user:/hello");
+	Key oldKey ("user:/hello", KEY_END);
 	ksOld.append (oldKey);
 	oldKey.setMeta ("meta:/same", "123");
 	oldKey.setMeta ("meta:/modified", "123");
 	oldKey.setMeta ("meta:/removed", "123");
 
 	KeySet ksNew;
-	Key newKey ("user:/hello");
+	Key newKey ("user:/hello", KEY_END);
 	ksNew.append (newKey);
 	newKey.setMeta ("meta:/same", "123");
 	newKey.setMeta ("meta:/modified", "456");
 	newKey.setMeta ("meta:/added", "123");
 
-	Key parentKey;
-
 	// Act
-	ElektraDiff diff = ElektraDiff::calculateDiff (ksNew, ksOld, parentKey);
+	ElektraDiff diff = ElektraDiff::calculateDiff (ksNew, ksOld, "/");
 
 	// Assert
 	EXPECT_TRUE (diff.getAddedMetaKeys (newKey).lookup ("meta:/added").isValid ());
@@ -70,23 +62,21 @@ TEST (diff, cut)
 {
 	// Arrange
 	KeySet ksOld;
-	ksOld.append (Key ("user:/test1/a"));
-	ksOld.append (Key ("user:/test1/b"));
-	ksOld.append (Key ("user:/test2/a"));
-	ksOld.append (Key ("user:/test2/b"));
+	ksOld.append (Key ("user:/test1/a", KEY_END));
+	ksOld.append (Key ("user:/test1/b", KEY_END));
+	ksOld.append (Key ("user:/test2/a", KEY_END));
+	ksOld.append (Key ("user:/test2/b", KEY_END));
 
 	KeySet ksNew;
-	ksNew.append (Key ("user:/test1/a"));
-	ksNew.append (Key ("user:/test2/a"));
+	ksNew.append (Key ("user:/test1/a", KEY_END));
+	ksNew.append (Key ("user:/test2/a", KEY_END));
 
 	Key parentKey;
 
 	ElektraDiff diff = ElektraDiff::calculateDiff (ksNew, ksOld, parentKey);
 
-	Key cutPoint = Key ("user:/test2");
-
 	// Act
-	ElektraDiff diff2 = diff.cut (cutPoint);
+	ElektraDiff diff2 = diff.cut ("user:/test2");
 
 	// Assert
 	EXPECT_TRUE (diff.getRemovedKeys ().lookup ("user:/test1/b").isValid ());
@@ -99,23 +89,21 @@ TEST (diff, removeOther)
 {
 	// Arrange
 	KeySet ksOld;
-	ksOld.append (Key ("user:/test1/a"));
-	ksOld.append (Key ("user:/test1/b"));
-	ksOld.append (Key ("user:/test2/a"));
-	ksOld.append (Key ("user:/test2/b"));
+	ksOld.append (Key ("user:/test1/a", KEY_END));
+	ksOld.append (Key ("user:/test1/b", KEY_END));
+	ksOld.append (Key ("user:/test2/a", KEY_END));
+	ksOld.append (Key ("user:/test2/b", KEY_END));
 
 	KeySet ksNew;
-	ksNew.append (Key ("user:/test1/a"));
-	ksNew.append (Key ("user:/test2/a"));
+	ksNew.append (Key ("user:/test1/a", KEY_END));
+	ksNew.append (Key ("user:/test2/a", KEY_END));
 
 	Key parentKey;
 
 	ElektraDiff diff = ElektraDiff::calculateDiff (ksNew, ksOld, parentKey);
 
-	Key cutPoint = Key ("user:/test2");
-
 	// Act
-	diff.removeOther (cutPoint);
+	diff.removeOther ("user:/test2");
 
 	// Assert
 	EXPECT_TRUE (diff.getRemovedKeys ().lookup ("user:/test2/b").isValid ());
@@ -126,23 +114,21 @@ TEST (diff, removeSameOrBelow)
 {
 	// Arrange
 	KeySet ksOld;
-	ksOld.append (Key ("user:/test1/a"));
-	ksOld.append (Key ("user:/test1/b"));
-	ksOld.append (Key ("user:/test2/a"));
-	ksOld.append (Key ("user:/test2/b"));
+	ksOld.append (Key ("user:/test1/a", KEY_END));
+	ksOld.append (Key ("user:/test1/b", KEY_END));
+	ksOld.append (Key ("user:/test2/a", KEY_END));
+	ksOld.append (Key ("user:/test2/b", KEY_END));
 
 	KeySet ksNew;
-	ksNew.append (Key ("user:/test1/a"));
-	ksNew.append (Key ("user:/test2/a"));
+	ksNew.append (Key ("user:/test1/a", KEY_END));
+	ksNew.append (Key ("user:/test2/a", KEY_END));
 
 	Key parentKey;
 
 	ElektraDiff diff = ElektraDiff::calculateDiff (ksNew, ksOld, parentKey);
 
-	Key cutPoint = Key ("user:/test2");
-
 	// Act
-	diff.removeSameOrBelow (cutPoint);
+	diff.removeSameOrBelow ("user:/test2");
 
 	// Assert
 	EXPECT_TRUE (diff.getRemovedKeys ().lookup ("user:/test1/b").isValid ());
@@ -153,11 +139,11 @@ TEST (diff, assign)
 {
 	// Arrange
 	KeySet ksOld;
-	ksOld.append (Key ("user:/hello"));
-	ksOld.append (Key ("user:/goodbye"));
+	ksOld.append (Key ("user:/hello", KEY_END));
+	ksOld.append (Key ("user:/goodbye", KEY_END));
 
 	KeySet ksNew;
-	ksNew.append (Key ("user:/hello"));
+	ksNew.append (Key ("user:/hello", KEY_END));
 
 	Key parentKey;
 
@@ -180,11 +166,11 @@ TEST (diff, isEmpty)
 {
 	// Arrange
 	KeySet ksOld;
-	ksOld.append (Key ("user:/hello"));
-	ksOld.append (Key ("user:/goodbye"));
+	ksOld.append (Key ("user:/hello", KEY_END));
+	ksOld.append (Key ("user:/goodbye", KEY_END));
 
 	KeySet ksNew;
-	ksNew.append (Key ("user:/hello"));
+	ksNew.append (Key ("user:/hello", KEY_END));
 
 	Key parentKey;
 
@@ -200,14 +186,14 @@ TEST (diff, dup)
 {
 	// Arrange
 	KeySet ksOld;
-	ksOld.append (Key ("user:/test1/a"));
-	ksOld.append (Key ("user:/test1/b"));
-	ksOld.append (Key ("user:/test2/a"));
-	ksOld.append (Key ("user:/test2/b"));
+	ksOld.append (Key ("user:/test1/a", KEY_END));
+	ksOld.append (Key ("user:/test1/b", KEY_END));
+	ksOld.append (Key ("user:/test2/a", KEY_END));
+	ksOld.append (Key ("user:/test2/b", KEY_END));
 
 	KeySet ksNew;
-	ksNew.append (Key ("user:/test1/a"));
-	ksNew.append (Key ("user:/test2/a"));
+	ksNew.append (Key ("user:/test1/a", KEY_END));
+	ksNew.append (Key ("user:/test2/a", KEY_END));
 
 	Key parentKey;
 

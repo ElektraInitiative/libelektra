@@ -49,3 +49,19 @@ TEST (kdb, get_set)
 		succeed_if (!ks.lookup ("user:/tests/key3/3"), "key was not removed");
 	}
 }
+
+TEST (kdb, calculateChanges)
+{
+	KeySet ks;
+	KDB kdb;
+	kdb.get (ks, "user:/tests/difftest");
+	ks.append (*Key ("user:/tests/difftest/added", KEY_END));
+
+
+	Key parent;
+	auto diff = kdb.calculateChanges (ks, parent);
+	succeed_if (diff.isEmpty() == false, "diff should not be empty");
+
+	auto diff2 = kdb.calculateChanges (ks, "user:/tests");
+	succeed_if (diff.isEmpty() == false, "diff should not be empty");
+}
