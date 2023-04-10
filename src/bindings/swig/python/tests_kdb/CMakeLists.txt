@@ -34,4 +34,6 @@ if (NOT (APPLE AND ENABLE_ASAN))
 	do_python_test (test_keyset.py)
 	do_python_test (test_kdb.py KDB_TEST)
 	do_python_test (test_gopts.py KDB_TEST REQUIRED_PLUGINS gopts)
+	do_python_test (test_elektradiff.py)
+
 endif (NOT (APPLE AND ENABLE_ASAN))

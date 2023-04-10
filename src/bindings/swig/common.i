@@ -22,6 +22,7 @@
   #include "key.hpp"
   #include "keyset.hpp"
   #include "kdb.hpp"
+  #include "elektradiff.hpp"
   using namespace kdb;
 %}
 
@@ -65,6 +66,9 @@
     KDB_CATCH_EX(kdb, ContractException) \
     KDB_CATCH_EX(kdb, KDBException) \
     KDB_CATCH_EX(kdb, Exception)
+
+  #define ELEKTRADIFF_EXCEPTIONS \
+    KDB_CATCH_EX(kdb, ElektraDiffNullException)
 %}
 
 #define KDB_CATCH(exceptions) \
@@ -135,6 +139,15 @@
 %ignore kdb::KeySet::KeySet (Key, ...);
 %ignore kdb::KeySet::operator=;
 
+
+/*
+ * elektradiff.hpp
+ */
+%ignore kdb::ElektraDiff::operator=;
+%ignore kdb::ElektraDiff::operator++;
+%ignore kdb::ElektraDiff::operator--;
+%ignore kdb::ElektraDiff::ElektraDiff (kdb::ElektraDiff const &other);
+%ignore kdb::ElektraDiff::ElektraDiff (kdb::ElektraDiff &other);
 
 // iterators
 // we hide all iterator classes. users should use pairs/ipairs

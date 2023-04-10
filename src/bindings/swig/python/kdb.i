@@ -398,6 +398,19 @@ ckdb::_Key * ksAt (ckdb::_KeySet * ks, ssize_t pos) {
 // clear exception handler
 %exception;
 
+/*
+ * elektradiff.hpp
+ */
+// exception handling for kdb::ElektraDiff
+%exception {
+	KDB_CATCH(ELEKTRADIFF_EXCEPTIONS)
+}
+
+%include "elektradiff.hpp"
+%include "elektradiffexcept.hpp"
+
+// clear exception handler
+%exception;
 
 /*
  * kdb.hpp
