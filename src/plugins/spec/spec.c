@@ -81,15 +81,16 @@ static void replaceCharacter (const char * str, char * newStr, const char search
  *
  * @param ks the KeySet to append the new default key to
  * @param specKey specification key with meta data of the new default key
+ * @param isArraySpec boolean value indicating whether this is an array specification key
  */
-static void addDefaultKey (KeySet * ks, Key * specKey)
+static void addDefaultKey (KeySet * ks, Key * specKey, bool isArraySpec)
 {
 	const Key * defaultMetaKey = keyGetMeta (specKey, "default");
 	const char * defaultValue = keyString (defaultMetaKey);
 
 	const char * specKeyName = strchr (keyName (specKey), '/');
 
-	char * formattedKeyName = elektraFormat ("default:/%s", specKeyName);
+	char * formattedKeyName = elektraFormat (isArraySpec ? "default:/%s0" : "default:/%s", specKeyName);
 	Key * newDefaultKey = keyNew (formattedKeyName, KEY_VALUE, defaultValue, KEY_END);
 	keyCopyAllMeta (newDefaultKey, specKey);
 
@@ -571,7 +572,7 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * specKeys, KeyS
 
 			if (arraySizeKeyToInstantiate == NULL)
 			{
-				addDefaultKey (ks, specKey);
+				addDefaultKey (ks, specKey, true);
 				continue;
 			}
 
@@ -622,7 +623,7 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * specKeys, KeyS
 	{
 		if (hasDefault (specKey))
 		{
-			addDefaultKey (ks, specKey);
+			addDefaultKey (ks, specKey, false);
 			return 0;
 		}
 		else

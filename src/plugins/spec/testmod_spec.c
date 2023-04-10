@@ -714,6 +714,32 @@ static void test_hook_remove_spec_keys_should_succeed (bool isKdbGet)
 	TEST_END
 }
 
+static void test_hook_copy_with_array_specification_as_last_element_should_create_array_default (bool isKdbGet)
+{
+	printf ("test %s, isKdbGet=%d\n", __func__, isKdbGet);
+
+	TEST_BEGIN
+	{
+		const char * metaKeyDefaultValue = "default value a";
+		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#", KEY_META, "default", metaKeyDefaultValue, KEY_END), KS_END);
+
+		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
+
+		for (elektraCursor it = 0; it < ksGetSize (ks); it++)
+		{
+			Key * current = ksAtCursor (ks, it);
+			output_key (current);
+			if (keyGetNamespace (current) == KEY_NS_DEFAULT)
+			{
+				succeed_if_same_string (keyString (current), metaKeyDefaultValue);
+			}
+		}
+
+		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
+	}
+	TEST_END
+}
+
 int main (void)
 {
 	test_hook_copy_with_require_meta_key_and_missing_key_should_error (false);
@@ -734,6 +760,8 @@ int main (void)
 	test_hook_copy_with_array_specification_with_default_meta_key_should_instantiate (false);
 
 	test_hook_remove_spec_keys_should_succeed (true);
+
+	test_hook_copy_with_array_specification_as_last_element_should_create_array_default (false);
 
 	return 0;
 }
