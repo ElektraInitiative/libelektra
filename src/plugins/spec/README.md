@@ -124,46 +124,104 @@ If there is an error, the `spec` plugin returns `ELEKTRA_PLUGIN_STATUS_ERROR`, o
 - Key has default but does not exist
   - In this case the key is created
 
-## Examples
+## Examples (with shell_recorder)
 
-<!-- FIXME [new_backend]: outdated -->
+This sample is creating keys and specifications for an application named `webserver`.
+The `webserver` application has a `name` and a `port`.
+In case a port is already in use, there is also an array key `alternative_ports` which is used to find another port for binding `webserver`.
 
-Ni files can be found in [/examples/spec](/examples/spec) which should be PWD
-so that the example works:
+A specification could look like this (`yaml`):
 
-```sh
-cd ../../../examples/spec
-#sudo kdb global-mount        # spec plugin should be mounted by default
-sudo kdb mount $PWD/spec.ini spec:/ ni
-sudo kdb mount $PWD/spectest.ini /testkey ni
-kdb export /testkey ni     # note: spec can only applied on cascading access
+```yaml
+- elektra:
+    mountpoint: user:/tests/sw/org/webserver
+    keys:
+      name:
+        value: web1
+        meta:
+          require: true
+      port:
+        value: 5000
+        meta:
+          default: 5000
+      alternative_ports:
+        keys:
+          0:
+            value: 5001
+            meta:
+              description: This is an alternative port if any other is already bound
+          1:
+            value: 5002
+            meta:
+              description: This is an alternative port if any other is already bound
+        meta:
+          array: 2
 ```
 
-With spec mount one can use (in this case battery.ini needs to be installed in
-`kdb file spec:/` (this should be preferred on non-development machines so that
-everything still works after the source is removed):
+> NOTE: 0 and 1 should be #0 and #1, the array elements.
+
+Below is an explanation of each command.
+
+### kdb meta-set spec:/tests/sw/org/webserver/name require true
+
+Adding a specification key with a require meta key.
+This `meta-set` command should throw error as no key with the name `/tests/sw/org/webserver/name` exists.
+
+### kdb meta-set spec:/tests/sw/org/webserver/port default 5000
+
+Adding a specification key with a default meta key.
+After this `meta-set` command a `default:/tests/sw/org/webserver/port` with value `5000` should exist.
+
+### kdb set user:/tests/sw/org/webserver/alternative_ports/#0 5001
+
+Adding an array key `user:/tests/sw/org/webserver/alternative_ports/#0` which value is set to `5001`.
+
+### kdb set user:/tests/sw/org/webserver/alternative_ports/#1 5002
+
+Adding an array key `user:/tests/sw/org/webserver/alternative_ports/#1` which value is set to `5002`.
+
+### kdb meta-set user:/tests/sw/org/webserver/alternative_ports array '2'
+
+Adding a meta key `array` with value `2` at `user:/tests/sw/org/webserver/alternative_ports`.
+
+### kdb meta-set spec:/tests/sw/org/webserver/alternative_ports/# description 'This is an alternative port if any other is already bound'
+
+Adding a specification meta key `description`.
+After this `meta-set` the all the array entries (`#0` and `#1`) should contain the `description`.
+
+### kdb meta-get user:/tests/sw/org/webserver/alternative_ports/#0 description
+
+Check if the `description` meta key was copied successfully.
+
+### kdb meta-get user:/tests/sw/org/webserver/alternative_ports/#1 description
+
+Check if the `description` meta key was copied successfully.
 
 ```sh
-sudo cp battery.ini $(dirname $(kdb file spec:/))/
-sudo kdb mount battery.ini spec:/example/battery ni
-sudo kdb spec-mount /example/battery
-kdb meta-ls /example/battery/level    # we see it has a check/enum
-kdb meta-get /example/battery/level check/enum    # now we know allowed values
-kdb set /example/battery/level low   # success, low is ok!
-kdb set /example/battery/level x     # fails, not one of the allowed values!
-```
+kdb meta-set spec:/tests/sw/org/webserver/name require true
+# RET: -1
+# STDERROR: Did not find the key
 
-```sh
-cp openicc.ini $(dirname $(kdb file spec:/))/
-sudo kdb mount openicc.ini spec:/freedesktop/openicc ni
-sudo kdb spec-mount /freedesktop/openicc
+kdb meta-set spec:/tests/sw/org/webserver/port default 5000
+#> Create a new key spec:/tests/sw/org/webserver/port with value 5000
 
-kdb meta-set /freedesktop/openicc/device/camera/ array "#1"
-kdb ls /freedesktop/openicc # lets see the whole configuration
-kdb export spec:/freedesktop/openicc ni   # give us details about the specification
-kdb meta-ls spec:/freedesktop/openicc/device/camera/#0/EXIF_serial   # seems like there is a check/type
-kdb set "/freedesktop/openicc/device/camera/#0/EXIF_serial" 203     # success, is a long
-kdb set "/freedesktop/openicc/device/camera/#0/EXIF_serial" x   # fails, not a long
+kdb set user:/tests/sw/org/webserver/alternative_ports/#0 5001
+#> Create a new key user:/tests/sw/org/webserver/alternative_ports/#0 with value 5001
+
+kdb set user:/tests/sw/org/webserver/alternative_ports/#1 5002
+#> Create a new key user:/tests/sw/org/webserver/alternative_ports/#1 with value 5002
+
+kdb meta-set user:/tests/sw/org/webserver/alternative_ports array '2'
+#> Create a new meta key array with value 2 at user:/tests/sw/org/webserver/alternative_ports
+
+kdb meta-set spec:/tests/sw/org/webserver/alternative_ports/# description 'This is an alternative port if any other is already bound'
+#> Create a new meta key spec:/tests/sw/org/webserver/alternative_ports/# with description
+
+kdb meta-get user:/tests/sw/org/webserver/alternative_ports/#0 description
+# STDOUT-REGEX: This is an alternative port if any other is already bound
+
+kdb meta-get user:/tests/sw/org/webserver/alternative_ports/#1 description
+# STDOUT-REGEX: This is an alternative port if any other is already bound
 ```
 
 ### Known limitations
