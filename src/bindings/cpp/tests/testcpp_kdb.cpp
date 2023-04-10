@@ -60,8 +60,8 @@ TEST (kdb, calculateChanges)
 
 	Key parent;
 	auto diff = kdb.calculateChanges (ks, parent);
-	succeed_if (diff.isEmpty() == false, "diff should not be empty");
+	succeed_if (diff.isEmpty () == false, "diff should not be empty");
 
 	auto diff2 = kdb.calculateChanges (ks, "user:/tests");
-	succeed_if (diff.isEmpty() == false, "diff should not be empty");
+	succeed_if (diff.isEmpty () == false, "diff should not be empty");
 }
