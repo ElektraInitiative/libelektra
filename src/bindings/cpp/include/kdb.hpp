@@ -12,14 +12,14 @@
 #include <string>
 #include <vector>
 
+#include <elektradiff.hpp>
 #include <kdbexcept.hpp>
 #include <key.hpp>
 #include <keyset.hpp>
-#include <elektradiff.hpp>
 
 #include <kdb.h>
-#include <kdbgopts.h>
 #include <kdbchangetracking.h>
+#include <kdbgopts.h>
 
 
 /**
@@ -306,7 +306,7 @@ inline int KDB::set (KeySet & returned, Key & parentKey)
 inline ElektraDiff KDB::calculateChanges (KeySet & changedKeySet, Key & parentKey)
 {
 	const ckdb::ChangeTrackingContext * context = ckdb::elektraChangeTrackingGetContextFromKdb (handle);
-	ckdb::ElektraDiff * diff = ckdb::elektraChangeTrackingCalculateDiff (changedKeySet.getKeySet(), context, parentKey.getKey());
+	ckdb::ElektraDiff * diff = ckdb::elektraChangeTrackingCalculateDiff (changedKeySet.getKeySet (), context, parentKey.getKey ());
 	return ElektraDiff (diff);
 }
 

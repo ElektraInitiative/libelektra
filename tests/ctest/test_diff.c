@@ -786,12 +786,10 @@ static void test_elektraDiffDup_shouldDuplicate (void)
 
 	// Arrange
 	Key * parentKey = keyNew ("system:/a", KEY_END);
-	ElektraDiff * diff = elektraDiffNew (
-		ksNew (2, keyNew ("system:/a/added", KEY_END), KS_END),
-		ksNew (2, keyNew ("system:/a/removed", KEY_END), KS_END),
-		ksNew (2, keyNew ("system:/a/modified", KEY_END), KS_END),
-		ksNew (2, keyNew ("system:/a/modifiedNew", KEY_END), KS_END),
-		       parentKey);
+	ElektraDiff * diff = elektraDiffNew (ksNew (2, keyNew ("system:/a/added", KEY_END), KS_END),
+					     ksNew (2, keyNew ("system:/a/removed", KEY_END), KS_END),
+					     ksNew (2, keyNew ("system:/a/modified", KEY_END), KS_END),
+					     ksNew (2, keyNew ("system:/a/modifiedNew", KEY_END), KS_END), parentKey);
 
 	// Act
 	ElektraDiff * duped = elektraDiffDup (diff);

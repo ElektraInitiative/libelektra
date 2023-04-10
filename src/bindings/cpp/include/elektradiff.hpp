@@ -47,7 +47,7 @@ public:
 	inline ckdb::ElektraDiff * getDiff () const;
 	inline ckdb::ElektraDiff * operator* () const;
 
-	inline ElektraDiff & operator=(const ElektraDiff & other);
+	inline ElektraDiff & operator= (const ElektraDiff & other);
 
 	inline uint16_t getReferenceCounter () const;
 
@@ -85,7 +85,7 @@ inline ElektraDiff::ElektraDiff (ckdb::ElektraDiff * cdiff) : diff (cdiff)
 		throw ElektraDiffNullException ();
 	}
 
-	operator++();
+	operator++ ();
 }
 
 /**
@@ -143,7 +143,7 @@ inline ElektraDiff ElektraDiff::calculateDiff (const KeySet & newKeys, const Key
  */
 inline void ElektraDiff::operator++ (int) const
 {
-	operator++();
+	operator++ ();
 }
 
 /**
@@ -159,7 +159,7 @@ inline void ElektraDiff::operator++ () const
  */
 inline void ElektraDiff::operator-- (int) const
 {
-	operator--();
+	operator-- ();
 }
 
 /**
@@ -184,7 +184,7 @@ inline uint16_t ElektraDiff::getReferenceCounter () const
  * @param other the diff to assign
  * @return reference to this
  */
-inline ElektraDiff & ElektraDiff::operator=(const ElektraDiff & other)
+inline ElektraDiff & ElektraDiff::operator= (const ElektraDiff & other)
 {
 	if (this != &other)
 	{
@@ -233,7 +233,7 @@ inline ckdb::ElektraDiff * ElektraDiff::operator* () const
  */
 inline void ElektraDiff::removeOther (const Key & parentKey)
 {
-	ckdb::elektraDiffRemoveOther (diff, parentKey.getKey());
+	ckdb::elektraDiffRemoveOther (diff, parentKey.getKey ());
 }
 
 /**
@@ -241,7 +241,7 @@ inline void ElektraDiff::removeOther (const Key & parentKey)
  */
 inline void ElektraDiff::removeSameOrBelow (const Key & cutpoint)
 {
-	ckdb::elektraDiffRemoveSameOrBelow (diff, cutpoint.getKey());
+	ckdb::elektraDiffRemoveSameOrBelow (diff, cutpoint.getKey ());
 }
 
 /**
@@ -249,7 +249,7 @@ inline void ElektraDiff::removeSameOrBelow (const Key & cutpoint)
  */
 inline ElektraDiff ElektraDiff::cut (const Key & cutpoint)
 {
-	return ElektraDiff(ckdb::elektraDiffCut (diff, cutpoint.getKey()));
+	return ElektraDiff (ckdb::elektraDiffCut (diff, cutpoint.getKey ()));
 }
 
 /**
@@ -273,7 +273,7 @@ inline bool ElektraDiff::isEmpty () const
  */
 inline KeySet ElektraDiff::getAddedKeys () const
 {
-	return {ckdb::elektraDiffGetAddedKeys (diff)};
+	return { ckdb::elektraDiffGetAddedKeys (diff) };
 }
 
 /**
@@ -281,7 +281,7 @@ inline KeySet ElektraDiff::getAddedKeys () const
  */
 inline KeySet ElektraDiff::getModifiedKeys () const
 {
-	return {ckdb::elektraDiffGetModifiedKeys (diff)};
+	return { ckdb::elektraDiffGetModifiedKeys (diff) };
 }
 
 /**
@@ -289,7 +289,7 @@ inline KeySet ElektraDiff::getModifiedKeys () const
  */
 inline KeySet ElektraDiff::getRemovedKeys () const
 {
-	return {ckdb::elektraDiffGetRemovedKeys (diff)};
+	return { ckdb::elektraDiffGetRemovedKeys (diff) };
 }
 
 /**
@@ -297,7 +297,7 @@ inline KeySet ElektraDiff::getRemovedKeys () const
  */
 inline KeySet ElektraDiff::getAddedMetaKeys (const Key & key) const
 {
-	return {ckdb::elektraDiffGetAddedMetaKeys (diff, key.getKey())};
+	return { ckdb::elektraDiffGetAddedMetaKeys (diff, key.getKey ()) };
 }
 
 /**
@@ -305,7 +305,7 @@ inline KeySet ElektraDiff::getAddedMetaKeys (const Key & key) const
  */
 inline KeySet ElektraDiff::getModifiedMetaKeys (const Key & key) const
 {
-	return {ckdb::elektraDiffGetModifiedMetaKeys (diff, key.getKey())};
+	return { ckdb::elektraDiffGetModifiedMetaKeys (diff, key.getKey ()) };
 }
 
 /**
@@ -313,7 +313,7 @@ inline KeySet ElektraDiff::getModifiedMetaKeys (const Key & key) const
  */
 inline KeySet ElektraDiff::getRemovedMetaKeys (const Key & key) const
 {
-	return {ckdb::elektraDiffGetRemovedMetaKeys (diff, key.getKey())};
+	return { ckdb::elektraDiffGetRemovedMetaKeys (diff, key.getKey ()) };
 }
 
 }

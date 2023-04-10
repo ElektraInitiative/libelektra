@@ -1,10 +1,10 @@
 /**
-* @file
-*
-* @brief
-*
-* @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
-*/
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
 
 #include <tests.hpp>
 
@@ -57,9 +57,9 @@ TEST (diff, meta)
 	ElektraDiff diff = ElektraDiff::calculateDiff (ksNew, ksOld, parentKey);
 
 	// Assert
-	EXPECT_TRUE (diff.getAddedMetaKeys (newKey).lookup ("meta:/added").isValid());
-	EXPECT_TRUE (diff.getRemovedMetaKeys (newKey).lookup ("meta:/removed").isValid());
-	EXPECT_TRUE (diff.getModifiedMetaKeys (newKey).lookup ("meta:/modified").isValid());
+	EXPECT_TRUE (diff.getAddedMetaKeys (newKey).lookup ("meta:/added").isValid ());
+	EXPECT_TRUE (diff.getRemovedMetaKeys (newKey).lookup ("meta:/removed").isValid ());
+	EXPECT_TRUE (diff.getModifiedMetaKeys (newKey).lookup ("meta:/modified").isValid ());
 }
 
 TEST (diff, cut)
@@ -85,10 +85,10 @@ TEST (diff, cut)
 	ElektraDiff diff2 = diff.cut (cutPoint);
 
 	// Assert
-	EXPECT_TRUE (diff.getRemovedKeys ().lookup ("user:/test1/b").isValid());
-	EXPECT_FALSE (diff.getRemovedKeys ().lookup ("user:/test2/b").isValid());
-	EXPECT_TRUE (diff2.getRemovedKeys ().lookup ("user:/test2/b").isValid());
-	EXPECT_FALSE (diff2.getRemovedKeys ().lookup ("user:/test1/b").isValid());
+	EXPECT_TRUE (diff.getRemovedKeys ().lookup ("user:/test1/b").isValid ());
+	EXPECT_FALSE (diff.getRemovedKeys ().lookup ("user:/test2/b").isValid ());
+	EXPECT_TRUE (diff2.getRemovedKeys ().lookup ("user:/test2/b").isValid ());
+	EXPECT_FALSE (diff2.getRemovedKeys ().lookup ("user:/test1/b").isValid ());
 }
 
 TEST (diff, removeOther)
@@ -114,8 +114,8 @@ TEST (diff, removeOther)
 	diff.removeOther (cutPoint);
 
 	// Assert
-	EXPECT_TRUE (diff.getRemovedKeys ().lookup ("user:/test2/b").isValid());
-	EXPECT_FALSE (diff.getRemovedKeys ().lookup ("user:/test1/b").isValid());
+	EXPECT_TRUE (diff.getRemovedKeys ().lookup ("user:/test2/b").isValid ());
+	EXPECT_FALSE (diff.getRemovedKeys ().lookup ("user:/test1/b").isValid ());
 }
 
 TEST (diff, removeSameOrBelow)
@@ -141,8 +141,8 @@ TEST (diff, removeSameOrBelow)
 	diff.removeSameOrBelow (cutPoint);
 
 	// Assert
-	EXPECT_TRUE (diff.getRemovedKeys ().lookup ("user:/test1/b").isValid());
-	EXPECT_FALSE (diff.getRemovedKeys ().lookup ("user:/test2/b").isValid());
+	EXPECT_TRUE (diff.getRemovedKeys ().lookup ("user:/test1/b").isValid ());
+	EXPECT_FALSE (diff.getRemovedKeys ().lookup ("user:/test2/b").isValid ());
 }
 
 TEST (diff, assign)
@@ -162,14 +162,14 @@ TEST (diff, assign)
 	// Act & Assert
 	ElektraDiff diffAssign1;
 	diffAssign1 = diff;
-	EXPECT_EQ (diff.getReferenceCounter(), 2);
+	EXPECT_EQ (diff.getReferenceCounter (), 2);
 
 	ElektraDiff diffAssign2;
 	diffAssign2 = diffAssign1;
-	EXPECT_EQ (diff.getReferenceCounter(), 3);
+	EXPECT_EQ (diff.getReferenceCounter (), 3);
 
 	diffAssign1 = ElektraDiff ();
-	EXPECT_EQ (diff.getReferenceCounter(), 2);
+	EXPECT_EQ (diff.getReferenceCounter (), 2);
 }
 
 TEST (diff, isEmpty)
@@ -188,8 +188,8 @@ TEST (diff, isEmpty)
 	ElektraDiff diffWithoutDifferences = ElektraDiff::calculateDiff (ksOld, ksOld, parentKey);
 
 	// Act & Assert
-	EXPECT_EQ (diffWithDifferences.isEmpty(), false);
-	EXPECT_EQ (diffWithoutDifferences.isEmpty(), true);
+	EXPECT_EQ (diffWithDifferences.isEmpty (), false);
+	EXPECT_EQ (diffWithoutDifferences.isEmpty (), true);
 }
 
 TEST (diff, dup)
@@ -213,9 +213,9 @@ TEST (diff, dup)
 	ElektraDiff second = diff.dup ();
 
 	// Assert
-	EXPECT_TRUE (diff.getDiff() != nullptr);
-	EXPECT_TRUE (second.getDiff() != nullptr);
+	EXPECT_TRUE (diff.getDiff () != nullptr);
+	EXPECT_TRUE (second.getDiff () != nullptr);
 
-	EXPECT_EQ (diff.getReferenceCounter(), 1);
-	EXPECT_EQ (second.getReferenceCounter(), 1);
+	EXPECT_EQ (diff.getReferenceCounter (), 1);
+	EXPECT_EQ (second.getReferenceCounter (), 1);
 }

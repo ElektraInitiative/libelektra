@@ -341,12 +341,8 @@ ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet *
  */
 ElektraDiff * elektraDiffDup (const ElektraDiff * original)
 {
-	return elektraDiffNew (ksDup (original->addedKeys),
-			       ksDup (original->removedKeys),
-			       ksDup (original->modifiedKeys),
-			       ksDup (original->modifiedNewKeys),
-			       original->parentKey
-			       );
+	return elektraDiffNew (ksDup (original->addedKeys), ksDup (original->removedKeys), ksDup (original->modifiedKeys),
+			       ksDup (original->modifiedNewKeys), original->parentKey);
 }
 
 
