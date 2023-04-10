@@ -154,6 +154,7 @@ libelektra_1.0 {
 	elektraDiffIsEmpty;
 	elektraDiffGetParentKey;
 	elektraDiffDel;
+	elektraDiffDup;
 	elektraDiffIncRef;
 	elektraDiffDecRef;
 	elektraDiffGetRef;

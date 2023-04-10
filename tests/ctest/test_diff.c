@@ -780,6 +780,47 @@ static void test_elektraDiffCut_shouldWork (void)
 	keyDel (toKeep);
 }
 
+static void test_elektraDiffDup_shouldDuplicate (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange
+	Key * parentKey = keyNew ("system:/a", KEY_END);
+	ElektraDiff * diff = elektraDiffNew (
+		ksNew (2, keyNew ("system:/a/added", KEY_END), KS_END),
+		ksNew (2, keyNew ("system:/a/removed", KEY_END), KS_END),
+		ksNew (2, keyNew ("system:/a/modified", KEY_END), KS_END),
+		ksNew (2, keyNew ("system:/a/modifiedNew", KEY_END), KS_END),
+		       parentKey);
+
+	// Act
+	ElektraDiff * duped = elektraDiffDup (diff);
+
+	// Assert
+	succeed_if (duped != NULL, "duplicated diff should not be NULL");
+	succeed_if (duped->addedKeys != NULL, "added keys should not be NULL");
+	succeed_if (duped->removedKeys != NULL, "removed keys should not be NULL");
+	succeed_if (duped->modifiedKeys != NULL, "modified keys should not be NULL");
+	succeed_if (duped->modifiedNewKeys != NULL, "modified new keys should not be NULL");
+	succeed_if (duped->parentKey != NULL, "parent key should not be NULL");
+
+	succeed_if (duped->addedKeys != diff->addedKeys, "added keys should point to different keysets");
+	succeed_if (duped->removedKeys != diff->removedKeys, "removed keys should point to different keysets");
+	succeed_if (duped->modifiedKeys != diff->modifiedKeys, "modified keys should point to different keysets");
+	succeed_if (duped->modifiedNewKeys != diff->modifiedNewKeys, "modified new keys should point to different keysets");
+	succeed_if (duped->parentKey != diff->parentKey, "parent key should point to different key");
+
+	succeed_if (ksLookupByName (duped->addedKeys, "system:/a/added", 0) != NULL, "added keys should contain key");
+	succeed_if (ksLookupByName (duped->removedKeys, "system:/a/removed", 0) != NULL, "removed keys should contain key");
+	succeed_if (ksLookupByName (duped->modifiedKeys, "system:/a/modified", 0) != NULL, "modified keys should contain key");
+	succeed_if (ksLookupByName (duped->modifiedNewKeys, "system:/a/modifiedNew", 0) != NULL, "modified new keys should contain key");
+	succeed_if (strcmp (keyName (duped->parentKey), "system:/a") == 0, "parent key should be correct");
+
+	elektraDiffDel (diff);
+	elektraDiffDel (duped);
+	keyDel (parentKey);
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("DIFF                 TESTS\n");
@@ -839,6 +880,8 @@ int main (int argc, char ** argv)
 	test_elektraDiffRemoveSameOrBelow_shouldWork ();
 	test_elektraDiffRemoveOther_shouldWork ();
 	test_elektraDiffCut_shouldWork ();
+
+	test_elektraDiffDup_shouldDuplicate ();
 
 	elektraDiffDel (demoDiff);
 

@@ -335,6 +335,22 @@ ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet *
 }
 
 /**
+ * Duplicate the given diff
+ * @param original the diff to duplicate
+ * @return duplicated version of the given diff
+ */
+ElektraDiff * elektraDiffDup (const ElektraDiff * original)
+{
+	return elektraDiffNew (ksDup (original->addedKeys),
+			       ksDup (original->removedKeys),
+			       ksDup (original->modifiedKeys),
+			       ksDup (original->modifiedNewKeys),
+			       original->parentKey
+			       );
+}
+
+
+/**
  * Delete a ElektraDiff
  * @param ksd the ElektraDiff to delete
  */
