@@ -37,7 +37,7 @@ task:
       freebsd_instance:
         cpu: 4
         memory: 8G
-        image_family: freebsd-12-3
+        image_family: freebsd-12-4
 
     - name: 😈 FreeBSD 13
       freebsd_instance:
