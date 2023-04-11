@@ -205,7 +205,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - Provide getter for the underlying C object of KDB _(Maximilian Irlinger @atmaxinger)_
 - Add `ElektraDiff` binding for C++ _(Maximilian Irlinger @atmaxinger)_
-- The `dup` method of `KeySet` now returns a wrapped object _(Maximilian Irlinger)_
+- The `dup` method of `KeySet` now returns a wrapped object _(Maximilian Irlinger @atmaxinger)_
+- Add an overload for `KeySet::cut` that accepts a string for the keyname _(Maximilian Irlinger)_
 
 ### <<Binding>>
 

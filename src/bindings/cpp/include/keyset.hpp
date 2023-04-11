@@ -83,7 +83,8 @@ public:
 	Key pop ();
 	Key at (elektraCursor pos) const;
 
-	KeySet cut (Key k);
+	KeySet cut (const Key & k);
+	KeySet cut (std::string const & name);
 
 	Key lookup (const Key & k, const elektraLookupFlags options = KDB_O_NONE) const;
 	Key lookup (std::string const & name, const elektraLookupFlags options = KDB_O_NONE) const;
@@ -706,7 +707,16 @@ inline Key KeySet::at (elektraCursor pos) const
 /**
  * @copydoc ksCut()
  */
-inline KeySet KeySet::cut (Key k)
+inline KeySet KeySet::cut (std::string const & name)
+{
+	Key cutpoint (name, KEY_END);
+	return cut (cutpoint);
+}
+
+/**
+ * @copydoc ksCut()
+ */
+inline KeySet KeySet::cut (const Key & k)
 {
 	return KeySet (ckdb::ksCut (ks, k.getKey ()));
 }
