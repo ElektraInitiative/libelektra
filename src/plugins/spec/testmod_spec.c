@@ -714,6 +714,17 @@ static void test_hook_remove_spec_keys_should_succeed (bool isKdbGet)
 	TEST_END
 }
 
+/**
+ * Test should verify that a specification key with an array element `#` at the end of the key name with default meta key is recognized
+ * correctly and default array key name is instantiated.
+ *
+ * Sample:
+ * 	spec:/sw/org/server/a/# => meta:/default = default value a
+ *
+ * No configuration. Should instantiate a default array key.
+ *
+ * @param isKdbGet boolean value indicating if it is a kdb get call
+ */
 static void test_hook_copy_with_array_specification_as_last_element_should_create_array_default (bool isKdbGet)
 {
 	printf ("test %s, isKdbGet=%d\n", __func__, isKdbGet);
@@ -739,6 +750,43 @@ static void test_hook_copy_with_array_specification_as_last_element_should_creat
 	TEST_END
 }
 
+/**
+ * Test should verify the menu test example from check_external_example_codegen_menu test.
+ *
+ * @param isKdbGet boolean value indicating if it is a kdb get call
+ */
+static void test_example_menu_should_succeed (bool isKdbGet)
+{
+	printf ("test %s, isKdbGet=%d\n", __func__, isKdbGet);
+
+	Key * parentKey = keyNew ("/sw/example/menu/#0/current", KEY_END);
+
+	KeySet * returned = ksNew (0, KS_END);
+
+	Key * specKeyCommand = keyNew ("spec:/sw/example/menu/#0/current/menu/#/command", KEY_END);
+	keySetMeta (specKeyCommand, "meta:/default", "");
+	keySetMeta (specKeyCommand, "meta:/type", "string");
+	ksAppendKey (returned, specKeyCommand);
+
+	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu", KEY_META, "array", "#1", KEY_END));
+	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#0/name", KEY_VALUE, "Main Menu", KEY_END));
+	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#1/name", KEY_VALUE, "Menu 1", KEY_END));
+	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#1/command", KEY_VALUE, "the executed command", KEY_END));
+
+	elektraSpecCopy (NULL, returned, parentKey, isKdbGet);
+
+	Key * menuCommand = ksLookupByName (returned, "user:/sw/example/menu/#0/current/menu/#1/command", 0);
+	succeed_if (menuCommand != NULL, "should have menu 1 command");
+	KeySet * menuCommandMeta = keyMeta (menuCommand);
+	succeed_if (menuCommandMeta != NULL, "should have menu 1 command meta");
+	succeed_if_fmt (ksGetSize (menuCommandMeta) == 2, "menu 1 command should have 2 meta keys, was %zu", ksGetSize (menuCommandMeta));
+	succeed_if (ksLookupByName (menuCommandMeta, "meta:/type", 0), "menu 1 command meta should have key meta:/type");
+	succeed_if (ksLookupByName (menuCommandMeta, "meta:/default", 0), "menu 1 command meta should have key meta:/default");
+
+	ksDel (returned);
+	keyDel (parentKey);
+}
+
 int main (void)
 {
 	test_hook_copy_with_require_meta_key_and_missing_key_should_error (false);
@@ -761,6 +809,8 @@ int main (void)
 	test_hook_remove_spec_keys_should_succeed (true);
 
 	test_hook_copy_with_array_specification_as_last_element_should_create_array_default (false);
+
+	test_example_menu_should_succeed (true);
 
 	return 0;
 }

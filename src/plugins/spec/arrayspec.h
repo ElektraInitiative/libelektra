@@ -17,6 +17,7 @@ char * createArrayElementName (int arrayNumber);
 char * createFormattedArrayKeyNameInDefaultNamespace (char * keyNameWithoutNamespace, int arrayNumber, int pos);
 void instantiateArraySpecificationAndCopyMeta (Key * specKey, KeySet * ks, int arraySize, int pos);
 void setArrayPositions (const char * keyNameWithoutNamespace, int * arrayPositions, int arraySize);
+int copyAllMetaDataForMatchingArrayKeyName (KeySet * ks, Key * parentKey, Key * specKey, bool isKdbGet);
 
 Key * getMatchingKeyFromKeySet (KeySet * ks, char * name);
 Key * getArraySizeOfArrayParent (KeySet * specKeys, Key * specKey);

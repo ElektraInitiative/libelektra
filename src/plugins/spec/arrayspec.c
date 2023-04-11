@@ -1,4 +1,6 @@
 #include "arrayspec.h"
+#include "kdberrors.h"
+#include "matching.h"
 
 #include <ctype.h>
 #include <kdbhelper.h>
@@ -302,4 +304,42 @@ bool isArrayEmpty (KeySet * ks, int arrayPosition)
 	}
 
 	return true;
+}
+
+/**
+ * Copy all meta keys from {@link specKey} to all matching keys in {@link ks}.
+ *
+ * @param ks the KeySet to search for matching key names for {@link specKey}
+ * @param parentKey the parent key to be used in case there is an error / warning
+ * @param specKey the specification key to check in {@link ks} for matching elements
+ * @retval 0 - if copying of all meta keys was successful
+ * @retval 0 - if no meta key needed to be copied
+ * @retval -1 - if copying of meta keys was not successful
+ */
+int copyAllMetaDataForMatchingArrayKeyName (KeySet * ks, Key * parentKey, Key * specKey, bool isKdbGet)
+{
+	for (elektraCursor it = 0; it < ksGetSize (ks); it++)
+	{
+		Key * key = ksAtCursor (ks, it);
+		if (keyGetNamespace (key) != KEY_NS_SPEC && specMatches (specKey, key))
+		{
+			if (keyCopyAllMeta (key, specKey) < 0)
+			{
+				if (isKdbGet)
+				{
+					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (parentKey, "Could not copy metadata from spec key %s",
+										 keyName (specKey));
+				}
+				else
+				{
+					ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (parentKey, "Could not copy metadata from spec key %s",
+									       keyName (specKey));
+				}
+
+				return -1;
+			}
+		}
+	}
+
+	return 0;
 }
