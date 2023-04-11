@@ -142,14 +142,17 @@ void instantiateArraySpecificationAndCopyMeta (Key * specKey, KeySet * ks, int a
  * @param[out] arrayPositions the array to hold all the positions of the `#` in the specification key
  * @param arraySize number of `#` in the whole specification key
  */
-void setArrayPositions (const char * keyNameWithoutNamespace, int * arrayPositions)
+void setArrayPositions (const char * keyNameWithoutNamespace, int * arrayPositions, int arraySize)
 {
 	int arrPos = 0;
 	for (int i = 0; i < (int) elektraStrLen (keyNameWithoutNamespace); i++)
 	{
 		if (keyNameWithoutNamespace[i] == '#')
 		{
-			arrayPositions[arrPos++] = i;
+			if (arrPos < arraySize)
+			{
+				arrayPositions[arrPos++] = i;
+			}
 		}
 	}
 }

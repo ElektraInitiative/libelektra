@@ -263,7 +263,7 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * specKeys, KeyS
 		int num = getNumberOfArrayCharactersInSpecName (specKey);
 
 		int * arrayPositions = elektraMalloc (num);
-		setArrayPositions (strchr (keyName (specKey), '/'), arrayPositions);
+		setArrayPositions (strchr (keyName (specKey), '/'), arrayPositions, num);
 
 		char * keyNameWithoutNamespace = strchr (keyName (specKey), '/');
 
