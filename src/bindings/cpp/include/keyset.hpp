@@ -72,7 +72,7 @@ public:
 
 	ssize_t size () const;
 
-	ckdb::KeySet * dup () const;
+	KeySet dup () const;
 
 	void copy (const KeySet & other);
 	void clear ();
@@ -510,7 +510,7 @@ inline KeySet::KeySet (ckdb::KeySet * keyset) : ks (keyset)
  */
 inline KeySet::KeySet (const KeySet & other)
 {
-	ks = other.dup ();
+	ks = ckdb::ksDup (other.ks);
 }
 
 /**
@@ -596,7 +596,7 @@ inline KeySet & KeySet::operator= (KeySet const & other)
 	if (this != &other)
 	{
 		ckdb::ksDel (ks);
-		ks = other.dup ();
+		ks = ckdb::ksDup (other.ks);
 	}
 	return *this;
 }
@@ -621,9 +621,9 @@ inline ssize_t KeySet::size () const
  *
  * @copydoc ksDup()
  */
-inline ckdb::KeySet * KeySet::dup () const
+inline KeySet KeySet::dup () const
 {
-	return ckdb::ksDup (ks);
+	return { ckdb::ksDup (ks) };
 }
 
 /**
