@@ -208,6 +208,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - The `dup` method of `KeySet` now returns a wrapped object _(Maximilian Irlinger @atmaxinger)_
 - Add an overload for `KeySet::cut` that accepts a string for the keyname _(Maximilian Irlinger)_
 - The `dup` method of `Key` now returns a wrapped object _(Maximilian Irlinger @atmaxinger)_
+- Add overloads for `Key::isBelow`, `Key::isBelowOrSame` and `Key::isDirectBelow` that accept a string as the key name _(Maximilian Irlinger @atmaxinger)_
 
 ### <<Binding>>
 
