@@ -550,7 +550,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Push FreeBSD 12.3 to 12.4 since 12.3 is end of life. _(Richard Stöckl @eiskasten)_
 - <<TODO>>
 
 ### GitHub Actions
