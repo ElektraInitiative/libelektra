@@ -213,10 +213,10 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 
-### <<Binding>>
+### Python
 
-- <<TODO>>
-- <<TODO>>
+- Add `ElektraDiff` binding _(Maximilian Irlinger @atmaxinger)_
+- The `__meta__` attribute on a key now returns a proper keyset _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 
 ### <<Binding>>

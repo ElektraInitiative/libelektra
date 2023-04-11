@@ -148,8 +148,8 @@ ckdb::_Key * ksAt (ckdb::_KeySet * ks, ssize_t pos) {
     return ckdb::keyCmp($self->getKey(), o->getKey());
   }
 
-  ckdb::_KeySet *__meta__() {
-    return ckdb::keyMeta($self->getKey());
+  kdb::KeySet *__meta__() {
+    return new kdb::KeySet(ckdb::keyMeta($self->getKey()));
   }
 
   // swig doesnt understand kdb::NameIterator::difference_type
@@ -192,9 +192,9 @@ ckdb::_Key * ksAt (ckdb::_KeySet * ks, ssize_t pos) {
 
     def __metaIter(self):
       metaKeys = self.__meta__()
-      size = ksSize(metaKeys)
+      size = len(metaKeys)
       for cursor in range(size):
-        yield ksAt (metaKeys, cursor)
+        yield metaKeys._lookup(cursor)
 
 
     name     = property(_kdb.Key__getName, _kdb.Key__setName)
