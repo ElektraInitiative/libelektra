@@ -102,6 +102,9 @@ else ()
 	# merge module
 	add_python_binding (merge merge.i elektra-merge)
 
+	# errors module
+	add_python_binding (errors errors.i elektra-kdb)
+
 	# install package
 	set (PYTHON_GET_MODULES_DIR_COMMAND
 	     "from distutils.sysconfig import get_python_lib; print(get_python_lib(True, prefix='${CMAKE_INSTALL_PREFIX}'))")
