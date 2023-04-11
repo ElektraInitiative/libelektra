@@ -787,6 +787,40 @@ static void test_example_menu_should_succeed (bool isKdbGet)
 	keyDel (parentKey);
 }
 
+/**
+ * Test should verify that default for key name is created in default namespace in case it has array element in parent key.
+ *
+ * @param isKdbGet boolean value indicating if it is a kdb get call
+ */
+static void test_example_highlevel_should_succeed (bool isKdbGet)
+{
+	printf ("test %s, isKdbGet=%d\n", __func__, isKdbGet);
+
+	Key * parentKey = keyNew ("/sw/example/highlevel/#0/current", KEY_END);
+
+	KeySet * returned = ksNew (0, KS_END);
+
+	Key * printKey = keyNew ("spec:/sw/example/highlevel/#0/current/print", KEY_END);
+	keySetMeta (printKey, "meta:/default", "0");
+	keySetMeta (printKey, "meta:/type", "boolean");
+
+	ksAppendKey (returned, printKey);
+
+	elektraSpecCopy (NULL, returned, parentKey, isKdbGet);
+
+	Key * highLevelPrint = ksLookupByName (returned, "default:/sw/example/highlevel/#0/current/print", 0);
+	succeed_if (highLevelPrint != NULL, "should have default key print");
+	KeySet * highLevelPrintMetaKeys = keyMeta (highLevelPrint);
+	succeed_if (highLevelPrintMetaKeys != NULL, "print key should have meta keys");
+	succeed_if_fmt (ksGetSize (highLevelPrintMetaKeys) == 2, "print key should have 2 meta keys, was %zu",
+			ksGetSize (highLevelPrintMetaKeys));
+	succeed_if (ksLookupByName (highLevelPrintMetaKeys, "meta:/type", 0), "print key should have key meta:/type");
+	succeed_if (ksLookupByName (highLevelPrintMetaKeys, "meta:/default", 0), "print key should have key meta:/default");
+
+	ksDel (returned);
+	keyDel (parentKey);
+}
+
 int main (void)
 {
 	test_hook_copy_with_require_meta_key_and_missing_key_should_error (false);
@@ -811,6 +845,7 @@ int main (void)
 	test_hook_copy_with_array_specification_as_last_element_should_create_array_default (false);
 
 	test_example_menu_should_succeed (true);
+	test_example_highlevel_should_succeed (true);
 
 	return 0;
 }

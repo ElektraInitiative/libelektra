@@ -313,11 +313,12 @@ bool isArrayEmpty (KeySet * ks, int arrayPosition)
  * @param parentKey the parent key to be used in case there is an error / warning
  * @param specKey the specification key to check in {@link ks} for matching elements
  * @retval 0 - if copying of all meta keys was successful
- * @retval 0 - if no meta key needed to be copied
+ * @retval  - if no meta key needed to be copied
  * @retval -1 - if copying of meta keys was not successful
  */
 int copyAllMetaDataForMatchingArrayKeyName (KeySet * ks, Key * parentKey, Key * specKey, bool isKdbGet)
 {
+	int copied = -1;
 	for (elektraCursor it = 0; it < ksGetSize (ks); it++)
 	{
 		Key * key = ksAtCursor (ks, it);
@@ -338,8 +339,12 @@ int copyAllMetaDataForMatchingArrayKeyName (KeySet * ks, Key * parentKey, Key * 
 
 				return -1;
 			}
+			else
+			{
+				copied = 0;
+			}
 		}
 	}
 
-	return 0;
+	return copied;
 }

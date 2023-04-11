@@ -51,7 +51,8 @@ static void addDefaultKey (KeySet * ks, Key * specKey, bool isArraySpec)
 
 	const char * specKeyName = strchr (keyName (specKey), '/');
 
-	char * formattedKeyName = elektraFormat (isArraySpec ? "default:/%s0" : "default:/%s", specKeyName);
+	char * formattedKeyName =
+		elektraFormat (isArraySpec && specKeyName[sizeof (specKeyName) - 1] == '#' ? "default:/%s0" : "default:/%s", specKeyName);
 	Key * newDefaultKey = keyNew (formattedKeyName, KEY_VALUE, defaultValue, KEY_END);
 	keyCopyAllMeta (newDefaultKey, specKey);
 
