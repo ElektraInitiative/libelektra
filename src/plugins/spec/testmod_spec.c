@@ -287,10 +287,11 @@ static void test_hook_copy_with_wildcard_specification_only_one_underline_should
 		const char * descriptionToMatch = "This is a name";
 		const char * userNamespace = "user:";
 		const char * keyNameToMatch = elektraFormat ("%s/server/name", PARENT_KEY);
-		KeySet * ks = ksNew (
-			10, keyNew ("spec:/" PARENT_KEY "_/name", KEY_META, "description", descriptionToMatch, KEY_END),
-			keyNew (elektraFormat ("%s/%s/%s", userNamespace, PARENT_KEY, keyNameToMatch), KEY_VALUE, "mailserver1", KEY_END),
-			KS_END);
+
+		const char * formattedKeyName = elektraFormat ("%s/%s/%s", userNamespace, PARENT_KEY, keyNameToMatch);
+
+		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "_/name", KEY_META, "description", descriptionToMatch, KEY_END),
+				     keyNew (formattedKeyName, KEY_VALUE, "mailserver1", KEY_END), KS_END);
 
 		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
@@ -307,6 +308,7 @@ static void test_hook_copy_with_wildcard_specification_only_one_underline_should
 			}
 		}
 
+		elektraFree ((char *) formattedKeyName);
 		elektraFree ((char *) keyNameToMatch);
 		ksDel (ks);
 
@@ -362,8 +364,11 @@ static void test_hook_copy_with_wildcard_two_underlines_should_succeed (bool isK
 	{
 		const char * namespace = "user:/";
 		const char * keyname = elektraFormat ("%s/test/server/test2/name", PARENT_KEY);
+
+		const char * formattedKeyName = elektraFormat ("%s%s", namespace, keyname);
+
 		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/_/server/_/name", KEY_META, "description", "place", KEY_END),
-				     keyNew (elektraFormat ("%s%s", namespace, keyname), KEY_END), KS_END);
+				     keyNew (formattedKeyName, KEY_END), KS_END);
 
 		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
@@ -382,6 +387,7 @@ static void test_hook_copy_with_wildcard_two_underlines_should_succeed (bool isK
 
 		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
 
+		elektraFree ((char *) formattedKeyName);
 		elektraFree ((char *) keyname);
 		ksDel (ks);
 	}
@@ -459,10 +465,13 @@ static void test_hook_copy_with_just_wildcard (bool isKdbGet)
 
 	TEST_BEGIN
 	{
+		const char * formattedKeyTest1 = elektraFormat ("user:%s/test1", PARENT_KEY);
+		const char * formattedKeyTest2 = elektraFormat ("user:%s/test2", PARENT_KEY);
+		const char * formattedKeyTest3_4 = elektraFormat ("user:%s/test3/test4", PARENT_KEY);
+
 		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/_", KEY_META, "description", "place", KEY_END),
-				     keyNew (elektraFormat ("user:%s/test1", PARENT_KEY), KEY_END),
-				     keyNew (elektraFormat ("user:%s/test2", PARENT_KEY), KEY_END),
-				     keyNew (elektraFormat ("user:%s/test3/test4", PARENT_KEY), KEY_END), KS_END);
+				     keyNew (formattedKeyTest1, KEY_END), keyNew (formattedKeyTest2, KEY_END),
+				     keyNew (formattedKeyTest3_4, KEY_END), KS_END);
 
 		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
@@ -485,6 +494,10 @@ static void test_hook_copy_with_just_wildcard (bool isKdbGet)
 
 
 		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
+
+		elektraFree ((char *) formattedKeyTest1);
+		elektraFree ((char *) formattedKeyTest2);
+		elektraFree ((char *) formattedKeyTest3_4);
 
 		ksDel (ks);
 	}
