@@ -862,7 +862,7 @@ static void test_example_menu_with_array_size_including_array_element (bool isKd
 		}
 	}
 
-	succeed_if (size == 4, "array size should equal 4");
+	succeed_if (size == 5, "array size should equal 4");
 
 	ksDel (returned);
 	keyDel (parentKey);

@@ -306,15 +306,17 @@ bool isValidArraySize (KeySet * ks, KeySet * specKeys, Key * specKey)
 }
 
 /**
- * Check if the array is empty.
+ * Get the actual array size.
  *
  * @param ks the KeySet with all keys
+ * @param specKey the array specification key
  * @param arrayPosition the position of the array character
  * @retval true - if the array is empty
  * @retval false - if the array is not empty
  */
-bool isArrayEmpty (KeySet * ks, int arrayPosition)
+int getActualArraySize (KeySet * ks, Key * specKey, int arrayPosition)
 {
+	int count = 0;
 	for (elektraCursor it = 0; it < ksGetSize (ks); it++)
 	{
 		Key * current = ksAtCursor (ks, it);
@@ -326,16 +328,21 @@ bool isArrayEmpty (KeySet * ks, int arrayPosition)
 			continue;
 		}
 
+		if (!specMatches (specKey, current))
+		{
+			continue;
+		}
+
 		if (withoutNamespace[arrayPosition] == '#' &&
 		    (arrayPosition < (len - 1) &&
 		     (withoutNamespace[arrayPosition + 1] == '_' || withoutNamespace[arrayPosition + 1] != '/' ||
 		      isdigit (withoutNamespace[arrayPosition + 1]))))
 		{
-			return false;
+			count++;
 		}
 	}
 
-	return true;
+	return count;
 }
 
 /**

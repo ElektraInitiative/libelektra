@@ -22,12 +22,12 @@ int copyAllMetaDataForMatchingArrayKeyName (KeySet * ks, Key * parentKey, Key * 
 Key * getMatchingKeyFromKeySet (KeySet * ks, char * name);
 Key * getArraySizeOfArrayParent (KeySet * specKeys, Key * specKey);
 int getNumberOfArrayCharactersInSpecName (Key * specKey);
+int getActualArraySize (KeySet * ks, Key * specKey, int arrayPosition);
 
 bool containsArraySpecElementWithNoDigitOrUnderlineAfterwards (const char * keyNameWithNamespace);
 bool isArraySpecification (Key * specKey);
 bool containsUnderlineInArraySpec (Key * specKey);
 bool validateArraySize (Key * key, Key * specKey);
 bool isValidArraySize (KeySet * ks, KeySet * specKeys, Key * specKey);
-bool isArrayEmpty (KeySet * ks, int arrayPosition);
 
 #endif

@@ -246,6 +246,10 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * specKeys, KeyS
 			untilArrayElementAtPositionI[arrayPositions[i] - 1] = '\0';
 
 			Key * arraySizeKeyToInstantiate = getMatchingKeyFromKeySet (specKeys, untilArrayElementAtPositionI);
+			if (arraySizeKeyToInstantiate == NULL)
+			{
+				arraySizeKeyToInstantiate = getMatchingKeyFromKeySet (ks, untilArrayElementAtPositionI);
+			}
 			const char * arraySizeToInstantiate = keyString (keyGetMeta (arraySizeKeyToInstantiate, "array"));
 
 			if (arraySizeKeyToInstantiate == NULL)
@@ -258,20 +262,21 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * specKeys, KeyS
 				continue;
 			}
 
-			if (!isArrayEmpty (ks, arrayPositions[i]))
-			{
-				continue;
-			}
+			int actualArraySize = getActualArraySize (ks, specKey, arrayPositions[i]);
 
 			char * end;
 			char * rest;
 
 			char * afterPossibleArrayElement = elektraStrDup (arraySizeToInstantiate);
 
-			const char * arraySize = strchr (arraySizeToInstantiate, '#') == NULL ?
-							 arraySizeToInstantiate :
-							 strtok_r (afterPossibleArrayElement, "#", &rest);
-			int size = strtol (arraySize, &end, 10);
+			int size = strchr (arraySizeToInstantiate, '#') == NULL ?
+					   strtol (arraySizeToInstantiate, &end, 10) :
+					   strtol (strtok_r (afterPossibleArrayElement, "#", &rest), &end, 10) + 1;
+
+			if (actualArraySize == size)
+			{
+				continue;
+			}
 
 			elektraFree (afterPossibleArrayElement);
 
