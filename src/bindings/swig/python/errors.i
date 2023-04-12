@@ -60,7 +60,7 @@ def get_warnings(key: kdb.Key) -> [ElektraWarning]:
     return result
 
 
-def get_error(key: kdb.Key) -> ElektraError | None:
+def get_error(key: kdb.Key):
     if key.hasMeta("meta:/error") is False:
         return None
 
