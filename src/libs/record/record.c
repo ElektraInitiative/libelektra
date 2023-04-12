@@ -38,6 +38,7 @@ bool elektraRecordEnableRecording (KDB * handle, const Key * parentKey, Key * er
 	Key * configKey = keyNew (ELEKTRA_RECORD_CONFIG_KEY, KEY_END);
 
 	KeySet * config = ksNew (0, KS_END);
+
 	if (kdbGet (handle, config, configKey) == -1)
 	{
 		elektraCopyError (errorKey, configKey);
@@ -65,14 +66,15 @@ bool elektraRecordEnableRecording (KDB * handle, const Key * parentKey, Key * er
 	if (kdbSet (handle, config, configKey) == -1)
 	{
 		elektraCopyError (errorKey, configKey);
+
 		keyDel (configKey);
+		// This will also automatically delete activeKey
 		ksDel (config);
-		keyDel (activeKey);
+
 		return false;
 	}
 
 	ksAppendKey (handle->global, activeKey);
-
 	keyDel (configKey);
 	ksDel (config);
 
