@@ -23,6 +23,7 @@ Key * getMatchingKeyFromKeySet (KeySet * ks, char * name);
 Key * getArraySizeOfArrayParent (KeySet * specKeys, Key * specKey);
 int getNumberOfArrayCharactersInSpecName (Key * specKey);
 
+bool containsArraySpecElementWithNoDigitOrUnderlineAfterwards (const char * keyNameWithNamespace);
 bool isArraySpecification (Key * specKey);
 bool containsUnderlineInArraySpec (Key * specKey);
 bool validateArraySize (Key * key, Key * specKey);

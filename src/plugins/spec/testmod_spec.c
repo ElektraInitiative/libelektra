@@ -821,6 +821,53 @@ static void test_example_highlevel_should_succeed (bool isKdbGet)
 	keyDel (parentKey);
 }
 
+/**
+ * Test should verify that if a array specification key with array size exists, the correct number of array key elements is created.
+ *
+ * Sample:
+ * 	spec:/sw/example/menu/#0/current/menu
+ *
+ * @param isKdbGet boolean value indicating if it is a kdb get call
+ */
+static void test_example_menu_with_array_size_including_array_element (bool isKdbGet)
+{
+	printf ("test %s, isKdbGet=%d\n", __func__, isKdbGet);
+
+	Key * parentKey = keyNew ("/sw/example/menu/#0/current", KEY_END);
+
+	KeySet * returned = ksNew (0, KS_END);
+
+	Key * specCommandArraySize = keyNew ("spec:/sw/example/menu/#0/current/menu", KEY_END);
+	Key * specKeyCommand = keyNew ("spec:/sw/example/menu/#0/current/menu/#/command", KEY_END);
+
+	keySetMeta (specCommandArraySize, "meta:/array", "#4");
+	keySetMeta (specKeyCommand, "meta:/default", "test");
+
+	ksAppendKey (returned, specCommandArraySize);
+	ksAppendKey (returned, specKeyCommand);
+
+	elektraSpecCopy (NULL, returned, parentKey, isKdbGet);
+
+	int size = 0;
+	for (elektraCursor it = 0; it < ksGetSize (returned); it++)
+	{
+		Key * key = ksAtCursor (returned, it);
+		if (keyGetNamespace (key) == KEY_NS_DEFAULT)
+		{
+			size++;
+			KeySet * metaKeys = keyMeta (key);
+
+			succeed_if (ksGetSize (metaKeys) == 1, "should not have more than 1 meta key");
+			succeed_if_same_string (keyString (keyGetMeta (key, "meta:/default")), "test");
+		}
+	}
+
+	succeed_if (size == 4, "array size should equal 4");
+
+	ksDel (returned);
+	keyDel (parentKey);
+}
+
 int main (void)
 {
 	test_hook_copy_with_require_meta_key_and_missing_key_should_error (false);
@@ -846,6 +893,7 @@ int main (void)
 
 	test_example_menu_should_succeed (true);
 	test_example_highlevel_should_succeed (true);
+	test_example_menu_with_array_size_including_array_element (true);
 
 	return 0;
 }

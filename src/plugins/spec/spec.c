@@ -3,7 +3,6 @@
 #include "kdberrors.h"
 #include "matching.h"
 
-#include <ctype.h>
 #include <kdbhelper.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -49,10 +48,21 @@ static void addDefaultKey (KeySet * ks, Key * specKey, bool isArraySpec)
 	const Key * defaultMetaKey = keyGetMeta (specKey, "default");
 	const char * defaultValue = keyString (defaultMetaKey);
 
+	if (elektraStrCmp (defaultValue, "") == 0 || elektraStrCmp (defaultValue, "(null)") == 0)
+	{
+		return;
+	}
+
 	const char * specKeyName = strchr (keyName (specKey), '/');
 
-	char * formattedKeyName =
-		elektraFormat (isArraySpec && specKeyName[sizeof (specKeyName) - 1] == '#' ? "default:/%s0" : "default:/%s", specKeyName);
+	char * formattedKeyName = elektraFormat (
+		isArraySpec && specKeyName[elektraStrLen (specKeyName) - 2] == '#' ? "default:/%s0" : "default:/%s", specKeyName);
+
+	if (containsArraySpecElementWithNoDigitOrUnderlineAfterwards (formattedKeyName))
+	{
+		return;
+	}
+
 	Key * newDefaultKey = keyNew (formattedKeyName, KEY_VALUE, defaultValue, KEY_END);
 	keyCopyAllMeta (newDefaultKey, specKey);
 
@@ -254,7 +264,17 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * specKeys, KeyS
 			}
 
 			char * end;
-			int size = strtol (arraySizeToInstantiate, &end, 10);
+			char * rest;
+
+			char * afterPossibleArrayElement = elektraStrDup (arraySizeToInstantiate);
+
+			const char * arraySize = strchr (arraySizeToInstantiate, '#') == NULL ?
+							 arraySizeToInstantiate :
+							 strtok_r (afterPossibleArrayElement, "#", &rest);
+			int size = strtol (arraySize, &end, 10);
+
+			elektraFree (afterPossibleArrayElement);
+
 			instantiateArraySpecificationAndCopyMeta (specKey, ks, size, arrayPositions[i]);
 
 			elektraFree (untilArrayElementAtPositionI);

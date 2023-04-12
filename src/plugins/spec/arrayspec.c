@@ -107,6 +107,29 @@ char * createFormattedArrayKeyNameInDefaultNamespace (char * keyNameWithoutNames
 }
 
 /**
+ * Check if the array specification element contains an array element '#' and afterwards no digit or '_'.
+ *
+ * Sample:
+ * 	spec:/sw/example/menu/#0/current/menu/#/command => true
+ *	spec:/sw/example/menu/#0/current/menu => false
+ *
+ * @param keyNameWithNamespace the key name with namespace to look for
+ * @retval true - if the array specification element contain an array element '#' with a digit or '_' afterwards
+ * @retval false - if the array specification element  does not contain any digit or '_' after the array element '#
+ */
+bool containsArraySpecElementWithNoDigitOrUnderlineAfterwards (const char * keyNameWithNamespace)
+{
+	for (int i = 0; i < (int) elektraStrLen (keyNameWithNamespace); i++)
+	{
+		if (keyNameWithNamespace[i] == '#' && (keyNameWithNamespace[i + 1] == '/' || keyNameWithNamespace[i + 1] == '\0'))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
  * Creates the corresponding array element keys and copies all the meta data keys from {@link specKey}.
  *
  * @param specKey the specification key to copy the meta data from
@@ -122,9 +145,18 @@ void instantiateArraySpecificationAndCopyMeta (Key * specKey, KeySet * ks, int a
 		char * keyNameWithoutNamespace = strchr (keyName (specKey), '/');
 
 		char * formattedKeyName = createFormattedArrayKeyNameInDefaultNamespace (keyNameWithoutNamespace, i, pos);
-		Key * key = keyNew (formattedKeyName, KEY_END);
-		keyCopyAllMeta (key, specKey);
+		if (containsArraySpecElementWithNoDigitOrUnderlineAfterwards (formattedKeyName))
+		{
+			return;
+		}
 
+		Key * key = ksLookupByName (ks, strchr (formattedKeyName, '/'), 0);
+		if (key == 0)
+		{
+			key = keyNew (formattedKeyName, KEY_END);
+		}
+
+		keyCopyAllMeta (key, specKey);
 		ksAppendKey (instantiatedArraySpecs, key);
 
 		elektraFree (formattedKeyName);
