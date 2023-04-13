@@ -55,8 +55,10 @@ static void addDefaultKey (KeySet * ks, Key * specKey, bool isArraySpec)
 
 	const char * specKeyName = strchr (keyName (specKey), '/');
 
-	char * formattedKeyName = elektraFormat (
-		isArraySpec && specKeyName[elektraStrLen (specKeyName) - 2] == '#' ? "default:/%s0" : "default:/%s", specKeyName);
+	char * formattedKeyName = elektraFormat (isArraySpec && specKeyName[elektraStrLen (specKeyName) - 2] == '#' ?
+							 (specKeyName[0] == '/' ? "default:%s0" : "default:/%s0") :
+							 (specKeyName[0] == '/' ? "default:%s" : "default:/%s"),
+						 specKeyName);
 
 	if (containsArraySpecElementWithNoDigitOrUnderlineAfterwards (formattedKeyName))
 	{
