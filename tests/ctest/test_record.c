@@ -3,7 +3,9 @@
 #include <stdio.h>
 #include <tests.h>
 
-static void printErrorAndClear (Key * key)
+#define printErrorAndClear(key) logKeyErrorAndClear(key, __FILE__, __LINE__)
+
+static void logKeyErrorAndClear (Key * key, char * file, int line)
 {
 	if (key == NULL)
 	{
@@ -14,6 +16,8 @@ static void printErrorAndClear (Key * key)
 	{
 		return;
 	}
+
+	printf ("Catched error in %s:%d!\n", file, line);
 
 	const Key * m = NULL;
 	if ((m = keyGetMeta (key, "meta:/error/number")) != NULL)
@@ -145,6 +149,7 @@ static void test_elektraRecordIsActive_onEmptyKdb (void)
 	KeySet * contract = ksNew (0, KS_END);
 	Key * parentKey = keyNew ("/", KEY_END);
 	KDB * kdb = openPrefixedKdbInstance (contract, parentKey, __func__);
+	printErrorAndClear (parentKey);
 
 	// Act
 	bool isActive = elektraRecordIsActive (kdb);
@@ -153,6 +158,8 @@ static void test_elektraRecordIsActive_onEmptyKdb (void)
 	succeed_if (isActive == false, "should be inactive on empty instance");
 
 	closePrefixedKdbInstance (kdb, parentKey, true);
+	printErrorAndClear (parentKey);
+
 	ksDel (contract);
 	keyDel (parentKey);
 }
@@ -169,6 +176,7 @@ static void test_elektraRecordEnableRecording_isActive_Disable_shouldWork (void)
 
 	// Enable
 	KDB * kdb = openPrefixedKdbInstance (contract, parentKey, __func__);
+	printErrorAndClear (parentKey);
 
 	bool success = elektraRecordEnableRecording (kdb, recordingParentKey, parentKey);
 	succeed_if (success == true, "call should be successful");
@@ -271,33 +279,56 @@ static void test_elektraRecordRecord_shouldRecordChanges (void)
 
 	// Fill some keys into kdb before recording
 	KDB * kdb = openPrefixedKdbInstance (contract, parentKey, __func__);
+	printErrorAndClear (parentKey);
+
 	KeySet * keys = ksNew (0, KS_END);
 	kdbGet (kdb, keys, parentKey);
+	printErrorAndClear (parentKey);
+
 	ksAppendKey (keys, keyNew ("user:/test/key1", KEY_VALUE, "1", KEY_END));
 	ksAppendKey (keys, keyNew ("user:/test/key2", KEY_VALUE, "1", KEY_END));
+
 	kdbSet (kdb, keys, parentKey);
+	printErrorAndClear (parentKey);
+
 	closePrefixedKdbInstance (kdb, parentKey, false);
+	printErrorAndClear (parentKey);
 
 	kdb = openPrefixedKdbInstance (contract, parentKey, __func__);
+	printErrorAndClear (parentKey);
+
 	elektraRecordEnableRecording (kdb, parentKey, parentKey);
+	printErrorAndClear (parentKey);
+
 	closePrefixedKdbInstance (kdb, parentKey, false);
+	printErrorAndClear (parentKey);
+
 	ksClear (keys);
 
 	// reopen KDB
 	kdb = openPrefixedKdbInstance (contract, parentKey, __func__);
+	printErrorAndClear (parentKey);
+
 	kdbGet (kdb, keys, parentKey);
+	printErrorAndClear (parentKey);
+
 	keyDel (ksLookupByName (keys, "user:/test/key1", KDB_O_POP));
 	ksAppendKey (keys, keyNew ("user:/test/key2", KEY_VALUE, "2", KEY_END));
 	ksAppendKey (keys, keyNew ("user:/test/key3", KEY_VALUE, "2", KEY_END));
 
 	Key * errorKey = keyNew ("/", KEY_END);
 	KDB * sessionStorageKdb = openPrefixedKdbInstance (contract, parentKey, __func__);
+	printErrorAndClear (parentKey);
 
 	// Act
 	bool success = elektraRecordRecord (kdb, sessionStorageKdb, keys, parentKey, errorKey);
+	printErrorAndClear (errorKey);
 
 	closePrefixedKdbInstance (sessionStorageKdb, parentKey, false);
+	printErrorAndClear (parentKey);
+
 	sessionStorageKdb = openPrefixedKdbInstance (contract, parentKey, __func__);
+	printErrorAndClear (parentKey);
 
 	// Assert
 	succeed_if (success == true, "should return successful status key");
@@ -306,6 +337,7 @@ static void test_elektraRecordRecord_shouldRecordChanges (void)
 	Key * sessionStorageKey = keyNew (ELEKTRA_RECORD_SESSION_KEY, KEY_END);
 	KeySet * sessionStorage = ksNew (0, KS_END);
 	kdbGet (sessionStorageKdb, sessionStorage, sessionStorageKey);
+	printErrorAndClear (sessionStorageKey);
 
 	succeed_if_fmt (ksGetSize (sessionStorage) == 3, "expected 3 keys, was %zu", ksGetSize (sessionStorage));
 	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/test/key3", "2");
@@ -319,7 +351,10 @@ static void test_elektraRecordRecord_shouldRecordChanges (void)
 	ksDel (keys);
 
 	closePrefixedKdbInstance (kdb, parentKey, true);
+	printErrorAndClear (parentKey);
+
 	closePrefixedKdbInstance (sessionStorageKdb, parentKey, true);
+	printErrorAndClear (parentKey);
 
 	keyDel (parentKey);
 	keyDel (errorKey);
@@ -335,24 +370,41 @@ static void test_elektraRecordRecord_withParentKeySet_shouldRecordOnlyChangesBel
 
 	// Fill some keys into kdb before recording
 	KDB * kdb = openPrefixedKdbInstance (contract, parentKey, __func__);
+	printErrorAndClear (parentKey);
+
 	KeySet * keys = ksNew (0, KS_END);
 	kdbGet (kdb, keys, parentKey);
+	printErrorAndClear (parentKey);
+
 	ksAppendKey (keys, keyNew ("user:/test/key1", KEY_VALUE, "1", KEY_END));
 	ksAppendKey (keys, keyNew ("user:/test/key2", KEY_VALUE, "1", KEY_END));
 	ksAppendKey (keys, keyNew ("user:/filter/filterkey1", KEY_VALUE, "1", KEY_END));
 
 	kdbSet (kdb, keys, parentKey);
+	printErrorAndClear (parentKey);
+
 	closePrefixedKdbInstance (kdb, parentKey, false);
+	printErrorAndClear (parentKey);
 
 	kdb = openPrefixedKdbInstance (contract, parentKey, __func__);
+	printErrorAndClear (parentKey);
+
 	Key * recordingParentKey = keyNew ("user:/filter", KEY_END);
 	elektraRecordEnableRecording (kdb, recordingParentKey, parentKey);
+	printErrorAndClear (parentKey);
+
 	closePrefixedKdbInstance (kdb, parentKey, false);
+	printErrorAndClear (parentKey);
+
 	ksClear (keys);
 
 	// reopen KDB
 	kdb = openPrefixedKdbInstance (contract, parentKey, __func__);
+	printErrorAndClear (parentKey);
+
 	kdbGet (kdb, keys, parentKey);
+	printErrorAndClear (parentKey);
+
 	keyDel (ksLookupByName (keys, "user:/test/key1", KDB_O_POP));
 	keyDel (ksLookupByName (keys, "user:/filter/filterkey1", KDB_O_POP));
 	ksAppendKey (keys, keyNew ("user:/test/key2", KEY_VALUE, "2", KEY_END));
@@ -361,12 +413,17 @@ static void test_elektraRecordRecord_withParentKeySet_shouldRecordOnlyChangesBel
 
 	Key * errorKey = keyNew ("/", KEY_END);
 	KDB * sessionStorageKdb = openPrefixedKdbInstance (contract, parentKey, __func__);
+	printErrorAndClear (parentKey);
 
 	// Act
 	bool success = elektraRecordRecord (kdb, sessionStorageKdb, keys, parentKey, errorKey);
+	printErrorAndClear (errorKey);
 
 	closePrefixedKdbInstance (sessionStorageKdb, parentKey, false);
+	printErrorAndClear (parentKey);
+
 	sessionStorageKdb = openPrefixedKdbInstance (contract, parentKey, __func__);
+	printErrorAndClear (parentKey);
 
 	// Assert
 	succeed_if (success == true, "should return successful status key");
@@ -375,6 +432,7 @@ static void test_elektraRecordRecord_withParentKeySet_shouldRecordOnlyChangesBel
 	Key * sessionStorageKey = keyNew (ELEKTRA_RECORD_SESSION_KEY, KEY_END);
 	KeySet * sessionStorage = ksNew (0, KS_END);
 	kdbGet (sessionStorageKdb, sessionStorage, sessionStorageKey);
+	printErrorAndClear (sessionStorageKey);
 
 	succeed_if_fmt (ksGetSize (sessionStorage) == 2, "expected 3 keys, was %zu", ksGetSize (sessionStorage));
 	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/filter/filterkey2",
@@ -389,7 +447,10 @@ static void test_elektraRecordRecord_withParentKeySet_shouldRecordOnlyChangesBel
 	ksDel (keys);
 
 	closePrefixedKdbInstance (kdb, parentKey, true);
+	printErrorAndClear (parentKey);
+
 	closePrefixedKdbInstance (sessionStorageKdb, parentKey, true);
+	printErrorAndClear (parentKey);
 
 	keyDel (parentKey);
 	keyDel (errorKey);
@@ -406,31 +467,54 @@ static void test_elektraRecordRecord_removeEverything_shouldRecordChanges (void)
 
 	// Fill some keys into kdb before recording
 	KDB * kdb = openPrefixedKdbInstance (contract, parentKey, __func__);
+	printErrorAndClear (parentKey);
+
 	KeySet * keys = ksNew (0, KS_END);
 	kdbGet (kdb, keys, parentKey);
+	printErrorAndClear (parentKey);
+
 	ksAppendKey (keys, keyNew ("user:/test/key1", KEY_VALUE, "1", KEY_END));
 	ksAppendKey (keys, keyNew ("user:/test/key2", KEY_VALUE, "1", KEY_END));
+
 	kdbSet (kdb, keys, parentKey);
+	printErrorAndClear (parentKey);
+
 	closePrefixedKdbInstance (kdb, parentKey, false);
+	printErrorAndClear (parentKey);
 
 	kdb = openPrefixedKdbInstance (contract, parentKey, __func__);
+	printErrorAndClear (parentKey);
+
 	elektraRecordEnableRecording (kdb, parentKey, parentKey);
+	printErrorAndClear (parentKey);
+
 	closePrefixedKdbInstance (kdb, parentKey, false);
+	printErrorAndClear (parentKey);
+
 	ksClear (keys);
 
 	// reopen KDB
 	kdb = openPrefixedKdbInstance (contract, parentKey, __func__);
+	printErrorAndClear (parentKey);
+
 	kdbGet (kdb, keys, parentKey);
+	printErrorAndClear (parentKey);
+
 	ksClear (keys);
 
 	Key * errorKey = keyNew ("/", KEY_END);
 	KDB * sessionStorageKdb = openPrefixedKdbInstance (contract, parentKey, __func__);
+	printErrorAndClear (parentKey);
 
 	// Act
 	bool success = elektraRecordRecord (kdb, sessionStorageKdb, keys, parentKey, errorKey);
+	printErrorAndClear (errorKey);
 
 	closePrefixedKdbInstance (sessionStorageKdb, parentKey, false);
+	printErrorAndClear (parentKey);
+
 	sessionStorageKdb = openPrefixedKdbInstance (contract, parentKey, __func__);
+	printErrorAndClear (parentKey);
 
 	// Assert
 	succeed_if (success == true, "should return successful status key");
@@ -439,6 +523,7 @@ static void test_elektraRecordRecord_removeEverything_shouldRecordChanges (void)
 	Key * sessionStorageKey = keyNew (ELEKTRA_RECORD_SESSION_KEY, KEY_END);
 	KeySet * sessionStorage = ksNew (0, KS_END);
 	kdbGet (sessionStorageKdb, sessionStorage, sessionStorageKey);
+	printErrorAndClear (sessionStorageKey);
 
 	succeed_if_fmt (ksGetSize (sessionStorage) == 2, "expected 2 keys, was %zu", ksGetSize (sessionStorage));
 	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/test/key1", "1");
@@ -451,7 +536,10 @@ static void test_elektraRecordRecord_removeEverything_shouldRecordChanges (void)
 	ksDel (keys);
 
 	closePrefixedKdbInstance (kdb, parentKey, true);
+	printErrorAndClear (parentKey);
+
 	closePrefixedKdbInstance (sessionStorageKdb, parentKey, true);
+	printErrorAndClear (parentKey);
 
 	keyDel (parentKey);
 	keyDel (errorKey);
@@ -467,8 +555,12 @@ static void test_elektraRecordUndo_shouldUndoChanges (void)
 
 	// Fill some keys into kdb before recording
 	KDB * kdb = openPrefixedKdbInstance (contract, parentKey, __func__);
+	printErrorAndClear (parentKey);
+
 	KeySet * keys = ksNew (0, KS_END);
 	kdbGet (kdb, keys, parentKey);
+	printErrorAndClear (parentKey);
+
 	ksAppendKey (keys, keyNew ("user:/test/key1", KEY_VALUE, "1", KEY_END));
 	ksAppendKey (keys, keyNew ("user:/test/key2", KEY_VALUE, "2", KEY_END));
 
@@ -478,17 +570,30 @@ static void test_elektraRecordUndo_shouldUndoChanges (void)
 	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/test/key1", KEY_VALUE, "1", KEY_END));
 
 	kdbSet (kdb, keys, parentKey);
+	printErrorAndClear (parentKey);
+
 	closePrefixedKdbInstance (kdb, parentKey, false);
+	printErrorAndClear (parentKey);
 
 	Key * errorKey = keyNew ("/", KEY_END);
 	KDB * sessionStorageKdb = openPrefixedKdbInstance (contract, parentKey, __func__);
+	printErrorAndClear (parentKey);
+
 	kdb = openPrefixedKdbInstance (contract, parentKey, __func__);
+	printErrorAndClear (parentKey);
 
 	// Act
 	bool success = elektraRecordUndo (kdb, sessionStorageKdb, parentKey, errorKey);
+	printErrorAndClear (errorKey);
+
 	closePrefixedKdbInstance (kdb, parentKey, false);
+	printErrorAndClear (parentKey);
+
 	closePrefixedKdbInstance (sessionStorageKdb, parentKey, false);
+	printErrorAndClear (parentKey);
+
 	sessionStorageKdb = openPrefixedKdbInstance (contract, parentKey, __func__);
+	printErrorAndClear (parentKey);
 
 	// Assert
 	succeed_if (success == true, "should return successful status key");
@@ -497,6 +602,7 @@ static void test_elektraRecordUndo_shouldUndoChanges (void)
 	Key * sessionStorageKey = keyNew (ELEKTRA_RECORD_SESSION_KEY, KEY_END);
 	KeySet * sessionStorage = ksNew (0, KS_END);
 	kdbGet (sessionStorageKdb, sessionStorage, sessionStorageKey);
+	printErrorAndClear (sessionStorageKey);
 
 	succeed_if_fmt (ksGetSize (sessionStorage) == 0, "expected 0 keys in session storage, was %zu", ksGetSize (sessionStorage));
 
@@ -507,18 +613,24 @@ static void test_elektraRecordUndo_shouldUndoChanges (void)
 	parentKey = keyNew ("user:/", KEY_END);
 
 	kdb = openPrefixedKdbInstance (contract, parentKey, __func__);
+	printErrorAndClear (parentKey);
+
 	ksClear (keys);
 	kdbGet (kdb, keys, parentKey);
+	printErrorAndClear (parentKey);
+
 	succeed_if_keyset_contains_key_with_string (keys, "user:/test/key3", "3");
 	succeed_if_keyset_contains_key_with_string (keys, "user:/test/key2", "1");
 	succeed_if (ksLookupByName (keys, "user:/test/key1", 0) == NULL, "user:/test/key1 should not have been found");
 
 	closePrefixedKdbInstance (kdb, parentKey, false);
+	printErrorAndClear (parentKey);
 
 	ksDel (contract);
 	ksDel (keys);
 
 	closePrefixedKdbInstance (sessionStorageKdb, parentKey, true);
+	printErrorAndClear (parentKey);
 
 	keyDel (parentKey);
 	keyDel (errorKey);
