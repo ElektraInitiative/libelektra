@@ -331,6 +331,15 @@ static bool isSpecEnabledByConfig (const KeySet * config ELEKTRA_UNUSED)
 	return true;
 }
 
+static bool isRecordingEnabledByConfig (const KeySet * config)
+{
+	KeySet * dupConfig = ksDup (config); // We need to duplicate because dupConfig is const, and ksLookupByName doesn't take const
+	bool isEnabled = ksLookupByName (dupConfig, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, 0) != NULL;
+	ksDel (dupConfig);
+
+	return isEnabled;
+}
+
 /**
  * This method looks for the hook plugin 'internalnotification'
  *
@@ -396,9 +405,26 @@ int initHooks (KDB * kdb, const KeySet * config, KeySet * modules, const KeySet 
 		goto error;
 	}
 
-	// No need for error handling here
-	// If the plugin does not exist, recording functionality will not be used
-	initHooksRecord (kdb, loadPlugin ("recorder", kdb->global, modules, contract, errorKey), errorKey);
+
+	// For recording we try to load the hook always, regardless whether it is enabled in the configuration
+	// This is because recording can be enabled in an already active KDB instance
+	Key * recordErrorKey = errorKey;
+	bool needToFreeRecordErrorKey = false;
+
+	if (!isRecordingEnabledByConfig (config))
+	{
+		// Recording isn't enabled, so we don't need to taint the warning messages if we don't find the plugin
+		recordErrorKey = keyDup (errorKey, KEY_CP_ALL);
+		needToFreeRecordErrorKey = true;
+	}
+
+	Plugin * recorderPlugin = loadPlugin ("recorder", kdb->global, modules, contract, recordErrorKey);
+	if (recorderPlugin != NULL)
+	{
+		initHooksRecord (kdb, recorderPlugin, errorKey);
+	}
+
+	if (needToFreeRecordErrorKey) keyDel (recordErrorKey);
 
 	if (!existingError)
 	{
