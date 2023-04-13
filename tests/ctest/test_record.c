@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <tests.h>
 
-#define printErrorAndClear(key) logKeyErrorAndClear(key, __FILE__, __LINE__)
+#define printErrorAndClear(key) logKeyErrorAndClear (key, __FILE__, __LINE__)
 
 static void logKeyErrorAndClear (Key * key, char * file, int line)
 {
