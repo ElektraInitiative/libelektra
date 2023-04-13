@@ -59,3 +59,6 @@ target_link_elektra (test_merge elektra-merge)
 
 # LibGit leaks memory
 set_property (TEST test_cmerge PROPERTY LABELS memleak)
+
+# test_record reads and writes from kdb some test stages don't allow that and exclude all with the label "kdbtests"
+set_property (TEST test_record PROPERTY LABELS kdbtests)
