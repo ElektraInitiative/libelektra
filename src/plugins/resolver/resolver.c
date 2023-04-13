@@ -741,6 +741,12 @@ static int elektraMkdirParents (resolverHandle * pk, const char * pathname, Key 
 {
 	if (mkdir (pathname, pk->dirmode) == -1)
 	{
+		if (errno == EEXIST)
+		{
+			// already exists
+			return 0;
+		}
+
 		if (errno != ENOENT)
 		{
 			// hopeless, give it up
