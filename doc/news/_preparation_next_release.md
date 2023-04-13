@@ -93,7 +93,7 @@ It is now strictly defined that the `spec` plugin throws a warning on `kdbGet` a
 Default values are now created in the `default` namespace.
 The instantiated array specifications are now also created in the `default` namespace.
 
-Keys with a require meta key and no default meta key do throw an error now.
+Keys with a require metakey and no default metakey do throw an error now.
 
 Known limitations:
 
