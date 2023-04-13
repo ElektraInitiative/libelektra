@@ -86,7 +86,12 @@ char * createArrayElementName (int arrayNumber)
  */
 char * createFormattedArrayKeyNameInDefaultNamespace (char * keyNameWithoutNamespace, int arrayNumber, int pos)
 {
-	if (keyNameWithoutNamespace == NULL || pos > (int) elektraStrLen (keyNameWithoutNamespace) - 2)
+	if (keyNameWithoutNamespace == NULL)
+	{
+		return NULL;
+	}
+
+	if (pos > (int) elektraStrLen (keyNameWithoutNamespace) - 1)
 	{
 		return NULL;
 	}

@@ -95,8 +95,10 @@ static void test_hook_copy_with_require_meta_key_and_missing_key_should_error (b
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "require", "true", KEY_END),
-				     keyNew ("user:/" PARENT_KEY "/b", KEY_VALUE, "19", KEY_END), KS_END);
+		KeySet * ks = ksNew (0, KS_END);
+
+		ksAppendKey (ks, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "require", "true", KEY_END));
+		ksAppendKey (ks, keyNew ("user:/" PARENT_KEY "/b", KEY_VALUE, "19", KEY_END));
 
 		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
@@ -126,7 +128,8 @@ static void test_hook_copy_with_default_meta_key_and_missing_key_should_create_k
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "default", "17", KEY_END), KS_END);
+		KeySet * ks = ksNew (0, KS_END);
+		ksAppendKey (ks, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "default", "17", KEY_END));
 
 		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
@@ -167,9 +170,11 @@ static void test_hook_copy_only_to_keys_specified_in_specification_should_succee
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "default", "17", KEY_END),
-				     keyNew ("user:/" PARENT_KEY "/a", KEY_VALUE, "17", KEY_END),
-				     keyNew ("user:/" PARENT_KEY "/b", KEY_VALUE, "18", KEY_END), KS_END);
+		KeySet * ks = ksNew (0, KS_END);
+
+		ksAppendKey (ks, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "default", "17", KEY_END));
+		ksAppendKey (ks, keyNew ("user:/" PARENT_KEY "/a", KEY_VALUE, "17", KEY_END));
+		ksAppendKey (ks, keyNew ("user:/" PARENT_KEY "/b", KEY_VALUE, "18", KEY_END));
 
 		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
@@ -213,7 +218,9 @@ static void test_hook_copy_with_missing_key_and_no_default_should_info (bool isK
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "somemetakey", "hello", KEY_END), KS_END);
+		KeySet * ks = ksNew (0, KS_END);
+
+		ksAppendKey (ks, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "somemetakey", "hello", KEY_END));
 
 		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
@@ -243,7 +250,8 @@ static void test_hook_copy_with_parent_key_containing_namespace_should_succeed (
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "default", "17", KEY_END), KS_END);
+		KeySet * ks = ksNew (0, KS_END);
+		ksAppendKey (ks, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "default", "17", KEY_END));
 
 		Key * parentKeyWithNamespace = keyNew (PARENT_KEY_WITH_NAMESPACE, KEY_END);
 		int result = elektraSpecCopy (NULL, ks, parentKeyWithNamespace, isKdbGet);
@@ -290,8 +298,9 @@ static void test_hook_copy_with_wildcard_specification_only_one_underline_should
 
 		const char * formattedKeyName = elektraFormat ("%s/%s/%s", userNamespace, PARENT_KEY, keyNameToMatch);
 
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "_/name", KEY_META, "description", descriptionToMatch, KEY_END),
-				     keyNew (formattedKeyName, KEY_VALUE, "mailserver1", KEY_END), KS_END);
+		KeySet * ks = ksNew (0, KS_END);
+		ksAppendKey (ks, keyNew ("spec:/" PARENT_KEY "_/name", KEY_META, "description", descriptionToMatch, KEY_END));
+		ksAppendKey (ks, keyNew (formattedKeyName, KEY_VALUE, "mailserver1", KEY_END));
 
 		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
@@ -333,7 +342,8 @@ static void test_hook_copy_with_wildcard_specification_and_required_no_match_sho
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "_/name", KEY_META, "require", "true", KEY_END), KS_END);
+		KeySet * ks = ksNew (0, KS_END);
+		ksAppendKey (ks, keyNew ("spec:/" PARENT_KEY "_/name", KEY_META, "require", "true", KEY_END));
 
 		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
@@ -367,8 +377,9 @@ static void test_hook_copy_with_wildcard_two_underlines_should_succeed (bool isK
 
 		const char * formattedKeyName = elektraFormat ("%s%s", namespace, keyname);
 
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/_/server/_/name", KEY_META, "description", "place", KEY_END),
-				     keyNew (formattedKeyName, KEY_END), KS_END);
+		KeySet * ks = ksNew (0, KS_END);
+		ksAppendKey (ks, keyNew ("spec:/" PARENT_KEY "/_/server/_/name", KEY_META, "description", "place", KEY_END));
+		ksAppendKey (ks, keyNew (formattedKeyName, KEY_END));
 
 		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
@@ -413,10 +424,13 @@ static void test_hook_copy_with_wildcard_with_trailing_underline (bool isKdbGet)
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/_/server/_", KEY_META, "description", "place", KEY_END),
-				     keyNew ("user:/sw/org/test/server/test1", KEY_END), keyNew ("user:/sw/org/test/server/test2", KEY_END),
-				     keyNew ("user:/sw/org/test/server/test3", KEY_END),
-				     keyNew ("user:/sw/org/test/server2/test4", KEY_END), KS_END);
+		KeySet * ks = ksNew (0, KS_END);
+
+		ksAppendKey (ks, keyNew ("spec:/" PARENT_KEY "/_/server/_", KEY_META, "description", "place", KEY_END));
+		ksAppendKey (ks, keyNew ("user:/sw/org/test/server/test1", KEY_END));
+		ksAppendKey (ks, keyNew ("user:/sw/org/test/server/test2", KEY_END));
+		ksAppendKey (ks, keyNew ("user:/sw/org/test/server/test3", KEY_END));
+		ksAppendKey (ks, keyNew ("user:/sw/org/test/server2/test4", KEY_END));
 
 		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
@@ -469,9 +483,11 @@ static void test_hook_copy_with_just_wildcard (bool isKdbGet)
 		const char * formattedKeyTest2 = elektraFormat ("user:%s/test2", PARENT_KEY);
 		const char * formattedKeyTest3_4 = elektraFormat ("user:%s/test3/test4", PARENT_KEY);
 
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/_", KEY_META, "description", "place", KEY_END),
-				     keyNew (formattedKeyTest1, KEY_END), keyNew (formattedKeyTest2, KEY_END),
-				     keyNew (formattedKeyTest3_4, KEY_END), KS_END);
+		KeySet * ks = ksNew (0, KS_END);
+		ksAppendKey (ks, keyNew ("spec:/" PARENT_KEY "/_", KEY_META, "description", "place", KEY_END));
+		ksAppendKey (ks, keyNew (formattedKeyTest1, KEY_END));
+		ksAppendKey (ks, keyNew (formattedKeyTest2, KEY_END));
+		ksAppendKey (ks, keyNew (formattedKeyTest3_4, KEY_END));
 
 		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
@@ -491,7 +507,6 @@ static void test_hook_copy_with_just_wildcard (bool isKdbGet)
 		Key * test3Key = ksLookupByName (ks, "/sw/org/test3/test4", 0);
 		const Key * metaKeyTest3 = keyGetMeta (test3Key, "description");
 		succeed_if (metaKeyTest3 == 0, "meta key should not be found");
-
 
 		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
 
@@ -523,8 +538,10 @@ static void test_hook_copy_with_wildcard_array_specification_collision_should_fa
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/server/_/name", KEY_META, "description", "value1", KEY_END),
-				     keyNew ("spec:/" PARENT_KEY "/server/#/name", KEY_META, "description", "value2", KEY_END), KS_END);
+		KeySet * ks = ksNew (0, KS_END);
+
+		ksAppendKey (ks, keyNew ("spec:/" PARENT_KEY "/server/_/name", KEY_META, "description", "value1", KEY_END));
+		ksAppendKey (ks, keyNew ("spec:/" PARENT_KEY "/server/#/name", KEY_META, "description", "value2", KEY_END));
 
 		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
@@ -561,12 +578,14 @@ static void test_hook_copy_with_array_specification_should_copy_to_correct_confi
 	TEST_BEGIN
 	{
 		char * metaKeyDescriptionValue = "The name of the server";
-		KeySet * ks = ksNew (
-			10, keyNew ("spec:/" PARENT_KEY "/server/#/name", KEY_META, "description", metaKeyDescriptionValue, KEY_END),
-			keyNew ("spec:/" PARENT_KEY "/server", KEY_META, "array", "4", KEY_END),
-			keyNew ("user:/" PARENT_KEY "/server/#0/name", KEY_END), keyNew ("user:/" PARENT_KEY "/server/#1/name", KEY_END),
-			keyNew ("user:/" PARENT_KEY "/server/#2/name", KEY_END), keyNew ("user:/" PARENT_KEY "/server/#3/name", KEY_END),
-			KS_END);
+		KeySet * ks = ksNew (0, KS_END);
+
+		ksAppendKey (ks, keyNew ("spec:/" PARENT_KEY "/server/#/name", KEY_META, "description", metaKeyDescriptionValue, KEY_END));
+		ksAppendKey (ks, keyNew ("spec:/" PARENT_KEY "/server", KEY_META, "array", "4", KEY_END));
+		ksAppendKey (ks, keyNew ("user:/" PARENT_KEY "/server/#0/name", KEY_END));
+		ksAppendKey (ks, keyNew ("user:/" PARENT_KEY "/server/#1/name", KEY_END));
+		ksAppendKey (ks, keyNew ("user:/" PARENT_KEY "/server/#2/name", KEY_END));
+		ksAppendKey (ks, keyNew ("user:/" PARENT_KEY "/server/#3/name", KEY_END));
 
 		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
@@ -606,10 +625,11 @@ static void test_hook_copy_with_array_specification_without_default_meta_key_sho
 	TEST_BEGIN
 	{
 		char * metaKeyDescriptionValue = "The name of the server";
-		KeySet * ks = ksNew (10,
-				     keyNew ("spec:/" PARENT_KEY "/server/#/name", KEY_VALUE, "testserver", KEY_META, "description",
-					     metaKeyDescriptionValue, KEY_END),
-				     keyNew ("spec:/" PARENT_KEY "/server", KEY_META, "array", "4", KEY_END), KS_END);
+		KeySet * ks = ksNew (0, KS_END);
+
+		ksAppendKey (ks, keyNew ("spec:/" PARENT_KEY "/server/#/name", KEY_VALUE, "testserver", KEY_META, "description",
+					 metaKeyDescriptionValue, KEY_END));
+		ksAppendKey (ks, keyNew ("spec:/" PARENT_KEY "/server", KEY_META, "array", "4", KEY_END));
 
 		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
@@ -644,10 +664,11 @@ static void test_hook_copy_with_array_specification_with_default_meta_key_should
 	TEST_BEGIN
 	{
 		char * metaKeyDescriptionValue = "The name of the server";
-		KeySet * ks = ksNew (10,
-				     keyNew ("spec:/" PARENT_KEY "/server/#/name", KEY_META, "default", "mail", KEY_META, "description",
-					     metaKeyDescriptionValue, KEY_END),
-				     keyNew ("spec:/" PARENT_KEY "/server", KEY_META, "array", "4", KEY_END), KS_END);
+		KeySet * ks = ksNew (0, KS_END);
+
+		ksAppendKey (ks, keyNew ("spec:/" PARENT_KEY "/server/#/name", KEY_META, "default", "mail", KEY_META, "description",
+					 metaKeyDescriptionValue, KEY_END));
+		ksAppendKey (ks, keyNew ("spec:/" PARENT_KEY "/server", KEY_META, "array", "4", KEY_END));
 
 		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
@@ -688,10 +709,10 @@ static void test_hook_remove_spec_keys_should_succeed (bool isKdbGet)
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10,
-				     keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "default", "default value a", KEY_META, "test1", "value1",
-					     KEY_META, "test2", "description2", KEY_END),
-				     KS_END);
+		KeySet * ks = ksNew (0, KS_END);
+
+		ksAppendKey (ks, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "default", "default value a", KEY_META, "test1", "value1",
+					 KEY_META, "test2", "description2", KEY_END));
 
 		int resultCopy = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
@@ -745,7 +766,9 @@ static void test_hook_copy_with_array_specification_as_last_element_should_creat
 	TEST_BEGIN
 	{
 		const char * metaKeyDefaultValue = "default value a";
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#", KEY_META, "default", metaKeyDefaultValue, KEY_END), KS_END);
+		KeySet * ks = ksNew (0, KS_END);
+
+		ksAppendKey (ks, keyNew ("spec:/" PARENT_KEY "/a/#", KEY_META, "default", metaKeyDefaultValue, KEY_END));
 
 		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
@@ -894,8 +917,8 @@ static void test_normal_key_with_meta_data_and_array_element_in_key_name_should_
 
 	KeySet * returned = ksNew (0, KS_END);
 
-	Key * specString = keyNew ("spec:/sw/example/highlevel/#0/current/mystring", KEY_END);
-	keySetMeta (specString, "meta:/default", "");
+	Key * specString = keyNew ("spec:/sw/example/highlevel/#0/current/myfloatarray/#", KEY_END);
+	keySetMeta (specString, "meta:/default", "2.5");
 	keySetMeta (specString, "meta:/type", "string");
 
 	ksAppendKey (returned, specString);
