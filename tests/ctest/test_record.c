@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <tests.h>
 
-static void printError (Key * key)
+static void printErrorAndClear (Key * key)
 {
 	if (key == NULL)
 	{
@@ -56,6 +56,10 @@ static void printError (Key * key)
 		printf ("error/reason = %s\n", keyString (m));
 		fflush (stdout);
 	}
+
+	Key * metaRoot = keyNew ("meta:/error", KEY_END);
+	ksDel (ksCut (keyMeta (key), metaRoot));
+	keyDel (metaRoot);
 }
 
 static char * appendString (const char * s1, const char * s2)
@@ -168,45 +172,45 @@ static void test_elektraRecordEnableRecording_isActive_Disable_shouldWork (void)
 
 	bool success = elektraRecordEnableRecording (kdb, recordingParentKey, parentKey);
 	succeed_if (success == true, "call should be successful");
-	printError (parentKey);
+	printErrorAndClear (parentKey);
 	succeed_if_keyset_contains_key_with_string (kdb->global, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, "user:/my/test");
 	closePrefixedKdbInstance (kdb, parentKey, false);
-	printError (parentKey);
+	printErrorAndClear (parentKey);
 
 	// Create new instance and see if it's active
 	kdb = openPrefixedKdbInstance (contract, parentKey, __func__);
-	printError (parentKey);
+	printErrorAndClear (parentKey);
 	KeySet * tmp = ksNew (0, KS_END);
 	Key * recordingConfigKey = keyNew (ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, KEY_END);
 	kdbGet (kdb, tmp, recordingConfigKey);
-	printError (recordingConfigKey);
+	printErrorAndClear (recordingConfigKey);
 	succeed_if_keyset_contains_key_with_string (kdb->global, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, "user:/my/test");
 	succeed_if_keyset_contains_key_with_string (tmp, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, "user:/my/test");
 	ksDel (tmp);
 	keyDel (recordingConfigKey);
 	succeed_if (elektraRecordIsActive (kdb) == true, "elektraRecordIsActive should report true");
 	closePrefixedKdbInstance (kdb, parentKey, false);
-	printError (parentKey);
+	printErrorAndClear (parentKey);
 
 	// Create new instance and disable
 	kdb = openPrefixedKdbInstance (contract, parentKey, __func__);
-	printError (parentKey);
+	printErrorAndClear (parentKey);
 	success = elektraRecordDisableRecording (kdb, recordingParentKey);
-	printError (recordingParentKey);
+	printErrorAndClear (recordingParentKey);
 
 	succeed_if (success == true, "call should be successful");
 	succeed_if (ksLookupByName (kdb->global, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, 0) == NULL,
 		    "global keyset should not contain active key");
 	closePrefixedKdbInstance (kdb, parentKey, false);
-	printError (parentKey);
+	printErrorAndClear (parentKey);
 
 	// Create new instance and see if it's active
 	kdb = openPrefixedKdbInstance (contract, parentKey, __func__);
-	printError (parentKey);
+	printErrorAndClear (parentKey);
 	tmp = ksNew (0, KS_END);
 	recordingConfigKey = keyNew (ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, KEY_END);
 	kdbGet (kdb, tmp, recordingConfigKey);
-	printError (recordingConfigKey);
+	printErrorAndClear (recordingConfigKey);
 	succeed_if (ksLookupByName (kdb->global, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, 0) == NULL,
 		    "global keyset should not contain active key");
 	succeed_if (ksLookupByName (tmp, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, 0) == NULL, "should not contain active key");
@@ -214,7 +218,7 @@ static void test_elektraRecordEnableRecording_isActive_Disable_shouldWork (void)
 	keyDel (recordingConfigKey);
 	succeed_if (elektraRecordIsActive (kdb) == false, "elektraRecordIsActive should report false");
 	closePrefixedKdbInstance (kdb, parentKey, true);
-	printError (parentKey);
+	printErrorAndClear (parentKey);
 
 
 	ksDel (contract);
@@ -232,24 +236,24 @@ static void test_elektraRecordRecord_notActive_shouldAddWarningIfNotActive (void
 	Key * errorKey = keyNew ("/", KEY_END);
 
 	KDB * kdb = openPrefixedKdbInstance (contract, parentKey, __func__);
-	printError (parentKey);
+	printErrorAndClear (parentKey);
 
 	KeySet * keys = ksNew (0, KS_END);
 	kdbGet (kdb, keys, parentKey);
-	printError (parentKey);
+	printErrorAndClear (parentKey);
 
 	ksAppendKey (keys, keyNew ("user:/test", KEY_VALUE, "123", KEY_END));
 
 	// Act
 	bool success = elektraRecordRecord (kdb, kdb, keys, parentKey, errorKey);
-	printError (errorKey);
+	printErrorAndClear (errorKey);
 
 	// Assert
 	succeed_if (success == true, "should return successful status code");
 	succeed_if (keyGetMeta (errorKey, "meta:/warnings/#0") != NULL, "should have a warning set");
 
 	closePrefixedKdbInstance (kdb, parentKey, true);
-	printError (parentKey);
+	printErrorAndClear (parentKey);
 
 	ksDel (contract);
 	ksDel (keys);
