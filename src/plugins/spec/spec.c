@@ -236,16 +236,34 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * specKeys, KeyS
 	{
 		int num = getNumberOfArrayCharactersInSpecName (specKey);
 
-		int * arrayPositions = elektraMalloc (num);
+		if (num == 0)
+		{
+			return 0;
+		}
+
+		int * arrayPositions = elektraCalloc (num);
+		if (arrayPositions == NULL)
+		{
+			return 0;
+		}
+
 		setArrayPositions (strchr (keyName (specKey), '/'), arrayPositions, num);
 
 		char * keyNameWithoutNamespace = strchr (keyName (specKey), '/');
 
+		if (keyNameWithoutNamespace == NULL)
+		{
+			return 0;
+		}
+
 		for (int i = 0; i < num; i++)
 		{
-			char * untilArrayElementAtPositionI = elektraMalloc (arrayPositions[i]);
+			char * untilArrayElementAtPositionI = elektraCalloc (arrayPositions[i] + 1);
+			if (untilArrayElementAtPositionI == NULL)
+			{
+				return 0;
+			}
 			memcpy (untilArrayElementAtPositionI, &keyNameWithoutNamespace[0], arrayPositions[i]);
-			untilArrayElementAtPositionI[arrayPositions[i] - 1] = '\0';
 
 			Key * arraySizeKeyToInstantiate = getMatchingKeyFromKeySet (specKeys, untilArrayElementAtPositionI);
 			if (arraySizeKeyToInstantiate == NULL)

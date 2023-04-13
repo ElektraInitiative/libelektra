@@ -86,14 +86,25 @@ char * createArrayElementName (int arrayNumber)
  */
 char * createFormattedArrayKeyNameInDefaultNamespace (char * keyNameWithoutNamespace, int arrayNumber, int pos)
 {
-	char * strUntilArrayElement = elektraMalloc (pos);
-	memcpy (strUntilArrayElement, &keyNameWithoutNamespace[0], pos - 1);
-	strUntilArrayElement[pos] = '\0';
+	if (keyNameWithoutNamespace == NULL || pos > (int) elektraStrLen (keyNameWithoutNamespace) - 2)
+	{
+		return NULL;
+	}
+
+	char * strUntilArrayElement = elektraCalloc (pos + 1);
+	if (strUntilArrayElement == NULL)
+	{
+		return NULL;
+	}
+	memcpy (strUntilArrayElement, &keyNameWithoutNamespace[0], pos);
 
 	size_t keyNameSize = elektraStrLen (&keyNameWithoutNamespace[pos + 1]);
-	char * strAfterArrayElement = elektraMalloc (keyNameSize);
-	memcpy (strAfterArrayElement, &keyNameWithoutNamespace[pos + 1], keyNameSize);
-	strAfterArrayElement[keyNameSize] = '\0';
+	char * strAfterArrayElement = elektraCalloc (keyNameSize);
+	if (strAfterArrayElement == NULL)
+	{
+		return NULL;
+	}
+	memcpy (strAfterArrayElement, &keyNameWithoutNamespace[pos + 1], keyNameSize - 1);
 
 	char * arrayElementName = createArrayElementName (arrayNumber);
 
@@ -139,7 +150,7 @@ bool containsArraySpecElementWithNoDigitOrUnderlineAfterwards (const char * keyN
  */
 void instantiateArraySpecificationAndCopyMeta (Key * specKey, KeySet * ks, int arraySize, int pos)
 {
-	KeySet * instantiatedArraySpecs = ksNew (arraySize, KS_END);
+	KeySet * instantiatedArraySpecs = ksNew (arraySize + 1, KS_END);
 	for (int i = 0; i < arraySize; i++)
 	{
 		char * keyNameWithoutNamespace = strchr (keyName (specKey), '/');
@@ -205,10 +216,26 @@ Key * getMatchingKeyFromKeySet (KeySet * ks, char * name)
 	for (elektraCursor it = 0; it < ksGetSize (ks); it++)
 	{
 		Key * current = ksAtCursor (ks, it);
-		if (elektraStrCmp (strchr (keyName (current), '/'), name) == 0)
+
+		size_t nameSize = elektraStrLen (name);
+		char * nameDup = elektraCalloc (nameSize);
+		if (name[nameSize - 2] == '/')
 		{
+			nameDup = elektraStrDup (name);
+			nameDup[nameSize - 2] = '\0';
+		}
+		else
+		{
+			memcpy (nameDup, name, nameSize - 1);
+		}
+
+		if (elektraStrCmp (strchr (keyName (current), '/'), nameDup) == 0)
+		{
+			elektraFree (nameDup);
 			return current;
 		}
+
+		elektraFree (nameDup);
 	}
 	return 0;
 }

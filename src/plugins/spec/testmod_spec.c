@@ -881,9 +881,14 @@ static void test_example_menu_with_array_size_including_array_element (bool isKd
 	keyDel (parentKey);
 }
 
-static void test_test2 (void)
+/**
+ * Test should verify that a key with an array element in parent key gets meta data copied correctly.
+ *
+ * @param isKdbGet boolean value indicating if it is a kdb get call
+ */
+static void test_normal_key_with_meta_data_and_array_element_in_key_name_should_succeed (bool isKdbGet)
 {
-	printf ("test %s, isKdbGet=%d\n", __func__, true);
+	printf ("test %s, isKdbGet=%d\n", __func__, isKdbGet);
 
 	Key * parentKey = keyNew ("/sw/example/highlevel/#0/current", KEY_END);
 
@@ -895,9 +900,62 @@ static void test_test2 (void)
 
 	ksAppendKey (returned, specString);
 
-	elektraSpecCopy (NULL, returned, parentKey, true);
+	elektraSpecCopy (NULL, returned, parentKey, isKdbGet);
+}
 
-	output_keyset (returned);
+/**
+ * Test should verify that the example_codegen_menu.sh test works.
+ *
+ * @param isKdbGet boolean value indicating if it is a kdb get call
+ */
+static void example_codegen_menu_test (bool isKdbGet)
+{
+
+	printf ("test %s, isKdbGet=%d\n", __func__, isKdbGet);
+
+	Key * parentKey = keyNew ("/sw/example/menu/#0/current", KEY_END);
+
+	KeySet * returned = ksNew (0, KS_END);
+
+	Key * specKeyCommand = keyNew ("spec:/sw/example/menu/#0/current/menu/#/command", KEY_END);
+	keySetMeta (specKeyCommand, "meta:/default", "");
+	keySetMeta (specKeyCommand, "meta:/type", "string");
+	ksAppendKey (returned, specKeyCommand);
+
+
+	Key * arraySpec = keyNew ("user:/sw/example/menu/#0/current/menu", KEY_END);
+	keySetMeta (arraySpec, "meta:/array", "#4");
+	ksAppendKey (returned, arraySpec);
+
+	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#0/name", KEY_VALUE, "Main Menu", KEY_END));
+	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#1/name", KEY_VALUE, "Menu 1", KEY_END));
+	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#2/name", KEY_VALUE, "Menu 2", KEY_END));
+	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#3/name", KEY_VALUE, "Menu 2.1", KEY_END));
+	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#4/name", KEY_VALUE, "Menu 2.2", KEY_END));
+
+	ksAppendKey (returned,
+		     keyNew ("user:/sw/example/menu/#0/current/menu/#1/command", KEY_VALUE, "echo \"Hello from Menu 1\"", KEY_END));
+	ksAppendKey (returned,
+		     keyNew ("user:/sw/example/menu/#0/current/menu/#2/command", KEY_VALUE, "echo \"Hello from Menu 2\"", KEY_END));
+	ksAppendKey (returned,
+		     keyNew ("user:/sw/example/menu/#0/current/menu/#3/command", KEY_VALUE, "echo \"Hello from Menu 2.1\"", KEY_END));
+	ksAppendKey (returned,
+		     keyNew ("user:/sw/example/menu/#0/current/menu/#4/command", KEY_VALUE, "echo \"Hello from Menu 2.2\"", KEY_END));
+
+	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#0/children", KEY_META, "array", "#1", KEY_END));
+	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#0/children/#0", KEY_VALUE, "@/menu/#1", KEY_END));
+	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#0/children/#1", KEY_VALUE, "@/menu/#2", KEY_END));
+
+	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#2/children", KEY_META, "array", "#1", KEY_END));
+	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#2/children/#0", KEY_VALUE, "@/menu/#3", KEY_END));
+	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#2/children/#1", KEY_VALUE, "@/menu/#4", KEY_END));
+
+	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/main", KEY_VALUE, "@/menu/#0", KEY_END));
+
+	elektraSpecCopy (NULL, returned, parentKey, isKdbGet);
+
+	succeed_if (ksLookup (returned, keyNew ("/sw/example/menu/#0/current/menu/#0/command", KEY_END), 0) != 0,
+		    "should have found #0 command");
 }
 
 int main (void)
@@ -927,7 +985,8 @@ int main (void)
 	test_example_highlevel_should_succeed (true);
 	test_example_menu_with_array_size_including_array_element (true);
 
-	test_test2 ();
+	test_normal_key_with_meta_data_and_array_element_in_key_name_should_succeed (true);
+	example_codegen_menu_test (true);
 
 	return 0;
 }
