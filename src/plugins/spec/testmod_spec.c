@@ -881,6 +881,25 @@ static void test_example_menu_with_array_size_including_array_element (bool isKd
 	keyDel (parentKey);
 }
 
+static void test_test2 (void)
+{
+	printf ("test %s, isKdbGet=%d\n", __func__, true);
+
+	Key * parentKey = keyNew ("/sw/example/highlevel/#0/current", KEY_END);
+
+	KeySet * returned = ksNew (0, KS_END);
+
+	Key * specString = keyNew ("spec:/sw/example/highlevel/#0/current/mystring", KEY_END);
+	keySetMeta (specString, "meta:/default", "");
+	keySetMeta (specString, "meta:/type", "string");
+
+	ksAppendKey (returned, specString);
+
+	elektraSpecCopy (NULL, returned, parentKey, true);
+
+	output_keyset (returned);
+}
+
 int main (void)
 {
 	test_hook_copy_with_require_meta_key_and_missing_key_should_error (false);
@@ -907,6 +926,8 @@ int main (void)
 	test_example_menu_should_succeed (true);
 	test_example_highlevel_should_succeed (true);
 	test_example_menu_with_array_size_including_array_element (true);
+
+	test_test2 ();
 
 	return 0;
 }

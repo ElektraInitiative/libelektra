@@ -48,7 +48,7 @@ static void addDefaultKey (KeySet * ks, Key * specKey, bool isArraySpec)
 	const Key * defaultMetaKey = keyGetMeta (specKey, "default");
 	const char * defaultValue = keyString (defaultMetaKey);
 
-	if (elektraStrCmp (defaultValue, "") == 0 || elektraStrCmp (defaultValue, "(null)") == 0)
+	if (elektraStrCmp (defaultValue, "(null)") == 0)
 	{
 		return;
 	}
