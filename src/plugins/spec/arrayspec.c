@@ -194,8 +194,13 @@ void instantiateArraySpecificationAndCopyMeta (Key * specKey, KeySet * ks, int a
  */
 void setArrayPositions (const char * keyNameWithoutNamespace, int * arrayPositions, int arraySize)
 {
+	if (keyNameWithoutNamespace == NULL || arrayPositions == NULL)
+	{
+		return;
+	}
+
 	int arrPos = 0;
-	for (int i = 0; i < (int) elektraStrLen (keyNameWithoutNamespace); i++)
+	for (int i = 0; i < (int) elektraStrLen (keyNameWithoutNamespace) - 1; i++)
 	{
 		if (keyNameWithoutNamespace[i] == '#')
 		{
@@ -223,7 +228,7 @@ Key * getMatchingKeyFromKeySet (KeySet * ks, char * name)
 		Key * current = ksAtCursor (ks, it);
 
 		size_t nameSize = elektraStrLen (name);
-		char * nameDup = elektraCalloc (nameSize);
+		char * nameDup;
 		if (name[nameSize - 2] == '/')
 		{
 			nameDup = elektraStrDup (name);
@@ -231,16 +236,13 @@ Key * getMatchingKeyFromKeySet (KeySet * ks, char * name)
 		}
 		else
 		{
-			memcpy (nameDup, name, nameSize - 1);
+			nameDup = name;
 		}
 
 		if (elektraStrCmp (strchr (keyName (current), '/'), nameDup) == 0)
 		{
-			elektraFree (nameDup);
 			return current;
 		}
-
-		elektraFree (nameDup);
 	}
 	return 0;
 }
@@ -277,9 +279,14 @@ int getNumberOfArrayCharactersInSpecName (Key * specKey)
 {
 	char * withoutNamespace = strchr (keyName (specKey), '/');
 
+	if (withoutNamespace == NULL)
+	{
+		return 0;
+	}
+
 	int count = 0;
 
-	for (size_t i = 0; i < elektraStrLen (withoutNamespace); i++)
+	for (size_t i = 0; i < elektraStrLen (withoutNamespace) - 1; i++)
 	{
 		if (withoutNamespace[i] == '#')
 		{
