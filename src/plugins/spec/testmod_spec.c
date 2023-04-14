@@ -541,10 +541,8 @@ static void test_hook_copy_with_wildcard_array_specification_collision_should_fa
 	{
 		KeySet * ks = ksNew (0, KS_END);
 
-		Key * specUnderlineName = keyNew ("spec:/" PARENT_KEY "/server/_/name", KEY_META, "description", "value1", KEY_END);
-		Key * specArrayName = keyNew ("spec:/" PARENT_KEY "/server/#/name", KEY_META, "description", "value2", KEY_END);
-		ksAppendKey (ks, specUnderlineName);
-		ksAppendKey (ks, specArrayName);
+		ksAppendKey (ks, keyNew ("spec:/" PARENT_KEY "/server/_/name", KEY_META, "description", "value1", KEY_END));
+		ksAppendKey (ks, keyNew ("spec:/" PARENT_KEY "/server/#/name", KEY_META, "description", "value2", KEY_END));
 
 		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
@@ -552,8 +550,6 @@ static void test_hook_copy_with_wildcard_array_specification_collision_should_fa
 
 		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_ERROR, "plugin should have failed");
 
-		keyDel (specUnderlineName);
-		keyDel (specArrayName);
 		ksDel (ks);
 	}
 	TEST_END
@@ -874,7 +870,7 @@ static void test_example_highlevel_should_succeed (bool isKdbGet)
  *
  * @param isKdbGet boolean value indicating if it is a kdb get call
  */
-static void test_example_menu_with_array_size_including_array_element (bool isKdbGet)
+static void test_example_menu_with_array_size_including_array_element_should_succeed (bool isKdbGet)
 {
 	printf ("test %s, isKdbGet=%d\n", __func__, isKdbGet);
 
@@ -946,7 +942,7 @@ static void test_normal_key_with_meta_data_and_array_element_in_key_name_should_
  *
  * @param isKdbGet boolean value indicating if it is a kdb get call
  */
-static void example_codegen_menu_test (bool isKdbGet)
+static void example_codegen_menu_test_should_succeed (bool isKdbGet)
 {
 
 	printf ("test %s, isKdbGet=%d\n", __func__, isKdbGet);
@@ -1017,7 +1013,7 @@ static void example_codegen_menu_test (bool isKdbGet)
  *
  * @param isKdbGet boolean value indicating if it is a kdb get call
  */
-static void test_with_array_specification_with_array_size_one (bool isKdbGet)
+static void test_with_array_specification_with_array_size_one_should_succeed (bool isKdbGet)
 {
 	printf ("test %s, isKdbGet=%d\n", __func__, isKdbGet);
 
@@ -1084,11 +1080,11 @@ int main (void)
 
 	test_example_menu_should_succeed (true);
 	test_example_highlevel_should_succeed (true);
-	test_example_menu_with_array_size_including_array_element (true);
+	test_example_menu_with_array_size_including_array_element_should_succeed (true);
 
 	test_normal_key_with_meta_data_and_array_element_in_key_name_should_succeed (true);
-	example_codegen_menu_test (true);
-	test_with_array_specification_with_array_size_one (true);
+	example_codegen_menu_test_should_succeed (true);
+	test_with_array_specification_with_array_size_one_should_succeed (true);
 
 	return 0;
 }

@@ -391,7 +391,7 @@ int elektraSpecCopy (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * pa
 							       keyName (collisionKey));
 		}
 
-		elektraFree (specKeys);
+		ksDel (specKeys);
 
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}

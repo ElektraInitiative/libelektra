@@ -164,7 +164,7 @@ void instantiateArraySpecificationAndCopyMeta (Key * specKey, KeySet * ks, int a
 		char * formattedKeyName = createFormattedArrayKeyNameInDefaultNamespace (keyNameWithoutNamespace, i, pos);
 		if (containsArraySpecElementWithNoDigitOrUnderlineAfterwards (formattedKeyName))
 		{
-			elektraFree (instantiatedArraySpecs);
+			ksDel (instantiatedArraySpecs);
 			elektraFree (formattedKeyName);
 			return;
 		}
