@@ -240,10 +240,14 @@ Key * getMatchingKeyFromKeySet (KeySet * ks, char * name)
 
 		size_t nameSize = elektraStrLen (name);
 		char * nameDup;
+
+		bool memoryAllocated = false;
+
 		if (name[nameSize - 2] == '/')
 		{
 			nameDup = elektraStrDup (name);
 			nameDup[nameSize - 2] = '\0';
+			memoryAllocated = true;
 		}
 		else
 		{
@@ -252,7 +256,17 @@ Key * getMatchingKeyFromKeySet (KeySet * ks, char * name)
 
 		if (elektraStrCmp (strchr (keyName (current), '/'), nameDup) == 0)
 		{
+			if (memoryAllocated)
+			{
+				elektraFree (nameDup);
+			}
+
 			return current;
+		}
+
+		if (memoryAllocated)
+		{
+			elektraFree (nameDup);
 		}
 	}
 	return 0;

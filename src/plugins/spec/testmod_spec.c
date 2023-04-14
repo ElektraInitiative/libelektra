@@ -267,6 +267,7 @@ static void test_hook_copy_with_parent_key_containing_namespace_should_succeed (
 		}
 
 		elektraFree ((char *) keyNameToMatch);
+		keyDel (parentKeyWithNamespace);
 		ksDel (ks);
 
 		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
@@ -540,8 +541,10 @@ static void test_hook_copy_with_wildcard_array_specification_collision_should_fa
 	{
 		KeySet * ks = ksNew (0, KS_END);
 
-		ksAppendKey (ks, keyNew ("spec:/" PARENT_KEY "/server/_/name", KEY_META, "description", "value1", KEY_END));
-		ksAppendKey (ks, keyNew ("spec:/" PARENT_KEY "/server/#/name", KEY_META, "description", "value2", KEY_END));
+		Key * specUnderlineName = keyNew ("spec:/" PARENT_KEY "/server/_/name", KEY_META, "description", "value1", KEY_END);
+		Key * specArrayName = keyNew ("spec:/" PARENT_KEY "/server/#/name", KEY_META, "description", "value2", KEY_END);
+		ksAppendKey (ks, specUnderlineName);
+		ksAppendKey (ks, specArrayName);
 
 		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
@@ -549,6 +552,8 @@ static void test_hook_copy_with_wildcard_array_specification_collision_should_fa
 
 		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_ERROR, "plugin should have failed");
 
+		keyDel (specUnderlineName);
+		keyDel (specArrayName);
 		ksDel (ks);
 	}
 	TEST_END
@@ -782,6 +787,8 @@ static void test_hook_copy_with_array_specification_as_last_element_should_creat
 		}
 
 		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
+
+		ksDel (ks);
 	}
 	TEST_END
 }
@@ -797,21 +804,21 @@ static void test_example_menu_should_succeed (bool isKdbGet)
 
 	Key * parentKey = keyNew ("/sw/example/menu/#0/current", KEY_END);
 
-	KeySet * returned = ksNew (0, KS_END);
+	KeySet * ks = ksNew (0, KS_END);
 
 	Key * specKeyCommand = keyNew ("spec:/sw/example/menu/#0/current/menu/#/command", KEY_END);
 	keySetMeta (specKeyCommand, "meta:/default", "");
 	keySetMeta (specKeyCommand, "meta:/type", "string");
-	ksAppendKey (returned, specKeyCommand);
+	ksAppendKey (ks, specKeyCommand);
 
-	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu", KEY_META, "array", "#1", KEY_END));
-	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#0/name", KEY_VALUE, "Main Menu", KEY_END));
-	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#1/name", KEY_VALUE, "Menu 1", KEY_END));
-	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#1/command", KEY_VALUE, "the executed command", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/sw/example/menu/#0/current/menu", KEY_META, "array", "#1", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/sw/example/menu/#0/current/menu/#0/name", KEY_VALUE, "Main Menu", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/sw/example/menu/#0/current/menu/#1/name", KEY_VALUE, "Menu 1", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/sw/example/menu/#0/current/menu/#1/command", KEY_VALUE, "the executed command", KEY_END));
 
-	elektraSpecCopy (NULL, returned, parentKey, isKdbGet);
+	elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
-	Key * menuCommand = ksLookupByName (returned, "user:/sw/example/menu/#0/current/menu/#1/command", 0);
+	Key * menuCommand = ksLookupByName (ks, "user:/sw/example/menu/#0/current/menu/#1/command", 0);
 	succeed_if (menuCommand != NULL, "should have menu 1 command");
 	KeySet * menuCommandMeta = keyMeta (menuCommand);
 	succeed_if (menuCommandMeta != NULL, "should have menu 1 command meta");
@@ -819,8 +826,9 @@ static void test_example_menu_should_succeed (bool isKdbGet)
 	succeed_if (ksLookupByName (menuCommandMeta, "meta:/type", 0), "menu 1 command meta should have key meta:/type");
 	succeed_if (ksLookupByName (menuCommandMeta, "meta:/default", 0), "menu 1 command meta should have key meta:/default");
 
-	ksDel (returned);
+	keyDel (specKeyCommand);
 	keyDel (parentKey);
+	ksDel (ks);
 }
 
 /**
@@ -834,17 +842,17 @@ static void test_example_highlevel_should_succeed (bool isKdbGet)
 
 	Key * parentKey = keyNew ("/sw/example/highlevel/#0/current", KEY_END);
 
-	KeySet * returned = ksNew (0, KS_END);
+	KeySet * ks = ksNew (0, KS_END);
 
 	Key * printKey = keyNew ("spec:/sw/example/highlevel/#0/current/print", KEY_END);
 	keySetMeta (printKey, "meta:/default", "0");
 	keySetMeta (printKey, "meta:/type", "boolean");
 
-	ksAppendKey (returned, printKey);
+	ksAppendKey (ks, printKey);
 
-	elektraSpecCopy (NULL, returned, parentKey, isKdbGet);
+	elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
-	Key * highLevelPrint = ksLookupByName (returned, "default:/sw/example/highlevel/#0/current/print", 0);
+	Key * highLevelPrint = ksLookupByName (ks, "default:/sw/example/highlevel/#0/current/print", 0);
 	succeed_if (highLevelPrint != NULL, "should have default key print");
 	KeySet * highLevelPrintMetaKeys = keyMeta (highLevelPrint);
 	succeed_if (highLevelPrintMetaKeys != NULL, "print key should have meta keys");
@@ -853,8 +861,9 @@ static void test_example_highlevel_should_succeed (bool isKdbGet)
 	succeed_if (ksLookupByName (highLevelPrintMetaKeys, "meta:/type", 0), "print key should have key meta:/type");
 	succeed_if (ksLookupByName (highLevelPrintMetaKeys, "meta:/default", 0), "print key should have key meta:/default");
 
-	ksDel (returned);
+	keyDel (printKey);
 	keyDel (parentKey);
+	ksDel (ks);
 }
 
 /**
@@ -871,7 +880,7 @@ static void test_example_menu_with_array_size_including_array_element (bool isKd
 
 	Key * parentKey = keyNew ("/sw/example/menu/#0/current", KEY_END);
 
-	KeySet * returned = ksNew (0, KS_END);
+	KeySet * ks = ksNew (0, KS_END);
 
 	Key * specCommandArraySize = keyNew ("spec:/sw/example/menu/#0/current/menu", KEY_END);
 	Key * specKeyCommand = keyNew ("spec:/sw/example/menu/#0/current/menu/#/command", KEY_END);
@@ -879,15 +888,15 @@ static void test_example_menu_with_array_size_including_array_element (bool isKd
 	keySetMeta (specCommandArraySize, "meta:/array", "#4");
 	keySetMeta (specKeyCommand, "meta:/default", "test");
 
-	ksAppendKey (returned, specCommandArraySize);
-	ksAppendKey (returned, specKeyCommand);
+	ksAppendKey (ks, specCommandArraySize);
+	ksAppendKey (ks, specKeyCommand);
 
-	elektraSpecCopy (NULL, returned, parentKey, isKdbGet);
+	elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
 	int size = 0;
-	for (elektraCursor it = 0; it < ksGetSize (returned); it++)
+	for (elektraCursor it = 0; it < ksGetSize (ks); it++)
 	{
-		Key * key = ksAtCursor (returned, it);
+		Key * key = ksAtCursor (ks, it);
 		if (keyGetNamespace (key) == KEY_NS_DEFAULT)
 		{
 			size++;
@@ -900,8 +909,10 @@ static void test_example_menu_with_array_size_including_array_element (bool isKd
 
 	succeed_if (size == 5, "array size should equal 4");
 
-	ksDel (returned);
+	keyDel (specCommandArraySize);
+	keyDel (specKeyCommand);
 	keyDel (parentKey);
+	ksDel (ks);
 }
 
 /**
@@ -915,15 +926,19 @@ static void test_normal_key_with_meta_data_and_array_element_in_key_name_should_
 
 	Key * parentKey = keyNew ("/sw/example/highlevel/#0/current", KEY_END);
 
-	KeySet * returned = ksNew (0, KS_END);
+	KeySet * ks = ksNew (0, KS_END);
 
 	Key * specString = keyNew ("spec:/sw/example/highlevel/#0/current/myfloatarray/#", KEY_END);
 	keySetMeta (specString, "meta:/default", "2.5");
 	keySetMeta (specString, "meta:/type", "string");
 
-	ksAppendKey (returned, specString);
+	ksAppendKey (ks, specString);
 
-	elektraSpecCopy (NULL, returned, parentKey, isKdbGet);
+	elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
+
+	keyDel (parentKey);
+	keyDel (specString);
+	ksDel (ks);
 }
 
 /**
@@ -938,47 +953,51 @@ static void example_codegen_menu_test (bool isKdbGet)
 
 	Key * parentKey = keyNew ("/sw/example/menu/#0/current", KEY_END);
 
-	KeySet * returned = ksNew (0, KS_END);
+	KeySet * ks = ksNew (0, KS_END);
 
 	Key * specKeyCommand = keyNew ("spec:/sw/example/menu/#0/current/menu/#/command", KEY_END);
 	keySetMeta (specKeyCommand, "meta:/default", "");
 	keySetMeta (specKeyCommand, "meta:/type", "string");
-	ksAppendKey (returned, specKeyCommand);
+	ksAppendKey (ks, specKeyCommand);
 
 
 	Key * arraySpec = keyNew ("user:/sw/example/menu/#0/current/menu", KEY_END);
 	keySetMeta (arraySpec, "meta:/array", "#4");
-	ksAppendKey (returned, arraySpec);
+	ksAppendKey (ks, arraySpec);
 
-	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#0/name", KEY_VALUE, "Main Menu", KEY_END));
-	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#1/name", KEY_VALUE, "Menu 1", KEY_END));
-	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#2/name", KEY_VALUE, "Menu 2", KEY_END));
-	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#3/name", KEY_VALUE, "Menu 2.1", KEY_END));
-	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#4/name", KEY_VALUE, "Menu 2.2", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/sw/example/menu/#0/current/menu/#0/name", KEY_VALUE, "Main Menu", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/sw/example/menu/#0/current/menu/#1/name", KEY_VALUE, "Menu 1", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/sw/example/menu/#0/current/menu/#2/name", KEY_VALUE, "Menu 2", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/sw/example/menu/#0/current/menu/#3/name", KEY_VALUE, "Menu 2.1", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/sw/example/menu/#0/current/menu/#4/name", KEY_VALUE, "Menu 2.2", KEY_END));
 
-	ksAppendKey (returned,
-		     keyNew ("user:/sw/example/menu/#0/current/menu/#1/command", KEY_VALUE, "echo \"Hello from Menu 1\"", KEY_END));
-	ksAppendKey (returned,
-		     keyNew ("user:/sw/example/menu/#0/current/menu/#2/command", KEY_VALUE, "echo \"Hello from Menu 2\"", KEY_END));
-	ksAppendKey (returned,
-		     keyNew ("user:/sw/example/menu/#0/current/menu/#3/command", KEY_VALUE, "echo \"Hello from Menu 2.1\"", KEY_END));
-	ksAppendKey (returned,
-		     keyNew ("user:/sw/example/menu/#0/current/menu/#4/command", KEY_VALUE, "echo \"Hello from Menu 2.2\"", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/sw/example/menu/#0/current/menu/#1/command", KEY_VALUE, "echo \"Hello from Menu 1\"", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/sw/example/menu/#0/current/menu/#2/command", KEY_VALUE, "echo \"Hello from Menu 2\"", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/sw/example/menu/#0/current/menu/#3/command", KEY_VALUE, "echo \"Hello from Menu 2.1\"", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/sw/example/menu/#0/current/menu/#4/command", KEY_VALUE, "echo \"Hello from Menu 2.2\"", KEY_END));
 
-	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#0/children", KEY_META, "array", "#1", KEY_END));
-	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#0/children/#0", KEY_VALUE, "@/menu/#1", KEY_END));
-	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#0/children/#1", KEY_VALUE, "@/menu/#2", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/sw/example/menu/#0/current/menu/#0/children", KEY_META, "array", "#1", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/sw/example/menu/#0/current/menu/#0/children/#0", KEY_VALUE, "@/menu/#1", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/sw/example/menu/#0/current/menu/#0/children/#1", KEY_VALUE, "@/menu/#2", KEY_END));
 
-	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#2/children", KEY_META, "array", "#1", KEY_END));
-	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#2/children/#0", KEY_VALUE, "@/menu/#3", KEY_END));
-	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/menu/#2/children/#1", KEY_VALUE, "@/menu/#4", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/sw/example/menu/#0/current/menu/#2/children", KEY_META, "array", "#1", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/sw/example/menu/#0/current/menu/#2/children/#0", KEY_VALUE, "@/menu/#3", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/sw/example/menu/#0/current/menu/#2/children/#1", KEY_VALUE, "@/menu/#4", KEY_END));
 
-	ksAppendKey (returned, keyNew ("user:/sw/example/menu/#0/current/main", KEY_VALUE, "@/menu/#0", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/sw/example/menu/#0/current/main", KEY_VALUE, "@/menu/#0", KEY_END));
 
-	elektraSpecCopy (NULL, returned, parentKey, isKdbGet);
+	elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
-	succeed_if (ksLookup (returned, keyNew ("/sw/example/menu/#0/current/menu/#0/command", KEY_END), 0) != 0,
-		    "should have found #0 command");
+	Key * commandToLookup = keyNew ("/sw/example/menu/#0/current/menu/#0/command", KEY_END);
+	Key * lookupCommand = ksLookup (ks, commandToLookup, 0);
+
+	keyDel (commandToLookup);
+	succeed_if (lookupCommand != 0, "should have found #0 command");
+
+	keyDel (parentKey);
+	keyDel (specKeyCommand);
+	keyDel (arraySpec);
+	ksDel (ks);
 }
 
 /**
@@ -1000,7 +1019,9 @@ static void example_codegen_menu_test (bool isKdbGet)
  */
 static void test_with_array_specification_with_array_size_one (bool isKdbGet)
 {
-	KeySet * returned = ksNew (0, KS_END);
+	printf ("test %s, isKdbGet=%d\n", __func__, isKdbGet);
+
+	KeySet * ks = ksNew (0, KS_END);
 
 	Key * parentKey = keyNew ("/tests/script/gen/highlevel/externalspec", KEY_END);
 
@@ -1011,16 +1032,16 @@ static void test_with_array_specification_with_array_size_one (bool isKdbGet)
 	keySetMeta (specArrayKey, "default", "2.5");
 	keySetMeta (specArrayKey, "type", "float");
 
-	ksAppendKey (returned, specArrayKey);
-	ksAppendKey (returned, parentKey);
-	ksAppendKey (returned, arrayKeySize);
+	ksAppendKey (ks, specArrayKey);
+	ksAppendKey (ks, parentKey);
+	ksAppendKey (ks, arrayKeySize);
 
-	elektraSpecCopy (NULL, returned, parentKey, isKdbGet);
+	elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
 
 	int count = 0;
-	for (elektraCursor it = 0; it < ksGetSize (returned); it++)
+	for (elektraCursor it = 0; it < ksGetSize (ks); it++)
 	{
-		Key * key = ksAtCursor (returned, it);
+		Key * key = ksAtCursor (ks, it);
 		if (keyGetNamespace (key) == KEY_NS_DEFAULT)
 		{
 			count++;
@@ -1031,6 +1052,11 @@ static void test_with_array_specification_with_array_size_one (bool isKdbGet)
 	}
 
 	succeed_if (count == 1, "myfloatarray should have size 1");
+
+	keyDel (parentKey);
+	keyDel (specArrayKey);
+	keyDel (arrayKeySize);
+	ksDel (ks);
 }
 
 int main (void)

@@ -62,6 +62,7 @@ static void addDefaultKey (KeySet * ks, Key * specKey, bool isArraySpec)
 
 	if (containsArraySpecElementWithNoDigitOrUnderlineAfterwards (formattedKeyName))
 	{
+		elektraFree (formattedKeyName);
 		return;
 	}
 
@@ -117,12 +118,19 @@ static bool hasDefault (Key * specKey)
  * @param ks the KeySet to extract specification keys from
  *
  * @retval the extracted specification keys
+ * @retval NULL - if the {@link ks} is NULL
  */
 static KeySet * extractSpecKeys (KeySet * ks)
 {
+	if (ks == NULL)
+	{
+		return NULL;
+	}
+
 	Key * specKey = keyNew ("spec:/", KEY_END);
 	KeySet * ksRet = ksCut (ks, specKey);
 	keyDel (specKey);
+
 	return ksRet;
 }
 
@@ -253,59 +261,60 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * specKeys, KeyS
 
 		if (keyNameWithoutNamespace == NULL)
 		{
+			elektraFree (arrayPositions);
 			return 0;
 		}
 
-		if (arrayPositions)
-
-			for (int i = 0; i < num; i++)
+		for (int i = 0; i < num; i++)
+		{
+			char * untilArrayElementAtPositionI = elektraCalloc (arrayPositions[i] + 1);
+			if (untilArrayElementAtPositionI == NULL)
 			{
-				char * untilArrayElementAtPositionI = elektraCalloc (arrayPositions[i] + 1);
-				if (untilArrayElementAtPositionI == NULL)
+				return 0;
+			}
+			memcpy (untilArrayElementAtPositionI, &keyNameWithoutNamespace[0], arrayPositions[i]);
+
+			Key * arraySizeKeyToInstantiate = getMatchingKeyFromKeySet (specKeys, untilArrayElementAtPositionI);
+			if (arraySizeKeyToInstantiate == NULL)
+			{
+				arraySizeKeyToInstantiate = getMatchingKeyFromKeySet (ks, untilArrayElementAtPositionI);
+			}
+			const char * arraySizeToInstantiate = keyString (keyGetMeta (arraySizeKeyToInstantiate, "array"));
+
+			if (arraySizeKeyToInstantiate == NULL)
+			{
+				// no array size, does any instantiated array element at this already exist
+				if (copyAllMetaDataForMatchingArrayKeyName (ks, parentKey, specKey, isKdbGet) == -1)
 				{
-					return 0;
+					addDefaultKey (ks, specKey, true);
 				}
-				memcpy (untilArrayElementAtPositionI, &keyNameWithoutNamespace[0], arrayPositions[i]);
-
-				Key * arraySizeKeyToInstantiate = getMatchingKeyFromKeySet (specKeys, untilArrayElementAtPositionI);
-				if (arraySizeKeyToInstantiate == NULL)
-				{
-					arraySizeKeyToInstantiate = getMatchingKeyFromKeySet (ks, untilArrayElementAtPositionI);
-				}
-				const char * arraySizeToInstantiate = keyString (keyGetMeta (arraySizeKeyToInstantiate, "array"));
-
-				if (arraySizeKeyToInstantiate == NULL)
-				{
-					// no array size, does any instantiated array element at this already exist
-					if (copyAllMetaDataForMatchingArrayKeyName (ks, parentKey, specKey, isKdbGet) == -1)
-					{
-						addDefaultKey (ks, specKey, true);
-					}
-					continue;
-				}
-
-				int actualArraySize = getActualArraySize (ks, specKey, arrayPositions[i]);
-
-				char * end;
-				char * rest;
-
-				char * afterPossibleArrayElement = elektraStrDup (arraySizeToInstantiate);
-
-				int size = strchr (arraySizeToInstantiate, '#') == NULL ?
-						   strtol (arraySizeToInstantiate, &end, 10) :
-						   strtol (strtok_r (afterPossibleArrayElement, "#", &rest), &end, 10) + 1;
-
-				if (actualArraySize == size)
-				{
-					continue;
-				}
-
-				elektraFree (afterPossibleArrayElement);
-
-				instantiateArraySpecificationAndCopyMeta (specKey, ks, size, arrayPositions[i]);
 
 				elektraFree (untilArrayElementAtPositionI);
+
+				continue;
 			}
+
+			int actualArraySize = getActualArraySize (ks, specKey, arrayPositions[i]);
+
+			char * end;
+			char * rest;
+
+			char * afterPossibleArrayElement = elektraStrDup (arraySizeToInstantiate);
+
+			int size = strchr (arraySizeToInstantiate, '#') == NULL ?
+					   strtol (arraySizeToInstantiate, &end, 10) :
+					   strtol (strtok_r (afterPossibleArrayElement, "#", &rest), &end, 10) + 1;
+
+			elektraFree (afterPossibleArrayElement);
+			elektraFree (untilArrayElementAtPositionI);
+
+			if (actualArraySize == size)
+			{
+				continue;
+			}
+
+			instantiateArraySpecificationAndCopyMeta (specKey, ks, size, arrayPositions[i]);
+		}
 
 		elektraFree (arrayPositions);
 
@@ -381,6 +390,8 @@ int elektraSpecCopy (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * pa
 							       keyName (collisionKey));
 		}
 
+		elektraFree (specKeys);
+
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -407,6 +418,8 @@ int elektraSpecCopy (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * pa
 
 				keyDel (cascadingKey);
 
+				ksDel (specKeys);
+
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 			keyDel (cascadingKey);
@@ -414,6 +427,8 @@ int elektraSpecCopy (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * pa
 
 		if (copyMetaData (parentKey, current, specKeys, returned, isKdbGet) != 0)
 		{
+			ksDel (specKeys);
+
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
