@@ -167,6 +167,10 @@ Below is an explanation of each command.
 Adding a specification key with a require metakey.
 This `meta-set` command should throw error as no key with the name `/tests/sw/org/webserver/name` exists.
 
+### kdb set user:/tests/sw/org/webserver/name web1
+
+Set the value for `user:/tests/sw/org/webserver/name` to `web1`.
+
 ### kdb meta-set spec:/tests/sw/org/webserver/port default 5000
 
 Adding a specification key with a default metakey.
@@ -199,23 +203,25 @@ Check if the `description` metakey was copied successfully.
 
 ```sh
 kdb meta-set spec:/tests/sw/org/webserver/name require true
-# RET: -1
-# STDERROR: Did not find the key
+# RET: 5
+
+kdb set user:/tests/sw/org/webserver/name web1
+# RET: 0
 
 kdb meta-set spec:/tests/sw/org/webserver/port default 5000
-#> Create a new key spec:/tests/sw/org/webserver/port with value 5000
+# RET: 0
 
 kdb set user:/tests/sw/org/webserver/alternative_ports/#0 5001
-#> Create a new key user:/tests/sw/org/webserver/alternative_ports/#0 with value 5001
+#> Create a new key user:/tests/sw/org/webserver/alternative_ports/#0 with string "5001"
 
 kdb set user:/tests/sw/org/webserver/alternative_ports/#1 5002
-#> Create a new key user:/tests/sw/org/webserver/alternative_ports/#1 with value 5002
+#> Create a new key user:/tests/sw/org/webserver/alternative_ports/#1 with string "5002"
 
 kdb meta-set user:/tests/sw/org/webserver/alternative_ports array '2'
-#> Create a new metakey array with value 2 at user:/tests/sw/org/webserver/alternative_ports
+# RET: 0
 
 kdb meta-set spec:/tests/sw/org/webserver/alternative_ports/# description 'This is an alternative port if any other is already bound'
-#> Create a new metakey spec:/tests/sw/org/webserver/alternative_ports/# with description
+# RET: 0
 
 kdb meta-get user:/tests/sw/org/webserver/alternative_ports/#0 description
 # STDOUT-REGEX: This is an alternative port if any other is already bound
