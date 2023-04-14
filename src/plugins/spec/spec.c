@@ -83,7 +83,7 @@ static void addDefaultKey (KeySet * ks, Key * specKey, bool isArraySpec)
  * @retval true - if the specification key contains a meta key require
  * @retval false - if the specification key does not contain a meta key require
  */
-static bool isRequired (Key * specKey)
+static bool isRequired (const Key * specKey)
 {
 	const Key * key = keyGetMeta (specKey, "require");
 
@@ -104,7 +104,7 @@ static bool isRequired (Key * specKey)
  * @retval true - if the specification key contains a meta key default
  * @retval false - if the specification key does not contain the meta key default
  */
-static bool hasDefault (Key * specKey)
+static bool hasDefault (const Key * specKey)
 {
 	return keyGetMeta (specKey, "default") != 0;
 }
@@ -141,7 +141,7 @@ static KeySet * extractSpecKeys (KeySet * ks)
  * @retval true - if the specification key has a wildcard character in the key name
  * @retval false - if the specification does not contain a wildcard character
  */
-static bool isWildcardSpecification (Key * specKey)
+static bool isWildcardSpecification (const Key * specKey)
 {
 	const char * keyWithoutNamespace = strchr (keyName (specKey), '/');
 	for (size_t i = 0; i < elektraStrLen (keyWithoutNamespace); i++)
@@ -270,6 +270,7 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * specKeys, KeyS
 			char * untilArrayElementAtPositionI = elektraCalloc (arrayPositions[i] + 1);
 			if (untilArrayElementAtPositionI == NULL)
 			{
+				elektraFree (arrayPositions);
 				return 0;
 			}
 			memcpy (untilArrayElementAtPositionI, &keyNameWithoutNamespace[0], arrayPositions[i]);
@@ -472,6 +473,8 @@ int elektraSpecRemove (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, ELEKTR
 				}
 			}
 		}
+
+		keyDel (specKey);
 	}
 
 	keyDel (specName);

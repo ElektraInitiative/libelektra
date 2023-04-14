@@ -107,6 +107,7 @@ char * createFormattedArrayKeyNameInDefaultNamespace (char * keyNameWithoutNames
 	char * strAfterArrayElement = elektraCalloc (keyNameSize);
 	if (strAfterArrayElement == NULL)
 	{
+		elektraFree (strUntilArrayElement);
 		return NULL;
 	}
 	memcpy (strAfterArrayElement, &keyNameWithoutNamespace[pos + 1], keyNameSize - 1);
@@ -163,6 +164,8 @@ void instantiateArraySpecificationAndCopyMeta (Key * specKey, KeySet * ks, int a
 		char * formattedKeyName = createFormattedArrayKeyNameInDefaultNamespace (keyNameWithoutNamespace, i, pos);
 		if (containsArraySpecElementWithNoDigitOrUnderlineAfterwards (formattedKeyName))
 		{
+			elektraFree (instantiatedArraySpecs);
+			elektraFree (formattedKeyName);
 			return;
 		}
 
