@@ -13,6 +13,12 @@ bool specMatches (Key * specKey, Key * otherKey)
 	 * This function was copied from 68e9dff, doesn't use globbing and therefore doesn't require the globbing library which is not
 	 * compatible with Windows:
 	 */
+
+	if (specKey == NULL || otherKey == NULL)
+	{
+		return false;
+	}
+
 	const char * spec = keyUnescapedName (specKey);
 	size_t specNsLen = strlen (spec) + 1;
 	spec += specNsLen; // skip namespace
@@ -35,10 +41,23 @@ bool specMatches (Key * specKey, Key * otherKey)
  */
 bool specMatches (Key * specKey, Key * otherKey)
 {
+	if (specKey == NULL || otherKey == NULL)
+	{
+		return false;
+	}
+
 	// ignore namespaces for globbing
-	Key * globKey = keyNew (strchr (keyName (otherKey), '/'), KEY_END);
+	char * untilFirstSlash = strchr (keyName (otherKey), '/');
+	if (untilFirstSlash == NULL)
+	{
+		return NULL;
+	}
+	Key * globKey = keyNew (untilFirstSlash, KEY_END);
+
 	bool matches = elektraKeyGlob (globKey, strchr (keyName (specKey), '/')) == 0;
+
 	keyDel (globKey);
+
 	return matches;
 }
 #endif
