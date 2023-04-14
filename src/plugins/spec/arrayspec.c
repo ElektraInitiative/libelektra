@@ -172,6 +172,17 @@ void instantiateArraySpecificationAndCopyMeta (Key * specKey, KeySet * ks, int a
 			key = keyNew (formattedKeyName, KEY_END);
 		}
 
+		// check if key has a value
+		const Key * defaultValue = keyGetMeta (specKey, "meta:/default");
+		if (elektraStrCmp (keyString (key), "") == 0 || elektraStrCmp (keyString (key), "(null)") == 0)
+		{
+			const char * defaultValueString = keyString (defaultValue);
+			if (elektraStrCmp (defaultValueString, "(null)") != 0)
+			{
+				keySetString (key, keyString (defaultValue));
+			}
+		}
+
 		keyCopyAllMeta (key, specKey);
 		ksAppendKey (instantiatedArraySpecs, key);
 

@@ -981,6 +981,58 @@ static void example_codegen_menu_test (bool isKdbGet)
 		    "should have found #0 command");
 }
 
+/**
+ * Test should verify that an array specification with an array size of 1 gets only 1 array instantiated and the default value assigned.
+ *
+ * Sample:
+ * 	user:/tests/script/gen/highlevel/externalspec/myfloatarray
+ * 		array => #0
+ *	spec:/tests/script/gen/highlevel/externalspec/myfloatarray/#
+ *		default => 2.5
+ *		type => float
+ *
+ * No other configuration.
+ * It should create /tests/script/gen/highlevel/externalspec/myfloatarray/#0 in default namespace.
+ * Value should be 2.5.
+ * Array should only have size 1.
+ *
+ * @param isKdbGet boolean value indicating if it is a kdb get call
+ */
+static void test_with_array_specification_with_array_size_one (bool isKdbGet)
+{
+	KeySet * returned = ksNew (0, KS_END);
+
+	Key * parentKey = keyNew ("/tests/script/gen/highlevel/externalspec", KEY_END);
+
+	Key * arrayKeySize = keyNew ("user:/tests/script/gen/highlevel/externalspec/myfloatarray", KEY_END);
+	keySetMeta (arrayKeySize, "array", "#0");
+
+	Key * specArrayKey = keyNew ("spec:/tests/script/gen/highlevel/externalspec/myfloatarray/#", KEY_END);
+	keySetMeta (specArrayKey, "default", "2.5");
+	keySetMeta (specArrayKey, "type", "float");
+
+	ksAppendKey (returned, specArrayKey);
+	ksAppendKey (returned, parentKey);
+	ksAppendKey (returned, arrayKeySize);
+
+	elektraSpecCopy (NULL, returned, parentKey, isKdbGet);
+
+	int count = 0;
+	for (elektraCursor it = 0; it < ksGetSize (returned); it++)
+	{
+		Key * key = ksAtCursor (returned, it);
+		if (keyGetNamespace (key) == KEY_NS_DEFAULT)
+		{
+			count++;
+
+			const char * value = keyString (key);
+			succeed_if_same_string (value, "2.5");
+		}
+	}
+
+	succeed_if (count == 1, "myfloatarray should have size 1");
+}
+
 int main (void)
 {
 	test_hook_copy_with_require_meta_key_and_missing_key_should_error (false);
@@ -1010,6 +1062,7 @@ int main (void)
 
 	test_normal_key_with_meta_data_and_array_element_in_key_name_should_succeed (true);
 	example_codegen_menu_test (true);
+	test_with_array_specification_with_array_size_one (true);
 
 	return 0;
 }
