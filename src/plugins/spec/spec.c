@@ -232,11 +232,14 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * specKeys, KeyS
 {
 	int found = -1;
 
+
 	bool isArraySpec = isArraySpecification (specKey);
 	if (isArraySpec && !isValidArraySize (ks, specKeys, parentKey))
 	{
 		return -1;
 	}
+
+	char * specKeyWithoutNamespace = strchr (keyName (specKey), '/');
 
 	// in case array spec does not look like #_10, #__100
 	// this will instantiate array keys and add to default:/ if they contain a default value
@@ -257,9 +260,7 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * specKeys, KeyS
 
 		setArrayPositions (strchr (keyName (specKey), '/'), arrayPositions, num);
 
-		char * keyNameWithoutNamespace = strchr (keyName (specKey), '/');
-
-		if (keyNameWithoutNamespace == NULL)
+		if (specKeyWithoutNamespace == NULL)
 		{
 			elektraFree (arrayPositions);
 			return 0;
@@ -273,7 +274,7 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * specKeys, KeyS
 				elektraFree (arrayPositions);
 				return 0;
 			}
-			memcpy (untilArrayElementAtPositionI, &keyNameWithoutNamespace[0], arrayPositions[i]);
+			memcpy (untilArrayElementAtPositionI, &specKeyWithoutNamespace[0], arrayPositions[i]);
 
 			Key * arraySizeKeyToInstantiate = getMatchingKeyFromKeySet (specKeys, untilArrayElementAtPositionI);
 			if (arraySizeKeyToInstantiate == NULL)
@@ -325,6 +326,12 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * specKeys, KeyS
 	for (elektraCursor it = 0; it < ksGetSize (ks); it++)
 	{
 		Key * current = ksAtCursor (ks, it);
+
+		char * withoutNamespace = strchr (keyName (current), '/');
+		if (elektraStrCmp (specKeyWithoutNamespace, "/") == 0 || elektraStrCmp (withoutNamespace, "/") == 0)
+		{
+			continue;
+		}
 
 		if (specMatches (specKey, current))
 		{
