@@ -258,7 +258,7 @@ int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * definition, Key * 
 		{
 			ELEKTRA_SET_INSTALLATION_ERRORF (
 				parentKey,
-				"If no resolver is configured, '%s/definition/path' you must set to an absolute path. "
+				"If no resolver is configured, you must set '%s/definition/path' to an absolute path. "
 				"(Configuration of mountpoint: '%s')",
 				keyName (parentKey), keyBaseName (parentKey));
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
