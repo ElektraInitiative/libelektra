@@ -739,7 +739,7 @@ static void test_elektraRecordGetDiff_shouldProvideDiff (void)
 	printErrorAndClear (parentKey);
 
 	// Act
-	ElektraDiff *diff = NULL;
+	ElektraDiff * diff = NULL;
 	bool success = elektraRecordGetDiff (kdb, &diff, errorKey);
 	printErrorAndClear (errorKey);
 

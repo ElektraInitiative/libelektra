@@ -1,10 +1,10 @@
 /**
-* @file
-*
-* @brief
-*
-* @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
-*/
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
 
 #ifndef ELEKTRA_RECORDSTATE_HPP
 #define ELEKTRA_RECORDSTATE_HPP
@@ -17,29 +17,29 @@ class RecordStateCommand : public Command
 {
 public:
 	RecordStateCommand ();
-       ~RecordStateCommand ();
+	~RecordStateCommand ();
 
-       virtual std::string getShortOptions () override
-       {
-	       return "";
-       };
+	virtual std::string getShortOptions () override
+	{
+		return "";
+	};
 
-       virtual std::string getSynopsis () override
-       {
-	       return "";
-       };
+	virtual std::string getSynopsis () override
+	{
+		return "";
+	};
 
-       virtual std::string getShortHelpText () override
-       {
-	       return "Show information about the current recording session.";
-       }
+	virtual std::string getShortHelpText () override
+	{
+		return "Show information about the current recording session.";
+	}
 
-       virtual std::string getLongHelpText () override
-       {
-	       return "";
-       }
+	virtual std::string getLongHelpText () override
+	{
+		return "";
+	}
 
-       virtual int execute (Cmdline const & cmdline) override;
+	virtual int execute (Cmdline const & cmdline) override;
 };
 
 

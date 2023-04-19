@@ -9,9 +9,9 @@
 #define ELEKTRA_KDBRECORD_H
 
 #include <kdb.h>
+#include <kdbdiff.h>
 #include <kdbplugin.h>
 #include <kdbtypes.h>
-#include <kdbdiff.h>
 
 #ifdef __cplusplus
 namespace ckdb

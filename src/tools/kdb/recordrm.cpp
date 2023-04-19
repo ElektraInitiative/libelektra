@@ -1,10 +1,10 @@
 /**
-* @file
-*
-* @brief
-*
-* @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
-*/
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
 
 #include "recordrm.hpp"
 #include "coloredkdbio.hpp"
@@ -21,22 +21,22 @@ RecordRemoveKeyCommand::~RecordRemoveKeyCommand () = default;
 
 int RecordRemoveKeyCommand::execute (const Cmdline & cmdline)
 {
-       if (cmdline.arguments.size () != 1)
-       {
-	       throw invalid_argument ("needs 1 argument");
-       }
+	if (cmdline.arguments.size () != 1)
+	{
+		throw invalid_argument ("needs 1 argument");
+	}
 
-       KDB kdb;
-       Key parentKey = cmdline.createKey (0);
-       Key errorKey ("/");
+	KDB kdb;
+	Key parentKey = cmdline.createKey (0);
+	Key errorKey ("/");
 
-       if (!ckdb::elektraRecordRemoveKey(*kdb, *parentKey, *errorKey))
-       {
-	       printError (cerr, errorKey, cmdline.verbose, cmdline.debug);
-	       return 1;
-       }
+	if (!ckdb::elektraRecordRemoveKey (*kdb, *parentKey, *errorKey))
+	{
+		printError (cerr, errorKey, cmdline.verbose, cmdline.debug);
+		return 1;
+	}
 
-       printWarnings (cerr, errorKey, cmdline.verbose, cmdline.debug);
+	printWarnings (cerr, errorKey, cmdline.verbose, cmdline.debug);
 
-       return 0;
+	return 0;
 }

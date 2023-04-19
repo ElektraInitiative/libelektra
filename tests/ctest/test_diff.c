@@ -720,11 +720,10 @@ static void test_elektraDiffRemoveKey_shouldWork (void)
 	printf ("Test %s\n", __func__);
 
 	// Arrange
-	ElektraDiff * diff = elektraDiffNew (
-		ksNew (2, keyNew ("system:/a/key", KEY_END), keyNew ("system:/b/key", KEY_END), KS_END),
-		ksNew (2, keyNew ("system:/a/key", KEY_END), keyNew ("system:/b/key", KEY_END), KS_END),
-		ksNew (2, keyNew ("system:/a/key", KEY_END), keyNew ("system:/b/key", KEY_END), KS_END),
-		ksNew (2, keyNew ("system:/a/key", KEY_END), keyNew ("system:/b/key", KEY_END), KS_END), NULL);
+	ElektraDiff * diff = elektraDiffNew (ksNew (2, keyNew ("system:/a/key", KEY_END), keyNew ("system:/b/key", KEY_END), KS_END),
+					     ksNew (2, keyNew ("system:/a/key", KEY_END), keyNew ("system:/b/key", KEY_END), KS_END),
+					     ksNew (2, keyNew ("system:/a/key", KEY_END), keyNew ("system:/b/key", KEY_END), KS_END),
+					     ksNew (2, keyNew ("system:/a/key", KEY_END), keyNew ("system:/b/key", KEY_END), KS_END), NULL);
 
 	Key * toRemove = keyNew ("system:/a/key", KEY_END);
 
@@ -738,19 +737,16 @@ static void test_elektraDiffRemoveKey_shouldWork (void)
 
 	succeed_if (diff->removedKeys != NULL, "removed keys should not be NULL");
 	succeed_if_fmt (ksGetSize (diff->removedKeys) == 1, "removed keys should have 1 key, was %zu", ksGetSize (diff->removedKeys));
-	succeed_if (ksLookupByName (diff->removedKeys, "system:/b/key", 0) != NULL,
-		    "system:/b/key should still be in removed keys");
+	succeed_if (ksLookupByName (diff->removedKeys, "system:/b/key", 0) != NULL, "system:/b/key should still be in removed keys");
 
 	succeed_if (diff->modifiedKeys != NULL, "modified keys should not be NULL");
 	succeed_if_fmt (ksGetSize (diff->modifiedKeys) == 1, "modified keys should have 1 key, was %zu", ksGetSize (diff->modifiedKeys));
-	succeed_if (ksLookupByName (diff->modifiedKeys, "system:/b/key", 0) != NULL,
-		    "system:/b/key should still be in added keys");
+	succeed_if (ksLookupByName (diff->modifiedKeys, "system:/b/key", 0) != NULL, "system:/b/key should still be in added keys");
 
 	succeed_if (diff->modifiedNewKeys != NULL, "modified new keys should not be NULL");
 	succeed_if_fmt (ksGetSize (diff->modifiedNewKeys) == 1, "modified new keys should have 1 key, was %zu",
 			ksGetSize (diff->modifiedNewKeys));
-	succeed_if (ksLookupByName (diff->modifiedNewKeys, "system:/b/key", 0) != NULL,
-		    "system:/b/key should still be in added keys");
+	succeed_if (ksLookupByName (diff->modifiedNewKeys, "system:/b/key", 0) != NULL, "system:/b/key should still be in added keys");
 
 	elektraDiffDel (diff);
 	keyDel (toRemove);

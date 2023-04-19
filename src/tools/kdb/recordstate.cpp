@@ -1,18 +1,18 @@
 /**
-* @file
-*
-* @brief
-*
-* @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
-*/
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
 
 #include "recordstate.hpp"
 #include "coloredkdbio.hpp"
+#include "kdbprivate.h"
 #include <cmdline.hpp>
 #include <iostream>
 #include <kdb.hpp>
 #include <kdbrecord.h>
-#include "kdbprivate.h"
 
 using namespace std;
 using namespace kdb;
@@ -54,24 +54,24 @@ int RecordStateCommand::execute (const Cmdline & cmdline)
 	cout << "Recording is active for " << activeKey.getString () << endl;
 	cout << endl;
 
-	cout << "Added " << addedKeys.size() << " key(s)" << endl;
-	cout << "Modified " << modifiedKeys.size() << " key(s)" << endl;
-	cout << "Removed " << removedKeys.size() << " key(s)" << endl;
+	cout << "Added " << addedKeys.size () << " key(s)" << endl;
+	cout << "Modified " << modifiedKeys.size () << " key(s)" << endl;
+	cout << "Removed " << removedKeys.size () << " key(s)" << endl;
 	cout << endl;
 
 	for (const auto & key : addedKeys)
 	{
-		cout << "Added key " << key.getName() << endl;
+		cout << "Added key " << key.getName () << endl;
 	}
 
 	for (const auto & key : modifiedKeys)
 	{
-		cout << "Modified key " << key.getName() << endl;
+		cout << "Modified key " << key.getName () << endl;
 	}
 
 	for (const auto & key : removedKeys)
 	{
-		cout << "Removed key " << key.getName() << endl;
+		cout << "Removed key " << key.getName () << endl;
 	}
 
 	return 0;
