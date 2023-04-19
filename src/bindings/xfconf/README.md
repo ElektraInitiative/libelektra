@@ -12,8 +12,6 @@ In other words, it makes applications which rely on xfconf for their configurati
 
 For further understanding how xfconf is structured, please refer to the [xfconf plugin](../../../src/plugins/xfconf/README.md#xfconf-terminology).
 
-todo.
-
 ## Files
 
 - The header files of this implementation are provided by xfconf and are not included here.
