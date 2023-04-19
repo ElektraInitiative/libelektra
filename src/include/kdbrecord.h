@@ -11,6 +11,7 @@
 #include <kdb.h>
 #include <kdbplugin.h>
 #include <kdbtypes.h>
+#include <kdbdiff.h>
 
 #ifdef __cplusplus
 namespace ckdb
@@ -25,6 +26,8 @@ bool elektraRecordExportSession (KDB * handle, Plugin * plugin, Key * parentKey,
 
 bool elektraRecordRecord (KDB * handle, KDB * sessionStorageHandle, KeySet * newKeys, Key * parentKey, Key * errorKey);
 bool elektraRecordUndo (KDB * handle, KDB * sessionStorageHandle, Key * parentKey, Key * errorKey);
+bool elektraRecordRemoveKey (KDB * handle, Key * toRemove, Key * errorKey);
+bool elektraRecordGetDiff (KDB * handle, ElektraDiff ** diff, Key * errorKey);
 bool elektraRecordIsActive (KDB * handle);
 
 #ifdef __cplusplus

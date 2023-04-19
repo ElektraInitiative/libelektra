@@ -567,6 +567,88 @@ cleanup:
 	return successful;
 }
 
+bool elektraRecordRemoveKey (KDB * handle, Key * toRemove, Key * errorKey)
+{
+	if (handle == NULL)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "NULL pointer passed for KDB handle");
+		return false;
+	}
+
+	if (toRemove == NULL)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "NULL pointer passed for key to remove");
+		return false;
+	}
+
+	Key * sessionRecordingKey = keyNew (ELEKTRA_RECORD_SESSION_KEY, KEY_END);
+	KeySet * recordStorage = ksNew (0, KS_END);
+
+	// Load data from session diff
+	if (kdbGet (handle, recordStorage, sessionRecordingKey) == -1)
+	{
+		elektraCopyError (errorKey, sessionRecordingKey);
+		keyDel (sessionRecordingKey);
+		ksDel (recordStorage);
+		return false;
+	}
+
+	ElektraDiff * sessionDiff = getDiffFromSessionStorage (recordStorage, NULL);
+	elektraDiffRemoveKey (sessionDiff, toRemove);
+
+	putDiffIntoSessionStorage (recordStorage, sessionDiff);
+
+	bool successful = true;
+
+	// store data for session diff
+	if (kdbSet (handle, recordStorage, sessionRecordingKey) == -1)
+	{
+		elektraCopyError (errorKey, sessionRecordingKey);
+		successful = false;
+	}
+
+	elektraDiffDel (sessionDiff);
+	ksDel (recordStorage);
+	keyDel (sessionRecordingKey);
+
+	return successful;
+}
+
+bool elektraRecordGetDiff (KDB * handle, ElektraDiff ** diff, Key * errorKey)
+{
+	if (handle == NULL)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "NULL pointer passed for KDB handle");
+		return false;
+	}
+
+	if (diff == NULL)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "NULL pointer passed for diff");
+		return false;
+	}
+
+	Key * sessionRecordingKey = keyNew (ELEKTRA_RECORD_SESSION_KEY, KEY_END);
+	KeySet * recordStorage = ksNew (0, KS_END);
+
+	// Load data from session diff
+	if (kdbGet (handle, recordStorage, sessionRecordingKey) == -1)
+	{
+		elektraCopyError (errorKey, sessionRecordingKey);
+		keyDel (sessionRecordingKey);
+		ksDel (recordStorage);
+		return false;
+	}
+
+	ElektraDiff * sessionDiff = getDiffFromSessionStorage (recordStorage, NULL);
+	*diff = sessionDiff;
+
+	keyDel (sessionRecordingKey);
+	ksDel (recordStorage);
+
+	return true;
+}
+
 static KeySet * buildExportKeySet (ElektraDiff * diff)
 {
 	KeySet * ks = ksNew (0, KS_END);

@@ -6,5 +6,7 @@ libelektra_0.9 {
 	elektraRecordExportSession;
 	elektraRecordRecord;
 	elektraRecordUndo;
+	elektraRecordRemoveKey;
+	elektraRecordGetDiff;
 	elektraRecordIsActive;
 };
