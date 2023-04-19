@@ -1,0 +1,57 @@
+Mountpoint: user:/testundo
+
+< kdb set user:/testundo/name Max
+< kdb set user:/testundo/age 28
+
+RET: 0
+< kdb record-start
+
+< kdb set user:/testundo/name Hans
+< kdb rm user:/testundo/age
+< kdb set user:/testundo/hobby swimming
+
+RET: 0
+STDOUT: Hans
+< kdb get user:/testundo/name
+
+STDERR: Did not find key 'user:/testundo/age'
+< kdb get user:/testundo/age
+
+RET: 0
+STDOUT: swimming
+< kdb get user:/testundo/hobby
+
+#
+# Undo only a part
+#
+
+RET: 0
+< kdb record-undo user:/testundo/hobby
+
+STDERR: Did not find key 'user:/testundo/hobby'
+< kdb get user:/testundo/hobby
+
+RET: 0
+STDOUT: Hans
+< kdb get user:/testundo/name
+
+STDERR: Did not find key 'user:/testundo/age'
+< kdb get user:/testundo/age
+
+#
+# Undo everything else
+#
+
+RET: 0
+< kdb record-undo
+
+RET: 0
+STDOUT: Max
+< kdb get user:/testundo/name
+
+RET: 0
+STDOUT: 28
+< kdb get user:/testundo/age
+
+< kdb record-stop
+< kdb record-clear
