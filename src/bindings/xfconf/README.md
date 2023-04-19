@@ -50,6 +50,11 @@ Assuming that the library directory is `/usr/local/lib`, this can be achieved as
 4. symlink `/usr/local/lib/libxfconf-0.so.3.0.0` to `/usr/local/lib/libxfconfbinding.so.0.0.1`
 5. take the symlinks `/usr/local/lib/libxfconf-0.so.3` and `/usr/local/lib/libxfconf-.so` which point to `/usr/local/lib/libxfconf-0.so` from the upstream xfconf library and place them into you system
 
+This can be also achieved using the [system replace script](scripts/replace-system-xfconf.sh).
+These changes can be reverted with the [system restore script](scripts/restore-system-xfconf.sh).
+Note, that both scripts must be run directly within the build root.
+However, there are more convenient ways to achieve that as described [below](#using-the-binding-as-a-replacement-in-xfce).
+
 ## Using the binding as a replacement in Xfce
 
 It is currently possible to use this binding instead of Xfconf in order to start and use Xfce.
@@ -67,32 +72,26 @@ Use with caution and on non-production systems such as virtual machines only.
 
 The following instructions only have an effect on the current user which allows a quick revert through a different user.
 
-Build elektra as instructed in the [COMPILE](../../../doc/COMPILE.md#developer-options) and do not forget to include the `xfconfbinding` and set the `KDB_DB_SYSTEM` and `CMAKE_INSTALL_PREFIX` paths properly.
-In this example, it is assumed, that the cmake build directory is `$HOME/build` and stored in the environment variable `CMAKE_BUILD_XFCONFBINDING` and `KDB_DB_SYSTEM=$CMAKE_BUILD_XFCONFBINDING/system` and `CMAKE_INSTALL_PREFIX=$CMAKE_BUILD_XFCONFBINDING/install`.
+Build elektra as instructed in the [COMPILE](../../../doc/COMPILE.md#developer-options) and do not forget to include the `xfconfbinding`.
 
-After building, a file at `~/.xprofile` with following content must be created:
+After building, the library has to be overridden with the [user replace script](scripts/replace-user-xfconf.sh).
+Again, the working directory must be the build root.
+Then the Xfce configuration must be initialized using:
 
-```shell
-export CMAKE_BUILD_XFCONFBINDING=$HOME/build
-export LD_LIBRARY_PATH=$CMAKE_BUILD_XFCONFBINDING/lib
-export LD_PRELOAD=$CMAKE_BUILD_XFCONFBINDING/lib/libxfconfbinding.so
-```
+1. `source $HOME/.xprofile`
+2. running the [population script](scripts/populate-xfconf.sh)
 
-Also make sure to use these variables in your shell.
-A possible solution is to copy this file to `~/.bash_profile`/`~/.zshenv` when using bash/zsh.
+When done, the graphical session can be started and will now use elektra for the Xfce configuration.
+
+To restore the usage of the systems Xfconf, it is enough to remove the `LD_*` exports from `$HOME/.xprofile`
+
+## Debugging
 
 For debugging purposes, it might be useful to output and log all debug messages from glib.
 This can be done by appending the `G_MESSAGES_DEBUG=all` environment variable to all the above-mentioned places.
+However, this is already done by the [user replace script](scripts/replace-user-xfconf.sh).
 All components responsible for starting the Xfce session will log their output wherever the display-manager stores the log files.
 All applications started from the command line will put their debug log to the stderr.
-
-Then, re-login into a text session, a graphical session with Xfce will fail at this point.
-Xfce needs to be populated with some configuration settings.
-This can be archived using the [provided script](scripts/populate-xfconf.sh).
-
-When done, the graphical session can bes started and will now use elektra for the Xfce configuration.
-
-To restore the usage of the systems Xfconf, it is enough to restore the content of the variable files created previously.
 
 ## Quality
 
