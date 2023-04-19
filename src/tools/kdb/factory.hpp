@@ -54,6 +54,7 @@
 #include <recordclear.hpp>
 #include <recordexport.hpp>
 #include <recordstart.hpp>
+#include <recordstate.hpp>
 #include <recordstop.hpp>
 #include <recordundo.hpp>
 #include <remount.hpp>
@@ -133,6 +134,7 @@ public:
 		m_factory.insert (std::make_pair ("record-clear", std::make_shared<Cnstancer<RecordClearCommand>> ()));
 		m_factory.insert (std::make_pair ("record-export", std::make_shared<Cnstancer<RecordExportCommand>> ()));
 		m_factory.insert (std::make_pair ("record-start", std::make_shared<Cnstancer<RecordStartCommand>> ()));
+		m_factory.insert (std::make_pair ("record-state", std::make_shared<Cnstancer<RecordStateCommand>> ()));
 		m_factory.insert (std::make_pair ("record-stop", std::make_shared<Cnstancer<RecordStopCommand>> ()));
 		m_factory.insert (std::make_pair ("record-undo", std::make_shared<Cnstancer<RecordUndoCommand>> ()));
 	}
