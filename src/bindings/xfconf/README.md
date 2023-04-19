@@ -99,10 +99,5 @@ However, since settings such as the Gtk theme part of the Xfce desktop itself, t
 
 ## Further Links
 
-Link to tutorials etc.
-todo.
-
-## Notes
-
-None.
-todo.
+- Official Xfconf docs: https://docs.xfce.org/xfce/xfconf/start
+- Official Xfconf query docs: https://docs.xfce.org/xfce/xfconf/xfconf-query
