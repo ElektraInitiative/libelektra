@@ -27,8 +27,8 @@ int RecordStartCommand::execute (const Cmdline & cmdline)
 	}
 
 	KDB kdb;
-	Key parentKey ("/");
-	Key errorKey ("/");
+	Key parentKey;
+	Key errorKey;
 
 	if (cmdline.arguments.size () == 1)
 	{

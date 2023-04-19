@@ -23,7 +23,7 @@ RecordStateCommand::~RecordStateCommand () = default;
 int RecordStateCommand::execute (const Cmdline & cmdline)
 {
 	KDB kdb;
-	Key errorKey ("/");
+	Key errorKey;
 
 	if (!ckdb::elektraRecordIsActive (*kdb))
 	{

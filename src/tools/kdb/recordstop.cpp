@@ -22,7 +22,7 @@ RecordStopCommand::~RecordStopCommand () = default;
 int RecordStopCommand::execute (const Cmdline & cmdline)
 {
 	KDB kdb;
-	Key errorKey ("/");
+	Key errorKey;
 
 	if (!ckdb::elektraRecordDisableRecording (*kdb, *errorKey))
 	{

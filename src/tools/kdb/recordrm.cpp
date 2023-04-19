@@ -28,7 +28,7 @@ int RecordRemoveKeyCommand::execute (const Cmdline & cmdline)
 
 	KDB kdb;
 	Key parentKey = cmdline.createKey (0);
-	Key errorKey ("/");
+	Key errorKey;
 
 	if (!ckdb::elektraRecordRemoveKey (*kdb, *parentKey, *errorKey))
 	{

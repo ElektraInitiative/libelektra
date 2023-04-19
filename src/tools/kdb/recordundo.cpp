@@ -26,14 +26,14 @@ int RecordUndoCommand::execute (const Cmdline & cmdline)
 		throw invalid_argument ("max 1 argument needed");
 	}
 
-	Key parentKey ("/");
+	Key parentKey;
 	if (cmdline.arguments.size () == 1)
 	{
 		parentKey = cmdline.createKey (0);
 	}
 
 	KDB kdb;
-	Key errorKey ("/");
+	Key errorKey;
 
 	if (!ckdb::elektraRecordUndo (*kdb, *kdb, *parentKey, *errorKey))
 	{

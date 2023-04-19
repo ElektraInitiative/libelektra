@@ -22,7 +22,7 @@ RecordClearCommand::~RecordClearCommand () = default;
 int RecordClearCommand::execute (const Cmdline & cmdline)
 {
 	KDB kdb;
-	Key errorKey ("/");
+	Key errorKey;
 
 	if (!ckdb::elektraRecordClearSession (*kdb, *errorKey))
 	{
