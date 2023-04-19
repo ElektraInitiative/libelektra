@@ -17,6 +17,7 @@ ElektraDiff * elektraDiffCalculate (KeySet * newKeys, KeySet * oldKeys, Key * pa
 void elektraDiffDel (ElektraDiff * ksd);
 void elektraDiffRemoveSameOrBelow (ElektraDiff * ksd, const Key * cutpoint);
 void elektraDiffRemoveOther (ElektraDiff * ksd, const Key * parentKey);
+void elektraDiffRemoveKey (ElektraDiff * ksd, Key * toRemove);
 ElektraDiff * elektraDiffCut (ElektraDiff * original, const Key * cutpoint);
 ElektraDiff * elektraDiffDup (const ElektraDiff * original);
 

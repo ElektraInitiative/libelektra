@@ -58,6 +58,9 @@ public:
 	inline void removeSameOrBelow (std::string const & cutpointName);
 	inline void removeSameOrBelow (const Key & cutpoint);
 
+	inline void removeKey (std::string const & keyName);
+	inline void removeKey (const Key & key);
+
 	inline ElektraDiff cut (std::string const & cutpointName);
 	inline ElektraDiff cut (const Key & cutpoint);
 
@@ -287,6 +290,23 @@ inline void ElektraDiff::removeSameOrBelow (std::string const & cutpointName)
 inline void ElektraDiff::removeSameOrBelow (const Key & cutpoint)
 {
 	ckdb::elektraDiffRemoveSameOrBelow (diff, cutpoint.getKey ());
+}
+
+/**
+ * @copydoc elektraDiffRemoveKey
+ */
+inline void ElektraDiff::removeKey (std::string const & keyName)
+{
+	Key key (keyName, KEY_END);
+	return removeKey (key);
+}
+
+/**
+ * @copydoc elektraDiffRemoveKey
+ */
+inline void ElektraDiff::removeKey (const Key & key)
+{
+	ckdb::elektraDiffRemoveKey (diff, key.getKey ());
 }
 
 /**

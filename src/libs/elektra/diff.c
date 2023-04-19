@@ -483,6 +483,25 @@ void elektraDiffRemoveOther (ElektraDiff * ksd, const Key * parentKey)
 }
 
 /**
+ * Remove the given key from the diff
+ *
+ * @param ksd the diff
+ * @param toRemove the key to remove
+ */
+void elektraDiffRemoveKey (ElektraDiff * ksd, Key * toRemove)
+{
+	if (ksd == NULL || toRemove == NULL)
+	{
+		return;
+	}
+
+	if (ksd->addedKeys) keyDel (ksLookup (ksd->addedKeys, toRemove, KDB_O_POP));
+	if (ksd->removedKeys) keyDel (ksLookup (ksd->removedKeys, toRemove, KDB_O_POP));
+	if (ksd->modifiedKeys) keyDel (ksLookup (ksd->modifiedKeys, toRemove, KDB_O_POP));
+	if (ksd->modifiedNewKeys) keyDel (ksLookup (ksd->modifiedNewKeys, toRemove, KDB_O_POP));
+}
+
+/**
  * Appends a diff to another diff.
  *
  * @param target the diff where the other diff should be appended

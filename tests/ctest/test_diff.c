@@ -715,6 +715,47 @@ static void test_elektraDiffRemoveOther_shouldWork (void)
 	keyDel (toKeep);
 }
 
+static void test_elektraDiffRemoveKey_shouldWork (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange
+	ElektraDiff * diff = elektraDiffNew (
+		ksNew (2, keyNew ("system:/a/key", KEY_END), keyNew ("system:/b/key", KEY_END), KS_END),
+		ksNew (2, keyNew ("system:/a/key", KEY_END), keyNew ("system:/b/key", KEY_END), KS_END),
+		ksNew (2, keyNew ("system:/a/key", KEY_END), keyNew ("system:/b/key", KEY_END), KS_END),
+		ksNew (2, keyNew ("system:/a/key", KEY_END), keyNew ("system:/b/key", KEY_END), KS_END), NULL);
+
+	Key * toRemove = keyNew ("system:/a/key", KEY_END);
+
+	// Act
+	elektraDiffRemoveKey (diff, toRemove);
+
+	// Assert
+	succeed_if (diff->addedKeys != NULL, "added keys should not be NULL");
+	succeed_if_fmt (ksGetSize (diff->addedKeys) == 1, "added keys should have 1 key, was %zu", ksGetSize (diff->addedKeys));
+	succeed_if (ksLookupByName (diff->addedKeys, "system:/b/key", 0) != NULL, "system:/b/key should still be in added keys");
+
+	succeed_if (diff->removedKeys != NULL, "removed keys should not be NULL");
+	succeed_if_fmt (ksGetSize (diff->removedKeys) == 1, "removed keys should have 1 key, was %zu", ksGetSize (diff->removedKeys));
+	succeed_if (ksLookupByName (diff->removedKeys, "system:/b/key", 0) != NULL,
+		    "system:/b/key should still be in removed keys");
+
+	succeed_if (diff->modifiedKeys != NULL, "modified keys should not be NULL");
+	succeed_if_fmt (ksGetSize (diff->modifiedKeys) == 1, "modified keys should have 1 key, was %zu", ksGetSize (diff->modifiedKeys));
+	succeed_if (ksLookupByName (diff->modifiedKeys, "system:/b/key", 0) != NULL,
+		    "system:/b/key should still be in added keys");
+
+	succeed_if (diff->modifiedNewKeys != NULL, "modified new keys should not be NULL");
+	succeed_if_fmt (ksGetSize (diff->modifiedNewKeys) == 1, "modified new keys should have 1 key, was %zu",
+			ksGetSize (diff->modifiedNewKeys));
+	succeed_if (ksLookupByName (diff->modifiedNewKeys, "system:/b/key", 0) != NULL,
+		    "system:/b/key should still be in added keys");
+
+	elektraDiffDel (diff);
+	keyDel (toRemove);
+}
+
 static void test_elektraDiffCut_shouldWork (void)
 {
 	printf ("Test %s\n", __func__);
@@ -877,6 +918,7 @@ int main (int argc, char ** argv)
 
 	test_elektraDiffRemoveSameOrBelow_shouldWork ();
 	test_elektraDiffRemoveOther_shouldWork ();
+	test_elektraDiffRemoveKey_shouldWork ();
 	test_elektraDiffCut_shouldWork ();
 
 	test_elektraDiffDup_shouldDuplicate ();

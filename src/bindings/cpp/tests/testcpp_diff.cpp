@@ -135,6 +135,29 @@ TEST (diff, removeSameOrBelow)
 	EXPECT_FALSE (diff.getRemovedKeys ().lookup ("user:/test2/b").isValid ());
 }
 
+TEST (diff, removeKey)
+{
+	// Arrange
+	KeySet ksOld;
+	ksOld.append (Key ("user:/key1", KEY_END));
+	ksOld.append (Key ("user:/key2", KEY_END));
+
+	KeySet ksNew;
+	ksNew.append (Key ("user:/key2", KEY_END));
+	ksNew.append (Key ("user:/key3", KEY_END));
+
+	Key parentKey;
+
+	ElektraDiff diff = ElektraDiff::calculateDiff (ksNew, ksOld, parentKey);
+
+	// Act
+	diff.removeKey ("user:/key1");
+
+	// Assert
+	EXPECT_TRUE (diff.getAddedKeys ().lookup ("user:/key3").isValid ());
+	EXPECT_FALSE (diff.getRemovedKeys ().lookup ("user:/key1").isValid ());
+}
+
 TEST (diff, assign)
 {
 	// Arrange
