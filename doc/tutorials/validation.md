@@ -259,7 +259,7 @@ kdb file dir:/tests/tutorial
 If you want to go without validation, you can work around that by setting the keys with the `-f` (`--force`) option:
 
 ```sh
-kdb set -f system:/tests/tutorial/links/elektra "invalid url"
+sudo kdb set -f system:/tests/tutorial/links/elektra "invalid url"
 #> Create a new key system:/tests/tutorial/links/elektra with string "invalid url"
 ```
 
@@ -288,7 +288,7 @@ Before we look further let us undo the modifications to the key database.
 
 ```sh
 kdb rm -r spec:/tests/tutorial
-kdb rm -r system:/tests/tutorial
+sudo kdb rm -r system:/tests/tutorial
 kdb rm -rf user:/tests/tutorial
 kdb umount spec:/tests/tutorial
 kdb umount /tests/tutorial
@@ -298,8 +298,8 @@ kdb import spec:/ dump < $(kdb get system:/tests/specbackup)
 kdb import user:/ dump < $(kdb get system:/tests/userbackup)
 rm $(kdb get system:/tests/specbackup)
 rm $(kdb get system:/tests/userbackup)
-kdb rm system:/tests/specbackup
-kdb rm system:/tests/userbackup
+sudo kdb rm system:/tests/specbackup
+sudo kdb rm system:/tests/userbackup
 ```
 
 ## Validate Existing Keys
@@ -315,8 +315,12 @@ sudo kdb mount range.ecf /tests/range range dump
 # set value
 kdb set user:/tests/range/value 5
 
+# set value
+kdb get user:/tests/range/value
+#> 5
+
 # add range check to all keys under /tests/range/
-kdb meta-set spec:/tests/range/_ check/range "1-10"
+sudo kdb meta-set spec:/tests/range/_ check/range "1-10"
 
 # check if validate passes
 kdb validate /tests/range
@@ -329,7 +333,8 @@ kdb validate /tests/range
 # RET:11
 
 # clean up
-kdb rm -r /tests/range/
 sudo kdb umount /tests/range
+kdb rm -rf user:/tests/
+sudo kdb rm -rf spec:/tests/
 
 ```

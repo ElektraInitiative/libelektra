@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre3
-.TH "KDB\-FIND" "1" "November 2020" ""
+.TH "KDB\-FIND" "1" "April 2023" ""
 .SH "NAME"
 \fBkdb\-find\fR \- Find keys in the key database
 .SH "SYNOPSIS"
@@ -59,7 +59,7 @@ kdb find 'fizz'
 #> user:/tests/find/tests/fizz/buzz
 #> user:/tests/find/tostfizz
 
-kdb rm \-r /tests/find
+kdb rm \-r user:/tests/find
 sudo kdb umount user:/tests/find
 .fi
 .SH "SEE ALSO"

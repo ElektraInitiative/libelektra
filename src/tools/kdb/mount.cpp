@@ -135,7 +135,7 @@ void MountCommand::buildBackend (Cmdline const & cl)
 			  << std::endl;
 		std::cout << "Only system+spec mountpoints are actually absolute." << std::endl;
 		std::cout << "Use `kdb file " << mp << "` to determine where the file(s) are." << std::endl;
-		std::cout << "Use `-q` or use `kdb set /sw/elektra/kdb/#0/current/quiet 1` to suppress infos." << std::endl;
+		std::cout << "Use `-q` or use `kdb set system:/sw/elektra/kdb/#0/current/quiet 1` to suppress infos." << std::endl;
 	}
 
 	if (cl.debug)

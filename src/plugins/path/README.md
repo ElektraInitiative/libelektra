@@ -76,7 +76,7 @@ kdb set user:/tests/path "$HOME"
 # STDOUT-REGEX: .*Set string to "/.*".*
 
 #cleanup
-sudo kdb rm -r user:/tests
+sudo kdb rm -r user:/tests/
 sudo kdb umount user:/tests
 ```
 
@@ -102,7 +102,7 @@ kdb set user:/tests/path `kdb get user:/tests/path/tempfile`
 
 #cleanup
 sudo rm -rf `kdb get user:/tests/path/tempfile`
-sudo kdb rm -r user:/tests
+sudo kdb rm -r user:/tests/
 sudo kdb umount user:/tests
 ```
 

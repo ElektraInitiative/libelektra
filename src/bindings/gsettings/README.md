@@ -108,7 +108,7 @@ export current settings and delete them so they will not be hidden
 
 ```sh
 kdb export /sw dump > tmp
-kdb rm -r /sw
+kdb rm -r user:/sw
 ```
 
 mount sw at you preferred location

@@ -90,7 +90,7 @@ kdb ls /tests/examples/kdb-ls/ -v
 #> user:/tests/examples/kdb-ls/tost
 #> user:/tests/examples/kdb-ls/tost/level
 
-kdb rm -r user:/tests/examples
+kdb rm -r user:/tests/examples/
 sudo kdb umount user:/tests/examples
 ```
 
