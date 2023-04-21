@@ -78,13 +78,13 @@ Return values on plugin checking:
 - 0:
   Everything ok. (no output)
 
-- 1:
+- 11:
   No such plugin found or plugin could not be opened.
 
-- 2:
+- 12:
   Plugin did not pass checks.
 
-- 3:
+- 13:
   Plugin has warnings.
 
 Please report any output caused by official plugins to [https://git.libelektra.org/issues](https://git.libelektra.org/issues).
