@@ -132,7 +132,7 @@ First create a new key-value pair `user:/test` and set its value to 5. This can 
   ```
 - through the rest API using curl
   ```sh
-  curl -X PUT -H "Content-Type: text/plain" --data "5" http://localhost:33333/kdb/user/test
+  curl -X PUT -H "Content-Type: text/plain" --data "5" http://localhost:33333/kdb/user:/test
   ```
 
 The output of the commandline tool will be `Set string to "5"` if the key did not exist before.
@@ -142,8 +142,8 @@ Elektrad will respond with code `200`.
 The command
 
 ```sh
-curl http://localhost:33333/kdb/user/test
-#> {"exists":true,"name":"test","path":"user/test","ls":["user/test"],"value":"5","meta":""}
+curl http://localhost:33333/kdb/user:/test
+#> {"exists":true,"name":"test","path":"user:/test","ls":["user:/test"],"value":"5","meta":""}
 ```
 
 will now return the value of the specified key `user:/test`, which is stored in the database.
