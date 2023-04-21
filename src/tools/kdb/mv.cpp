@@ -71,6 +71,13 @@ int MvCommand::execute (Cmdline const & cl)
 			     << ", aborting (use -r to move hierarchy)\n";
 			return 11;
 		}
+		for (Key subKey : oldConf)
+		{
+			if (k.getName() != subKey.getName())
+			{
+				newConf.append (subKey);
+			}
+		}
 		newConf.append (rename_key (k, sourceName, newDirName, cl.verbose));
 	}
 	newConf.append (tmpConf); // these are unrelated keys
