@@ -28,7 +28,7 @@ using namespace kdb;
  * @param cl the command line
  *
  * @return 0 if no warnings or errors were found and validation was therefore successful
- * @return 1 if some warnings and errors occurred and validation therefore failed
+ * @return 11 if some warnings and errors occurred and validation therefore failed
  */
 int ValidateCommand::execute (Cmdline const & cl)
 {
@@ -80,7 +80,7 @@ int ValidateCommand::execute (Cmdline const & cl)
 					"The validation was stopped because of warnings "
 					"while getting the values!")
 			     << endl;
-			return 1;
+			return 11;
 		}
 		else if (cl.verbose)
 		{
@@ -129,7 +129,7 @@ int ValidateCommand::execute (Cmdline const & cl)
 		result = tools::errors::ErrorFactory::fromKey (root);
 		cerr << *result << endl << endl;
 		delete result;
-		return 1;
+		return 12;
 	}
 }
 

@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre3
-.TH "KDB\-VALIDATE" "1" "January 2022" ""
+.TH "KDB\-VALIDATE" "1" "April 2023" ""
 .SH "NAME"
 \fBkdb\-validate\fR \- Validate key values
 .SH "SYNOPSIS"
@@ -35,4 +35,16 @@ Print version info\.
 .TP
 \fB\-C <when>\fR, \fB\-\-color <when>\fR
 Print \fBnever/auto(default)/always\fR colored output\.
+.SH "RETURN VALUES"
+This command will return the following values as an exit status:
+.br
+.TP
+0
+Validated correctly\.
+.TP
+11
+Could not get the values\.
+.TP
+12
+Error occurred while writing back the values\.
 
