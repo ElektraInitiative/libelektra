@@ -87,15 +87,15 @@ const setmeta = (host, path, key, value) =>
   });
 
 const setmetabulk = (host, path, keySet) =>
-    fetch(`${host}/kdbMetaBulk/${encodePath(path)}`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(keySet),
-    }).then((res) => {
-        return { status: res.status };
-    })
+  fetch(`${host}/kdbMetaBulk/${encodePath(path)}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(keySet),
+  }).then((res) => {
+    return { status: res.status };
+  });
 
 const rmmeta = (host, path, key) =>
   fetch(`${host}/kdbMeta/${encodePath(path)}`, {
@@ -108,4 +108,15 @@ const rmmeta = (host, path, key) =>
     return { status: res.status };
   });
 
-export default { version, get, set, rm, mv, cp, setmeta, setmetabulk, rmmeta, find };
+export default {
+  version,
+  get,
+  set,
+  rm,
+  mv,
+  cp,
+  setmeta,
+  setmetabulk,
+  rmmeta,
+  find,
+};
