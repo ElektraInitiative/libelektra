@@ -225,4 +225,22 @@ export default function initInstanceRoutes(app) {
         .then(() => res.status(204).send())
         .catch((err) => errorResponse(res, err))
     );
+
+  app
+      .route("/api/instances/:id/kdbMetaBulk/*")
+      .post((req, res) =>
+          getInstance(req.params.id)
+              .then((instance) =>
+                  remoteKdb.setmetabulk(
+                      instance.host,
+                      req.params[0],
+                      req.body
+                  )
+              )
+              .then((instanceRes) =>
+                  setSessionID(req.params.id, req.session, instanceRes)
+              )
+              .then(() => res.status(204).send())
+              .catch((err) => errorResponse(res, err))
+      );
 }

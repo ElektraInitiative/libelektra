@@ -12,17 +12,23 @@ type keyValueBody struct {
 	Value *string `json:"value"`
 }
 
+type metaKeySet struct {
+	MetaSet []keyValueBody `json:"metaSet"`
+}
+
 // postMetaHandler sets a Meta value on a key if a value was passed,
 // and deletes the existing Meta value if not.
 //
 // Arguments:
-//		keyName the name of the key. URL path param.
-//		key		the name of the metaKey. Passed through the key field of the JSON body.
-//		value	the value of the metaKey. Passed through the `value` field of the JSON body.
+//
+//	keyName the name of the key. URL path param.
+//	key		the name of the metaKey. Passed through the key field of the JSON body.
+//	value	the value of the metaKey. Passed through the `value` field of the JSON body.
 //
 // Response Code:
-//		201 No Content if the request is successfull.
-//		401 Bad Request if no key name was passed - or the key name is invalid.
+//
+//	201 No Content if the request is successful.
+//	401 Bad Request if no key name was passed - or the key name is invalid.
 //
 // Example: `curl -X POST -d '{ "key": "hello", "value": "world" }' localhost:33333/kdbMeta/user/test/hello`
 func (s *server) postMetaHandler(w http.ResponseWriter, r *http.Request) {
@@ -96,16 +102,105 @@ func (s *server) postMetaHandler(w http.ResponseWriter, r *http.Request) {
 	noContent(w)
 }
 
+// postMetaBulkHandler sets a whole set of metadata. In case there is a metakey with empty value it deletes the existing
+// Meta value.
+//
+// Arguments:
+//
+//	keyName the name of the key. URL path param.
+//	metaSet the set of metakeys for the given keyName
+//
+// Response Code:
+//
+//	201 No Content if the request is successful.
+//	401 Bad Request if no key name was passed - or the key name is invalid.
+//
+// Example: `curl -X POST -d '{ metaSet: [{"key": "hello", "value": "world"}] }' localhost:33333/kdbMeta/user/test/hello`
+func (s *server) postMetaBulkHandler(w http.ResponseWriter, r *http.Request) {
+	var metaKeySet metaKeySet
+
+	keyName := parseKeyNameFromURL(r)
+
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&metaKeySet); err != nil {
+		writeError(w, err)
+		return
+	}
+
+	if metaKeySet.MetaSet == nil {
+		badRequest(w)
+		return
+	}
+
+	errKey, err := elektra.NewKey(keyName)
+
+	if err != nil {
+		internalServerError(w)
+		return
+	}
+
+	defer errKey.Close()
+
+	parentKey, err := elektra.NewKey(keyName)
+
+	if err != nil {
+		badRequest(w)
+		return
+	}
+
+	defer parentKey.Close()
+
+	handle, ks := getHandle(r)
+
+	_, err = handle.Get(ks, errKey)
+
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	k := ks.LookupByName(keyName)
+
+	if k == nil {
+		k = parentKey
+		ks.AppendKey(parentKey)
+	}
+
+	for _, meta := range metaKeySet.MetaSet {
+		if meta.Value == nil {
+			err = k.RemoveMeta(meta.Key)
+		} else {
+			err = k.SetMeta(meta.Key, *meta.Value)
+		}
+
+		if err != nil {
+        	writeError(w, err)
+        	return
+        }
+
+        err = set(handle, ks, errKey)
+
+        if err != nil {
+        	writeError(w, err)
+        	return
+        }
+	}
+
+	noContent(w)
+}
+
 // deleteMetaHandler deletes a Meta key.
 //
 // Arguments:
-//		keyName the name of the Key.
-//		key		the name of the metaKey. Passed through the key field of the JSON body.
+//
+//	keyName the name of the Key.
+//	key		the name of the metaKey. Passed through the key field of the JSON body.
 //
 // Response Code:
-//		201 No Content if the request is successfull.
-//		401 Bad Request if no key name was passed - or the key name is invalid.
-//      404 Not Found if the key was not found.
+//
+//			201 No Content if the request is successful.
+//			401 Bad Request if no key name was passed - or the key name is invalid.
+//	     404 Not Found if the key was not found.
 //
 // Example: `curl -X DELETE -d '{ "key": "hello" }' localhost:33333/kdbMeta/user/test/hello`
 func (s *server) deleteMetaHandler(w http.ResponseWriter, r *http.Request) {
