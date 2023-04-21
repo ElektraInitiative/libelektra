@@ -171,7 +171,7 @@ The command
 curl -X POST -H "Content-Type: application/json" -d '{"metaSet": [{"key": "metakey1", "value": "value1"},{"key": "metakey2", "value": "value2"}]}' http://localhost:33333/kdbMetaBulk/user:/test
 ```
 
-will now create multiple metakeys at once. 
+will now create multiple metakeys at once.
 In this case, it will create two (`metakey1` and `metakey2`).
 
 The command
