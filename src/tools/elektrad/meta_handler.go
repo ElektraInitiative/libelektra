@@ -13,7 +13,7 @@ type keyValueBody struct {
 }
 
 type metaKeySet struct {
-	MetaSet []keyValueBody `json:"metaSet"`
+	Meta []keyValueBody `json:"meta"`
 }
 
 // postMetaHandler sets a Meta value on a key if a value was passed,
@@ -115,7 +115,7 @@ func (s *server) postMetaHandler(w http.ResponseWriter, r *http.Request) {
 //	201 No Content if the request is successful.
 //	401 Bad Request if no key name was passed - or the key name is invalid.
 //
-// Example: `curl -X POST -d '{ metaSet: [{"key": "hello", "value": "world"}] }' localhost:33333/kdbMeta/user/test/hello`
+// Example: `curl -X POST -d '{ meta: [{"key": "hello", "value": "world"}] }' localhost:33333/kdbMetaBulk/user/test/hello`
 func (s *server) postMetaBulkHandler(w http.ResponseWriter, r *http.Request) {
 	var metaKeySet metaKeySet
 
@@ -166,7 +166,7 @@ func (s *server) postMetaBulkHandler(w http.ResponseWriter, r *http.Request) {
 		ks.AppendKey(parentKey)
 	}
 
-	for _, meta := range metaKeySet.MetaSet {
+	for _, meta := range metaKeySet.Meta {
 		if meta.Value == nil {
 			err = k.RemoveMeta(meta.Key)
 		} else {

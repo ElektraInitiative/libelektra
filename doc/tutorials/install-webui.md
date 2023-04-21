@@ -168,7 +168,7 @@ will now return the value of the specified key `user:/test`, which is stored in 
 The command
 
 ```sh
-curl -X POST -H "Content-Type: application/json" -d '{"metaSet": [{"key": "metakey1", "value": "value1"},{"key": "metakey2", "value": "value2"}]}' http://localhost:33333/kdbMetaBulk/user:/test
+curl -X POST -H "Content-Type: application/json" -d '{"meta": [{"key": "metakey1", "value": "value1"},{"key": "metakey2", "value": "value2"}]}' http://localhost:33333/kdbMetaBulk/user:/test
 ```
 
 will now create multiple metakeys at once.
