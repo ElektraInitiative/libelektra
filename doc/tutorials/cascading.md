@@ -100,7 +100,7 @@ For example,
 ```sh
 kdb set /tests/tutorial/cascading/#0/current/cascading_write_test value
 # STDERR: Aborting: A cascading write to a non-existent key is ambiguous.
-# RET: 2
+# RET: 12
 
 kdb meta-set /tests/tutorial/cascading/#0/current/cascading_write_test metakey metavalue
 # STDERR: Aborting: A cascading write to a non-existent key is ambiguous.

@@ -50,7 +50,7 @@ int SetCommand::execute (Cmdline const & cl)
 	if (!key && cascadingWrite)
 	{
 		cerr << "Aborting: A cascading write to a non-existent key is ambiguous." << endl;
-		return 2;
+		return 12;
 	}
 	if (!key)
 	{
@@ -62,7 +62,7 @@ int SetCommand::execute (Cmdline const & cl)
 		if (!key.isValid ())
 		{
 			cerr << "no valid name supplied" << endl;
-			return 1;
+			return 11;
 		}
 		conf.append (key);
 	}
