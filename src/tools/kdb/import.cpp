@@ -43,6 +43,12 @@ int ImportCommand::execute (Cmdline const & cl)
 	{
 		throw invalid_argument ("root key \"" + cl.arguments[0] + "\" is not a valid key name");
 	}
+	if (root.getNamespace () == kdb::ElektraNamespace::CASCADING)
+	{
+		cerr << "Aborting: Specify a namespace for importing." << endl;
+		return 2;
+	}
+
 
 	KeySet originalKeys;
 	kdb.get (originalKeys, root);

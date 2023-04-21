@@ -35,6 +35,13 @@ int RemoveCommand::execute (Cmdline const & cl)
 
 	KeySet conf;
 	Key x = cl.createKey (0);
+
+	if (x.getNamespace () == kdb::ElektraNamespace::CASCADING)
+	{
+		cerr << "Aborting: Specify a namespace for deleting a key." << endl;
+		return 12;
+	}
+
 	Key parentKey = cl.getParentKey (x);
 
 	kdb.get (conf, parentKey);
