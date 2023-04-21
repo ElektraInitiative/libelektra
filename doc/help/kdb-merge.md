@@ -68,6 +68,14 @@ To interactively resolve conflicts, use the `-i` option.
 - `-i`, `--interactive`
   Interactively resolve the conflicts.
 
+## RETURN VALUE
+
+- 0:
+  Successful.
+
+- 11:
+  A conflict occurred during the merge.
+
 ## EXAMPLES
 
 To complete a simple merge of three KeySets:<br>

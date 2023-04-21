@@ -109,7 +109,7 @@ int MergeCommand::execute (Cmdline const & cl)
 	}
 	else
 	{
-		ret = -1;
+		ret = 11;
 	}
 
 	return ret;
