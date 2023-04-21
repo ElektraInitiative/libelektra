@@ -165,6 +165,44 @@ will now return the value of the specified key `user:/test`, which is stored in 
 
 <!-- prettier-ignore-end -->
 
+The command
+
+```sh
+curl -X POST -H "Content-Type: application/json" -d '{"metaSet": [{"key": "metakey1", "value": "value1"},{"key": "metakey2", "value": "value2"}]}' http://localhost:33333/kdbMetaBulk/user:/test
+```
+
+will now create multiple metakeys at once. 
+In this case, it will create two (`metakey1` and `metakey2`).
+
+The command
+
+```sh
+curl http://localhost:33333/kdb/user:/test
+#> {"exists":true,"name":"test","path":"user:/test","ls":["user:/test"],"value":"1","meta":{"metakey1":"value1","metakey2":"value2"}}
+```
+
+will now also return the two metakeys.
+
+<!-- prettier-ignore-start -->
+
+```json
+{
+    "exists": true,
+    "name": "test",
+    "path": "user:/test",
+    "ls": [
+        "user:/test"
+    ],
+    "value": "5",
+    "meta": {
+        "metakey1": "value1",
+        "metakey2": "value2"
+    }
+}
+```
+
+<!-- prettier-ignore-end -->
+
 ## Auth
 
 Currently, webd does not support authentication. The best way to work around
