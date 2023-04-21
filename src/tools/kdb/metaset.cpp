@@ -45,7 +45,7 @@ int MetaSetCommand::execute (Cmdline const & cl)
 		if (cascadingWrite)
 		{
 			cerr << "Aborting: A cascading write to a non-existent key is ambiguous." << endl;
-			return 2;
+			return 12;
 		}
 
 		k = Key (keyname, KEY_END);
@@ -56,7 +56,7 @@ int MetaSetCommand::execute (Cmdline const & cl)
 	if (!k.isValid ())
 	{
 		cerr << "Could not create key " << keyname << endl;
-		return 1;
+		return 11;
 	}
 
 	if (cl.arguments.size () == 2)

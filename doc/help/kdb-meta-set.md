@@ -36,6 +36,17 @@ There is some special handling for the metadata atime, mtime and ctime. They wil
 - `-f`, `--force`:
   Do not perform cascading KDB operations if the key provided has a namespace. For example, this bypasses validation specified in the spec: namespace for the given key.
 
+## RETURN VALUES
+
+This command will return the following values as an exit status:<br>
+
+- 0:
+  No errors.
+- 11:
+  Key not found. (Invalid `path`)
+- 12:
+  Setting a non-existing key without a namespace is not possible\.
+
 ## KDB
 
 - `/sw/elektra/kdb/#0/current/verbose`:
