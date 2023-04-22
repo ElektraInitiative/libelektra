@@ -39,7 +39,16 @@ int SetCommand::execute (Cmdline const & cl)
 	// do not resume on any get errors
 	// otherwise the user might break
 	// the config
-	kdb.get (conf, parentKey);
+	if (cl.force)
+	{
+		kdb.get (conf, parentKey);
+	}
+	else
+	{ // if not -f, do a cascading lookup so validation is not skipped
+		Key cascadingParentKey = parentKey.dup ();
+		cascadingParentKey.setNamespace (kdb::ElektraNamespace::CASCADING);
+		kdb.get (conf, cascadingParentKey);
+	}
 
 	bool cascadingWrite = name[0] == '/';
 
