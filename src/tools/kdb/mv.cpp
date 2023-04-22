@@ -73,7 +73,7 @@ int MvCommand::execute (Cmdline const & cl)
 		}
 		for (Key subKey : oldConf)
 		{
-			if (k.getName() != subKey.getName())
+			if (k.getName () != subKey.getName ())
 			{
 				newConf.append (subKey);
 			}
