@@ -214,6 +214,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - Add `elektraCopyError` function to copy error from one key to another _(Maximilian Irlinger @atmaxinger)_
 - Add `elektraCopyWarnings` function to copy warnings from one key to another _(Maximilian Irlinger @atmaxinger)_
 - Add `elektraCopyErrorAndWarnings` function to copy error and warnings from one key to another _(Maximilian Irlinger @atmaxinger)_
+- Disable cascading writes and update tests, docs and tutorials _(Hannes Laimer @hannes99)_
 - <<TODO>>
 
 ### <<Library>>
