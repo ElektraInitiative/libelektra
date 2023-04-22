@@ -81,20 +81,8 @@ func (s *server) postMetaHandler(w http.ResponseWriter, r *http.Request) {
 		ks.AppendKey(parentKey)
 	}
 
-	if meta.Value == nil {
-		err = k.RemoveMeta(meta.Key)
-	} else {
-		err = k.SetMeta(meta.Key, *meta.Value)
-	}
-
-	if err != nil {
-		writeError(w, err)
-		return
-	}
-
-	err = set(handle, ks, errKey)
-
-	if err != nil {
+	metaKeys := []keyValueBody{meta}
+	if err = removeOrSetMetaKeys(k, errKey, handle, ks, metaKeySet{metaKeys}); err != nil {
 		writeError(w, err)
 		return
 	}
@@ -127,7 +115,7 @@ func (s *server) postMetaBulkHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if metaKeySet.MetaSet == nil {
+	if metaKeySet.Meta == nil {
 		badRequest(w)
 		return
 	}
@@ -152,9 +140,7 @@ func (s *server) postMetaBulkHandler(w http.ResponseWriter, r *http.Request) {
 
 	handle, ks := getHandle(r)
 
-	_, err = handle.Get(ks, errKey)
-
-	if err != nil {
+	if _, err = handle.Get(ks, errKey); err != nil {
 		writeError(w, err)
 		return
 	}
@@ -166,7 +152,31 @@ func (s *server) postMetaBulkHandler(w http.ResponseWriter, r *http.Request) {
 		ks.AppendKey(parentKey)
 	}
 
-	for _, meta := range metaKeySet.Meta {
+	if err = removeOrSetMetaKeys(k, errKey, handle, ks, metaKeySet); err != nil {
+		writeError(w, err)
+		return
+	}
+
+	noContent(w)
+}
+
+// removeOrSetMetaKeys removes or sets a set of metakeys for a given k
+//
+// Arguments:
+//
+//	k the key to append metakeys too
+//	errKey the key to append errors too
+//	handle the KDB handle
+//	ks the KeySet the key is located in
+//	metaKeys the set of metakeys to append to k
+//
+// Return:
+//
+//	error in case it case the set metakey operation failed
+func removeOrSetMetaKeys(k elektra.Key, errKey elektra.Key, handle elektra.KDB, ks elektra.KeySet, metaKeys metaKeySet) error {
+	var err error
+
+	for _, meta := range metaKeys.Meta {
 		if meta.Value == nil {
 			err = k.RemoveMeta(meta.Key)
 		} else {
@@ -174,19 +184,17 @@ func (s *server) postMetaBulkHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if err != nil {
-        	writeError(w, err)
-        	return
-        }
+			return err
+		}
 
-        err = set(handle, ks, errKey)
+		err = set(handle, ks, errKey)
 
-        if err != nil {
-        	writeError(w, err)
-        	return
-        }
+		if err != nil {
+			return err
+		}
 	}
 
-	noContent(w)
+	return err
 }
 
 // deleteMetaHandler deletes a Meta key.
