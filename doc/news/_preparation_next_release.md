@@ -234,7 +234,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 ### kdb
 
 - Add new changetracking API _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
+- Fix issue where values were not validated when set _(Hannes Laimer @hannes99)_
 - <<TODO>>
 
 ### <<Library>>
