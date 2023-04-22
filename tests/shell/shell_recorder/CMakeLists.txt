@@ -38,6 +38,7 @@ if (ENABLE_KDB_TESTING)
 	# DISABLED add_shell_recorder_test (profiletest.esr)
 	add_shell_recorder_test (script.esr)
 	add_shell_recorder_test (selftest.esr REQUIRED_PLUGINS mini)
+	add_shell_recorder_test (set_validation.esr)
 
 	if (ENABLE_REPLAY_TESTS)
 		file (GLOB REPLAY_TESTS replay_tests/*.esr)
