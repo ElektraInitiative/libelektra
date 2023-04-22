@@ -22,7 +22,7 @@ struct GlobFlagMap
 	short flag;
 };
 
-struct GlobFlagMap flagMaps[] = { { "noescape", FNM_NOESCAPE }, { "pathname", FNM_PATHNAME }, { "period", FNM_PERIOD } };
+static const struct GlobFlagMap flagMaps[] = { { "noescape", FNM_NOESCAPE }, { "pathname", FNM_PATHNAME }, { "period", FNM_PERIOD } };
 
 int elektraGlobMatch (Key * key, const Key * match, const char * globFlags)
 {

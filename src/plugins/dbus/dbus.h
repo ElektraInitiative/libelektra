@@ -26,9 +26,6 @@
  */
 typedef struct
 {
-	// remember all keys
-	KeySet * keys;
-
 	// D-Bus connections (may be NULL)
 	DBusConnection * systemBus;
 	DBusConnection * sessionBus;

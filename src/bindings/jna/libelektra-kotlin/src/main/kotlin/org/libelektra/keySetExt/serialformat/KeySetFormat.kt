@@ -39,7 +39,7 @@ sealed class KeySetFormat(
         override val serializersModule: SerializersModule
 ) : SerialFormat {
 
-    companion object Default : KeySetFormat(EmptySerializersModule)
+    companion object Default : KeySetFormat(EmptySerializersModule())
 
     /**
      * Encodes any given value to a KeySet with the given serializer

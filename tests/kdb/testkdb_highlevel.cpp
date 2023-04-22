@@ -469,22 +469,22 @@ TEST_F (Highlevel, ArrayGetters)
 TEST_F (Highlevel, PrimitiveSetters)
 {
 	setValues ({
-		makeKey (KDB_TYPE_STRING, "stringkey", "A string"),
-		makeKey (KDB_TYPE_BOOLEAN, "booleankey", "1"),
-		makeKey (KDB_TYPE_CHAR, "charkey", "c"),
-		makeKey (KDB_TYPE_OCTET, "octetkey", "1"),
-		makeKey (KDB_TYPE_SHORT, "shortkey", "1"),
-		makeKey (KDB_TYPE_UNSIGNED_SHORT, "unsignedshortkey", "1"),
-		makeKey (KDB_TYPE_LONG, "longkey", "1"),
-		makeKey (KDB_TYPE_UNSIGNED_LONG, "unsignedlongkey", "1"),
-		makeKey (KDB_TYPE_LONG_LONG, "longlongkey", "1"),
-		makeKey (KDB_TYPE_UNSIGNED_LONG_LONG, "unsignedlonglongkey", "1"),
-		makeKey (KDB_TYPE_FLOAT, "floatkey", "1.1"),
-		makeKey (KDB_TYPE_DOUBLE, "doublekey", "1.1"),
+		makeKey (KDB_TYPE_STRING, "stringkey", "An original string"),
+		makeKey (KDB_TYPE_BOOLEAN, "booleankey", "0"),
+		makeKey (KDB_TYPE_CHAR, "charkey", "x"),
+		makeKey (KDB_TYPE_OCTET, "octetkey", "0"),
+		makeKey (KDB_TYPE_SHORT, "shortkey", "0"),
+		makeKey (KDB_TYPE_UNSIGNED_SHORT, "unsignedshortkey", "0"),
+		makeKey (KDB_TYPE_LONG, "longkey", "0"),
+		makeKey (KDB_TYPE_UNSIGNED_LONG, "unsignedlongkey", "0"),
+		makeKey (KDB_TYPE_LONG_LONG, "longlongkey", "0"),
+		makeKey (KDB_TYPE_UNSIGNED_LONG_LONG, "unsignedlonglongkey", "0"),
+		makeKey (KDB_TYPE_FLOAT, "floatkey", "0.1"),
+		makeKey (KDB_TYPE_DOUBLE, "doublekey", "0.1"),
 
 #ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
-		makeKey (KDB_TYPE_LONG_DOUBLE, "longdoublekey", "1.1"),
+		makeKey (KDB_TYPE_LONG_DOUBLE, "longdoublekey", "0.1"),
 
 #endif
 	});
@@ -653,9 +653,6 @@ TEST_F (Highlevel, ArraySetters)
 	elektraSetUnsignedLongArrayElement (elektra, "unsignedLongarraykey", 0, 1, &error);
 	elektraSetUnsignedLongArrayElement (elektra, "unsignedLongarraykey", 1, 2, &error);
 
-	elektraSetLongArrayElement (elektra, "longarraykey", 0, 1, &error);
-	elektraSetLongArrayElement (elektra, "longarraykey", 1, 2, &error);
-
 	elektraSetUnsignedLongArrayElement (elektra, "unsignedlongarraykey", 0, 1, &error);
 	elektraSetUnsignedLongArrayElement (elektra, "unsignedlongarraykey", 1, 2, &error);
 
@@ -703,9 +700,6 @@ TEST_F (Highlevel, ArraySetters)
 
 	elektraSetUnsignedLongArrayElement (elektra, "newunsignedLongarraykey", 0, 1, &error);
 	elektraSetUnsignedLongArrayElement (elektra, "newunsignedLongarraykey", 1, 2, &error);
-
-	elektraSetLongArrayElement (elektra, "newlongarraykey", 0, 1, &error);
-	elektraSetLongArrayElement (elektra, "newlongarraykey", 1, 2, &error);
 
 	elektraSetUnsignedLongArrayElement (elektra, "newunsignedlongarraykey", 0, 1, &error);
 	elektraSetUnsignedLongArrayElement (elektra, "newunsignedlongarraykey", 1, 2, &error);

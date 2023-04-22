@@ -35,6 +35,7 @@ provides.
 - [Ruby Bindings](/src/bindings/swig/ruby/README.md)
 - [High Level API Bindings](highlevel-bindings.md)
 - [Notifications](notifications.md)
+- [Changetracking](changetracking.md)
 
 ## System Administrators
 
@@ -67,6 +68,7 @@ Elektra:
 - [Benchmarking](benchmarking.md)
 - [Profiling](profiling.md)
 - [Logging](logger.md)
+- [Changetracking](changetracking.md)
 
 ## Installation Manuals
 

@@ -1,5 +1,6 @@
 - infos = Information about the unit plugin is in keys below
 - infos/author = Marcel Hauri <e1355940@student.tuwien.ac.at>
+- infos/maintainer = Florian Lindner <florian.lindner@student.tuwien.ac.at>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides =

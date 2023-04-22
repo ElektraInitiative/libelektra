@@ -27,8 +27,8 @@ typedef enum
 } PrefType;
 
 
-const char * function[] = { "pref", "user_pref", "lockPref", "sticky_pref" };
-const char * prefix[] = { "pref", "user", "lock", "sticky" };
+const char * const function[] = { "pref", "user_pref", "lockPref", "sticky_pref" };
+const char * const prefix[] = { "pref", "user", "lock", "sticky" };
 
 static Key * prefToKey (Key * parentKey, PrefType type, const char * pref)
 {

@@ -34,23 +34,6 @@ TEST_F (ThreeWayMergeTest, EqualKeySetsMerge)
 	compareAllKeys (merged);
 }
 
-TEST_F (ThreeWayMergeTest, EqualKeySetsWontCauseSync)
-{
-	unsyncKeys (ours);
-	unsyncKeys (theirs);
-	unsyncKeys (base);
-
-	MergeResult result = merger.mergeKeySet (base, ours, theirs, ourParent);
-	EXPECT_FALSE (result.hasConflicts ()) << "Invalid conflict detected";
-
-	KeySet merged = result.getMergedKeys ();
-
-	for (const Key & current : merged)
-	{
-		EXPECT_FALSE (current.needSync ());
-	}
-}
-
 TEST_F (ThreeWayMergeTest, CascadingParentsCauseNoCascadingKeys)
 {
 	Key root ("/", KEY_END);

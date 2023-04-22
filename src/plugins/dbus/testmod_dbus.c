@@ -14,6 +14,8 @@
 #include <tests.h>
 #include <tests_plugin.h>
 
+#include <kdbchangetracking.h>
+
 typedef struct
 {
 	char * lookupSignalName;
@@ -31,6 +33,20 @@ DBusBusType testBusType;
 
 /** key namespace to use for tests */
 char * testKeyNamespace;
+
+KeySet * oldKeys = NULL;
+ChangeTrackingContext * changeTrackingContext = NULL;
+
+const ChangeTrackingContext * elektraChangeTrackingGetContextFromPlugin (ELEKTRA_UNUSED Plugin * plugin)
+{
+	if (changeTrackingContext != NULL)
+	{
+		elektraChangeTrackingContextDel (changeTrackingContext);
+	}
+
+	changeTrackingContext = elektraChangeTrackingCreateContextForTesting (oldKeys);
+	return changeTrackingContext;
+}
 
 /**
  * @internal
@@ -176,6 +192,8 @@ static void test_keyAdded (void)
 {
 	printf ("test adding keys\n");
 
+	ksClear (oldKeys);
+
 	// (namespace)/tests/foo
 	Key * parentKey = keyNew (testKeyNamespace, KEY_END);
 	keyAddName (parentKey, "tests/foo");
@@ -217,6 +235,8 @@ static void test_keyChanged (void)
 {
 	printf ("test changing keys\n");
 
+	ksClear (oldKeys);
+
 	// All keys created by keyNew have the KEY_FLAG_SYNC set and will be
 	// detected as changed by the dbus plugin
 	// This flag is only cleared after kdbCommit or when keys come from a backend.
@@ -237,6 +257,7 @@ static void test_keyChanged (void)
 
 	// initial get to save current state
 	plugin->kdbGet (plugin, ks, parentKey);
+	ksAppendKey (oldKeys, keyDup (toChange, KEY_CP_ALL));
 
 	// change key in keyset
 	keySetString (toChange, "new value");
@@ -262,6 +283,8 @@ static void test_keyDeleted (void)
 {
 	printf ("test deleting keys\n");
 
+	ksClear (oldKeys);
+
 	// (namespace)/tests/foo
 	Key * parentKey = keyNew (testKeyNamespace, KEY_END);
 	keyAddName (parentKey, "tests/foo");
@@ -278,6 +301,7 @@ static void test_keyDeleted (void)
 
 	// initial get to save current state
 	plugin->kdbGet (plugin, ks, parentKey);
+	ksAppend (oldKeys, ks);
 
 	// remove key from keyset
 	Key * deleted = ksLookup (ks, toDelete, KDB_O_POP);
@@ -305,6 +329,8 @@ static void test_announceOnce (void)
 {
 	printf ("test announce once\n");
 
+	ksClear (oldKeys);
+
 	// (namespace)/tests/foo
 	Key * parentKey = keyNew (testKeyNamespace, KEY_END);
 	keyAddName (parentKey, "tests/foo");
@@ -330,6 +356,7 @@ static void test_announceOnce (void)
 
 	// initial get to save current state
 	plugin->kdbGet (plugin, ks, parentKey);
+	ksAppend (oldKeys, ks);
 
 	// modify keyset
 	ksAppendKey (ks, toAdd1);
@@ -357,6 +384,8 @@ static void test_cascadedChangeNotification (void)
 {
 	printf ("test change notification with cascaded parent key\n");
 
+	ksClear (oldKeys);
+
 	Key * parentKey = keyNew ("/tests/foo", KEY_END);
 
 	// (namespace)/tests/foo
@@ -375,6 +404,7 @@ static void test_cascadedChangeNotification (void)
 
 	// initial get to save current state
 	plugin->kdbGet (plugin, ks, parentKey);
+	ksAppend (oldKeys, ks);
 
 	// add key to keyset
 	ksAppendKey (ks, toAdd);
@@ -400,6 +430,8 @@ static void test_cascadedAnnounceOnce (void)
 {
 	printf ("test announce once with cascaded parent key\n");
 
+	ksClear (oldKeys);
+
 	Key * parentKey = keyNew ("/tests/foo", KEY_END);
 
 	// (namespace)/tests/foo
@@ -418,6 +450,7 @@ static void test_cascadedAnnounceOnce (void)
 
 	// initial get to save current state
 	plugin->kdbGet (plugin, ks, parentKey);
+	ksAppend (oldKeys, ks);
 
 	// add key to keyset
 	ksAppendKey (ks, toAdd);
@@ -446,6 +479,9 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
+	oldKeys = ksNew (0, KS_END);
+	ksIncRef (oldKeys);
+
 	// Test if dbus is available
 	if (test_prerequisites ())
 	{
@@ -467,6 +503,14 @@ int main (int argc, char ** argv)
 	print_result ("testmod_dbus");
 
 	dbus_shutdown ();
+
+	if (changeTrackingContext != NULL)
+	{
+		elektraChangeTrackingContextDel (changeTrackingContext);
+	}
+
+	ksDecRef (oldKeys);
+	ksDel (oldKeys);
 
 	return nbError;
 }

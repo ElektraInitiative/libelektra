@@ -19,7 +19,14 @@ maintainer, development of the cache and mmapstorage plugins
 
 ## Klemens Böswirth
 
-a bit of everything
+a bit of everything, including:
+
+- current implementation for `libelektra-kdb`, including new concept of backend plugins
+- created `libelektra-highlevel`
+- extended `spec` plugin for use with `libelektra-highlevel`
+- created `quickdump` and `specload` plugins
+- created `kdb gen` code generator
+- many, many bugfixes
 
 - email: k.boeswirth+git@gmail.com
 - GitHub user: [kodebach](https://github.com/kodebach)
@@ -177,8 +184,24 @@ elektra-core, rust implementation
 
 ## Hannes Laimer
 
-KDB CLI rewrite C++ -> C
+KDB CLI rewrite C++ -> C, CLI cleanup
 
 - email: hannes.laimer@tuwien.ac.at
 - GitHub user: [hannes99](https://github.com/hannes99)
 - devel/test on: Arch
+
+## Tomislav Makar
+
+spec plugin, [go-elektra](https://github.com/ElektraInitiative/go-elektra), elektrad, web-ui
+
+- email: tmakar23@gmail.com
+- GitHub user: [tmakar](https://github.com/tmakar)
+- devel/test on: macOS
+
+## Florian Lindner
+
+mounting library, [unixODBC](https://www.unixodbc.org) backend
+
+- email: florian.lindner@student.tuwien.ac.at
+- GitHub user: [flo91](https://github.com/flo91)
+- devel/test on: Gentoo Linux

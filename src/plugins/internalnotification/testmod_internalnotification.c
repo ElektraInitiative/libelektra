@@ -20,6 +20,24 @@
 #include <tests_plugin.h>
 
 #include "internalnotification.h"
+#include <kdbchangetracking.h>
+
+ChangeTrackingContext * changeTrackingContext = NULL;
+
+const ChangeTrackingContext * elektraChangeTrackingGetContextFromPlugin (ELEKTRA_UNUSED Plugin * plugin)
+{
+	return changeTrackingContext;
+}
+
+static void setChangeTrackingContextForTest (ChangeTrackingContext * context)
+{
+	if (changeTrackingContext != NULL)
+	{
+		elektraChangeTrackingContextDel (changeTrackingContext);
+	}
+
+	changeTrackingContext = context;
+}
 
 int callback_called;
 char * callback_keyValue;
@@ -147,12 +165,14 @@ static void test_updateOnKdbGet (void)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
 
-	Key * valueKey = keyNew ("user:/test/internalnotification/value", KEY_VALUE, "42", KEY_END);
+	Key * valueKey = keyNew ("user:/tests/internalnotification/value", KEY_VALUE, "42", KEY_END);
 	KeySet * ks = ksNew (1, valueKey, KS_END);
 
 	int value = 0;
 	succeed_if (internalnotificationRegisterInt (plugin, valueKey, &value) == 1,
 		    "call to elektraInternalnotificationRegisterInt was not successful");
+
+	setChangeTrackingContextForTest (elektraChangeTrackingCreateContextForTesting (ksNew (0, KS_END)));
 
 	plugin->kdbGet (plugin, ks, parentKey);
 
@@ -171,12 +191,14 @@ static void test_updateOnKdbCommit (void)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
 
-	Key * valueKey = keyNew ("user:/test/internalnotification/value", KEY_VALUE, "42", KEY_END);
+	Key * valueKey = keyNew ("user:/tests/internalnotification/value", KEY_VALUE, "42", KEY_END);
 	KeySet * ks = ksNew (1, valueKey, KS_END);
 
 	int value = 0;
 	succeed_if (internalnotificationRegisterInt (plugin, valueKey, &value) == 1,
 		    "call to elektraInternalnotificationRegisterInt was not successful");
+
+	setChangeTrackingContextForTest (elektraChangeTrackingCreateContextForTesting (ksNew (0, KS_END)));
 
 	plugin->kdbCommit (plugin, ks, parentKey);
 
@@ -202,11 +224,16 @@ static void test_intUpdateWithCascadingKey (void)
 	Key * valueKey = keyNew ("user:/test/internalnotification/value", KEY_VALUE, "42", KEY_END);
 	KeySet * ks = ksNew (1, valueKey, KS_END);
 
-	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
+	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL);
+	ksIncRef (ks);
+	elektraInternalnotificationNotifyChangedKeys (plugin, diff);
+	elektraDiffDel (diff);
+	// elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
 
 	succeed_if (value == 42, "registered value was not updated");
 
 	keyDel (registeredKey);
+	ksDecRef (ks);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
@@ -227,11 +254,14 @@ static void test_intNoUpdateWithInvalidValue (void)
 
 	keySetString (valueKey, "42abcd");
 
-
-	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
+	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL);
+	ksIncRef (ks);
+	elektraInternalnotificationNotifyChangedKeys (plugin, diff);
+	elektraDiffDel (diff); // elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
 
 	succeed_if (value == 123, "registered value was updated");
 
+	ksDecRef (ks);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
@@ -258,13 +288,18 @@ static void test_conversionError (void)
 	callback_called = 0;
 	callback_keyName = NULL;
 	callback_keyValue = NULL;
-	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
+	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL);
+	ksIncRef (ks);
+	elektraInternalnotificationNotifyChangedKeys (plugin, diff);
+	elektraDiffDel (diff);
+	// elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
 
 	succeed_if (value == 123, "registered value was updated");
 	succeed_if (callback_called, "conversion error callback was not called");
 	succeed_if_same_string (keyName (valueKey), callback_keyName) succeed_if_same_string (keyString (valueKey), callback_keyValue)
 
-		ksDel (ks);
+		ksDecRef (ks);
+	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
 
@@ -286,12 +321,16 @@ static void test_intUpdateWithValueNotYetExceedingIntMax (void)
 	char * stringValue = convertLongLongToString ((long long) exceedsInt);
 	keySetString (valueKey, stringValue);
 
-
-	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
+	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL);
+	ksIncRef (ks);
+	elektraInternalnotificationNotifyChangedKeys (plugin, diff);
+	elektraDiffDel (diff);
+	// elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
 
 	succeed_if (value == INT_MAX, "registered value was not updated");
 
 	elektraFree (stringValue);
+	ksDecRef (ks);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
@@ -314,12 +353,16 @@ static void test_intNoUpdateWithValueExceedingIntMax (void)
 	char * stringValue = convertLongLongToString (exceedsInt);
 	keySetString (valueKey, stringValue);
 
-
-	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
+	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL);
+	ksIncRef (ks);
+	elektraInternalnotificationNotifyChangedKeys (plugin, diff);
+	elektraDiffDel (diff);
+	// elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
 
 	succeed_if (value == 123, "registered value was updated");
 
 	elektraFree (stringValue);
+	ksDecRef (ks);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
@@ -343,12 +386,16 @@ static void test_intUpdateWithValueNotYetExceedingIntMin (void)
 	char * stringValue = convertLongLongToString ((long long) exceedsInt);
 	keySetString (valueKey, stringValue);
 
-
-	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
+	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL);
+	ksIncRef (ks);
+	elektraInternalnotificationNotifyChangedKeys (plugin, diff);
+	elektraDiffDel (diff);
+	// elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
 
 	succeed_if (value == INT_MIN, "registered value was not updated");
 
 	elektraFree (stringValue);
+	ksDecRef (ks);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
@@ -371,11 +418,16 @@ static void test_intNoUpdateWithValueExceedingIntMin (void)
 	char * stringValue = convertLongLongToString (exceedsInt);
 	keySetString (valueKey, stringValue);
 
-	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
+	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL);
+	ksIncRef (ks);
+	elektraInternalnotificationNotifyChangedKeys (plugin, diff);
+	elektraDiffDel (diff);
+	// elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
 
 	succeed_if (value == 123, "registered value was updated");
 
 	elektraFree (stringValue);
+	ksDecRef (ks);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
@@ -394,12 +446,18 @@ static void test_callbackCalledWithKey (void)
 	succeed_if (internalnotificationRegisterCallback (plugin, valueKey, test_callback, CALLBACK_CONTEXT_MAGIC_NUMBER) == 1,
 		    "call to elektraInternalnotificationRegisterCallback was not successful");
 
-	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
+	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL);
+	ksIncRef (ks);
+	elektraInternalnotificationNotifyChangedKeys (plugin, diff);
+	elektraDiffDel (diff);
+
+	// elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
 
 	succeed_if (callback_called, "registered value was not updated");
 	succeed_if_same_string (callback_keyName, keyName (valueKey));
 	succeed_if_same_string (callback_keyValue, value);
 
+	ksDecRef (ks);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
@@ -418,14 +476,25 @@ static void test_callbackCalledWithChangeDetection (void)
 	succeed_if (internalnotificationRegisterCallback (plugin, valueKey, test_callback, CALLBACK_CONTEXT_MAGIC_NUMBER) == 1,
 		    "call to elektraInternalnotificationRegisterCallback was not successful");
 
-	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
+	ksIncRef (ks);
+	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL);
+	elektraInternalnotificationNotifyChangedKeys (plugin, diff);
+	elektraDiffDel (diff);
+
+	// elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
 
 	succeed_if (callback_called, "registered value was not updated");
 
 	callback_called = 0;
-	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
+
+	diff = elektraDiffNew (NULL, NULL, ksNew (0, KS_END), NULL);
+	elektraInternalnotificationNotifyChangedKeys (plugin, diff);
+	elektraDiffDel (diff);
+
+	// elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
 	succeed_if (callback_called == 0, "registered value was updated but value has not changed");
 
+	ksDecRef (ks);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
@@ -777,6 +846,11 @@ int main (int argc, char ** argv)
 	test_doUpdateShouldUpdateKeyAbove ();
 
 	print_result ("testmod_internalnotification");
+
+	if (changeTrackingContext != NULL)
+	{
+		elektraChangeTrackingContextDel (changeTrackingContext);
+	}
 
 	return nbError;
 }

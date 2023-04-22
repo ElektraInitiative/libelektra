@@ -3,7 +3,7 @@
 - infos/licence = BSD
 - infos/provides = logging
 - infos/needs =
-- infos/placements = pregetstorage postcommit postrollback
+- infos/placements = hook pregetstorage postcommit postrollback
 - infos/status = maintained tested nodep global nodoc
 - infos/description = Logs set and error calls to syslog.
 

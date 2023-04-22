@@ -19,17 +19,14 @@ TEST (key, null)
 	Key key0 (static_cast<ckdb::Key *> (nullptr));
 	succeed_if (!key0, "key should evaluate to false");
 	succeed_if (key0.isNull (), "key should evaluate to false");
-	succeed_if (key0.needSync (), "key should need sync");
 
 	key0 = static_cast<ckdb::Key *> (nullptr);
 	succeed_if (!key0, "key should evaluate to false");
 	succeed_if (key0.isNull (), "key should evaluate to false");
-	succeed_if (key0.needSync (), "key should need sync");
 
 	key0.release ();
 	succeed_if (!key0, "key should evaluate to false");
 	succeed_if (key0.isNull (), "key should evaluate to false");
-	succeed_if (key0.needSync (), "key should need sync");
 }
 
 

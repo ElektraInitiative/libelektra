@@ -568,8 +568,6 @@ std::string printKey (Key const & k)
 	std::string ret;
 	ret += k.getName ();
 
-	if (ckdb::keyNeedSync (*k)) ret += "°";
-
 	if (!k.isBinary ())
 	{
 		ret += "=";

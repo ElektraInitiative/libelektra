@@ -2,6 +2,7 @@
 
 *.sh text eol=lf
 *.awk text eol=lf
+*.java text eol=lf
 
 *.bat text eol=crlf
 *.cmd text eol=crlf

@@ -127,11 +127,6 @@ public class GOptsTest {
       }
       keySet.append(specKeySet);
       kdb.set(keySet, specParentKey);
-      keySet.release(); // optional clean-up
-    } finally {
-      // optional clean-up
-      specKeySet.release();
-      specParentKey.release();
     }
   }
 
@@ -153,13 +148,6 @@ public class GOptsTest {
       assertEquals(keySet.lookup(BASE_KEY + "/getter/keyname").get().getString(), "user:/");
       assertTrue(keySet.lookup(BASE_KEY + "/getter/verbose").isPresent());
       assertEquals(keySet.lookup(BASE_KEY + "/getter/verbose").get().getString(), "1");
-
-      keySet.release(); // optional clean-up
-    } finally {
-      // optional clean-up
-      config.release();
-      parentKey.release();
-      contract.release();
     }
   }
 
@@ -170,9 +158,6 @@ public class GOptsTest {
       var keySet = kdb.get(specParentKey);
       keySet.cut(specParentKey);
       kdb.set(keySet, specParentKey);
-      keySet.release(); // optional clean-up
-    } finally {
-      specParentKey.release(); // optional clean-up
     }
   }
 }

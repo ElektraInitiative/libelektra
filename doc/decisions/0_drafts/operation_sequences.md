@@ -227,7 +227,7 @@ As can be seen, the change tracking within the `dbus` and `logchange` plugins wr
    This way, we have only one such algorithm in a central place, and plugin authors don't have to think about the sequences their plugins are called by developers.
 
    This approach can also be paired with [COW semantics](../4_decided/internal_cache.md), so that memory toll will be kept low.
-   A separate [decision for change tracking](../1_problem_clear/change_tracking.md) is currently in progress.
+   A separate [decision for change tracking](../3_in_review/change_tracking.md) is currently in progress.
 
    Should we observe this problem with use cases other than change tracking, we can provide general frameworks for those too.
 
@@ -243,7 +243,7 @@ As can be seen, the change tracking within the `dbus` and `logchange` plugins wr
 
 ## Related Decisions
 
-- [Change Tracking](../1_problem_clear/change_tracking.md)
+- [Change Tracking](../3_in_review/change_tracking.md)
 - [Internal KeySet Cache](../4_decided/internal_cache.md)
 - []()
 

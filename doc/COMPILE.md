@@ -61,7 +61,7 @@ To build the documentation you need doxygen (we recommend 1.8.8+), graphviz and 
 - on APT-based systems (Ubuntu, Debian):
 
   ```sh
-  apt-get install doxygen graphviz
+  apt-get install doxygen graphviz ruby
   gem install ronn-ng -v 0.10.1.pre1
   ```
 
@@ -106,7 +106,7 @@ A small subset of build dependencies to get you started:
   ```sh
   sudo yum install -y libdb-devel GConf2-devel libxml2-devel yajl-devel   \
   libcurl-devel augeas-devel libgit2-devel lua-devel swig python34-devel python-devel \
-  java-1.8.0-openjdk-devel jna ruby-devel byacc
+  java-17-openjdk-devel jna ruby-devel byacc
   ```
 
 - on APT-based systems (Ubuntu, Debian):
@@ -114,7 +114,7 @@ A small subset of build dependencies to get you started:
   ```sh
   sudo apt install -y libxerces-c-dev libxml2-dev libyajl-dev \
   libcurl4-gnutls-dev libaugeas-dev git git-buildpackage dh-lua liblua5.2-dev \
-  dh-python python3-all python3-dev default-jdk libjna-java ruby-dev flex bison
+  dh-python python3-all python3-dev openjdk-17-jdk libjna-java ruby-dev flex bison
   ```
 
 ## Preparation
@@ -143,7 +143,7 @@ Note: You have to enclose a value with quotes `""` if it contains a semicolon (`
 E.g.:
 
 ```sh
-cmake -DPLUGINS="dump;resolver;yajl;list;spec" ..
+cmake -DPLUGINS="dump;resolver_fm_hpu_b;yajl;list;spec" ..
 ```
 
 Some scripts in the folder of the same name may help you running CMake.

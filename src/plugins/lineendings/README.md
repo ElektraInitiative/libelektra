@@ -1,5 +1,6 @@
 - infos = Information about the lineendings plugin is in keys below
-- infos/author = Thomas Waser <thomas.waser@libelektra.org>, Michael Langhammer <e1125605@student.tuwien.ac.at>, Florian Lindner <e1225590@student.tuwien.ac.at>
+- infos/author = Thomas Waser <thomas.waser@libelektra.org>, Michael Langhammer <e1125605@student.tuwien.ac.at>, Florian Lindner <florian.lindner@student.tuwien.ac.at>
+- infos/maintainer = Florian Lindner <florian.lindner@student.tuwien.ac.at>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides =

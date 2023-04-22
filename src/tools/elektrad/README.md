@@ -1,3 +1,5 @@
+- infos/maintainer = Tomislav Makar <tmakar23@gmail.com>
+
 # Elektrad
 
 ## Introduction

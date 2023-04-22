@@ -18,7 +18,6 @@ const Key *keyGetMeta(const Key *key, const char* metaName);
 ssize_t    keySetMeta(Key *key, const char* metaName,const char *newMetaString);
 KeySet * keyMeta (Key * key);
 int keyCmp(const Key *k1, const Key *k2);
-int keyNeedSync(const Key *key);
 int keyIsBelow(const Key *key, const Key *check);
 int keyIsBelowOrSame(const Key *key, const Key *check);
 int keyIsDirectlyBelow(const Key *key, const Key *check);

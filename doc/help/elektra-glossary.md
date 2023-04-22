@@ -113,9 +113,6 @@
 
 ## Details
 
-- [Sync Flag](elektra-sync-flag.md):
-  Marks keys that were changed and need to be written out to disc.
-
 - Null Value:
   The absence of a value, i.e. `keyValue (key) == NULL`.
 

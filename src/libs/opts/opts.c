@@ -25,7 +25,7 @@ static const char SEP_ENV_VALUE = ':';
 #endif
 
 // Meta key storing which command an option/argument belongs to.
-static char * const META_COMMAND_KEY = "command/key";
+static const char * const META_COMMAND_KEY = "command/key";
 
 struct OptionData
 {

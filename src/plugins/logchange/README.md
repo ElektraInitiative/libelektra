@@ -4,7 +4,7 @@
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = tracing
-- infos/placements = pregetstorage postgetstorage postcommit
+- infos/placements = hook pregetstorage postgetstorage postcommit
 - infos/status = maintained nodep global nodoc
 - infos/description = demonstrates notification of key changes
 
