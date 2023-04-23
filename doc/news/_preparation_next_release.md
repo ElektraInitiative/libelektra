@@ -235,6 +235,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 - Add new changetracking API _(Maximilian Irlinger @atmaxinger)_
 - Fix inconsistent return values in code, tests and man pages _(Hannes Laimer @hannes99)_
+- Remove `smount` alias _(Hannes Laimer @hannes99)_
 - <<TODO>>
 
 ### <<Library>>
