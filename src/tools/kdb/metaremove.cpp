@@ -43,7 +43,7 @@ int MetaRemoveCommand::execute (Cmdline const & cl)
 	if (!k)
 	{
 		cerr << "Key not found" << endl;
-		return 1;
+		return 11;
 	}
 
 	k.delMeta (metaname);

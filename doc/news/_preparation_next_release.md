@@ -235,6 +235,8 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 - Add new changetracking API _(Maximilian Irlinger @atmaxinger)_
 - Fix unwanted removal of subkeys when using mv _(Hannes Laimer @hannes99)_
+- Fix inconsistent return values in code, tests and man pages _(Hannes Laimer @hannes99)_
+- Remove `smount` alias _(Hannes Laimer @hannes99)_
 - <<TODO>>
 
 ### <<Library>>
@@ -331,6 +333,11 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Added Florian Lindner to `AUTHORS.md` _(Florian Lindner @flo91)_
 - <<TODO>>
+- .github rework _(Markus Raab)_
+- Added `hook` to `placements` contract in [CONTRACT.ini](../CONTRACT.ini) _(Tomislav Makar @tmakar)_
+- Added `hook` information to [hooks.md](../dev/hooks.md)
+- Added Hannes Laimer to `AUTHORS.md` _(Hannes Laimer @hannes99)_
+- Add README to tools/kdb _(Hannes Laimer @hannes99)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre3
-.TH "KDB\-MERGE" "1" "November 2020" ""
+.TH "KDB\-MERGE" "1" "April 2023" ""
 .SH "NAME"
 \fBkdb\-merge\fR \- Three\-way merge of KeySets
 .SH "SYNOPSIS"
@@ -86,6 +86,13 @@ Conflicts in a merge can be resolved using a \fIstrategy\fR with the \fB\-s\fR o
 .IP "\(bu" 4
 \fB\-i\fR, \fB\-\-interactive\fR Interactively resolve the conflicts\.
 .IP "" 0
+.SH "RETURN VALUE"
+.TP
+0
+Successful\.
+.TP
+11
+A conflict occurred during the merge\.
 .SH "EXAMPLES"
 To complete a simple merge of three KeySets:
 .br

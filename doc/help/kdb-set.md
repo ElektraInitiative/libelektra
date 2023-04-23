@@ -40,6 +40,17 @@ To set a key to a negative value, `--` has to be used to stop option processing.
 - `-f`, `--force`:
   Do not perform a cascading lookup if the key provided has a namespace. For example, this bypasses validation specified in the spec: namespace for the given key.
 
+## RETURN VALUES
+
+This command will return the following values as an exit status:<br>
+
+- 0:
+  No errors.
+- 11:
+  Not a valid keyname.
+- 12:
+  Setting a non-existing key without a namespace is not possible.
+
 ## KDB
 
 - `/sw/elektra/kdb/#0/current/verbose`:

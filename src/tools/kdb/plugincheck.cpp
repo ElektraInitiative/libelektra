@@ -91,14 +91,14 @@ int PluginCheckCommand::execute (Cmdline const & cl)
 	catch (NoPlugin const & p)
 	{
 		cerr << p.what () << endl;
-		return 1;
+		return 11;
 	}
 	catch (PluginCheckException const & p)
 	{
 		cerr << "Plugin did not pass all checks:" << endl;
 		cerr << "See description below:" << endl;
 		cerr << p.what () << endl;
-		return 2;
+		return 12;
 	}
 
 	if (warnings.size () > 0)
@@ -110,7 +110,7 @@ int PluginCheckCommand::execute (Cmdline const & cl)
 		{
 			cerr << "Warning #" << i << ": " << warnings[i] << endl;
 		}
-		return 3;
+		return 13;
 	}
 
 	return 0;

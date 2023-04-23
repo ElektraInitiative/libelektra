@@ -182,6 +182,14 @@ elektra-core, rust implementation
 - GitHub user: [lawli3t](https://github.com/lawli3t)
 - devel/test on: Arch Linux / Debian Docker
 
+## Hannes Laimer
+
+KDB CLI rewrite C++ -> C, CLI cleanup
+
+- email: hannes.laimer@tuwien.ac.at
+- GitHub user: [hannes99](https://github.com/hannes99)
+- devel/test on: Arch
+
 ## Tomislav Makar
 
 spec plugin, [go-elektra](https://github.com/ElektraInitiative/go-elektra), elektrad, web-ui

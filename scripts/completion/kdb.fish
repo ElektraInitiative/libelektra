@@ -187,7 +187,7 @@ function __fish_kdb_subcommand_remount_needs_namespace -d 'Check if the subcomma
 end
 
 function __fish_kdb_subcommand_smount_needs_plugin -d 'Check if the subcommand spec-mount needs a plugin completion'
-    __fish_kdb_subcommand_includes smount spec-mount
+    __fish_kdb_subcommand_includes spec-mount
     and test (__fish_kdb__number_arguments_input_left) -eq 3
 end
 
@@ -291,7 +291,7 @@ function __fish_kdb_subcommand_supports_option_color -d 'Check if the current su
 end
 
 function __fish_kdb_subcommand_supports_option_debug -d 'Check if the current subcommand supports the option debug'
-    __fish_kdb_subcommand_includes complete ls mount remount smount spec-mount
+    __fish_kdb_subcommand_includes complete ls mount remount spec-mount
 end
 
 function __fish_kdb_subcommand_supports_option_force -d 'Check if the current subcommand supports the option force'
@@ -303,7 +303,7 @@ function __fish_kdb_subcommand_supports_option_null -d 'Check if the current sub
 end
 
 function __fish_kdb_subcommand_supports_option_plugins_config -d 'Check if the current subcommand supports plugin configuration'
-    __fish_kdb_subcommand_includes check export import info mount smount spec-mount
+    __fish_kdb_subcommand_includes check export import info mount spec-mount
 end
 
 function __fish_kdb_subcommand_supports_option_verbose -d 'Check if the current subcommand supports the option verbose'
@@ -360,7 +360,7 @@ end
 
 complete -c kdb -n 'not __fish_kdb_subcommand' -x -a '(__fish_kdb_print_subcommands -v)'
 
-set -l arguments complete editor export file fstab get meta-get import ls meta-ls rm meta-rm set meta-set sget smount spec-mount test umount
+set -l arguments complete editor export file fstab get meta-get import ls meta-ls rm meta-rm set meta-set sget spec-mount test umount
 set -l completion_function "__fish_kdb_needs_namespace $arguments" 1
 complete -c kdb -n "$completion_function" -x -a '(__fish_kdb_print_namespaces)'
 complete -c kdb -n '__fish_kdb_needs_namespace cp mv 2' -x -a '(__fish_kdb_print_namespaces)'
@@ -371,7 +371,7 @@ complete -c kdb -n '__fish_kdb_subcommand_remount_needs_namespace' -x -a '(__fis
 complete -c kdb -n '__fish_kdb_needs_plugin' -x -a '(__fish_kdb_print_plugins)'
 
 complete -c kdb -n '__fish_kdb_subcommand_mount_needs_plugin' -x -a '(__fish_kdb_print_non_resolver_plugins)'
-complete -c kdb -n '__fish_kdb_subcommand_smount_needs_plugin' -x -a '(__fish_kdb_print_non_resolver_plugins)'
+complete -c kdb -n '__fish_kdb_subcommand_needs_plugin' -x -a '(__fish_kdb_print_non_resolver_plugins)'
 
 complete -c kdb -n '__fish_kdb_subcommand_convert_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
 complete -c kdb -n '__fish_kdb_subcommand_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
@@ -413,7 +413,7 @@ __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_force' 'force' 'f' 
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_common_options' 'help' 'H' 'Show the man page'
 
 # --interactive -i
-__fish_kdb_add_option '__fish_kdb_subcommand_includes merge mount remount smount spec-mount' 'interactive' 'i' 'Ask the user interactively'
+__fish_kdb_add_option '__fish_kdb_subcommand_includes merge mount remount spec-mount' 'interactive' 'i' 'Ask the user interactively'
 
 # --load -l
 __fish_kdb_add_option '__fish_kdb_subcommand_includes info' 'load' 'l' 'Load plugin even if system:/elektra is available'
@@ -442,7 +442,7 @@ set -l description 'Use a different profile for kdb configuration'
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_common_options' 'profile' 'p' "$description" 'current'
 
 # --quiet -q
-__fish_kdb_add_option '__fish_kdb_subcommand_includes mount set meta-set smount spec-mount' 'quiet' 'q' 'Only print error messages'
+__fish_kdb_add_option '__fish_kdb_subcommand_includes mount set meta-set spec-mount' 'quiet' 'q' 'Only print error messages'
 
 # --recursive -r
 __fish_kdb_add_option '__fish_kdb_subcommand_includes cp mv rm' 'recursive' 'r' 'Work in a recursive mode'
@@ -450,7 +450,7 @@ __fish_kdb_add_option '__fish_kdb_subcommand_includes cp mv rm' 'recursive' 'r' 
 # --resolver -R
 set -l argument_function '__fish_kdb_print_resolver_plugins'
 set -l description 'Specify the resolver plugin to use'
-__fish_kdb_add_option '__fish_kdb_subcommand_includes mount smount spec-mount' 'resolver' 'R' "$description" "($argument_function)"
+__fish_kdb_add_option '__fish_kdb_subcommand_includes mount spec-mount' 'resolver' 'R' "$description" "($argument_function)"
 
 # --second -2
 __fish_kdb_add_option '__fish_kdb_subcommand_includes mount' 'second' '2' 'Suppress the second column'
@@ -476,5 +476,5 @@ __fish_kdb_add_option "not __fish_kdb_subcommand; or __fish_kdb_subcommand_suppo
 __fish_kdb_add_option '__fish_kdb_subcommand_includes export import' 'without-elektra' 'E' 'Omit the `/elektra` directory'
 
 # --with-recommends -W
-set -l completion_function '__fish_kdb_subcommand_includes global-mount gmount mount smount spec-mount'
+set -l completion_function '__fish_kdb_subcommand_includes global-mount gmount mount spec-mount'
 __fish_kdb_add_option "$completion_function" 'with-recommends' 'W' 'Add recommended plugins'

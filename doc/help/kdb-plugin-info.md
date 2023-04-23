@@ -21,7 +21,7 @@ This command returns the following exit statuses:<br>
 - 0:<br>
   The command was successful.<br>
 
-- 1:<br>
+- 11:<br>
   A `clause name` was specified but not found.<br>
 
 ## OPTIONS

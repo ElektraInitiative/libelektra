@@ -40,13 +40,13 @@ int MetaGetCommand::execute (Cmdline const & cl)
 	if (!k)
 	{
 		cerr << "Key not found" << endl;
-		return 1;
+		return 11;
 	}
 
 	if (!k.getMeta<const Key> (metaname))
 	{
 		cerr << "Metakey not found" << endl;
-		return 2;
+		return 12;
 	}
 
 	cout << k.getMeta<string> (metaname);
