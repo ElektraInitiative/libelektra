@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre3
-.TH "KDB\-META\-SET" "1" "September 2021" ""
+.TH "KDB\-META\-SET" "1" "April 2023" ""
 .SH "NAME"
 \fBkdb\-meta\-set\fR \- Set the value of a metakey
 .SH "SYNOPSIS"
@@ -36,6 +36,18 @@ Suppress non\-error messages\.
 .TP
 \fB\-f\fR, \fB\-\-force\fR
 Do not perform cascading KDB operations if the key provided has a namespace\. For example, this bypasses validation specified in the spec: namespace for the given key\.
+.SH "RETURN VALUES"
+This command will return the following values as an exit status:
+.br
+.TP
+0
+No errors\.
+.TP
+11
+Key not found\. (Invalid \fBpath\fR)
+.TP
+12
+Setting a non\-existing key without a namespace is not possible\.
 .SH "KDB"
 .TP
 \fB/sw/elektra/kdb/#0/current/verbose\fR

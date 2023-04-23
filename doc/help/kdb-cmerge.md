@@ -45,10 +45,10 @@ Strategies have their own [man page](/doc/help/elektra-cmerge-strategy.md) which
 - 0:
   Successful.
 
-- 1:
+- 11:
   An error happened.
 
-- 2:
+- 12:
   A merge conflict occurred and merge strategy abort was set.
 
 The result of the merge is stored in `result`.

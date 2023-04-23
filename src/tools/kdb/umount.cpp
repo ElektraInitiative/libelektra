@@ -38,7 +38,7 @@ int UmountCommand::execute (Cmdline const & cl)
 	if (Backends::umount (name, conf) == 0)
 	{
 		cerr << "Mountpoint " << name << " does not exist" << endl;
-		return 1;
+		return 11;
 	}
 
 	kdb.set (conf, parentKey);
