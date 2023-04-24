@@ -9,7 +9,7 @@
 #ifndef ELEKTRA_KDBVALUE_HPP
 #define ELEKTRA_KDBVALUE_HPP
 
-#include <internal/macros/utils.h>
+#include <internal/macros/old_utils.h>
 
 #ifdef HAVE_KDBCONFIG_H
 #include <internal/kdb/config.h>

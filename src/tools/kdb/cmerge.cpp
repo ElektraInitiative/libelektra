@@ -10,7 +10,7 @@
 #include "keyset.hpp"
 #include <cmdline.hpp>
 #include <elektra/merge.h>
-#include <internal/macros/utils.h>
+#include <internal/macros/old_utils.h>
 #include <iostream>
 #include <keysetio.hpp>
 #include <string>

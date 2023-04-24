@@ -14,7 +14,7 @@
 #include <elektra/highlevel/errors.h>
 #include <elektra/highlevel/types.h>
 #include <elektra/type/types.h>
-#include <internal/macros/utils.h>
+#include <internal/macros/old_utils.h>
 
 // region Helpers for Code Generation
 #define ELEKTRA_GET(typeName) ELEKTRA_CONCAT (elektraGet, typeName)

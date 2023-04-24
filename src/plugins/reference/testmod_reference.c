@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <internal/macros/utils.h>
+#include <internal/macros/old_utils.h>
 
 #include <tests_plugin.h>
 

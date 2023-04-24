@@ -15,7 +15,7 @@
 #include <string.h>
 
 #include <elektra/kdb/errors.h>
-#include <internal/macros/utils.h>
+#include <internal/macros/old_utils.h>
 
 #include <yajl/yajl_gen.h>
 

@@ -25,7 +25,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <internal/macros/utils.h>
+#include <internal/macros/old_utils.h>
 #include <stdexcept>
 
 class UserException : public std::exception

@@ -13,7 +13,7 @@
 
 #include <elektra/type/types.h>
 #include <internal/kdb/config.h>
-#include <internal/macros/utils.h>
+#include <internal/macros/old_utils.h>
 #include <internal/notifications.h>
 
 #include <tests.h>

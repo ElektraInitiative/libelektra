@@ -26,7 +26,7 @@
 #include <sanitizer/lsan_interface.h>
 #endif
 
-#include <internal/macros/utils.h>
+#include <internal/macros/old_utils.h>
 
 ELEKTRA_UNUSED static bool isRunningWithValgrind (void)
 {

@@ -21,7 +21,7 @@
 #include <elektra/kdb/kdb.h>
 #include <elektra/plugin/plugin.h>
 #include <elektra/type/types.h>
-#include <internal/macros/utils.h>
+#include <internal/macros/old_utils.h>
 #include <internal/notifications.h>
 #include <internal/utility/old_helper.h>
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS

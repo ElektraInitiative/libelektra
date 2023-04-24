@@ -11,7 +11,7 @@
 #include <modules.hpp>
 #include <plugindatabase.hpp>
 
-#include <internal/macros/utils.h>
+#include <internal/macros/old_utils.h>
 
 #include <export.hpp>
 #include <import.hpp>

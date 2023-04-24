@@ -10,7 +10,7 @@
 #define ELEKTRA_KDBASSERT_H
 
 #include <internal/kdb/config.h>
-#include <internal/macros/utils.h>
+#include <internal/macros/old_utils.h>
 
 #ifdef __cplusplus
 extern "C" {

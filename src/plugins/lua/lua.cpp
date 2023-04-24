@@ -12,7 +12,7 @@
 #endif
 
 #include "lua.hpp"
-#include <internal/macros/utils.h>
+#include <internal/macros/old_utils.h>
 #include <internal/utility/old_helper.h>
 
 #include <key.hpp>
