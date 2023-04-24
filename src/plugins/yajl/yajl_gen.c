@@ -8,6 +8,7 @@
 
 #include "yajl_gen.h"
 #include <errno.h>
+#include <internal/macros/plugin_errors.h>
 
 
 /**

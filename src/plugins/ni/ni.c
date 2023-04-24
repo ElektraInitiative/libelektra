@@ -8,9 +8,8 @@
 
 #include "ni.h"
 
-#ifndef HAVE_KDBCONFIG
 #include <internal/kdb/config.h>
-#endif
+#include <internal/macros/plugin_errors.h>
 
 #include <elektra/ease/old_ease.h>
 #include <elektra/kdb/errors.h>

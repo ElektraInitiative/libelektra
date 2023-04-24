@@ -7,12 +7,13 @@
  *
  */
 
-#ifndef HAVE_KDBCONFIG
-#include <internal/kdb/config.h>
-#endif
-
 /* used for asprintf */
 #define _GNU_SOURCE
+#include <stdio.h>
+
+#include <elektra/kdb/errors.h>
+#include <internal/kdb/config.h>
+#include <internal/macros/plugin_errors.h>
 
 #include <ctype.h>
 #include <glob.h>

@@ -13,6 +13,7 @@
 
 #include <elektra/kdb/errors.h>
 #include <internal/kdb/config.h>
+#include <internal/macros/plugin_errors.h>
 
 #include <stdio.h>
 #include <string.h>

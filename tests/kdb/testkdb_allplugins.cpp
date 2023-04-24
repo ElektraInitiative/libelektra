@@ -20,6 +20,7 @@
 
 #include <gtest/gtest.h>
 #include <internal/kdb/config.h>
+#include <internal/macros/attributes.h>
 #include <kdb.hpp>
 
 #ifdef ENABLE_ASAN

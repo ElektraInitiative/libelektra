@@ -7,6 +7,7 @@
  */
 
 #include "resolver.h"
+#include "stat.h"
 
 #include <internal/kdb/config.h>
 #include <internal/kdbprivate.h> // KDB_CACHE_PREFIX

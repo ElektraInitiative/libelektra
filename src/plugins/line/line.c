@@ -6,9 +6,13 @@
  *
  */
 
-#ifndef HAVE_KDBCONFIG
+
+// The definition `_WITH_GETLINE` is required for FreeBSD
+#define _WITH_GETLINE
+#include <stdio.h>
+
 #include <internal/kdb/config.h>
-#endif
+#include <internal/macros/plugin_errors.h>
 
 #include "line.h"
 
@@ -17,9 +21,6 @@
 
 #include <errno.h>
 #include <stddef.h>
-// The definition `_WITH_GETLINE` is required for FreeBSD
-#define _WITH_GETLINE
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 

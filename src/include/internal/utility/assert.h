@@ -12,6 +12,7 @@
 #include <elektra/macros/attributes.h>
 #include <internal/kdb/config.h>
 #include <internal/macros/attributes.h>
+#include <internal/macros/utils.h>
 #ifdef __cplusplus
 extern "C" {
 #endif

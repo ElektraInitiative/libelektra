@@ -53,7 +53,8 @@
  */
 #define ELEKTRA_README ELEKTRA_README2 (ELEKTRA_PLUGIN_NAME_C)
 #define ELEKTRA_README2(module) ELEKTRA_README3 (module)
-#define ELEKTRA_README3(module) ELEKTRA_QUOTE (readme_##module.c)
+#define ELEKTRA_README3(module) ELEKTRA_README4 (readme_##module.c)
+#define ELEKTRA_README4(file) #file
 
 
 /**

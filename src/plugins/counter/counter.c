@@ -6,9 +6,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#ifndef HAVE_KDBCONFIG
 #include <internal/kdb/config.h>
-#endif
+#include <internal/macros/attributes.h>
+#include <internal/macros/plugin_errors.h>
 
 #include <stdio.h>
 #include <string.h>

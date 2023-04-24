@@ -9,21 +9,12 @@
 #ifndef TESTS_H
 #define TESTS_H
 
-#ifdef HAVE_KDBCONFIG_H
 #include <internal/kdb/config.h>
-#endif
+#include <internal/macros/utils.h>
 
-#ifdef HAVE_STDIO_H
 #include <stdio.h>
-#endif
-
-#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
-
-#ifdef HAVE_STRING_H
 #include <string.h>
-#endif
 
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>

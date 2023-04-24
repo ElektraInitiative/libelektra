@@ -15,9 +15,8 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-#ifndef HAVE_KDBCONFIG
 #include <internal/kdb/config.h>
-#endif
+#include <internal/macros/plugin_errors.h>
 
 
 typedef void CommentConstructor (KeySet *, size_t, const char *, const char *);

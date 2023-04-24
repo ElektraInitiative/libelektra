@@ -9,6 +9,7 @@
 
 #include "quickdump.h"
 
+#include <internal/macros/plugin_errors.h>
 #include <internal/utility/endian.h>
 #include <internal/utility/old_helper.h>
 

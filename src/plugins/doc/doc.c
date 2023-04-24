@@ -21,9 +21,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifndef HAVE_KDBCONFIG
 #include <internal/kdb/config.h>
-#endif
+#include <internal/macros/plugin_errors.h>
 
 
 //! [global data]

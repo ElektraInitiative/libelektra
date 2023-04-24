@@ -7,9 +7,8 @@
  *
  */
 
-#ifndef HAVE_KDBCONFIG
 #include <internal/kdb/config.h>
-#endif
+#include <internal/macros/attributes.h>
 
 #include <stdlib.h>
 #include <systemd/sd-journal.h>

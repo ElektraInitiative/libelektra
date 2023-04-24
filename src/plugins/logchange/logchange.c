@@ -8,9 +8,8 @@
  */
 
 
-#ifndef HAVE_KDBCONFIG
 #include <internal/kdb/config.h>
-#endif
+#include <internal/macros/attributes.h>
 
 #include <stdio.h>
 #include <string.h>

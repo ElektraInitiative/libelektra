@@ -17,6 +17,7 @@
 #include <elektra/kdb/errors.h>
 #include <errno.h>
 #include <internal/kdbprivate.h> // for ksRenameKeys
+#include <internal/macros/plugin_errors.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/old_helper.h>
 #include <stdio.h>

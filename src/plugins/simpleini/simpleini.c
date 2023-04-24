@@ -7,9 +7,9 @@
  */
 
 #define _GNU_SOURCE
-#ifndef HAVE_KDBCONFIG
 #include <internal/kdb/config.h>
-#endif
+#include <internal/macros/plugin_errors.h>
+
 
 #include "simpleini.h"
 #include <errno.h>

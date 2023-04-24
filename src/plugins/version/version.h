@@ -13,6 +13,7 @@
 #include <elektra/config.h>
 #include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
+#include <internal/macros/utils.h>
 
 static inline KeySet * elektraVersionKeySet (void)
 {

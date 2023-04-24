@@ -9,9 +9,8 @@
 
 #include "hosts.h"
 
-#ifndef HAVE_KDBCONFIG
 #include <internal/kdb/config.h>
-#endif
+#include <internal/macros/plugin_errors.h>
 
 #include <elektra/ease/meta.h>
 #include <elektra/ease/old_ease.h>

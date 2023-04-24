@@ -11,6 +11,7 @@
 #include <elektra/kdb/errors.h>
 #include <elektra/type/conversion.h>
 #include <internal/kdbprivate.h>
+#include <internal/macros/symver.h>
 #include <internal/utility/logger.h>
 #include <internal/utility/old_helper.h>
 #include <stdlib.h>
