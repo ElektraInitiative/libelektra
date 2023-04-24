@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Elektra macros for compiler attributes.
+ * @brief Elektra macros for compiler attributes (potentially) used in public headers.
  *
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
@@ -14,6 +14,20 @@
 #define ELEKTRA_SENTINEL __attribute__ ((sentinel))
 #elif
 #define ELEKTRA_SENTINEL
+#endif
+
+#ifdef __GNUC__
+/** Declares an API as deprecated. */
+#define ELEKTRA_DEPRECATED __attribute__ ((deprecated))
+#else
+#define ELEKTRA_DEPRECATED
+#endif
+
+#ifdef __GNUC__
+/** Marks a function as never returning, like e.g. exit() */
+#define ELEKTRA_ATTRIBUTE_NO_RETURN __attribute__ ((noreturn))
+#else
+#define ELEKTRA_ATTRIBUTE_NO_RETURN
 #endif
 
 #endif // ELEKTRA_MACROS_ATTRIBUTES_H

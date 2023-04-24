@@ -194,6 +194,4 @@
 #cmakedefine HAVE_HSEARCHR
 #endif
 
-#define ELEKTRA_SYMVER_COMMAND(arg1, arg2) @ELEKTRA_SYMVER_COMMAND@
-
 #endif

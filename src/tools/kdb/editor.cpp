@@ -23,6 +23,8 @@
 #include <merging/metamergestrategy.hpp>
 #include <merging/threewaymerge.hpp>
 
+#include "../../plugins/resolver/stat.h"
+
 using namespace kdb;
 using namespace kdb::tools;
 using namespace kdb::tools::merging;
