@@ -10,7 +10,7 @@
 #include "./mozprefs.h"
 
 #include <internal/utility/old_helper.h>
-#include <internal/utility/old_utility.h>
+#include <internal/utility/string.h>
 
 #include <ctype.h>
 #include <stdio.h>

@@ -18,7 +18,7 @@
 #include <elektra/kdb/errors.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
-#include <internal/utility/old_utility.h>
+#include <internal/utility/string.h>
 
 #include <stdio.h>
 #include <stdlib.h>

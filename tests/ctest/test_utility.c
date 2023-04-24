@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <internal/utility/old_utility.h>
+#include <internal/utility/string.h>
 
 #include "tests.h"
 
