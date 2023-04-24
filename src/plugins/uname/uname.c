@@ -18,8 +18,8 @@
 #endif
 
 #include <elektra/kdb/errors.h>
-#include <internal/macros/plugin_errors.h>
 #include <internal/macros/attributes.h>
+#include <internal/macros/plugin_errors.h>
 static int elektraAddUname (KeySet * returned, Key * parentKey)
 {
 	Key * dir;

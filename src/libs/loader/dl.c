@@ -22,9 +22,9 @@
   exists.
   */
 
+#include <dlfcn.h>
 #include <internal/kdb/config.h>
 #include <internal/macros/attributes.h>
-#include <dlfcn.h>
 
 #include <elektra/kdb/errors.h>
 #include <internal/pluginload/module.h>
