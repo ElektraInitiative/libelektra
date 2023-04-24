@@ -7,7 +7,7 @@
  *
  */
 
-#include "base64.h"
+#include "./base64.h"
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 #include <elektra/kdb/errors.h>
@@ -239,7 +239,7 @@ int PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * keySet, Key * parentKey)
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/" ELEKTRA_PLUGIN_NAME))
 	{
 		KeySet * moduleConfig = ksNew (30,
-#include "contract.h"
+#include "./contract.h"
 					       KS_END);
 		ksAppend (keySet, moduleConfig);
 		ksDel (moduleConfig);

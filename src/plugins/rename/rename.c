@@ -7,7 +7,7 @@
  *
  */
 
-#include "rename.h"
+#include "./rename.h"
 
 #ifndef HAVE_KDBCONFIG
 #include <internal/kdb/config.h>
@@ -258,7 +258,7 @@ int elektraRenameGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/rename"))
 	{
 		KeySet * info =
-#include "contract.h"
+#include "./contract.h"
 
 			ksAppend (returned, info);
 		ksDel (info);

@@ -9,7 +9,7 @@
 #ifndef YAJL_GEN_H
 #define YAJL_GEN_H
 
-#include "yajl.h"
+#include "./yajl.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -18,8 +18,8 @@
 #include <yajl/yajl_gen.h>
 
 
-#include "iterator.h"
-#include "name.h"
+#include "./iterator.h"
+#include "./name.h"
 
 typedef enum
 {

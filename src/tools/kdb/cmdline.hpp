@@ -23,7 +23,7 @@
 #include <string>
 #include <vector>
 
-#include "coloredkdbio.hpp"
+#include "./coloredkdbio.hpp"
 
 class Command;
 

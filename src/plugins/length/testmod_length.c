@@ -10,7 +10,7 @@
 #include <stdio.h>
 
 #define PLUGIN_NAME "length"
-#include "test_length.h"
+#include "./test_length.h"
 
 
 int main (int argc, char ** argv)

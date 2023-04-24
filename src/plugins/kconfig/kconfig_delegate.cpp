@@ -7,9 +7,9 @@
  *
  */
 
-#include "kconfig_delegate.hpp"
-#include "file_utility.hpp"
-#include "kconfig_parser.hpp"
+#include "./kconfig_delegate.hpp"
+#include "./file_utility.hpp"
+#include "./kconfig_parser.hpp"
 #include <fstream>
 
 using kdb::Key;

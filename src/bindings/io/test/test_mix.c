@@ -15,7 +15,7 @@
 
 #include <tests.h>
 
-#include "test.h"
+#include "./test.h"
 #include <elektra/io/api.h>
 #include <internal/io/test.h>
 

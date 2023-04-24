@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "validation.h"
+#include "./validation.h"
 
 static int validateKey (Key *, Key *);
 
@@ -30,7 +30,7 @@ int elektraValidationGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key
 			     keyNew ("system:/elektra/modules/validation/exports/set", KEY_FUNC, elektraValidationSet, KEY_END),
 			     keyNew ("system:/elektra/modules/validation/exports/ksLookupRE", KEY_FUNC, ksLookupRE, KEY_END),
 			     keyNew ("system:/elektra/modules/validation/exports/validateKey", KEY_FUNC, validateKey, KEY_END),
-#include "readme_validation.c"
+#include "./readme_validation.c"
 			     keyNew ("system:/elektra/modules/validation/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
 	ksDel (n);
 	return 1;

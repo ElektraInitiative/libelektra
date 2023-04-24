@@ -44,4 +44,4 @@ TEST (GetEnv, SimpleFork)
 	elektraClose ();
 }
 
-#include "main.cpp"
+#include "./main.cpp"

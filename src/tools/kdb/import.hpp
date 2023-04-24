@@ -9,7 +9,7 @@
 #ifndef IMPORT_HPP
 #define IMPORT_HPP
 
-#include "coloredkdbio.hpp"
+#include "./coloredkdbio.hpp"
 #include <command.hpp>
 #include <kdb.hpp>
 

@@ -17,7 +17,7 @@
 #include <kdb.hpp>
 #include <keyio.hpp>
 
-#include "printvisitor.hpp"
+#include "./printvisitor.hpp"
 
 class TreeViewModel;
 class PrintVisitor;

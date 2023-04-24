@@ -10,8 +10,8 @@
 #ifndef HAVE_KDBCONFIG
 #include <internal/kdb/config.h>
 #endif
-#include "gpgme.h"
-#include "keylist.h"
+#include "./gpgme.h"
+#include "./keylist.h"
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 #include <elektra/core/namespace.h>
@@ -588,7 +588,7 @@ int elektraGpgmeGet (Plugin * handle, KeySet * ks, Key * parentKey)
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/" ELEKTRA_PLUGIN_NAME))
 	{
 		KeySet * moduleConfig = ksNew (30,
-#include "contract.h"
+#include "./contract.h"
 					       KS_END);
 		ksAppend (ks, moduleConfig);
 		ksDel (moduleConfig);

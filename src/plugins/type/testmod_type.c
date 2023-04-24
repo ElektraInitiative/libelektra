@@ -8,7 +8,7 @@
  */
 
 
-#include "type.h"
+#include "./type.h"
 
 #include <elektra/core.h>
 #include <elektra/plugin/plugin.h>

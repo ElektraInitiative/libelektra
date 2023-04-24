@@ -10,9 +10,9 @@
 #include <elektra/kdb/errors.h>
 #include <kdbplugin.hpp>
 
-#include "directoryvalue.hpp"
-#include "directoryvalue_delegate.hpp"
-#include "log.hpp"
+#include "./directoryvalue.hpp"
+#include "./directoryvalue_delegate.hpp"
+#include "./log.hpp"
 
 using std::exception;
 using std::range_error;

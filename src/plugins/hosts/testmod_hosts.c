@@ -19,7 +19,7 @@
 #include <string.h>
 #endif
 
-#include "keymetaformatting.h"
+#include "./keymetaformatting.h"
 #include <tests_plugin.h>
 
 void test_readHostsSimple (char * fileName)

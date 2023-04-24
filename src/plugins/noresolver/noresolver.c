@@ -10,7 +10,7 @@
 #include <internal/kdb/config.h>
 #endif
 
-#include "noresolver.h"
+#include "./noresolver.h"
 #include <internal/utility/logger.h>
 #include <string.h>
 

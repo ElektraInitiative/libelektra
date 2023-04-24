@@ -9,7 +9,7 @@
 #ifndef METAGET_HPP
 #define METAGET_HPP
 
-#include "coloredkdbio.hpp"
+#include "./coloredkdbio.hpp"
 #include <command.hpp>
 #include <kdb.hpp>
 

@@ -7,7 +7,7 @@
  *
  */
 
-#include "modules.h"
+#include "./modules.h"
 
 #include <elektra/kdb/errors.h>
 #include <internal/kdbprivate.h> // for struct _Plugin internals

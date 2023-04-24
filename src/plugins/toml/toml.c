@@ -14,9 +14,9 @@
 #include <internal/macros/attributes.h>
 #include <internal/utility/logger.h>
 
-#include "driver.h"
-#include "toml.h"
-#include "write.h"
+#include "./driver.h"
+#include "./toml.h"
+#include "./write.h"
 
 KeySet * getContract (void)
 {

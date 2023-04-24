@@ -7,9 +7,9 @@
  *
  */
 
-#include "kconfig.hpp"
-#include "kconfig_delegate.hpp"
-#include "kconfig_serializer.hpp"
+#include "./kconfig.hpp"
+#include "./kconfig_delegate.hpp"
+#include "./kconfig_serializer.hpp"
 
 #include <elektra/kdb/errors.h>
 #include <fstream>

@@ -9,7 +9,7 @@
 
 /* -- Imports --------------------------------------------------------------------------------------------------------------------------- */
 
-#include "mini.h"
+#include "./mini.h"
 
 // The definition `_WITH_GETLINE` is required for FreeBSD
 #define _WITH_GETLINE

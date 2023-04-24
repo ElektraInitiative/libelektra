@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "ccode.hpp"
+#include "./ccode.hpp"
 
 #include <internal/kdbprivate.h>
 #include <internal/pluginload/module.h>

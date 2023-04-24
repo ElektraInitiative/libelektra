@@ -7,7 +7,7 @@
  *
  */
 
-#include "profile.h"
+#include "./profile.h"
 
 #include <internal/utility/old_helper.h>
 

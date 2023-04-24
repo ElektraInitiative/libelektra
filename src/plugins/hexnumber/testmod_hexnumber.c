@@ -14,7 +14,7 @@
 
 #include <tests_plugin.h>
 
-#include "hexnumber.h"
+#include "./hexnumber.h"
 
 #define CREATE_TEST_KEY(HEX) (keyNew ("user:/tests/hexnumber/" #HEX, KEY_VALUE, #HEX, KEY_META, "type", "long", KEY_END))
 #define CREATE_TEST_KEY_UNITBASE(HEX) (keyNew ("user:/tests/hexnumber/" #HEX, KEY_VALUE, #HEX, KEY_META, "unit/base", "hex", KEY_END))

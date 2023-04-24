@@ -13,7 +13,7 @@
 #include <libxml/xmlreader.h>
 #include <libxml/xmlschemas.h>
 
-#include "kdbtools.h"
+#include "./kdbtools.h"
 #include <elektra/core.h>
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>

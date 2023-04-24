@@ -9,7 +9,7 @@
 #ifndef ELEKTRA_GEN_HPP
 #define ELEKTRA_GEN_HPP
 
-#include "command.hpp"
+#include "./command.hpp"
 #include <kdb.hpp>
 
 class GenCommand : public Command

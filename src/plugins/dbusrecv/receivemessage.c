@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "dbusrecv.h"
+#include "./dbusrecv.h"
 
 #include <internal/utility/logger.h>
 

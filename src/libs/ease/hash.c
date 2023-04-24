@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "sha-256.h"
+#include "./sha-256.h"
 
 static void hash_to_string (char string[65], const uint8_t hash[32]);
 

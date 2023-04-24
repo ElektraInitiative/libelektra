@@ -8,8 +8,8 @@
  */
 
 
-#include "type.h"
-#include "types.h"
+#include "./type.h"
+#include "./types.h"
 
 #include <elektra/ease/old_ease.h>
 #include <elektra/kdb/errors.h>

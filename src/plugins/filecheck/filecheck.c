@@ -12,7 +12,7 @@
 #include <internal/kdb/config.h>
 #endif
 
-#include "filecheck.h"
+#include "./filecheck.h"
 #include <elektra/kdb/errors.h>
 #include <errno.h>
 #include <iconv.h>

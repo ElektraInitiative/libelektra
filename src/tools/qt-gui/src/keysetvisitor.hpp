@@ -9,8 +9,8 @@
 #ifndef KEYSETVISITOR_HPP
 #define KEYSETVISITOR_HPP
 
-#include "confignode.hpp"
-#include "visitor.hpp"
+#include "./confignode.hpp"
+#include "./visitor.hpp"
 #include <kdb.hpp>
 
 /**

@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "yajl_gen.h"
+#include "./yajl_gen.h"
 
 // TODO: use unesacped names instead
 static char * keyNameGetOneLevel (const char * name, size_t * size)

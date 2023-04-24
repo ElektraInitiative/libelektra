@@ -11,7 +11,7 @@
 #include <internal/kdb/config.h>
 #endif
 
-#include "fcrypt.h"
+#include "./fcrypt.h"
 
 
 #include <errno.h>
@@ -605,7 +605,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, 
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/" ELEKTRA_PLUGIN_NAME))
 	{
 		KeySet * moduleConfig = ksNew (30,
-#include "contract.h"
+#include "./contract.h"
 					       KS_END);
 		ksAppend (ks, moduleConfig);
 		ksDel (moduleConfig);

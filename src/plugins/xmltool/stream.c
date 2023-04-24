@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "xmltool.h"
+#include "./xmltool.h"
 
 #ifdef HAVE_KDBCONFIG_H
 #include <internal/kdb/config.h>
@@ -18,7 +18,7 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "kdbtools.h"
+#include "./kdbtools.h"
 #include <elektra/core.h>
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>

@@ -11,7 +11,7 @@
 #include <internal/kdb/config.h>
 #endif
 
-#include "zeromqrecv.h"
+#include "./zeromqrecv.h"
 
 #include <internal/utility/logger.h>
 #include <internal/utility/old_helper.h>

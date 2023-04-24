@@ -7,7 +7,7 @@
  *
  */
 
-#include "range.h"
+#include "./range.h"
 #include <ctype.h>
 #include <elektra/kdb/errors.h>
 #include <errno.h>

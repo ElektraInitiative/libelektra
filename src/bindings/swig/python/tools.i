@@ -9,17 +9,17 @@
 %module tools
 
 %{
-  #include "toolexcept.hpp"
-  #include "backend.hpp"
-  #include "backends.hpp"
-  #include "backendparser.hpp"
-  #include "backendbuilder.hpp"
-  #include "plugin.hpp"
-  #include "plugins.hpp"
-  #include "pluginspec.hpp"
-  #include "plugindatabase.hpp"
-  #include "specreader.hpp"
-  #include "modules.hpp"
+  #include "./toolexcept.hpp"
+  #include "./backend.hpp"
+  #include "./backends.hpp"
+  #include "./backendparser.hpp"
+  #include "./backendbuilder.hpp"
+  #include "./plugin.hpp"
+  #include "./plugins.hpp"
+  #include "./pluginspec.hpp"
+  #include "./plugindatabase.hpp"
+  #include "./specreader.hpp"
+  #include "./modules.hpp"
   using namespace kdb::tools;
 %}
 

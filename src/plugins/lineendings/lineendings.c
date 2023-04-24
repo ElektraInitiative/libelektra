@@ -12,7 +12,7 @@
 #include <internal/kdb/config.h>
 #endif
 
-#include "lineendings.h"
+#include "./lineendings.h"
 #include <elektra/kdb/errors.h>
 #include <stdio.h>
 #include <string.h>

@@ -14,8 +14,8 @@ cheetahVarStartToken = $
 @from support.c import *
 @set support = CSupport()
 $util.header($args.output)
-#include "kdb.h"
-#include "kdbtypes.h"
+#include "./kdb.h"
+#include "./kdbtypes.h"
 
 #include <stdlib.h>
 #include <stdint.h>

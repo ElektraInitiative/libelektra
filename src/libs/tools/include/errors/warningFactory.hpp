@@ -5,7 +5,7 @@
 #ifndef ELEKTRA_WARNINGFACTORY_HPP
 #define ELEKTRA_WARNINGFACTORY_HPP
 
-#include "warning.hpp"
+#include "./warning.hpp"
 
 namespace kdb
 {

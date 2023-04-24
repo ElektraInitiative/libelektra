@@ -14,7 +14,7 @@
  *
  */
 
-#include "dynarray.h"
+#include "./dynarray.h"
 
 #include <internal/macros/os.h>
 #include <internal/utility/logger.h>

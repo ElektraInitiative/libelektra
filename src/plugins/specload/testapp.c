@@ -13,7 +13,7 @@
 #include <elektra/plugin/invoke.h>
 #include <internal/pluginload/module.h>
 
-#include "testdata.h"
+#include "./testdata.h"
 
 // keep #ifdef in sync with kdb export
 #ifdef _WIN32

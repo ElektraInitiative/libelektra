@@ -16,14 +16,14 @@
 #include <string.h>
 #include <limits.h>
 
-#include "codepoint.h"
-#include "driver.h"
-#include "error.h"
-#include "parser.h"
-#include "scalar.h"
-#include "utility.h"
-#include "type.h"
-#include "integer.h"
+#include "./codepoint.h"
+#include "./driver.h"
+#include "./error.h"
+#include "./parser.h"
+#include "./scalar.h"
+#include "./utility.h"
+#include "./type.h"
+#include "./integer.h"
 
 #define BASIC_TERMINATOR '\"'
 #define LITERAL_TERMINATOR '\''

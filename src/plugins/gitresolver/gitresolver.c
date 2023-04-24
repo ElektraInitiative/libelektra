@@ -24,7 +24,7 @@
 #include "../resolver/shared.h"
 #include <elektra/plugin/invoke.h>
 
-#include "gitresolver.h"
+#include "./gitresolver.h"
 
 #define TV_MAX_DIGITS 26
 #define DEFAULT_CHECKOUT_LOCATION "/tmp/"

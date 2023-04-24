@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "dbus.h"
+#include "./dbus.h"
 
 #include <stdio.h> // printf() & co
 #include <time.h>  // time()

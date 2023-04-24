@@ -21,7 +21,7 @@ ksNew (30,
 	keyNew ("system:/elektra/modules/rename/exports/set",
 		KEY_FUNC, elektraRenameSet,
 		KEY_END),
-#include "readme_rename.c"
+#include "./readme_rename.c"
 	keyNew ("system:/elektra/modules/rename/infos",
 		KEY_VALUE, "All information you want to know", KEY_END),
 	keyNew ("system:/elektra/modules/rename/infos/version",

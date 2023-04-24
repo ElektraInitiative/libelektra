@@ -12,8 +12,8 @@
 #include <internal/kdb/config.h>
 #endif
 
-#include "floathelper.h"
-#include "mathcheck.h"
+#include "./floathelper.h"
+#include "./mathcheck.h"
 #include <ctype.h>
 #include <elektra/kdb/errors.h>
 #include <math.h>

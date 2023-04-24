@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "cutkeycommand.hpp"
+#include "./cutkeycommand.hpp"
 
 CutKeyCommand::CutKeyCommand (QString type, ConfigNodePtr source, ConfigNodePtr target, int sourceIndex, QUndoCommand * parent)
 : QUndoCommand (parent), m_sourceParentModel (source->getParentModel ()), m_source (new ConfigNode (*source)), m_target (target),

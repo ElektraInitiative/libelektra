@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "resolver.h"
+#include "./resolver.h"
 
 #include <elektra/type/types.h>
 #include <errno.h>

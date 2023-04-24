@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "logchange.h"
+#include "./logchange.h"
 
 static void logKeys (KeySet * ks, const char * message)
 {

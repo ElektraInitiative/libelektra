@@ -15,8 +15,8 @@ cheetahVarStartToken = $
 @from cpp_util import cpp_util
 @set support = ContextSupport()
 $util.header($args.output)
-#include "kdbthread.hpp"
-#include "kdbtypes.h"
+#include "./kdbthread.hpp"
+#include "./kdbtypes.h"
 
 #include <string>
 

@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "resolver.h"
-#include "stat.h"
+#include "./resolver.h"
+#include "./stat.h"
 
 #include <internal/kdb/config.h>
 #include <internal/kdbprivate.h> // KDB_CACHE_PREFIX
@@ -533,7 +533,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 	{
 		keyDel (root);
 		KeySet * info =
-#include "contract.h"
+#include "./contract.h"
 			ksAppend (returned, info);
 		ksDel (info);
 		return 1;

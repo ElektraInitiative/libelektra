@@ -9,7 +9,7 @@
 #ifndef SHOWMETA_HPP
 #define SHOWMETA_HPP
 
-#include "coloredkdbio.hpp"
+#include "./coloredkdbio.hpp"
 #include <command.hpp>
 #include <kdb.hpp>
 

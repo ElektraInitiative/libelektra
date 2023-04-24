@@ -13,7 +13,7 @@
 
 #include <elektra/kdb/errors.h>
 
-#include "zeromqsend.h"
+#include "./zeromqsend.h"
 
 #include <internal/utility/logger.h>
 #include <internal/utility/old_helper.h>

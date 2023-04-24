@@ -7,7 +7,7 @@
  *
  */
 
-#include "mozprefs.h"
+#include "./mozprefs.h"
 
 #include <internal/utility/old_helper.h>
 #include <internal/utility/old_utility.h>

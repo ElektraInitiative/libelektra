@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "deserializer.hpp"
-#include "util.hpp"
+#include "./deserializer.hpp"
+#include "./util.hpp"
 
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/dom/DOMAttr.hpp>

@@ -7,11 +7,11 @@
  *
  */
 
-#include "crypto.h"
+#include "./crypto.h"
 
-#include "gcrypt_operations.h"
-#include "gpg.h"
-#include "helper.h"
+#include "./gcrypt_operations.h"
+#include "./gpg.h"
+#include "./helper.h"
 
 #include <elektra/kdb/errors.h>
 #include <elektra/type/types.h>

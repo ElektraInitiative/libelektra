@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "xmltool.h"
-#include "kdbtools.h"
+#include "./xmltool.h"
+#include "./kdbtools.h"
 
 #include <errno.h>
 
@@ -29,7 +29,7 @@ int elektraXmltoolGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 			       keyNew ("system:/elektra/modules/xmltool/exports/set", KEY_FUNC, elektraXmltoolSet, KEY_END),
 			       keyNew ("system:/elektra/modules/xmltool/exports/ksFromXML", KEY_FUNC, ksFromXMLfile, KEY_END),
 			       keyNew ("system:/elektra/modules/xmltool/exports/ksToStream", KEY_FUNC, ksToStream, KEY_END),
-#include "readme_xmltool.c"
+#include "./readme_xmltool.c"
 			       keyNew ("system:/elektra/modules/xmltool/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, moduleConfig);
 		ksDel (moduleConfig);

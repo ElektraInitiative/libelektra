@@ -2,7 +2,7 @@
  * See https://github.com/ElektraInitiative/libelektra/issues/3998#issuecomment-918111622 */
 
 
-#include "sha-256.h"
+#include "./sha-256.h"
 
 #define TOTAL_LEN_LEN 8
 

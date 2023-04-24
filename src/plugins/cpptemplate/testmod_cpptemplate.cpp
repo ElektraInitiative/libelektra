@@ -7,7 +7,7 @@
  *
  */
 
-#include "cpptemplate.hpp"
+#include "./cpptemplate.hpp"
 
 #include <internal/kdbprivate.h>
 #include <internal/pluginload/module.h>

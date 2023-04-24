@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "dbus.h"
+#include "./dbus.h"
 
 #ifdef HAVE_KDBCONFIG_H
 #include <internal/kdb/config.h>

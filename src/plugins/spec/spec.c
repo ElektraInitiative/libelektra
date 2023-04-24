@@ -7,7 +7,7 @@
  *
  */
 
-#include "spec.h"
+#include "./spec.h"
 
 #include <elektra/ease/globbing.h>
 #include <elektra/ease/meta.h>

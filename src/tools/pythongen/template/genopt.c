@@ -16,13 +16,13 @@ cheetahVarStartToken = $
 @set support = CSupport()
 $util.header($args.output)
 #ifdef __cplusplus
-#include "genopt.hpp"
+#include "./genopt.hpp"
 #else
-#include "genopt.h"
+#include "./genopt.h"
 #endif
 
-#include "kdb.h"
-#include "kdbtypes.h"
+#include "./kdb.h"
+#include "./kdbtypes.h"
 
 #include <unistd.h>
 

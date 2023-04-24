@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "yajl.h"
+#include "./yajl.h"
 
 #include <errno.h>
 #include <stdio.h>
@@ -341,7 +341,7 @@ static inline KeySet * elektraGetModuleConfig (void)
 		      keyNew ("system:/elektra/modules/yajl/exports", KEY_END),
 		      keyNew ("system:/elektra/modules/yajl/exports/get", KEY_FUNC, elektraYajlGet, KEY_END),
 		      keyNew ("system:/elektra/modules/yajl/exports/set", KEY_FUNC, elektraYajlSet, KEY_END),
-#include "readme_yajl.c"
+#include "./readme_yajl.c"
 		      keyNew ("system:/elektra/modules/yajl/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 		      keyNew ("system:/elektra/modules/yajl/config", KEY_END),
 		      keyNew ("system:/elektra/modules/yajl/config/", KEY_VALUE, "system", KEY_END),

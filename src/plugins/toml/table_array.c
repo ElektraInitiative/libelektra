@@ -6,13 +6,13 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "table_array.h"
+#include "./table_array.h"
 
 #include <internal/utility/old_helper.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "utility.h"
+#include "./utility.h"
 
 static char * getChildFraction (const Key * parent, const Key * child);
 

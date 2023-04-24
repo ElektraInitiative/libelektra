@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "floathelper.h"
+#include "./floathelper.h"
 
 char * elektraFtoA (char * buffer, ssize_t bufSize, double val)
 {

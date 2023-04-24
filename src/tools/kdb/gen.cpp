@@ -8,7 +8,7 @@
 
 #include <gen.hpp>
 
-#include "gen/template.hpp"
+#include "./gen/template.hpp"
 #include <cmdline.hpp>
 #include <kdb.hpp>
 

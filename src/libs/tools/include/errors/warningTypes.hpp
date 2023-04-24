@@ -2,7 +2,7 @@
 #ifndef ELEKTRA_WARNINGTYPES_HPP
 #define ELEKTRA_WARNINGTYPES_HPP
 
-#include "warning.hpp"
+#include "./warning.hpp"
 
 namespace kdb
 {

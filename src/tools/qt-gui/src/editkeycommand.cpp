@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "editkeycommand.hpp"
+#include "./editkeycommand.hpp"
 
 EditKeyCommand::EditKeyCommand (TreeViewModel * model, int index, DataContainer * data, QUndoCommand * parent)
 : QUndoCommand (parent), m_model (model), m_index (index), m_oldName (data->oldName ()), m_oldValue (data->oldValue ()),

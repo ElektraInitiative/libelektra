@@ -16,8 +16,8 @@
 
 #include <tests_plugin.h>
 
-#include "internal.h"
-#include "mmapstorage.h"
+#include "./internal.h"
+#include "./mmapstorage.h"
 
 /* -- Macros ---------------------------------------------------------------------------------------------------------------------------- */
 

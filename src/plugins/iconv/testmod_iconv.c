@@ -18,7 +18,7 @@
 #include <string.h>
 #endif
 
-#include "conv.h"
+#include "./conv.h"
 
 #include <langinfo.h>
 
@@ -44,18 +44,18 @@ void test_latin1_to_utf8 (void)
 	exit_if_fail (plugin != 0, "could not open plugin");
 
 	latin1 =
-#include "data_latin1.c"
+#include "./data_latin1.c"
 		utf8 =
-#include "data_utf8.c"
+#include "./data_utf8.c"
 			succeed_if (plugin->kdbSet (plugin, latin1, 0) == NR_KEYS, "not the correct number of keys");
 	compare_keyset (latin1, utf8);
 	ksDel (latin1);
 	ksDel (utf8);
 
 	latin1 =
-#include "data_latin1.c"
+#include "./data_latin1.c"
 		utf8 =
-#include "data_utf8.c"
+#include "./data_utf8.c"
 			succeed_if (plugin->kdbGet (plugin, utf8, parentKey) == NR_KEYS, "not the correct number of keys");
 	compare_keyset (utf8, latin1);
 	ksDel (latin1);
@@ -85,18 +85,18 @@ void test_utf8_to_latin1 (void)
 	exit_if_fail (plugin != 0, "could not open plugin");
 
 	latin1 =
-#include "data_latin1.c"
+#include "./data_latin1.c"
 		utf8 =
-#include "data_utf8.c"
+#include "./data_utf8.c"
 			succeed_if (plugin->kdbGet (plugin, latin1, parentKey) == NR_KEYS, "not the correct number of keys");
 	compare_keyset (latin1, utf8);
 	ksDel (latin1);
 	ksDel (utf8);
 
 	latin1 =
-#include "data_latin1.c"
+#include "./data_latin1.c"
 		utf8 =
-#include "data_utf8.c"
+#include "./data_utf8.c"
 			succeed_if (plugin->kdbSet (plugin, utf8, 0) == NR_KEYS, "not the correct number of keys");
 	compare_keyset (utf8, latin1);
 	ksDel (latin1);

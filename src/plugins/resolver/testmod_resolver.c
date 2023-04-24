@@ -21,7 +21,7 @@
 #include <internal/utility/logger.h>
 #include <langinfo.h>
 
-#include "resolver.h"
+#include "./resolver.h"
 
 // FIXME [new_backend]: tests partially disabled, see TODOs
 void test_resolve (void)

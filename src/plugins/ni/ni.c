@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "ni.h"
+#include "./ni.h"
 
 #include <internal/kdb/config.h>
 #include <internal/macros/plugin_errors.h>
@@ -28,7 +28,7 @@ int elektraNiGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * paren
 			       keyNew ("system:/elektra/modules/ni/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/ni/exports/get", KEY_FUNC, elektraNiGet, KEY_END),
 			       keyNew ("system:/elektra/modules/ni/exports/set", KEY_FUNC, elektraNiSet, KEY_END),
-#include "readme_ni.c"
+#include "./readme_ni.c"
 			       keyNew ("system:/elektra/modules/ni/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, moduleConfig);
 		ksDel (moduleConfig);

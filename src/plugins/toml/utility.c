@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "utility.h"
+#include "./utility.h"
 
 #include <elektra/ease/old_ease.h>
 #include <internal/utility/assert.h>

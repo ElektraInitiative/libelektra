@@ -29,7 +29,7 @@
 
 #include "../crypto/common_gpg_tests.c"
 #include "../crypto/gpgagent_teardown.h"
-#include "fcrypt.h"
+#include "./fcrypt.h"
 
 #define PLUGIN_NAME "fcrypt"
 #define TEST_KEY_ID "DDEBEF9EE2DC931701338212DAF635B17F230E8D"

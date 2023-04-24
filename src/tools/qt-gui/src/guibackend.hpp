@@ -9,7 +9,7 @@
 #ifndef GUIBACKEND_HPP
 #define GUIBACKEND_HPP
 
-#include "treeviewmodel.hpp"
+#include "./treeviewmodel.hpp"
 #include <QObject>
 #include <QStringList>
 #include <backendbuilder.hpp>

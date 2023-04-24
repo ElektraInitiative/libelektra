@@ -6,9 +6,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
-#include "crypto.h"
-#include "gpg.h"
-#include "helper.h"
+#include "./crypto.h"
+#include "./gpg.h"
+#include "./helper.h"
 #include <elektra/core.h>
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
@@ -26,9 +26,9 @@
 #include <tests_internal.h>
 #include <tests_plugin.h>
 
-#include "common_gpg_tests.c"
-#include "gpgagent_teardown.h"
-#include "test_key.h"
+#include "./common_gpg_tests.c"
+#include "./gpgagent_teardown.h"
+#include "./test_key.h"
 
 #define PLUGIN_NAME "crypto"
 #define TEST_KEY_ID "DDEBEF9EE2DC931701338212DAF635B17F230E8D"

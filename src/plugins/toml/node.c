@@ -8,8 +8,8 @@
  */
 
 
-#include "node.h"
-#include "utility.h"
+#include "./node.h"
+#include "./utility.h"
 #include <elektra/ease/meta.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/old_helper.h>

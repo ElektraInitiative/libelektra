@@ -1,4 +1,4 @@
-#include "referencegraph.h"
+#include "./referencegraph.h"
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 #include <elektra/ease/old_ease.h>

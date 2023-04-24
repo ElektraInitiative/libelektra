@@ -7,13 +7,13 @@
  *
  */
 
-#include "codepoint.h"
+#include "./codepoint.h"
 
 #include <internal/utility/assert.h>
 #include <stdint.h>
 #include <stdio.h>
 
-#include "utf8_dfa.h"
+#include "./utf8_dfa.h"
 
 #define TRAIL 0x80
 #define MASK(b) (b == 6 ? 0x3F : b == 5 ? 0x1F : b == 4 ? 0x0F : 0x07)

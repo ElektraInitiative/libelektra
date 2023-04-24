@@ -11,7 +11,7 @@
 #error Build system error, SWIG_TYPE_TABLE is not defined
 #endif
 
-#include "lua.hpp"
+#include "./lua.hpp"
 #include <internal/macros/attributes.h>
 #include <internal/utility/old_helper.h>
 
@@ -23,7 +23,7 @@
 extern "C" {
 #include <lualib.h>
 }
-#include "runtime.h"
+#include "./runtime.h"
 
 #include <elektra/kdb/errors.h>
 using namespace ckdb;

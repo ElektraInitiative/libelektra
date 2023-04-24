@@ -7,7 +7,7 @@
  *
  */
 
-#include "macaddr.h"
+#include "./macaddr.h"
 
 #include <assert.h>
 #include <ctype.h>

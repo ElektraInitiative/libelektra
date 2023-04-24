@@ -7,7 +7,7 @@
  *
  */
 
-#include "glob.h"
+#include "./glob.h"
 
 #ifndef HAVE_KDBCONFIG
 #include <internal/kdb/config.h>
@@ -193,7 +193,7 @@ int elektraGlobGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	{
 		// TODO: improve plugin contract
 		KeySet * config =
-#include "contract.h"
+#include "./contract.h"
 			ksAppend (returned, config);
 		ksDel (config);
 		return 1;

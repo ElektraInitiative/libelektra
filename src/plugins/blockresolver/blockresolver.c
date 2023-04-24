@@ -7,7 +7,7 @@
  *
  */
 
-#include "blockresolver.h"
+#include "./blockresolver.h"
 
 #include <elektra/kdb/errors.h>
 #include <internal/utility/old_helper.h>

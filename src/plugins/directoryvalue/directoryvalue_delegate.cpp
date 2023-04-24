@@ -16,8 +16,8 @@
 
 #include <kdbplugin.hpp>
 
-#include "directoryvalue_delegate.hpp"
-#include "log.hpp"
+#include "./directoryvalue_delegate.hpp"
+#include "./log.hpp"
 
 using std::accumulate;
 using std::ignore;

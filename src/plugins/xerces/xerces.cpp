@@ -6,10 +6,10 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "xerces.hpp"
-#include "deserializer.hpp"
-#include "serializer.hpp"
-#include "util.hpp"
+#include "./xerces.hpp"
+#include "./deserializer.hpp"
+#include "./serializer.hpp"
+#include "./util.hpp"
 
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/util/OutOfMemoryException.hpp>

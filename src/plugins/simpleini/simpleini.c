@@ -11,7 +11,7 @@
 #include <internal/macros/plugin_errors.h>
 
 
-#include "simpleini.h"
+#include "./simpleini.h"
 #include <errno.h>
 
 #include <elektra/ease/old_ease.h>
@@ -219,7 +219,7 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			keyNew ("system:/elektra/modules/simpleini/exports", KEY_END),
 			keyNew ("system:/elektra/modules/simpleini/exports/get", KEY_FUNC, elektraSimpleiniGet, KEY_END),
 			keyNew ("system:/elektra/modules/simpleini/exports/set", KEY_FUNC, elektraSimpleiniSet, KEY_END),
-#include "readme_simpleini.c"
+#include "./readme_simpleini.c"
 			keyNew ("system:/elektra/modules/simpleini/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 			keyNew ("system:/elektra/modules/simpleini/config/needs", KEY_VALUE,
 				"the needed configuration to work in a backend", KEY_END),

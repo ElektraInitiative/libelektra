@@ -9,7 +9,7 @@
 
 #include <internal/kdb/config.h>
 
-#include "dbus.h"
+#include "./dbus.h"
 
 #include <internal/utility/old_helper.h>
 

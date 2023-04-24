@@ -9,7 +9,7 @@
 #ifndef NAMESPACE_HPP
 #define NAMESPACE_HPP
 
-#include "coloredkdbio.hpp"
+#include "./coloredkdbio.hpp"
 #include <command.hpp>
 #include <kdb.hpp>
 

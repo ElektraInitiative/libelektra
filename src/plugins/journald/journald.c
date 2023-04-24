@@ -14,7 +14,7 @@
 #include <systemd/sd-journal.h>
 #include <unistd.h>
 
-#include "journald.h"
+#include "./journald.h"
 
 int elektraJournaldGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
@@ -29,7 +29,7 @@ int elektraJournaldGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 				   keyNew ("system:/elektra/modules/journald/exports/get", KEY_FUNC, elektraJournaldGet, KEY_END),
 				   keyNew ("system:/elektra/modules/journald/exports/commit", KEY_FUNC, elektraJournaldCommit, KEY_END),
 				   keyNew ("system:/elektra/modules/journald/exports/error", KEY_FUNC, elektraJournaldError, KEY_END),
-#include "readme_journald.c"
+#include "./readme_journald.c"
 				   keyNew ("system:/elektra/modules/journald/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
 		ksDel (n);
 		return 1;

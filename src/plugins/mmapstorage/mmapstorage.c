@@ -10,9 +10,9 @@
 
 /* -- Imports --------------------------------------------------------------------------------------------------------------------------- */
 
-#include "mmapstorage.h"
-#include "dynarray.h"
-#include "internal.h"
+#include "./mmapstorage.h"
+#include "./dynarray.h"
+#include "./internal.h"
 
 #include <elektra/kdb/errors.h>
 #include <internal/kdbprivate.h>
@@ -1334,7 +1334,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	{
 		keyDel (root);
 		KeySet * contract =
-#include "contract.h"
+#include "./contract.h"
 			ksAppend (ks, contract);
 		ksDel (contract);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;

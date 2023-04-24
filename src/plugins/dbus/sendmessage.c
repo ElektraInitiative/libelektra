@@ -7,7 +7,7 @@
  *
  */
 
-#include "dbus.h"
+#include "./dbus.h"
 
 #ifndef HAVE_KDBCONFIG
 #include <internal/kdb/config.h>

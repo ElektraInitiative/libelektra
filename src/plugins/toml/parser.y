@@ -14,9 +14,9 @@
 #include <string.h>
 
 #include <internal/utility/old_helper.h>
-#include "error.h"
-#include "scalar.h"
-#include "driver.h"
+#include "./error.h"
+#include "./scalar.h"
+#include "./driver.h"
 
 
 extern int yylex(Driver * driver);
@@ -29,8 +29,8 @@ extern int yylex(Driver * driver);
 %define parse.error verbose
 
 %code requires {
-#include "scalar.h"
-#include "driver.h"
+#include "./scalar.h"
+#include "./driver.h"
 }
 
 %code provides {

@@ -7,8 +7,8 @@
  *
  */
 
-#include "hosts.h"
-#include "keymetaformatting.h"
+#include "./hosts.h"
+#include "./keymetaformatting.h"
 
 #include <errno.h>
 #include <netdb.h>
@@ -205,7 +205,7 @@ int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/hosts"))
 	{
 		KeySet * moduleConfig =
-#include "contract.h"
+#include "./contract.h"
 			ksAppend (returned, moduleConfig);
 		ksDel (moduleConfig);
 		return 1;

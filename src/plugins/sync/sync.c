@@ -10,7 +10,7 @@
 #include <internal/kdb/config.h>
 #endif
 
-#include "sync.h"
+#include "./sync.h"
 
 #include <elektra/kdb/errors.h>
 

@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "uname.h"
+#include "./uname.h"
 
 #include <errno.h>
 #include <internal/utility/logger.h>
@@ -72,7 +72,7 @@ int elektraUnameGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 			       keyNew ("system:/elektra/modules/uname/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/uname/exports/get", KEY_FUNC, elektraUnameGet, KEY_END),
 			       keyNew ("system:/elektra/modules/uname/exports/set", KEY_FUNC, elektraUnameSet, KEY_END),
-#include "readme_uname.c"
+#include "./readme_uname.c"
 			       keyNew ("system:/elektra/modules/uname/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, moduleConfig);
 		ksDel (moduleConfig);

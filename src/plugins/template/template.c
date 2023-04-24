@@ -7,7 +7,7 @@
  *
  */
 
-#include "template.h"
+#include "./template.h"
 
 #include <internal/utility/old_helper.h>
 

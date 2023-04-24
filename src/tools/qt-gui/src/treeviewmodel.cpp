@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "treeviewmodel.hpp"
+#include "./treeviewmodel.hpp"
 
 #include <backends.hpp>
 #include <elektra/ease/old_ease.h>

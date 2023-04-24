@@ -11,7 +11,7 @@
 
 #define _GNU_SOURCE // needed for recursive mutex
 
-#include "shared.h"
+#include "./shared.h"
 
 #include <sys/stat.h>
 

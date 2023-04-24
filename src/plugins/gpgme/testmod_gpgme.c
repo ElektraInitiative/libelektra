@@ -28,7 +28,7 @@
 #include <tests_plugin.h>
 #include <unistd.h>
 
-#include "gpgme.h"
+#include "./gpgme.h"
 
 #include "../crypto/gpgagent_teardown.h"
 

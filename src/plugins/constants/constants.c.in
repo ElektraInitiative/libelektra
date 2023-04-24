@@ -354,7 +354,7 @@ int elektraConstantsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * pare
 		ksAppendKey (ks, keyNew ("system:/elektra/modules/constants/exports/set", KEY_FUNC, elektraConstantsSet, KEY_END));
 		KeySet * contract =
 			ksNew (30,
-#include "readme_constants.c"
+#include "./readme_constants.c"
 			       keyNew ("system:/elektra/modules/constants/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (ks, contract);
 		ksDel (contract);

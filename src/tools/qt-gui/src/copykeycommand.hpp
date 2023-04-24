@@ -9,7 +9,7 @@
 #ifndef COPYKEYCOMMAND_H
 #define COPYKEYCOMMAND_H
 
-#include "confignode.hpp"
+#include "./confignode.hpp"
 #include <QDebug>
 #include <QUndoCommand>
 

@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "conv.h"
+#include "./conv.h"
 
 static inline const char * getFrom (Plugin * handle)
 {
@@ -154,7 +154,7 @@ int elektraIconvGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			       keyNew ("system:/elektra/modules/iconv/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/iconv/exports/get", KEY_FUNC, elektraIconvGet, KEY_END),
 			       keyNew ("system:/elektra/modules/iconv/exports/set", KEY_FUNC, elektraIconvSet, KEY_END),
-#include "readme_iconv.c"
+#include "./readme_iconv.c"
 			       keyNew ("system:/elektra/modules/iconv/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, pluginConfig);
 		ksDel (pluginConfig);

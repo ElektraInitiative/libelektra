@@ -18,7 +18,7 @@
 
 #include <tests_plugin.h>
 
-#include "testdata.h"
+#include "./testdata.h"
 
 extern char ** environ;
 

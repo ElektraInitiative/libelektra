@@ -9,7 +9,7 @@
 #ifndef EXPORT_H
 #define EXPORT_H
 
-#include "coloredkdbio.hpp"
+#include "./coloredkdbio.hpp"
 #include <command.hpp>
 #include <kdb.hpp>
 

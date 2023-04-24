@@ -143,7 +143,7 @@ std::chrono::system_clock::time_point elektraReloadNext;
 std::shared_ptr<ostream> elektraLog;
 bool elektraInGetEnv;
 KeySet * elektraDocu = ksNew (20,
-#include "readme_elektrify-getenv.c"
+#include "./readme_elektrify-getenv.c"
 			      KS_END);
 
 int to_ (int c)

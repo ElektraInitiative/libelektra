@@ -19,7 +19,7 @@
 #include <tests.h>
 #include <tests_plugin.h>
 
-#include "internalnotification.h"
+#include "./internalnotification.h"
 
 int callback_called;
 char * callback_keyValue;
@@ -576,35 +576,35 @@ static void test_doUpdateShouldNotUpdateUnregisteredKey (void)
 #define FORMAT_STRING "%u"
 #define TEST_VALUE UINT_MAX
 #define INVALID_VALUE "-1"
-#include "macros/create_type_tests.h"
+#include "./macros/create_type_tests.h"
 
 #define TYPE long
 #define TYPE_NAME Long
 #define FORMAT_STRING "%ld"
 #define TEST_VALUE LONG_MAX
 #define INVALID_VALUE "5000abc000"
-#include "macros/create_type_tests.h"
+#include "./macros/create_type_tests.h"
 
 #define TYPE unsigned long
 #define TYPE_NAME UnsignedLong
 #define FORMAT_STRING "%lu"
 #define TEST_VALUE ULONG_MAX
 #define INVALID_VALUE "-446744073715"
-#include "macros/create_type_tests.h"
+#include "./macros/create_type_tests.h"
 
 #define TYPE long long
 #define TYPE_NAME LongLong
 #define FORMAT_STRING "%lld"
 #define TEST_VALUE LLONG_MAX
 #define INVALID_VALUE "322337abc6854775807"
-#include "macros/create_type_tests.h"
+#include "./macros/create_type_tests.h"
 
 #define TYPE unsigned long long
 #define TYPE_NAME UnsignedLongLong
 #define FORMAT_STRING "%llu"
 #define TEST_VALUE ULLONG_MAX
 #define INVALID_VALUE "-3223372036854775807"
-#include "macros/create_type_tests.h"
+#include "./macros/create_type_tests.h"
 
 #define TYPE float
 #define TYPE_NAME Float
@@ -613,7 +613,7 @@ static void test_doUpdateShouldNotUpdateUnregisteredKey (void)
 #define CHECK_VALUE (value >= 2.295 && value <= 2.305)
 #define INVALID_VALUE "4.a"
 #define CHECK_INVALID ((int) value == 0)
-#include "macros/create_type_tests.h"
+#include "./macros/create_type_tests.h"
 
 #define TYPE double
 #define TYPE_NAME Double
@@ -622,7 +622,7 @@ static void test_doUpdateShouldNotUpdateUnregisteredKey (void)
 #define CHECK_VALUE (value >= 1 + 1e-9 && value <= 1 + 1e-7)
 #define INVALID_VALUE "4.a"
 #define CHECK_INVALID ((int) value == 0)
-#include "macros/create_type_tests.h"
+#include "./macros/create_type_tests.h"
 
 // for kdb_*_t types
 #define TYPE kdb_boolean_t
@@ -630,63 +630,63 @@ static void test_doUpdateShouldNotUpdateUnregisteredKey (void)
 #define FORMAT_STRING "%d"
 #define TEST_VALUE 1
 #define CHECK_VALUE (value)
-#include "macros/create_type_tests.h"
+#include "./macros/create_type_tests.h"
 
 #define TYPE kdb_char_t
 #define TYPE_NAME KdbChar
 #define FORMAT_STRING "abc%d"
 #define TEST_VALUE 1
 #define CHECK_VALUE (value == 'a')
-#include "macros/create_type_tests.h"
+#include "./macros/create_type_tests.h"
 
 #define TYPE kdb_octet_t
 #define TYPE_NAME KdbOctet
 #define FORMAT_STRING "%d"
 #define TEST_VALUE 255
 #define INVALID_VALUE "4a"
-#include "macros/create_type_tests.h"
+#include "./macros/create_type_tests.h"
 
 #define TYPE kdb_short_t
 #define TYPE_NAME KdbShort
 #define FORMAT_STRING "%d"
 #define TEST_VALUE SHRT_MIN
 #define INVALID_VALUE "-55ABC"
-#include "macros/create_type_tests.h"
+#include "./macros/create_type_tests.h"
 
 #define TYPE kdb_unsigned_short_t
 #define TYPE_NAME KdbUnsignedShort
 #define FORMAT_STRING "%d"
 #define TEST_VALUE USHRT_MAX
 #define INVALID_VALUE "-55"
-#include "macros/create_type_tests.h"
+#include "./macros/create_type_tests.h"
 
 #define TYPE kdb_long_t
 #define TYPE_NAME KdbLong
 #define FORMAT_STRING "%d"
 #define TEST_VALUE INT_MIN
 #define INVALID_VALUE "B5C"
-#include "macros/create_type_tests.h"
+#include "./macros/create_type_tests.h"
 
 #define TYPE kdb_unsigned_long_t
 #define TYPE_NAME KdbUnsignedLong
 #define FORMAT_STRING "%u"
 #define TEST_VALUE UINT_MAX
 #define INVALID_VALUE "-523255"
-#include "macros/create_type_tests.h"
+#include "./macros/create_type_tests.h"
 
 #define TYPE kdb_long_long_t
 #define TYPE_NAME KdbLongLong
 #define FORMAT_STRING ELEKTRA_LONG_LONG_F
 #define TEST_VALUE (kdb_long_long_t) LONG_MAX
 #define INVALID_VALUE "50000asasd"
-#include "macros/create_type_tests.h"
+#include "./macros/create_type_tests.h"
 
 #define TYPE kdb_unsigned_long_long_t
 #define TYPE_NAME KdbUnsignedLongLong
 #define FORMAT_STRING ELEKTRA_UNSIGNED_LONG_LONG_F
 #define TEST_VALUE (kdb_unsigned_long_long_t) ULONG_MAX
 #define INVALID_VALUE "-5326523652"
-#include "macros/create_type_tests.h"
+#include "./macros/create_type_tests.h"
 
 #define TYPE kdb_float_t
 #define TYPE_NAME KdbFloat
@@ -695,7 +695,7 @@ static void test_doUpdateShouldNotUpdateUnregisteredKey (void)
 #define CHECK_VALUE (value >= 2.295 && value <= 2.305)
 #define INVALID_VALUE "4.a"
 #define CHECK_INVALID ((int) value == 0)
-#include "macros/create_type_tests.h"
+#include "./macros/create_type_tests.h"
 
 #define TYPE kdb_double_t
 #define TYPE_NAME KdbDouble
@@ -704,7 +704,7 @@ static void test_doUpdateShouldNotUpdateUnregisteredKey (void)
 #define CHECK_VALUE (value >= 1 + 1e-9 && value <= 1 + 1e-7)
 #define INVALID_VALUE "4.a"
 #define CHECK_INVALID ((int) value == 0)
-#include "macros/create_type_tests.h"
+#include "./macros/create_type_tests.h"
 
 #ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 #define TYPE kdb_long_double_t
@@ -714,7 +714,7 @@ static void test_doUpdateShouldNotUpdateUnregisteredKey (void)
 #define CHECK_VALUE (value >= 1 + 1e-9 && value <= 1 + 1e-7)
 #define INVALID_VALUE "4.a"
 #define CHECK_INVALID ((int) value == 0)
-#include "macros/create_type_tests.h"
+#include "./macros/create_type_tests.h"
 #endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 int main (int argc, char ** argv)

@@ -9,8 +9,8 @@
 #ifndef NEWKEYCOMMAND_HPP
 #define NEWKEYCOMMAND_HPP
 
-#include "datacontainer.hpp"
-#include "treeviewmodel.hpp"
+#include "./datacontainer.hpp"
+#include "./treeviewmodel.hpp"
 #include <QUndoCommand>
 
 /**

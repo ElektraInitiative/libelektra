@@ -19,9 +19,9 @@
 #include <stddef.h>
 #include <stdio.h>
 
-#include "comment_list.h"
-#include "scalar.h"
-#include "table_array.h"
+#include "./comment_list.h"
+#include "./scalar.h"
+#include "./table_array.h"
 
 
 typedef struct _ParentList

@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_CRYPTO_GPG_H
 #define ELEKTRA_PLUGIN_CRYPTO_GPG_H
 
-#include "crypto.h"
+#include "./crypto.h"
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 #include <elektra/type/types.h>

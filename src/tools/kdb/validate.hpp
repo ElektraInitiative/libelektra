@@ -9,7 +9,7 @@
 #ifndef VALIDATE_HPP
 #define VALIDATE_HPP
 
-#include "coloredkdbio.hpp"
+#include "./coloredkdbio.hpp"
 #include <command.hpp>
 #include <kdb.hpp>
 

@@ -9,7 +9,7 @@
 #ifndef ELEKTRA_ERROR_H
 #define ELEKTRA_ERROR_H
 
-#include "types.h"
+#include "./types.h"
 #include <stdbool.h>
 
 #ifdef __cplusplus

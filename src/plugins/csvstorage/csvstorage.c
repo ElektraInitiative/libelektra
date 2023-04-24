@@ -12,7 +12,7 @@
 #include <internal/kdb/config.h>
 #endif
 
-#include "csvstorage.h"
+#include "./csvstorage.h"
 #include <elektra/ease/old_ease.h>
 #include <elektra/kdb/errors.h>
 #include <errno.h>

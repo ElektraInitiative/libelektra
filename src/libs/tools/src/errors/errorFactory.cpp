@@ -1,7 +1,7 @@
 
-#include "errors/errorFactory.hpp"
-#include "errors/errorTypes.hpp"
-#include "errors/warningFactory.hpp"
+#include "./errors/errorFactory.hpp"
+#include "./errors/errorTypes.hpp"
+#include "./errors/warningFactory.hpp"
 #include <elektra/kdb/errors.h> // for code and description constants
 #include <keyset.hpp>
 

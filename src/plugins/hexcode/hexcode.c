@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "hexcode.h"
+#include "./hexcode.h"
 
 #ifndef HAVE_KDBCONFIG
 #include <internal/kdb/config.h>
@@ -115,7 +115,7 @@ int elektraHexcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			       keyNew ("system:/elektra/modules/hexcode/exports/set", KEY_FUNC, elektraHexcodeSet, KEY_END),
 			       keyNew ("system:/elektra/modules/hexcode/exports/open", KEY_FUNC, elektraHexcodeOpen, KEY_END),
 			       keyNew ("system:/elektra/modules/hexcode/exports/close", KEY_FUNC, elektraHexcodeClose, KEY_END),
-#include "readme_hexcode.c"
+#include "./readme_hexcode.c"
 			       keyNew ("system:/elektra/modules/hexcode/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, pluginConfig);
 		ksDel (pluginConfig);

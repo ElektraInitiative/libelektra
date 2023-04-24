@@ -22,10 +22,10 @@
 #include <internal/utility/assert.h>
 #include <internal/utility/old_helper.h>
 
-#include "driver.h"
-#include "error.h"
-#include "parser.h"
-#include "utility.h"
+#include "./driver.h"
+#include "./error.h"
+#include "./parser.h"
+#include "./utility.h"
 
 extern int yyparse (Driver * driver);
 extern int yylineno;

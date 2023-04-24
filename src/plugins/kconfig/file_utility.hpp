@@ -1,7 +1,7 @@
 #ifndef ELEKTRA_FILEUTILITY_HPP
 #define ELEKTRA_FILEUTILITY_HPP
 
-#include "kconfig_parser_exception.hpp"
+#include "./kconfig_parser_exception.hpp"
 #include <memory>
 #include <sstream>
 

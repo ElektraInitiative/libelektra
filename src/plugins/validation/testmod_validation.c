@@ -23,7 +23,7 @@
 
 #include <tests.h>
 
-#include "validation.h"
+#include "./validation.h"
 
 #include <tests_internal.h>
 #include <tests_plugin.h>

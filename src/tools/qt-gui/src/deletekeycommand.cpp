@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "deletekeycommand.hpp"
+#include "./deletekeycommand.hpp"
 
 DeleteKeyCommand::DeleteKeyCommand (const QString & type, TreeViewModel * model, int index, QUndoCommand * parent)
 : QUndoCommand (parent), m_model (model), m_node (model->model ().at (index)), m_index (index), m_isRoot (false)

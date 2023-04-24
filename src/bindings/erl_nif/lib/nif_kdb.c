@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "erl_nif.h"
+#include "./erl_nif.h"
 
 // Function signatures are prescribed.
 #pragma GCC diagnostic push

@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "enums.hpp"
-#include "common.hpp"
+#include "./enums.hpp"
+#include "./common.hpp"
 #include <command.hpp>
 #include <elektra/ease/old_ease.h>
 #include <internal/utility/old_helper.h>

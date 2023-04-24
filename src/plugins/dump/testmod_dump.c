@@ -15,7 +15,7 @@
 
 #include <tests_plugin.h>
 
-#include "testdata.h"
+#include "./testdata.h"
 
 static void test_v1_oneValue (void)
 {

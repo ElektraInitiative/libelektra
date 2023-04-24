@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "lift_context_dynamic.hpp"
+#include "./lift_context_dynamic.hpp"
 #include <kdb.hpp>
 
 #include <iostream>

@@ -18,7 +18,7 @@
 #endif
 #include <internal/utility/old_helper.h>
 #include SWIG_RUNTIME
-#include "python.hpp"
+#include "./python.hpp"
 
 #include <config.h>
 #include <internal/pluginprocess.h>

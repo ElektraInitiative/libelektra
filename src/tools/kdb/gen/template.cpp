@@ -8,7 +8,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "template.hpp"
+#include "./template.hpp"
 
 #include <algorithm>
 #include <command.hpp>
@@ -16,7 +16,7 @@
 
 #include <gen/templates.hpp>
 
-#include "highlevel/highlevel.hpp"
+#include "./highlevel/highlevel.hpp"
 
 GenTemplate::GenTemplate (std::string templateBaseName, std::vector<std::string> allParts, std::vector<std::string> partials,
 			  const std::unordered_map<std::string, bool> & parameters)

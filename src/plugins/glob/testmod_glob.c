@@ -12,7 +12,7 @@
 
 #include <stdio.h>
 
-#include "glob.h"
+#include "./glob.h"
 #include <fnmatch.h>
 #include <tests.h>
 

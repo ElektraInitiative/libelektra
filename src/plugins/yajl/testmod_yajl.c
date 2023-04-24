@@ -6,9 +6,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "iterator.h"
-#include "name.h"
-#include "yajl.h"
+#include "./iterator.h"
+#include "./name.h"
+#include "./yajl.h"
 
 #ifdef HAVE_KDBCONFIG_H
 #include <internal/kdb/config.h>

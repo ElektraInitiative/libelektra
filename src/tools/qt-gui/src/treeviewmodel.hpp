@@ -20,10 +20,10 @@
 #include <merging/automergeconfiguration.hpp>
 #include <merging/mergingkdb.hpp>
 
-#include "confignode.hpp"
-#include "findvisitor.hpp"
-#include "keysetvisitor.hpp"
-#include "printvisitor.hpp"
+#include "./confignode.hpp"
+#include "./findvisitor.hpp"
+#include "./keysetvisitor.hpp"
+#include "./printvisitor.hpp"
 
 class Visitor;
 

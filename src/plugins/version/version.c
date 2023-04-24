@@ -7,7 +7,7 @@
  *
  */
 
-#include "version.h"
+#include "./version.h"
 
 #include <internal/kdbprivate.h> // for keyReplacePrefix
 

@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "importconfigurationcommand.hpp"
+#include "./importconfigurationcommand.hpp"
 
 using namespace kdb;
 

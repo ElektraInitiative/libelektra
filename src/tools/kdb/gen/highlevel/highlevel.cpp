@@ -6,11 +6,11 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "highlevel.hpp"
+#include "./highlevel.hpp"
 
-#include "common.hpp"
-#include "enums.hpp"
-#include "structs.hpp"
+#include "./common.hpp"
+#include "./enums.hpp"
+#include "./structs.hpp"
 
 #include <command.hpp>
 #include <modules.hpp>

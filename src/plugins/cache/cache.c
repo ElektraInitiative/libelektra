@@ -8,7 +8,7 @@
  */
 #define _XOPEN_SOURCE 600
 
-#include "cache.h"
+#include "./cache.h"
 
 #ifdef HAVE_KDBCONFIG_H
 #include <internal/kdb/config.h>

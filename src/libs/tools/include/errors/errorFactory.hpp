@@ -5,7 +5,7 @@
 #ifndef ELEKTRA_ERRORFACTORY_HPP
 #define ELEKTRA_ERRORFACTORY_HPP
 
-#include "error.hpp"
+#include "./error.hpp"
 
 namespace kdb
 {

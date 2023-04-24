@@ -7,7 +7,7 @@
  *
  */
 
-#include "process.h"
+#include "./process.h"
 
 #include <elektra/kdb/errors.h>
 #include <elektra/plugin/invoke.h>

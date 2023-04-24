@@ -17,7 +17,7 @@
 
 #include <string.h>
 
-#include "wresolver.h"
+#include "./wresolver.h"
 #include <errno.h> /* errno in getcwd() */
 #include <stdlib.h>
 #include <sys/stat.h> /* mkdir() */

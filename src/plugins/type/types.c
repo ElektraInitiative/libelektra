@@ -7,8 +7,8 @@
  *
  */
 
-#include "types.h"
-#include "type.h"
+#include "./types.h"
+#include "./type.h"
 
 #include <ctype.h>
 #include <stdio.h>

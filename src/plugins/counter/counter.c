@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "counter.h"
+#include "./counter.h"
 
 typedef int Counter;
 #define COUNTER_FMT "%d"

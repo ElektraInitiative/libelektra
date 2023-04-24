@@ -9,16 +9,16 @@
 
 // -- Imports ------------------------------------------------------------------------------------------------------------------------------
 
-#include "yamlcpp.hpp"
-#include "log.hpp"
-#include "read.hpp"
-#include "write.hpp"
+#include "./yamlcpp.hpp"
+#include "./log.hpp"
+#include "./read.hpp"
+#include "./write.hpp"
 
 #include <elektra/kdb/errors.h>
 #include <internal/utility/logger.h>
 #include <kdb.hpp>
 
-#include "yaml-cpp/yaml.h"
+#include "./yaml-cpp/yaml.h"
 
 using std::exception;
 using std::overflow_error;

@@ -7,7 +7,7 @@
  *
  */
 
-#include "hexnumber.h"
+#include "./hexnumber.h"
 
 #include <elektra/ease/old_ease.h>
 #include <elektra/kdb/errors.h>

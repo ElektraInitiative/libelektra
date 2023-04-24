@@ -18,7 +18,7 @@
 #include <string.h>
 #endif
 
-#include "hexcode.h"
+#include "./hexcode.h"
 
 #include <tests_internal.h>
 

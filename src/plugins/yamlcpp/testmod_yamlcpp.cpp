@@ -9,7 +9,7 @@
 
 // -- Imports ------------------------------------------------------------------------------------------------------------------------------
 
-#include "yamlcpp.hpp"
+#include "./yamlcpp.hpp"
 
 #include <internal/kdbprivate.h>
 #include <internal/pluginload/module.h>
@@ -101,56 +101,56 @@ static void test_write_read (kdb::KeySet expected)
 TEST (yamlcpp, flat) //! OCLint (avoid private static members)
 {
 	test_read ("yamlcpp/flat_block_mapping.yaml",
-#include "yamlcpp/flat_block_mapping.hpp"
+#include "./yamlcpp/flat_block_mapping.hpp"
 	);
 	test_write_read (
-#include "yamlcpp/flat_block_mapping.hpp"
+#include "./yamlcpp/flat_block_mapping.hpp"
 	);
 
 	test_read ("yamlcpp/flat_flow_mapping.yaml",
-#include "yamlcpp/flat_flow_mapping.hpp"
+#include "./yamlcpp/flat_flow_mapping.hpp"
 	);
 	test_write_read (
-#include "yamlcpp/flat_flow_mapping.hpp"
+#include "./yamlcpp/flat_flow_mapping.hpp"
 	);
 }
 
 TEST (yamlcpp, nested) //! OCLint (avoid private static members)
 {
 	test_read ("yamlcpp/nested_block_mapping.yaml",
-#include "yamlcpp/nested_block_mapping.hpp"
+#include "./yamlcpp/nested_block_mapping.hpp"
 	);
 	test_write_read (
-#include "yamlcpp/nested_block_mapping.hpp"
+#include "./yamlcpp/nested_block_mapping.hpp"
 	);
 	test_read ("yamlcpp/nested_mixed_mapping.yaml",
-#include "yamlcpp/nested_mixed_mapping.hpp"
+#include "./yamlcpp/nested_mixed_mapping.hpp"
 	);
 	test_write_read (
-#include "yamlcpp/nested_mixed_mapping.hpp"
+#include "./yamlcpp/nested_mixed_mapping.hpp"
 	);
 }
 
 TEST (yamlcpp, array) //! OCLint (avoid private static members)
 {
 	test_read ("yamlcpp/simple_sequence.yaml",
-#include "yamlcpp/simple_sequence.hpp"
+#include "./yamlcpp/simple_sequence.hpp"
 	);
 	test_write_read (
-#include "yamlcpp/simple_sequence.hpp"
+#include "./yamlcpp/simple_sequence.hpp"
 	);
 
 	test_read ("yamlcpp/nested_sequences.yaml",
-#include "yamlcpp/nested_sequences.hpp"
+#include "./yamlcpp/nested_sequences.hpp"
 	);
 	test_write_read (
-#include "yamlcpp/nested_sequences.hpp"
+#include "./yamlcpp/nested_sequences.hpp"
 	);
 	test_write_read (
-#include "yamlcpp/mapping_with_array_key.hpp"
+#include "./yamlcpp/mapping_with_array_key.hpp"
 	);
 	test_write_read (
-#include "yamlcpp/mixed.hpp"
+#include "./yamlcpp/mixed.hpp"
 	);
 }
 

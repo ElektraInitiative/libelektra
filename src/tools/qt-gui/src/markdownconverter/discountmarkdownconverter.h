@@ -32,7 +32,7 @@
 #ifndef DISCOUNTMARKDOWNCONVERTER_H
 #define DISCOUNTMARKDOWNCONVERTER_H
 
-#include "markdownconverter.h"
+#include "./markdownconverter.h"
 
 class DiscountMarkdownConverter : public MarkdownConverter
 {

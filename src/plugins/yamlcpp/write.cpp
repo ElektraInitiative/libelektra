@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "write.hpp"
-#include "yaml-cpp/yaml.h"
+#include "./write.hpp"
+#include "./yaml-cpp/yaml.h"
 
 #include <elektra/ease/old_ease.h>
 #include <internal/utility/logger.h>

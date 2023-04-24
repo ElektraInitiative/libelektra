@@ -11,7 +11,7 @@
 #include <regex.h>
 #include <stdio.h>
 
-#include "ipaddr.h"
+#include "./ipaddr.h"
 
 static int validateIPv4 (const char * addr)
 {

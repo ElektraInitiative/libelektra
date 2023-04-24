@@ -10,7 +10,7 @@
 #include <stdio.h>
 
 #define PLUGIN_NAME "email"
-#include "test_email.h"
+#include "./test_email.h"
 
 int main (int argc, char ** argv)
 {

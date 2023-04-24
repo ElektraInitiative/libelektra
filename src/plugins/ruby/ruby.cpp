@@ -19,7 +19,7 @@
 
 #include <internal/macros/attributes.h>
 #include SWIG_RUNTIME
-#include "ruby.hpp"
+#include "./ruby.hpp"
 
 #include <key.hpp>
 #include <keyset.hpp>

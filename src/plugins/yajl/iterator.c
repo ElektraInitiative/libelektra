@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "iterator.h"
+#include "./iterator.h"
 
 keyNameReverseIterator elektraKeyNameGetReverseIterator (const Key * k)
 {

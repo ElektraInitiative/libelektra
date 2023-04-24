@@ -7,7 +7,7 @@
  *
  */
 
-#include "c.h"
+#include "./c.h"
 
 #include <elektra/kdb/errors.h>
 #include <internal/macros/plugin_errors.h>

@@ -10,7 +10,7 @@
 #include <elektra/kdb/errors.h>
 #include <stdio.h>
 
-#include "blacklist.h"
+#include "./blacklist.h"
 
 static void blacklistValidValues (const Key * key, KeySet * validValues)
 {

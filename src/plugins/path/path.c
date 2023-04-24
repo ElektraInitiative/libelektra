@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "path.h"
+#include "./path.h"
 
 #ifndef HAVE_KDBCONFIG
 
@@ -355,7 +355,7 @@ int elektraPathGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 				       keyNew ("system:/elektra/modules/path/exports/set", KEY_FUNC, elektraPathSet, KEY_END),
 				       keyNew ("system:/elektra/modules/path/exports/validateKey", KEY_FUNC, validateKey, KEY_END),
 
-#include "readme_path.c"
+#include "./readme_path.c"
 
 				       keyNew ("system:/elektra/modules/path/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
 	ksDel (n);

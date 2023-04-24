@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "newkeycommand.hpp"
+#include "./newkeycommand.hpp"
 #include <kdb.hpp>
 
 NewKeyCommand::NewKeyCommand (TreeViewModel * model, int index, DataContainer * data, bool isBelow, QUndoCommand * parent)

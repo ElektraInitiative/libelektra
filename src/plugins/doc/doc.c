@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "doc.h"
+#include "./doc.h"
 
 //! [plugin include]
 #include <elektra/core.h>

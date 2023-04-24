@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "editor_context.hpp"
+#include "./editor_context.hpp"
 #include <kdb.hpp>
 
 #include <iostream>

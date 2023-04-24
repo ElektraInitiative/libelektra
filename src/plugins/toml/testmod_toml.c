@@ -15,8 +15,8 @@
 #include <tests.h>
 #include <tests_plugin.h>
 
-#include "toml.h"
-#include "utility.h"
+#include "./toml.h"
+#include "./utility.h"
 
 static const char * prefix = NULL;
 
@@ -238,58 +238,58 @@ static void testRead (void)
 	prefix = PREFIX;
 
 	testReadCompare ("toml/basic.toml",
-#include "toml/basic.h"
+#include "./toml/basic.h"
 	);
 	testReadCompare ("toml/integer.toml",
-#include "toml/integer.h"
+#include "./toml/integer.h"
 	);
 	testReadCompare ("toml/key_names_empty.toml",
-#include "toml/key_names_empty.h"
+#include "./toml/key_names_empty.h"
 	);
 	testReadCompare ("toml/string_utf8.toml",
-#include "toml/string_utf8.h"
+#include "./toml/string_utf8.h"
 	);
 	testReadCompare ("toml/string_basic_escape.toml",
-#include "toml/string_basic_escape.h"
+#include "./toml/string_basic_escape.h"
 	);
 	testReadCompare ("toml/string_multiline.toml",
-#include "toml/string_multiline.h"
+#include "./toml/string_multiline.h"
 	);
 	testReadCompare ("toml/string_null.toml",
-#include "toml/string_null.h"
+#include "./toml/string_null.h"
 	);
 	testReadCompare ("toml/string_base64.toml",
-#include "toml/string_base64.h"
+#include "./toml/string_base64.h"
 	);
 	testReadCompare ("toml/date.toml",
-#include "toml/date.h"
+#include "./toml/date.h"
 	);
 	testReadCompare ("toml/array.toml",
-#include "toml/array.h"
+#include "./toml/array.h"
 	);
 	testReadCompare ("toml/simple_table.toml",
-#include "toml/simple_table.h"
+#include "./toml/simple_table.h"
 	);
 	testReadCompare ("toml/table_array.toml",
-#include "toml/table_array.h"
+#include "./toml/table_array.h"
 	);
 	testReadCompare ("toml/table_array_nested.toml",
-#include "toml/table_array_nested.h"
+#include "./toml/table_array_nested.h"
 	);
 	testReadCompare ("toml/table_array_table_mixed.toml",
-#include "toml/table_array_table_mixed.h"
+#include "./toml/table_array_table_mixed.h"
 	);
 	testReadCompare ("toml/inline_table.toml",
-#include "toml/inline_table.h"
+#include "./toml/inline_table.h"
 	);
 	testReadCompare ("toml/inline_table_empty.toml",
-#include "toml/inline_table_empty.h"
+#include "./toml/inline_table_empty.h"
 	);
 	testReadCompare ("toml/inline_table_multiline_values.toml",
-#include "toml/inline_table_multiline_values.h"
+#include "./toml/inline_table_multiline_values.h"
 	);
 	testReadCompare ("toml/comment.toml",
-#include "toml/comment.h"
+#include "./toml/comment.h"
 	);
 #undef PREFIX
 
@@ -354,58 +354,58 @@ static void testReadRoot (void)
 	prefix = PREFIX;
 
 	testReadCompare ("toml/basic.toml",
-#include "toml/basic.h"
+#include "./toml/basic.h"
 	);
 	testReadCompare ("toml/integer.toml",
-#include "toml/integer.h"
+#include "./toml/integer.h"
 	);
 	//	testReadCompare ("toml/key_names_empty.toml",
 	// #include "toml/key_names_empty.h"
 	//	);
 	testReadCompare ("toml/string_utf8.toml",
-#include "toml/string_utf8.h"
+#include "./toml/string_utf8.h"
 	);
 	testReadCompare ("toml/string_basic_escape.toml",
-#include "toml/string_basic_escape.h"
+#include "./toml/string_basic_escape.h"
 	);
 	testReadCompare ("toml/string_multiline.toml",
-#include "toml/string_multiline.h"
+#include "./toml/string_multiline.h"
 	);
 	testReadCompare ("toml/string_null.toml",
-#include "toml/string_null.h"
+#include "./toml/string_null.h"
 	);
 	testReadCompare ("toml/string_base64.toml",
-#include "toml/string_base64.h"
+#include "./toml/string_base64.h"
 	);
 	testReadCompare ("toml/date.toml",
-#include "toml/date.h"
+#include "./toml/date.h"
 	);
 	testReadCompare ("toml/array.toml",
-#include "toml/array.h"
+#include "./toml/array.h"
 	);
 	testReadCompare ("toml/simple_table.toml",
-#include "toml/simple_table.h"
+#include "./toml/simple_table.h"
 	);
 	testReadCompare ("toml/table_array.toml",
-#include "toml/table_array.h"
+#include "./toml/table_array.h"
 	);
 	testReadCompare ("toml/table_array_nested.toml",
-#include "toml/table_array_nested.h"
+#include "./toml/table_array_nested.h"
 	);
 	testReadCompare ("toml/table_array_table_mixed.toml",
-#include "toml/table_array_table_mixed.h"
+#include "./toml/table_array_table_mixed.h"
 	);
 	testReadCompare ("toml/inline_table.toml",
-#include "toml/inline_table.h"
+#include "./toml/inline_table.h"
 	);
 	testReadCompare ("toml/inline_table_empty.toml",
-#include "toml/inline_table_empty.h"
+#include "./toml/inline_table_empty.h"
 	);
 	testReadCompare ("toml/inline_table_multiline_values.toml",
-#include "toml/inline_table_multiline_values.h"
+#include "./toml/inline_table_multiline_values.h"
 	);
 	testReadCompare ("toml/comment.toml",
-#include "toml/comment.h"
+#include "./toml/comment.h"
 	);
 #undef PREFIX
 

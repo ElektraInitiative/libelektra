@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "xmltool.h"
+#include "./xmltool.h"
 
 #include <internal/macros/os.h>
 #include <stdlib.h>

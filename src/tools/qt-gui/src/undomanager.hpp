@@ -9,8 +9,8 @@
 #ifndef UNDOMANAGER_HPP
 #define UNDOMANAGER_HPP
 
-#include "datacontainer.hpp"
-#include "treeviewmodel.hpp"
+#include "./datacontainer.hpp"
+#include "./treeviewmodel.hpp"
 #include <QApplication>
 #include <QClipboard>
 #include <QObject>

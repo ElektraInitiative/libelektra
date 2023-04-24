@@ -16,8 +16,8 @@ useAutocalling = false
 @from cpp_util import cpp_util
 @set support = NestedSupport()
 $util.header($args.output)
-#include "kdb.hpp"
-#include "kdbtypes.h"
+#include "./kdb.hpp"
+#include "./kdbtypes.h"
 
 #include <string>
 

@@ -7,7 +7,7 @@
  *
  */
 
-#include "gpg.h"
+#include "./gpg.h"
 #include <assert.h>
 #include <elektra/kdb/errors.h>
 #include <errno.h>

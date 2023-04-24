@@ -7,8 +7,8 @@
  *
  */
 
-#include "reference.h"
-#include "referencegraph.h"
+#include "./reference.h"
+#include "./referencegraph.h"
 
 #include <elektra/ease/globbing.h>
 #include <elektra/ease/old_ease.h>

@@ -7,7 +7,7 @@
  *
  */
 
-#include "multifile.h"
+#include "./multifile.h"
 
 #include <dirent.h>
 #include <elektra/core.h>

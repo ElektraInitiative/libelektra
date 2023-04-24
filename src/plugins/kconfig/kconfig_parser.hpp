@@ -1,7 +1,7 @@
 #ifndef ELEKTRA_KCONFIGPARSER_HPP
 #define ELEKTRA_KCONFIGPARSER_HPP
 
-#include "file_utility.hpp"
+#include "./file_utility.hpp"
 #include <elektra/kdb/errors.h>
 #include <kdbplugin.hpp>
 

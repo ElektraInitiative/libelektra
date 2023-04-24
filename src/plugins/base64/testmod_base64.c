@@ -9,7 +9,7 @@
 
 #include <tests_plugin.h>
 
-#include "base64.h"
+#include "./base64.h"
 
 // test vectors are defined in RFC4648
 // see https://www.ietf.org/rfc/rfc4648.txt

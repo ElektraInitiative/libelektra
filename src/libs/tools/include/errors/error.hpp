@@ -1,7 +1,7 @@
 #ifndef ELEKTRA_ERROR_HPP
 #define ELEKTRA_ERROR_HPP
 
-#include "errors/warning.hpp"
+#include "./errors/warning.hpp"
 #include <vector>
 
 namespace kdb

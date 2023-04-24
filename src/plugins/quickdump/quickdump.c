@@ -7,7 +7,7 @@
  *
  */
 
-#include "quickdump.h"
+#include "./quickdump.h"
 
 #include <internal/macros/plugin_errors.h>
 #include <internal/utility/endian.h>
@@ -56,7 +56,7 @@ static void ensureBufferSize (struct stringbuffer * buffer, size_t minSize);
 #define STDOUT_FILENAME ("/dev/stdout")
 #endif
 
-#include "varint.c"
+#include "./varint.c"
 
 static inline void closeFile (FILE * file)
 {

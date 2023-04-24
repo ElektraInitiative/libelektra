@@ -6,10 +6,10 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "printvisitor.hpp"
+#include "./printvisitor.hpp"
 
-#include "confignode.hpp"
-#include "treeviewmodel.hpp"
+#include "./confignode.hpp"
+#include "./treeviewmodel.hpp"
 
 void PrintVisitor::visit (ConfigNode & node)
 {

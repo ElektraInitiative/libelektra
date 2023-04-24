@@ -9,7 +9,7 @@
 #include <internal/kdb/config.h>
 #include <internal/macros/attributes.h>
 
-#include "log.h"
+#include "./log.h"
 
 int elektraSyslogOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
@@ -49,7 +49,7 @@ int elektraSyslogGet (Plugin * handle, KeySet * returned, Key * parentKey)
 				     keyNew ("system:/elektra/modules/syslog/exports/get", KEY_FUNC, elektraSyslogGet, KEY_END),
 				     keyNew ("system:/elektra/modules/syslog/exports/commit", KEY_FUNC, elektraSyslogCommit, KEY_END),
 				     keyNew ("system:/elektra/modules/syslog/exports/error", KEY_FUNC, elektraSyslogError, KEY_END),
-#include "readme_syslog.c"
+#include "./readme_syslog.c"
 				     keyNew ("system:/elektra/modules/syslog/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
 		ksDel (n);
 

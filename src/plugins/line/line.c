@@ -14,7 +14,7 @@
 #include <internal/kdb/config.h>
 #include <internal/macros/plugin_errors.h>
 
-#include "line.h"
+#include "./line.h"
 
 #include <elektra/ease/old_ease.h>
 #include <elektra/kdb/errors.h>
@@ -30,7 +30,7 @@ static inline KeySet * elektraLineContract (void)
 		      keyNew ("system:/elektra/modules/line/exports", KEY_END),
 		      keyNew ("system:/elektra/modules/line/exports/get", KEY_FUNC, elektraLineGet, KEY_END),
 		      keyNew ("system:/elektra/modules/line/exports/set", KEY_FUNC, elektraLineSet, KEY_END),
-#include "readme_line.c"
+#include "./readme_line.c"
 		      keyNew ("system:/elektra/modules/line/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 

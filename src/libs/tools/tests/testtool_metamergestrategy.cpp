@@ -7,7 +7,7 @@
  *
  */
 
-#include "mergetestutils.cpp"
+#include "./mergetestutils.cpp"
 #include <gtest/gtest.h>
 #include <merging/metamergestrategy.hpp>
 #include <merging/onesidestrategy.hpp>

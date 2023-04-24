@@ -6,7 +6,7 @@
  ******************************************************************************/
 
 
-#include "internal.h"
+#include "./internal.h"
 #include <bohr/ds_hash.h>
 #include <bohr/ni.h>
 

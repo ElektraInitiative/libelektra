@@ -12,7 +12,7 @@
 
 #include <stdio.h>
 
-#include "network.h"
+#include "./network.h"
 
 #include <tests.h>
 

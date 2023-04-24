@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "ansicolors.hpp"
+#include "./ansicolors.hpp"
 
 #ifdef _WIN32
 #include <io.h>

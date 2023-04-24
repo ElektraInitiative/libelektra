@@ -9,8 +9,8 @@
 #ifndef FINDVISITOR_HPP
 #define FINDVISITOR_HPP
 
-#include "confignode.hpp"
-#include "visitor.hpp"
+#include "./confignode.hpp"
+#include "./visitor.hpp"
 
 /**
  * @brief The FindVisitor class. It performs the search for a term and includes all ConfigNodes that contain the search

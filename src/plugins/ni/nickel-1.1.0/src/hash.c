@@ -6,7 +6,7 @@
  ******************************************************************************/
 
 
-#include "internal.h"
+#include "./internal.h"
 
 
 // This is a trivially modified public domain hash library, lookup3.c, from:

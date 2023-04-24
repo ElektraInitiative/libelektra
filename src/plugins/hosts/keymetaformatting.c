@@ -7,7 +7,7 @@
  *
  */
 
-#include "keymetaformatting.h"
+#include "./keymetaformatting.h"
 
 #include <ctype.h>
 #include <elektra/core.h>

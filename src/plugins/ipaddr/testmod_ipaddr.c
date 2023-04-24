@@ -10,7 +10,7 @@
 #include <stdio.h>
 
 #define PLUGIN_NAME "ipaddr"
-#include "test_ipaddr.h"
+#include "./test_ipaddr.h"
 
 int main (int argc, char ** argv)
 {

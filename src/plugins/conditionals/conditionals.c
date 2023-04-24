@@ -24,7 +24,7 @@
 #include <string.h>
 #include <sys/types.h>
 
-#include "conditionals.h"
+#include "./conditionals.h"
 
 #define EPSILON 0.00001
 

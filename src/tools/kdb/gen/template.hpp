@@ -9,7 +9,7 @@
 #ifndef ELEKTRA_KDB_GEN_TEMPLATE_HPP
 #define ELEKTRA_KDB_GEN_TEMPLATE_HPP
 
-#include "mustache.hpp"
+#include "./mustache.hpp"
 
 #include <algorithm>
 #include <iostream>

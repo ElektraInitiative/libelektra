@@ -10,7 +10,7 @@
 #include <internal/kdb/config.h>
 #endif
 
-#include "tracer.h"
+#include "./tracer.h"
 
 #include <string.h>
 
@@ -82,7 +82,7 @@ int elektraTracerGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			       keyNew ("system:/elektra/modules/tracer/exports/set", KEY_FUNC, elektraTracerSet, KEY_END),
 			       keyNew ("system:/elektra/modules/tracer/exports/commit", KEY_FUNC, elektraTracerCommit, KEY_END),
 			       keyNew ("system:/elektra/modules/tracer/exports/error", KEY_FUNC, elektraTracerError, KEY_END),
-#include "readme_tracer.c"
+#include "./readme_tracer.c"
 			       keyNew ("system:/elektra/modules/tracer/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, info);
 		ksDel (info);

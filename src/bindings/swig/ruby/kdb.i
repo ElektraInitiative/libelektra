@@ -55,11 +55,11 @@ namespace std {
     #include <elektra/config.h>
   }
 
-  #include "keyexcept.hpp"
-  #include "kdbexcept.hpp"
-  #include "key.hpp"
-  #include "keyset.hpp"
-  #include "kdb.hpp"
+  #include "./keyexcept.hpp"
+  #include "./kdbexcept.hpp"
+  #include "./key.hpp"
+  #include "./keyset.hpp"
+  #include "./kdb.hpp"
   using namespace kdb;
 %}
 

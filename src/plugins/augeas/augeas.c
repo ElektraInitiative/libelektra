@@ -19,7 +19,7 @@
 #include <glob.h>
 #include <libgen.h>
 
-#include "aug.h"
+#include "./aug.h"
 
 struct KeyConversion
 {
@@ -498,7 +498,7 @@ int elektraAugeasGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/augeas"))
 	{
 		KeySet * info =
-#include "contract.h"
+#include "./contract.h"
 
 			ksAppend (returned, info);
 		ksDel (info);

@@ -6,9 +6,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "read.hpp"
-#include "log.hpp"
-#include "yaml-cpp/yaml.h"
+#include "./read.hpp"
+#include "./log.hpp"
+#include "./yaml-cpp/yaml.h"
 
 #include <internal/utility/logger.h>
 #include <kdb.hpp>

@@ -9,7 +9,7 @@
 #ifndef LS_H
 #define LS_H
 
-#include "coloredkdbio.hpp"
+#include "./coloredkdbio.hpp"
 #include <command.hpp>
 #include <kdb.hpp>
 

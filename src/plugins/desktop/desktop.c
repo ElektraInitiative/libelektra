@@ -7,7 +7,7 @@
  *
  */
 
-#include "desktop.h"
+#include "./desktop.h"
 
 #include <ctype.h>   // for tolower
 #include <stdlib.h>  // for getenv

@@ -7,7 +7,7 @@
  *
  */
 
-#include "hosts.h"
+#include "./hosts.h"
 
 #include <internal/kdb/config.h>
 #include <internal/macros/plugin_errors.h>

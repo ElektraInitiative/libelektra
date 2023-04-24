@@ -2,7 +2,7 @@
 #ifndef ELEKTRA_WARNING_HPP
 #define ELEKTRA_WARNING_HPP
 
-#include "baseNotification.hpp"
+#include "./baseNotification.hpp"
 
 namespace kdb
 {

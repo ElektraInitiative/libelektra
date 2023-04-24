@@ -13,7 +13,7 @@
 
 #include <tests_plugin.h>
 
-#include "testdata.h"
+#include "./testdata.h"
 
 #include <config.c>
 

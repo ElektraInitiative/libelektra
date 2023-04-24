@@ -9,7 +9,7 @@
 #ifndef DELETEKEYCOMMAND_HPP
 #define DELETEKEYCOMMAND_HPP
 
-#include "treeviewmodel.hpp"
+#include "./treeviewmodel.hpp"
 #include <QUndoCommand>
 
 /**

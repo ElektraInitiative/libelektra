@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "complete.hpp"
+#include "./complete.hpp"
 
 #include <climits>
 #include <functional>
@@ -14,7 +14,7 @@
 #include <limits>
 #include <stack>
 
-#include "cmdline.hpp"
+#include "./cmdline.hpp"
 #include <kdb.hpp>
 #include <keysetio.hpp>
 

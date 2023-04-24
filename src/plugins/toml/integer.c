@@ -2,7 +2,7 @@
 #include <internal/utility/old_helper.h>
 #include <limits.h>
 
-#include "integer.h"
+#include "./integer.h"
 
 static bool getValue (const char * start, const char * str, unsigned long long base, unsigned long long factor, unsigned long long * value);
 static unsigned long long getDigitValue (char digit);

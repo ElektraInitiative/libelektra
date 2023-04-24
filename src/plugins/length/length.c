@@ -7,7 +7,7 @@
  *
  */
 
-#include "length.h"
+#include "./length.h"
 #include <elektra/ease/old_ease.h>
 #include <elektra/kdb/errors.h>
 #include <stdlib.h>

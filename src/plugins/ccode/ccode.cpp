@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "ccode.hpp"
-#include "coder.hpp"
+#include "./ccode.hpp"
+#include "./coder.hpp"
 
 #include <elektra/kdb/errors.h>
 #include <kdbplugin.hpp>
@@ -34,7 +34,7 @@ inline KeySet * contract (void)
 		      keyNew ("system:/elektra/modules/ccode/exports/close", KEY_FUNC, elektraCcodeClose, KEY_END),
 		      keyNew ("system:/elektra/modules/ccode/exports/get", KEY_FUNC, elektraCcodeGet, KEY_END),
 		      keyNew ("system:/elektra/modules/ccode/exports/set", KEY_FUNC, elektraCcodeSet, KEY_END),
-#include "readme_ccode.c"
+#include "./readme_ccode.c"
 		      keyNew ("system:/elektra/modules/ccode/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 

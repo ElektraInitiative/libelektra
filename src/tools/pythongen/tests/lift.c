@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "lift.h"
-#include "genopt.h"
+#include "./lift.h"
+#include "./genopt.h"
 
 #include <stdio.h>
 

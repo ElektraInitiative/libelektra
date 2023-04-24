@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "copykeycommand.hpp"
-#include "treeviewmodel.hpp"
+#include "./copykeycommand.hpp"
+#include "./treeviewmodel.hpp"
 
 CopyKeyCommand::CopyKeyCommand (QString type, ConfigNodePtr source, ConfigNodePtr target, QUndoCommand * parent)
 : QUndoCommand (parent), m_source (new ConfigNode (*source)), m_target (target), m_isExpanded (target->isExpanded ()), m_index (-1)

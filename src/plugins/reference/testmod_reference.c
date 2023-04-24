@@ -13,7 +13,7 @@
 #include <internal/macros/attributes.h>
 #include <tests_plugin.h>
 
-#include "reference.h"
+#include "./reference.h"
 
 #define BASE_KEY "user:/tests/reference"
 

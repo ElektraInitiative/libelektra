@@ -9,7 +9,7 @@
 #ifndef KDB_FIND_H
 #define KDB_FIND_H
 
-#include "coloredkdbio.hpp"
+#include "./coloredkdbio.hpp"
 #include <command.hpp>
 #include <kdb.hpp>
 
