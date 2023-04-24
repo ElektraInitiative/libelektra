@@ -29,9 +29,10 @@ CHECKS="${*:-dotslash dotdot internal}"
 for check in $CHECKS; do
 	case "$check" in
 	"dotslash")
-		# .../highlevel.*.mustache - contains mustache placeholders in includes
-		# testmod_ - tests
-		# qt-gui/unittest - tests
+		# Exceptions:
+		#   .../highlevel.*.mustache - contains mustache placeholders in includes
+		#   testmod_ - tests
+		#   qt-gui/unittest - tests
 		QUOTE_NOT_DOT_SLASH=$(git grep -on --untracked -E -e '^\s*#include\s+".+"' --and --not -e '^\s*#include\s+"\./.*"' -- 'src' \
 			':^src/tools/kdb/gen/templates/highlevel.*.mustache' \
 			':^src/plugins/*/testmod_*' \
@@ -56,7 +57,11 @@ for check in $CHECKS; do
 		;;
 
 	"internal")
-		INTERNAL_IN_PUBLIC=$(git grep -on --untracked -E -e '^\s*#include\s+["<]internal/.*[">]' -- 'src/include/elektra' || true)
+		# Exceptions:
+		#   kdb/errors_log.h - uses #ifdef guarded included controlled via CMake
+		INTERNAL_IN_PUBLIC=$(git grep -on --untracked -E -e '^\s*#include\s+["<]internal/.*[">]' -- 'src/include/elektra' \
+			':^src/include/elektra/kdb/errors_log.h' ||
+			true)
 
 		if [ -n "$INTERNAL_IN_PUBLIC" ]; then
 			HAS_ERROR=1

@@ -6,13 +6,13 @@
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
-#ifndef KDBERRORS_H
-#define KDBERRORS_H
+#ifndef ELEKTRA_KDB_ERRORS_H
+#define ELEKTRA_KDB_ERRORS_H
 
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
+#include <elektra/kdb/errors_log.h>
 #include <elektra/macros/utils.h>
-#include <internal/utility/logger.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,26 +27,26 @@ using KeySet = ckdb::KeySet;
 #define ELEKTRA_SET_RESOURCE_ERROR(key, reason)                                                                                            \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Error %s: %s", ELEKTRA_ERROR_RESOURCE, reason);                                                          \
+		ELEKTRA_ERRORS_LOG ("Add Error %s: %s", ELEKTRA_ERROR_RESOURCE, reason);                                                   \
 		elektraSetErrorRESOURCE (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), reason);    \
 	} while (0)
 #define ELEKTRA_SET_RESOURCE_ERRORF(key, reason, ...)                                                                                      \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Error %s: " reason, ELEKTRA_ERROR_RESOURCE, __VA_ARGS__);                                                \
+		ELEKTRA_ERRORS_LOG ("Add Error %s: " reason, ELEKTRA_ERROR_RESOURCE, __VA_ARGS__);                                         \
 		elektraSetErrorRESOURCE (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), reason,     \
 					 __VA_ARGS__);                                                                                     \
 	} while (0)
 #define ELEKTRA_ADD_RESOURCE_WARNING(key, reason)                                                                                          \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Warning %s: %s", ELEKTRA_WARNING_RESOURCE, reason);                                                      \
+		ELEKTRA_ERRORS_LOG ("Add Warning %s: %s", ELEKTRA_WARNING_RESOURCE, reason);                                               \
 		elektraAddWarningRESOURCE (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), reason);  \
 	} while (0)
 #define ELEKTRA_ADD_RESOURCE_WARNINGF(key, reason, ...)                                                                                    \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Warning %s: " reason, ELEKTRA_WARNING_RESOURCE, __VA_ARGS__);                                            \
+		ELEKTRA_ERRORS_LOG ("Add Warning %s: " reason, ELEKTRA_WARNING_RESOURCE, __VA_ARGS__);                                     \
 		elektraAddWarningRESOURCE (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), reason,   \
 					   __VA_ARGS__);                                                                                   \
 	} while (0)
@@ -54,7 +54,7 @@ using KeySet = ckdb::KeySet;
 #define ELEKTRA_SET_OUT_OF_MEMORY_ERROR(key)                                                                                               \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Error %s", ELEKTRA_ERROR_OUT_OF_MEMORY);                                                                 \
+		ELEKTRA_ERRORS_LOG ("Add Error %s", ELEKTRA_ERROR_OUT_OF_MEMORY);                                                          \
 		elektraSetErrorOUT_OF_MEMORY (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),        \
 					      "Memory allocation failed");                                                                 \
 	} while (0)
@@ -62,7 +62,7 @@ using KeySet = ckdb::KeySet;
 #define ELEKTRA_ADD_OUT_OF_MEMORY_WARNING(key)                                                                                             \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Warning %s: %s", ELEKTRA_WARNING_OUT_OF_MEMORY, "Memory allocation failed");                             \
+		ELEKTRA_ERRORS_LOG ("Add Warning %s: %s", ELEKTRA_WARNING_OUT_OF_MEMORY, "Memory allocation failed");                      \
 		elektraAddWarningOUT_OF_MEMORY (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),      \
 						"Memory allocation failed");                                                               \
 	} while (0)
@@ -70,28 +70,28 @@ using KeySet = ckdb::KeySet;
 #define ELEKTRA_SET_INSTALLATION_ERROR(key, reason)                                                                                        \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Error %s: %s", ELEKTRA_ERROR_INSTALLATION, reason);                                                      \
+		ELEKTRA_ERRORS_LOG ("Add Error %s: %s", ELEKTRA_ERROR_INSTALLATION, reason);                                               \
 		elektraSetErrorINSTALLATION (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),         \
 					     reason);                                                                                      \
 	} while (0)
 #define ELEKTRA_SET_INSTALLATION_ERRORF(key, reason, ...)                                                                                  \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Error %s: " reason, ELEKTRA_ERROR_INSTALLATION, __VA_ARGS__);                                            \
+		ELEKTRA_ERRORS_LOG ("Add Error %s: " reason, ELEKTRA_ERROR_INSTALLATION, __VA_ARGS__);                                     \
 		elektraSetErrorINSTALLATION (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), reason, \
 					     __VA_ARGS__);                                                                                 \
 	} while (0)
 #define ELEKTRA_ADD_INSTALLATION_WARNING(key, reason)                                                                                      \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Warning %s: %s", ELEKTRA_WARNING_INSTALLATION, reason);                                                  \
+		ELEKTRA_ERRORS_LOG ("Add Warning %s: %s", ELEKTRA_WARNING_INSTALLATION, reason);                                           \
 		elektraAddWarningINSTALLATION (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),       \
 					       reason);                                                                                    \
 	} while (0)
 #define ELEKTRA_ADD_INSTALLATION_WARNINGF(key, reason, ...)                                                                                \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Warning %s: " reason, ELEKTRA_WARNING_INSTALLATION, __VA_ARGS__);                                        \
+		ELEKTRA_ERRORS_LOG ("Add Warning %s: " reason, ELEKTRA_WARNING_INSTALLATION, __VA_ARGS__);                                 \
 		elektraAddWarningINSTALLATION (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),       \
 					       reason, __VA_ARGS__);                                                                       \
 	} while (0)
@@ -99,26 +99,26 @@ using KeySet = ckdb::KeySet;
 #define ELEKTRA_SET_INTERNAL_ERROR(key, reason)                                                                                            \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Error %s: %s", ELEKTRA_ERROR_INTERNAL, reason);                                                          \
+		ELEKTRA_ERRORS_LOG ("Add Error %s: %s", ELEKTRA_ERROR_INTERNAL, reason);                                                   \
 		elektraSetErrorINTERNAL (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), reason);    \
 	} while (0)
 #define ELEKTRA_SET_INTERNAL_ERRORF(key, reason, ...)                                                                                      \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Error %s: " reason, ELEKTRA_ERROR_INTERNAL, __VA_ARGS__);                                                \
+		ELEKTRA_ERRORS_LOG ("Add Error %s: " reason, ELEKTRA_ERROR_INTERNAL, __VA_ARGS__);                                         \
 		elektraSetErrorINTERNAL (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), reason,     \
 					 __VA_ARGS__);                                                                                     \
 	} while (0)
 #define ELEKTRA_ADD_INTERNAL_WARNING(key, reason)                                                                                          \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Warning %s: %s", ELEKTRA_WARNING_INTERNAL, reason);                                                      \
+		ELEKTRA_ERRORS_LOG ("Add Warning %s: %s", ELEKTRA_WARNING_INTERNAL, reason);                                               \
 		elektraAddWarningINTERNAL (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), reason);  \
 	} while (0)
 #define ELEKTRA_ADD_INTERNAL_WARNINGF(key, reason, ...)                                                                                    \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Warning %s: " reason, ELEKTRA_WARNING_INTERNAL, __VA_ARGS__);                                            \
+		ELEKTRA_ERRORS_LOG ("Add Warning %s: " reason, ELEKTRA_WARNING_INTERNAL, __VA_ARGS__);                                     \
 		elektraAddWarningINTERNAL (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), reason,   \
 					   __VA_ARGS__);                                                                                   \
 	} while (0)
@@ -126,26 +126,26 @@ using KeySet = ckdb::KeySet;
 #define ELEKTRA_SET_INTERFACE_ERROR(key, reason)                                                                                           \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Error %s: %s", ELEKTRA_ERROR_INTERFACE, reason);                                                         \
+		ELEKTRA_ERRORS_LOG ("Add Error %s: %s", ELEKTRA_ERROR_INTERFACE, reason);                                                  \
 		elektraSetErrorINTERFACE (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), reason);   \
 	} while (0)
 #define ELEKTRA_SET_INTERFACE_ERRORF(key, reason, ...)                                                                                     \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Error %s: " reason, ELEKTRA_ERROR_INTERFACE, __VA_ARGS__);                                               \
+		ELEKTRA_ERRORS_LOG ("Add Error %s: " reason, ELEKTRA_ERROR_INTERFACE, __VA_ARGS__);                                        \
 		elektraSetErrorINTERFACE (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), reason,    \
 					  __VA_ARGS__);                                                                                    \
 	} while (0)
 #define ELEKTRA_ADD_INTERFACE_WARNING(key, reason)                                                                                         \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Warning %s: %s", ELEKTRA_WARNING_INTERFACE, reason);                                                     \
+		ELEKTRA_ERRORS_LOG ("Add Warning %s: %s", ELEKTRA_WARNING_INTERFACE, reason);                                              \
 		elektraAddWarningINTERFACE (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), reason); \
 	} while (0)
 #define ELEKTRA_ADD_INTERFACE_WARNINGF(key, reason, ...)                                                                                   \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Warning %s: " reason, ELEKTRA_WARNING_INTERFACE, __VA_ARGS__);                                           \
+		ELEKTRA_ERRORS_LOG ("Add Warning %s: " reason, ELEKTRA_WARNING_INTERFACE, __VA_ARGS__);                                    \
 		elektraAddWarningINTERFACE (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), reason,  \
 					    __VA_ARGS__);                                                                                  \
 	} while (0)
@@ -153,28 +153,28 @@ using KeySet = ckdb::KeySet;
 #define ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERROR(key, reason)                                                                                  \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Error %s: %s", ELEKTRA_ERROR_PLUGIN_MISBEHAVIOR, reason);                                                \
+		ELEKTRA_ERRORS_LOG ("Add Error %s: %s", ELEKTRA_ERROR_PLUGIN_MISBEHAVIOR, reason);                                         \
 		elektraSetErrorPLUGIN_MISBEHAVIOR (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),   \
 						   reason);                                                                                \
 	} while (0)
 #define ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF(key, reason, ...)                                                                            \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Error %s: " reason, ELEKTRA_ERROR_PLUGIN_MISBEHAVIOR, __VA_ARGS__);                                      \
+		ELEKTRA_ERRORS_LOG ("Add Error %s: " reason, ELEKTRA_ERROR_PLUGIN_MISBEHAVIOR, __VA_ARGS__);                               \
 		elektraSetErrorPLUGIN_MISBEHAVIOR (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),   \
 						   reason, __VA_ARGS__);                                                                   \
 	} while (0)
 #define ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING(key, reason)                                                                                \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Warning %s: %s", ELEKTRA_WARNING_PLUGIN_MISBEHAVIOR, reason);                                            \
+		ELEKTRA_ERRORS_LOG ("Add Warning %s: %s", ELEKTRA_WARNING_PLUGIN_MISBEHAVIOR, reason);                                     \
 		elektraAddWarningPLUGIN_MISBEHAVIOR (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), \
 						     reason);                                                                              \
 	} while (0)
 #define ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF(key, reason, ...)                                                                          \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Warning %s: " reason, ELEKTRA_WARNING_PLUGIN_MISBEHAVIOR, __VA_ARGS__);                                  \
+		ELEKTRA_ERRORS_LOG ("Add Warning %s: " reason, ELEKTRA_WARNING_PLUGIN_MISBEHAVIOR, __VA_ARGS__);                           \
 		elektraAddWarningPLUGIN_MISBEHAVIOR (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), \
 						     reason, __VA_ARGS__);                                                                 \
 	} while (0)
@@ -182,28 +182,28 @@ using KeySet = ckdb::KeySet;
 #define ELEKTRA_SET_CONFLICTING_STATE_ERROR(key, reason)                                                                                   \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Error %s: %s", ELEKTRA_ERROR_CONFLICTING_STATE, reason);                                                 \
+		ELEKTRA_ERRORS_LOG ("Add Error %s: %s", ELEKTRA_ERROR_CONFLICTING_STATE, reason);                                          \
 		elektraSetErrorCONFLICTING_STATE (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),    \
 						  reason);                                                                                 \
 	} while (0)
 #define ELEKTRA_SET_CONFLICTING_STATE_ERRORF(key, reason, ...)                                                                             \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Error %s: " reason, ELEKTRA_ERROR_CONFLICTING_STATE, __VA_ARGS__);                                       \
+		ELEKTRA_ERRORS_LOG ("Add Error %s: " reason, ELEKTRA_ERROR_CONFLICTING_STATE, __VA_ARGS__);                                \
 		elektraSetErrorCONFLICTING_STATE (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),    \
 						  reason, __VA_ARGS__);                                                                    \
 	} while (0)
 #define ELEKTRA_ADD_CONFLICTING_STATE_WARNING(key, reason)                                                                                 \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Warning %s: %s", ELEKTRA_WARNING_CONFLICTING_STATE, reason);                                             \
+		ELEKTRA_ERRORS_LOG ("Add Warning %s: %s", ELEKTRA_WARNING_CONFLICTING_STATE, reason);                                      \
 		elektraAddWarningCONFLICTING_STATE (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),  \
 						    reason);                                                                               \
 	} while (0)
 #define ELEKTRA_ADD_CONFLICTING_STATE_WARNINGF(key, reason, ...)                                                                           \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Warning %s: " reason, ELEKTRA_WARNING_CONFLICTING_STATE, __VA_ARGS__);                                   \
+		ELEKTRA_ERRORS_LOG ("Add Warning %s: " reason, ELEKTRA_WARNING_CONFLICTING_STATE, __VA_ARGS__);                            \
 		elektraAddWarningCONFLICTING_STATE (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),  \
 						    reason, __VA_ARGS__);                                                                  \
 	} while (0)
@@ -211,28 +211,28 @@ using KeySet = ckdb::KeySet;
 #define ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR(key, reason)                                                                                \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Error %s: %s", ELEKTRA_ERROR_VALIDATION_SYNTACTIC, reason);                                              \
+		ELEKTRA_ERRORS_LOG ("Add Error %s: %s", ELEKTRA_ERROR_VALIDATION_SYNTACTIC, reason);                                       \
 		elektraSetErrorVALIDATION_SYNTACTIC (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), \
 						     reason);                                                                              \
 	} while (0)
 #define ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF(key, reason, ...)                                                                          \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Error %s: " reason, ELEKTRA_ERROR_VALIDATION_SYNTACTIC, __VA_ARGS__);                                    \
+		ELEKTRA_ERRORS_LOG ("Add Error %s: " reason, ELEKTRA_ERROR_VALIDATION_SYNTACTIC, __VA_ARGS__);                             \
 		elektraSetErrorVALIDATION_SYNTACTIC (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), \
 						     reason, __VA_ARGS__);                                                                 \
 	} while (0)
 #define ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNING(key, reason)                                                                              \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Warning %s: %s", ELEKTRA_WARNING_VALIDATION_SYNTACTIC, reason);                                          \
+		ELEKTRA_ERRORS_LOG ("Add Warning %s: %s", ELEKTRA_WARNING_VALIDATION_SYNTACTIC, reason);                                   \
 		elektraAddWarningVALIDATION_SYNTACTIC (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__),                                        \
 						       ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), reason);                                   \
 	} while (0)
 #define ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF(key, reason, ...)                                                                        \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Warning %s: " reason, ELEKTRA_WARNING_VALIDATION_SYNTACTIC, __VA_ARGS__);                                \
+		ELEKTRA_ERRORS_LOG ("Add Warning %s: " reason, ELEKTRA_WARNING_VALIDATION_SYNTACTIC, __VA_ARGS__);                         \
 		elektraAddWarningVALIDATION_SYNTACTIC (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__),                                        \
 						       ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), reason, __VA_ARGS__);                      \
 	} while (0)
@@ -240,28 +240,28 @@ using KeySet = ckdb::KeySet;
 #define ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR(key, reason)                                                                                 \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Error %s: %s", ELEKTRA_ERROR_VALIDATION_SEMANTIC, reason);                                               \
+		ELEKTRA_ERRORS_LOG ("Add Error %s: %s", ELEKTRA_ERROR_VALIDATION_SEMANTIC, reason);                                        \
 		elektraSetErrorVALIDATION_SEMANTIC (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),  \
 						    reason);                                                                               \
 	} while (0)
 #define ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF(key, reason, ...)                                                                           \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Error %s: " reason, ELEKTRA_ERROR_VALIDATION_SEMANTIC, __VA_ARGS__);                                     \
+		ELEKTRA_ERRORS_LOG ("Add Error %s: " reason, ELEKTRA_ERROR_VALIDATION_SEMANTIC, __VA_ARGS__);                              \
 		elektraSetErrorVALIDATION_SEMANTIC (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),  \
 						    reason, __VA_ARGS__);                                                                  \
 	} while (0)
 #define ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNING(key, reason)                                                                               \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Warning %s: %s", ELEKTRA_WARNING_VALIDATION_SEMANTIC, reason);                                           \
+		ELEKTRA_ERRORS_LOG ("Add Warning %s: %s", ELEKTRA_WARNING_VALIDATION_SEMANTIC, reason);                                    \
 		elektraAddWarningVALIDATION_SEMANTIC (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__),                                         \
 						      ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), reason);                                    \
 	} while (0)
 #define ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF(key, reason, ...)                                                                         \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		ELEKTRA_LOG ("Add Warning %s: " reason, ELEKTRA_WARNING_VALIDATION_SEMANTIC, __VA_ARGS__);                                 \
+		ELEKTRA_ERRORS_LOG ("Add Warning %s: " reason, ELEKTRA_WARNING_VALIDATION_SEMANTIC, __VA_ARGS__);                          \
 		elektraAddWarningVALIDATION_SEMANTIC (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__),                                         \
 						      ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), reason, __VA_ARGS__);                       \
 	} while (0)
@@ -294,4 +294,4 @@ void elektraTriggerError (const char * nr, Key * parentKey, const char * message
 }
 #endif
 
-#endif
+#endif // ELEKTRA_KDB_ERRORS_H

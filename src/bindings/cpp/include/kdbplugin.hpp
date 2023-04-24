@@ -74,7 +74,7 @@ private:
 		}
 		catch (const char * msg)
 		{
-#ifdef KDBERRORS_H
+#ifdef ELEKTRA_KDB_ERRORS_H
 			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey, "Could not create C++ plugin. Reason: %s", msg);
 #endif
 			return -1;

@@ -41,6 +41,8 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/scripts/cmake/M
 file (REMOVE "${CMAKE_BINARY_DIR}/extra_install_manifest.txt")
 file (REMOVE "${CMAKE_BINARY_DIR}/external-links.txt")
 
+add_compile_definitions (ELEKTRA_HAVE_INTERNAL_LOGGER)
+
 # needed by ifs below
 include (scripts/cmake/ElektraCache.cmake)
 include (scripts/cmake/ElektraCompiling.cmake)
