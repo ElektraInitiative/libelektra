@@ -11,14 +11,14 @@
 
 - **Precondition:** None.
 - **Main success scenario:**
-    - The Dev-Ops Engineer wants to write a specification for the `log level` in the `dockerd` configuration.
-    - The configuration key is `log/level`.
-    - The configuration key uses `description`, `default` and `enum` as metakeys.
-    - The specification strictly defines all enum values `debug`, `info`, `warn`, `error` and `fatal`.
-    - The keys are all stored for the `spec` namespace.
+  - The Dev-Ops Engineer wants to write a specification for the `log level` in the `dockerd` configuration.
+  - The configuration key is `log/level`.
+  - The configuration key uses `description`, `default` and `enum` as metakeys.
+  - The specification strictly defines all enum values `debug`, `info`, `warn`, `error` and `fatal`.
+  - The keys are all stored for the `spec` namespace.
 - **Alternative scenario:** None.
 - **Error scenario:**
-    - Wrong metakeys are used (yielded as error to the user).
+  - Wrong metakeys are used (yielded as error to the user).
 - **Postcondition:** None.
 - **Non-functional Constraints:** None.
 
