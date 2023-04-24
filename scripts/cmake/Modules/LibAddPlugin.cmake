@@ -194,6 +194,7 @@ function (add_plugintest testname)
 			endforeach (ee ${ARG_EXTRA_EXECUTABLES})
 
 			if (ARG_INSTALL_TEST_DATA)
+				# TODO: make more clear via repo structure that this happens
 				install (
 					DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${testname}"
 					DESTINATION "${TARGET_TEST_DATA_FOLDER}"
@@ -464,6 +465,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	if (ADDTESTING_PHASE)
 		if (ARG_INSTALL_TEST_DATA AND NOT ARG_ADD_TEST)
 			if (INSTALL_TESTING)
+				# TODO: make more clear via repo structure that this happens
 				install (
 					DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${PLUGIN_SHORT_NAME}"
 					DESTINATION "${TARGET_TEST_DATA_FOLDER}"

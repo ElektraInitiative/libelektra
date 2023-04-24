@@ -160,7 +160,6 @@ test_big_endian (ELEKTRA_BIG_ENDIAN)
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektra/config.h.in" "${CMAKE_CURRENT_BINARY_DIR}/elektra/config.h")
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/internal/config.h.in" "${CMAKE_CURRENT_BINARY_DIR}/internal/config.h")
 
-# DO NOT install kdbconfig.h it may cause conflicts with applications own config.h files
 install (
 	DIRECTORY elektra
 	DESTINATION include
@@ -168,6 +167,7 @@ install (
 	FILES_MATCHING
 	PATTERN "*.h")
 
+# TODO: restrict to generated config.h TODO: make sure config.h cannot conflict with headers from other software
 install (
 	DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/elektra"
 	DESTINATION include

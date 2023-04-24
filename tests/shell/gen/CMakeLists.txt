@@ -26,10 +26,12 @@ endforeach ()
 unset (C_FLAG_32BIT)
 
 if (INSTALL_TESTING)
+	# TODO: make clear via repo structure that this happens
 	install (
 		DIRECTORY "."
 		DESTINATION "${TARGET_TEST_DATA_FOLDER}/gen"
 		COMPONENT elektra-tests)
+	# TODO: make clear via repo structure that this happens
 	install (
 		DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 		DESTINATION "${TARGET_TEST_DATA_FOLDER}/gen"

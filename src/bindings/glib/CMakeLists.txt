@@ -43,6 +43,7 @@ target_link_libraries (${GELEKTRA_LIBRARY} PUBLIC ${GOBJECT_LDFLAGS})
 
 install (TARGETS ${GELEKTRA_LIBRARY} LIBRARY DESTINATION lib${LIB_SUFFIX} COMPONENT glib-elektra)
 
+# TODO: move installed headers
 install (
 	FILES ${GELEKTRA_HDR_FILES}
 	DESTINATION include/${TARGET_INCLUDE_FOLDER}

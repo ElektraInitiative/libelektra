@@ -26,6 +26,7 @@ target_link_elektra (${IO_VARIANT_LIBRARY} elektra-io)
 
 install (TARGETS ${IO_VARIANT_LIBRARY} LIBRARY DESTINATION lib${LIB_SUFFIX})
 
+# TODO: move installed headers
 install (FILES ${IO_VARIANT_HDR_FILES} DESTINATION include/${TARGET_INCLUDE_FOLDER})
 
 # configure_file ( "${CMAKE_CURRENT_SOURCE_DIR}/${IO_VARIANT_LIBRARY}.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/${IO_VARIANT_LIBRARY}.pc" @ONLY )

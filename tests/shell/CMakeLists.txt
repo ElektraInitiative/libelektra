@@ -76,6 +76,7 @@ function (add_scripttest testname)
 					set (RACE_COMMAND "$KDB race")
 					set (INCLUDE_COMMON "${INCLUDE_COMMON_INSTALLED_FILE}")
 					configure_file ("${filename}" "${CMAKE_CURRENT_BINARY_DIR}/${testname}" @ONLY)
+					# TODO: make clear via repo structure that this happens
 					install (
 						FILES "${CMAKE_CURRENT_BINARY_DIR}/${testname}"
 						DESTINATION ${TARGET_TOOL_EXEC_FOLDER}
@@ -124,6 +125,7 @@ function (add_scripttest testname)
 endfunction (add_scripttest)
 
 if (INSTALL_TESTING)
+	# TODO: make clear via repo structure that this happens
 	install (
 		DIRECTORY "shell"
 		DESTINATION ${TARGET_TEST_DATA_FOLDER}

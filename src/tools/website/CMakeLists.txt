@@ -25,7 +25,7 @@ else ()
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/mount-config.sh" "${CMAKE_CURRENT_BINARY_DIR}/mount-${tool}-config")
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/README.md" "${CMAKE_CURRENT_BINARY_DIR}/README.md")
 
-	# install files to destination
+	# install files to destination TODO: make clear via repo structure that this happens
 	install (DIRECTORY public resources DESTINATION ${install_directory})
 	install (FILES package.json README.md ${CMAKE_CURRENT_BINARY_DIR}/Gruntfile.js application-config.json
 		 DESTINATION ${install_directory})

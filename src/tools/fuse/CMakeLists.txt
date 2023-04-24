@@ -59,7 +59,7 @@ install (
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )")
 
 # Copy the just created 'fuse' directory to the global installation directory. (This indirection is performed so that CPack knows about the
-# directory.)
+# directory.) TODO: make clear via repo structure that this happens
 install (
 	DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/fuse
 	DESTINATION "${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_DATA_FOLDER}"
