@@ -20,6 +20,7 @@
 #include <elektra/core/namespace.h>
 #include <elektra/kdb/errors.h>
 #include <elektra/type/types.h>
+#include <internal/utility/old_helper.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>

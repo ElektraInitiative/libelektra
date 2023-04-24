@@ -9,7 +9,7 @@
 #define _GNU_SOURCE
 #include <internal/kdb/config.h>
 #include <internal/macros/plugin_errors.h>
-
+#include <internal/utility/old_helper.h>
 
 #include "./simpleini.h"
 #include <errno.h>

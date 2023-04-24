@@ -9,9 +9,8 @@
 
 #include "./keytometa.h"
 
-#ifndef HAVE_KDBCONFIG
 #include <internal/kdb/config.h>
-#endif
+#include <internal/utility/old_helper.h>
 
 
 #include <errno.h>

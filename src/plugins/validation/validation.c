@@ -6,9 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#ifndef HAVE_KDBCONFIG
 #include <internal/kdb/config.h>
-#endif
+#include <internal/utility/old_helper.h>
 
 #include <ctype.h>
 #include <stdio.h>

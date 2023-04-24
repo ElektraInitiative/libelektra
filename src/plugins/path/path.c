@@ -8,11 +8,8 @@
 
 #include "./path.h"
 
-#ifndef HAVE_KDBCONFIG
-
 #include <internal/kdb/config.h>
-
-#endif
+#include <internal/utility/old_helper.h>
 
 static int createModeBits (const char * modes);
 

@@ -7,6 +7,7 @@
  */
 
 #include <elektra/kdb/errors.h>
+#include <internal/utility/old_helper.h>
 
 #include <string.h>
 

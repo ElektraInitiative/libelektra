@@ -8,9 +8,9 @@
 
 #include "./network.h"
 
-#ifndef HAVE_KDBCONFIG
 #include <internal/kdb/config.h>
-#endif
+#include <internal/utility/old_helper.h>
+
 
 /* Obtain address(es) matching host/port */
 int elektraNetworkAddrInfo (Key * toCheck)

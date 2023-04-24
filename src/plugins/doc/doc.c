@@ -23,6 +23,7 @@
 
 #include <internal/kdb/config.h>
 #include <internal/macros/plugin_errors.h>
+#include <internal/utility/old_helper.h>
 
 
 //! [global data]

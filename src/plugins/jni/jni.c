@@ -19,6 +19,7 @@
 #include <elektra/core.h>
 #include <elektra/kdb/errors.h>
 #include <elektra/plugin/plugin.h>
+#include <internal/utility/old_helper.h>
 
 // forward declarations
 int elektraJniOpen (Plugin * handle, Key * errorKey);

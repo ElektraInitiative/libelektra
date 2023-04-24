@@ -8,6 +8,7 @@
  */
 
 #include <elektra/kdb/errors.h>
+#include <internal/utility/old_helper.h>
 #include <stdio.h>
 
 #include "./blacklist.h"

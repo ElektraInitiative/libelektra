@@ -17,6 +17,7 @@
 
 #include <internal/kdb/config.h>
 #include <internal/macros/plugin_errors.h>
+#include <internal/utility/old_helper.h>
 
 
 typedef void CommentConstructor (KeySet *, size_t, const char *, const char *);

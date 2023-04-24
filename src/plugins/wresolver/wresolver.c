@@ -14,6 +14,7 @@
 #include <elektra/kdb/errors.h>
 #include <internal/macros/os.h>
 #include <internal/utility/assert.h>
+#include <internal/utility/old_helper.h>
 
 #include <string.h>
 

@@ -17,6 +17,7 @@
 #include <elektra/ease/old_ease.h>
 #include <elektra/kdb/errors.h>
 #include <errno.h>
+#include <internal/utility/old_helper.h>
 #include <math.h>
 #include <regex.h>
 #include <stdio.h>

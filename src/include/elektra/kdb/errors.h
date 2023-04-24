@@ -13,7 +13,6 @@
 #include <elektra/core/keyset.h>
 #include <elektra/macros/utils.h>
 #include <internal/utility/logger.h>
-#include <internal/utility/old_helper.h>
 
 #ifdef __cplusplus
 extern "C" {

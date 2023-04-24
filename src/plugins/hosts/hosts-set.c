@@ -11,6 +11,7 @@
 
 #include <internal/kdb/config.h>
 #include <internal/macros/plugin_errors.h>
+#include <internal/utility/old_helper.h>
 
 #include <elektra/ease/meta.h>
 #include <elektra/ease/old_ease.h>

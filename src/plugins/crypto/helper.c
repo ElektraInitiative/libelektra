@@ -13,6 +13,7 @@
 #include <elektra/kdb/errors.h>
 #include <elektra/plugin/invoke.h>
 #include <internal/utility/assert.h>
+#include <internal/utility/old_helper.h>
 #include <stdlib.h>
 
 /**

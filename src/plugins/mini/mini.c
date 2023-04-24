@@ -20,6 +20,7 @@
 #include <internal/macros/plugin_errors.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
+#include <internal/utility/old_helper.h>
 #include <internal/utility/old_utility.h>
 
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
