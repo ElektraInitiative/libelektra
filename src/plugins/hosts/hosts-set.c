@@ -13,8 +13,8 @@
 #include <internal/macros/plugin_errors.h>
 #include <internal/utility/old_helper.h>
 
-#include <elektra/ease/meta.h>
 #include <elektra/ease/array.h>
+#include <elektra/ease/meta.h>
 #include <elektra/ease/utils.h>
 static int keyCmpOrderWrapper (const void * a, const void * b)
 {

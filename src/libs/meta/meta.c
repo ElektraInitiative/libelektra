@@ -8,8 +8,8 @@
 
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
-#include <elektra/ease/meta.h>
 #include <elektra/ease/array.h>
+#include <elektra/ease/meta.h>
 #include <elektra/ease/utils.h>
 #include <elektra/type/types.h>
 #include <internal/kdb/config.h>

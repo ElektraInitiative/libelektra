@@ -9,9 +9,9 @@
 
 #include "./gopts.h"
 
-#include <elektra/type/conversion.h>
 #include <elektra/kdb/errors.h>
 #include <elektra/opts.h>
+#include <elektra/type/conversion.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/old_helper.h>
 

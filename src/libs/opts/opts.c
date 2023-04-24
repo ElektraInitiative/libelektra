@@ -11,9 +11,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <elektra/ease/array.h>
 #include <elektra/ease/meta.h>
 #include <elektra/type/conversion.h>
-#include <elektra/ease/array.h>
 #include <internal/utility/old_helper.h>
 
 #include <elektra/kdb/errors.h>

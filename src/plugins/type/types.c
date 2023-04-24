@@ -17,8 +17,8 @@
 
 #include <internal/utility/old_helper.h>
 
-#include <elektra/type/conversion.h>
 #include <elektra/kdb/errors.h>
+#include <elektra/type/conversion.h>
 
 #define CHECK_TYPE(key, var, toValue)                                                                                                      \
 	{                                                                                                                                  \

@@ -10,10 +10,10 @@
 #include "./reference.h"
 #include "./referencegraph.h"
 
-#include <elektra/ease/globbing.h>
 #include <elektra/ease/array.h>
-#include <elektra/ease/utils.h>
+#include <elektra/ease/globbing.h>
 #include <elektra/ease/reference.h>
+#include <elektra/ease/utils.h>
 #include <elektra/kdb/errors.h>
 #include <internal/utility/old_helper.h>
 #include <stdbool.h>

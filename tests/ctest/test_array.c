@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <elektra/ease/array.h>
 #include "tests.h"
+#include <elektra/ease/array.h>
 
 static void test_array (void)
 {

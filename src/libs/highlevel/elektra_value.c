@@ -6,7 +6,6 @@
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
-#include <elektra/type/conversion.h>
 #include <elektra/ease/reference.h>
 #include <elektra/highlevel.h>
 #include <elektra/type/conversion.h>
