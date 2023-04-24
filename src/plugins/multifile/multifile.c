@@ -23,7 +23,7 @@
 #include <glob.h>
 #include <internal/kdb/config.h>
 #include <internal/kdbprivate.h>
-#include <internal/macros/old_utils.h>
+#include <internal/macros/attributes.h>
 #include <internal/pluginload/module.h>
 #include <internal/utility/logger.h>
 #include <internal/utility/old_helper.h>

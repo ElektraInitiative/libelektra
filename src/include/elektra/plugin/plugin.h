@@ -11,7 +11,6 @@
 
 #include <elektra/core/keyset.h>
 #include <errno.h>
-#include <internal/macros/old_utils.h>
 #include <string.h>
 
 #ifdef ELEKTRA_STATIC

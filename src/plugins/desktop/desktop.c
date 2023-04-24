@@ -14,7 +14,8 @@
 #include <strings.h> // for strcasecmp
 
 #include <elektra/kdb/errors.h>
-#include <internal/macros/old_utils.h>
+#include <internal/macros/plugin_errors.h>
+#include <internal/macros/attributes.h>
 #include <internal/utility/logger.h>
 #include <internal/utility/old_helper.h>
 

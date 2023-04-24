@@ -11,7 +11,6 @@
 
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
-#include <internal/macros/old_utils.h>
 #include <internal/utility/logger.h>
 #include <internal/utility/old_helper.h>
 

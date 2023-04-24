@@ -10,8 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <internal/macros/old_utils.h>
-
+#include <internal/macros/attributes.h>
 #include <tests_plugin.h>
 
 #include "reference.h"

@@ -13,8 +13,7 @@
 #define KDB_HELPER
 
 #include <elektra/type/types.h>
-#include <internal/macros/old_utils.h>
-
+#include <internal/macros/attributes.h>
 #include <stdarg.h>
 #include <stddef.h>
 

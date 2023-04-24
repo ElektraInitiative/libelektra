@@ -9,7 +9,6 @@
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 #include <elektra/kdb/kdb.h>
-#include <internal/macros/old_utils.h> // Declares `ELEKTRA_STRINGIFY`
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>

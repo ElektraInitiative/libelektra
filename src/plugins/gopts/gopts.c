@@ -12,7 +12,6 @@
 #include <elektra/ease/old_ease.h>
 #include <elektra/kdb/errors.h>
 #include <elektra/opts.h>
-#include <internal/macros/old_utils.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/old_helper.h>
 

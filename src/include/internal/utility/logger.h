@@ -10,8 +10,7 @@
 #define KDBLOGGER_H
 
 #include <internal/kdb/config.h>
-#include <internal/macros/old_utils.h>
-
+#include <internal/macros/attributes.h>
 enum ElektraLogLevel
 {
 	/**

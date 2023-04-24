@@ -26,8 +26,6 @@
 #include <sanitizer/lsan_interface.h>
 #endif
 
-#include <internal/macros/old_utils.h>
-
 ELEKTRA_UNUSED static bool isRunningWithValgrind (void)
 {
 	char * p = getenv ("LD_PRELOAD");

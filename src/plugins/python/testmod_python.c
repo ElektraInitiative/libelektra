@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <internal/macros/old_utils.h>
+#include <internal/macros/utils.h>
 #include <stdlib.h>
 
 #ifdef HAVE_KDBCONFIG_H

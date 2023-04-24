@@ -23,8 +23,7 @@
   */
 
 #include <internal/kdb/config.h>
-#include <internal/macros/old_utils.h>
-
+#include <internal/macros/attributes.h>
 #include <dlfcn.h>
 
 #include <elektra/kdb/errors.h>

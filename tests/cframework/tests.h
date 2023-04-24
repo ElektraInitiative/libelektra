@@ -27,7 +27,6 @@
 
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
-#include <internal/macros/old_utils.h>
 #include <internal/utility/old_helper.h>
 
 #define BUFFER_LENGTH 4096

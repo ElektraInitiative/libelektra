@@ -31,7 +31,7 @@
 #include <dirent.h>
 
 #include <elektra/kdb/errors.h>
-#include <internal/macros/old_utils.h>
+#include <internal/macros/attributes.h>
 #include <internal/utility/logger.h>
 
 #ifdef ELEKTRA_LOCK_MUTEX

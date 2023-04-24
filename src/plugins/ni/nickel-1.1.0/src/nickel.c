@@ -10,8 +10,7 @@
 #include <bohr/ds_hash.h>
 #include <bohr/ni.h>
 
-#include <internal/macros/old_utils.h>
-
+#include <internal/macros/attributes.h>
 #include <assert.h>
 #include <ctype.h>
 #include <inttypes.h>

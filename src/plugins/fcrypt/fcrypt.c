@@ -29,8 +29,7 @@
 #include <elektra/core/keyset.h>
 #include <elektra/kdb/errors.h>
 #include <elektra/type/types.h>
-#include <internal/macros/old_utils.h>
-
+#include <internal/macros/attributes.h>
 /**
  * @brief Defines the plugin state during the <code>kdb get</code> phase.
  */
