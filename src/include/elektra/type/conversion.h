@@ -32,6 +32,7 @@ int elektraKeyToLongLong (const Key * key, kdb_long_long_t * variable);
 int elektraKeyToUnsignedLongLong (const Key * key, kdb_unsigned_long_long_t * variable);
 int elektraKeyToFloat (const Key * key, kdb_float_t * variable);
 int elektraKeyToDouble (const Key * key, kdb_double_t * variable);
+int elektraKeyToLongDouble (const Key * key, kdb_long_double_t * variable);
 
 char * elektraBooleanToString (kdb_boolean_t value);
 char * elektraCharToString (kdb_char_t value);
@@ -44,15 +45,7 @@ char * elektraLongLongToString (kdb_long_long_t value);
 char * elektraUnsignedLongLongToString (kdb_unsigned_long_long_t value);
 char * elektraFloatToString (kdb_float_t value);
 char * elektraDoubleToString (kdb_double_t value);
-
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
-int elektraKeyToLongDouble (const Key * key, kdb_long_double_t * variable);
-
 char * elektraLongDoubleToString (kdb_long_double_t value);
-
-#endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 
 #ifdef __cplusplus
 }

@@ -436,8 +436,6 @@ kdb_double_t elektraGetDoubleArrayElement (Elektra * elektra, const char * keyna
 	return result;
 }
 
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 /**
  * Gets a long double value array element.
  *
@@ -452,8 +450,6 @@ kdb_long_double_t elektraGetLongDoubleArrayElement (Elektra * elektra, const cha
 	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToLongDouble, KDB_TYPE_LONG_DOUBLE, elektra, keyname, index, result);
 	return result;
 }
-
-#endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 #define ELEKTRA_SET_ARRAY_ELEMENT_VALUE(VALUE_TO_STRING, KDB_TYPE, elektra, keyname, index, value, error)                                  \
 	CHECK_ERROR (elektra, error);                                                                                                      \
@@ -655,8 +651,6 @@ void elektraSetDoubleArrayElement (Elektra * elektra, const char * keyname, kdb_
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraDoubleToString, KDB_TYPE_DOUBLE, elektra, keyname, index, value, error);
 }
 
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 /**
  * Sets a long double value array element.
  *
@@ -672,8 +666,6 @@ void elektraSetLongDoubleArrayElement (Elektra * elektra, const char * keyname, 
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraLongDoubleToString, KDB_TYPE_LONG_DOUBLE, elektra, keyname, index, value, error);
 }
-
-#endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 /**
  * @}

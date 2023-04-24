@@ -21,11 +21,7 @@ extern KDBType KDB_TYPE_LONG_LONG;
 extern KDBType KDB_TYPE_UNSIGNED_LONG_LONG;
 extern KDBType KDB_TYPE_FLOAT;
 extern KDBType KDB_TYPE_DOUBLE;
-
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 extern KDBType KDB_TYPE_LONG_DOUBLE;
-#endif
-
 extern KDBType KDB_TYPE_ENUM;
 
 #ifdef __cplusplus

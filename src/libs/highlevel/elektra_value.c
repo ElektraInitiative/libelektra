@@ -346,8 +346,6 @@ kdb_double_t elektraGetDouble (Elektra * elektra, const char * keyname)
 	return result;
 }
 
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 /**
  * Gets a long double value.
  *
@@ -361,8 +359,6 @@ kdb_long_double_t elektraGetLongDouble (Elektra * elektra, const char * keyname)
 	ELEKTRA_GET_VALUE (elektraKeyToLongDouble, KDB_TYPE_LONG_DOUBLE, elektra, keyname, result);
 	return result;
 }
-
-#endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 #define ELEKTRA_SET_VALUE(VALUE_TO_STRING, KDB_TYPE, elektra, keyname, value, error)                                                       \
 	CHECK_ERROR (elektra, error);                                                                                                      \
@@ -544,8 +540,6 @@ void elektraSetDouble (Elektra * elektra, const char * keyname, kdb_double_t val
 	ELEKTRA_SET_VALUE (elektraDoubleToString, KDB_TYPE_DOUBLE, elektra, keyname, value, error);
 }
 
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 /**
  * Sets a long double value.
  *
@@ -559,8 +553,6 @@ void elektraSetLongDouble (Elektra * elektra, const char * keyname, kdb_long_dou
 {
 	ELEKTRA_SET_VALUE (elektraLongDoubleToString, KDB_TYPE_LONG_DOUBLE, elektra, keyname, value, error);
 }
-
-#endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 /**
  * @}

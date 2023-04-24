@@ -7,11 +7,20 @@
  *
  */
 
+#include "./gitresolver.h"
+
+#include "../resolver/shared.h"
 
 #include <elektra/kdb/errors.h>
+#include <elektra/plugin/invoke.h>
+#include <elektra/type/types.h>
+
+#include <internal/config.h>
+#include <internal/utility/old_helper.h>
+#include <internal/utility/string.h>
+
 #include <fcntl.h>
 #include <git2.h>
-#include <internal/utility/old_helper.h>
 #include <libgen.h>
 #include <openssl/md5.h>
 #include <stdio.h>
@@ -20,11 +29,6 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <unistd.h>
-
-#include "../resolver/shared.h"
-#include <elektra/plugin/invoke.h>
-
-#include "./gitresolver.h"
 
 #define TV_MAX_DIGITS 26
 #define DEFAULT_CHECKOUT_LOCATION "/tmp/"

@@ -190,15 +190,12 @@ bool elektraTypeCheckDouble (const Key * key)
 	return true;
 }
 
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 bool elektraTypeCheckLongDouble (const Key * key)
 {
 	kdb_long_double_t value;
 	CHECK_TYPE (key, value, elektraKeyToLongDouble)
 	return true;
 }
-
-#endif
 
 bool elektraTypeCheckShort (const Key * key)
 {

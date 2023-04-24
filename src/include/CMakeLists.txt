@@ -74,10 +74,6 @@ else ()
 	message (FATAL_ERROR "Couldn't find a 64-bit integer type for use as kdb_long_long_t")
 endif ()
 
-if (HAVE_SIZEOF_LONG_DOUBLE AND SIZEOF_LONG_DOUBLE GREATER 9)
-	set (ELEKTRA_HAVE_KDB_LONG_DOUBLE "1")
-endif ()
-
 if (SIZEOF_TV_USEC EQUAL SIZEOF_LONG)
 	set (ELEKTRA_TIME_USEC_F "\"%ld\"")
 elseif (SIZEOF_TV_USEC EQUAL SIZEOF_LONG_LONG)
@@ -113,9 +109,6 @@ if (SIZEOF_SIZE_T EQUAL 8)
 else ()
 	set (KDB_OPMPHM_MAX_N "795364313") # bound by opmphm->size max value
 endif ()
-
-# TODO: remove configure
-configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektra/type/types.h.in" "${CMAKE_CURRENT_BINARY_DIR}/elektra/type/types.h")
 
 unset (INT32_T)
 unset (UINT32_T)
@@ -183,7 +176,5 @@ install (
 	FILES_MATCHING
 	PATTERN "*.h")
 
-add_custom_target (
-	elektra_config_headers ALL
-	DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/elektra/config.h" "${CMAKE_CURRENT_BINARY_DIR}/elektra/type/types.h"
-		"${CMAKE_CURRENT_BINARY_DIR}/internal/config.h")
+add_custom_target (elektra_config_headers ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/elektra/config.h"
+						      "${CMAKE_CURRENT_BINARY_DIR}/internal/config.h")

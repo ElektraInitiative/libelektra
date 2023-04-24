@@ -461,13 +461,11 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 #define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION
 #include "./macros/add_type.h"
 
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 #define TYPE kdb_long_double_t
 #define TYPE_NAME KdbLongDouble
 #define TO_VALUE (strtold (string, &end))
 #define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION
 #include "./macros/add_type.h"
-#endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 /**
  * @see kdbnotificationinternal.h ::ElektraNotificationPluginRegisterCallback
@@ -550,10 +548,7 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 			INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbUnsignedShort), INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbLong),
 			INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbUnsignedLong), INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbLongLong),
 			INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbUnsignedLongLong), INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbFloat),
-			INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbDouble),
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-			INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbLongDouble),
-#endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
+			INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbDouble), INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbLongDouble),
 
 			keyNew ("system:/elektra/modules/internalnotification/exports/registerCallback", KEY_FUNC,
 				elektraInternalnotificationRegisterCallback, KEY_END),

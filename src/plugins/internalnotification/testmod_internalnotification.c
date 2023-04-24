@@ -706,7 +706,6 @@ static void test_doUpdateShouldNotUpdateUnregisteredKey (void)
 #define CHECK_INVALID ((int) value == 0)
 #include "./macros/create_type_tests.h"
 
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 #define TYPE kdb_long_double_t
 #define TYPE_NAME KdbLongDouble
 #define FORMAT_STRING "%1.8f"
@@ -715,7 +714,6 @@ static void test_doUpdateShouldNotUpdateUnregisteredKey (void)
 #define INVALID_VALUE "4.a"
 #define CHECK_INVALID ((int) value == 0)
 #include "./macros/create_type_tests.h"
-#endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 int main (int argc, char ** argv)
 {
@@ -765,9 +763,7 @@ int main (int argc, char ** argv)
 	RUN_TYPE_TESTS (KdbUnsignedLongLong)
 	RUN_TYPE_TESTS (KdbFloat)
 	RUN_TYPE_TESTS (KdbDouble)
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 	RUN_TYPE_TESTS (KdbLongDouble)
-#endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 	printf ("\nelektraInternalnotificationDoUpdate\n-----------------------------------\n");
 	test_doUpdateShouldUpdateKey ();

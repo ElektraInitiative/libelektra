@@ -118,12 +118,7 @@ kdb_long_long_t elektraGetLongLong (Elektra * elektra, const char * keyname);
 kdb_unsigned_long_long_t elektraGetUnsignedLongLong (Elektra * elektra, const char * keyname);
 kdb_float_t elektraGetFloat (Elektra * elektra, const char * keyname);
 kdb_double_t elektraGetDouble (Elektra * elektra, const char * keyname);
-
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 kdb_long_double_t elektraGetLongDouble (Elektra * elektra, const char * keyname);
-
-#endif
 
 // endregion Getters
 
@@ -147,12 +142,7 @@ void elektraSetLongLong (Elektra * elektra, const char * keyname, kdb_long_long_
 void elektraSetUnsignedLongLong (Elektra * elektra, const char * keyname, kdb_unsigned_long_long_t value, ElektraError ** error);
 void elektraSetFloat (Elektra * elektra, const char * keyname, kdb_float_t value, ElektraError ** error);
 void elektraSetDouble (Elektra * elektra, const char * keyname, kdb_double_t value, ElektraError ** error);
-
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 void elektraSetLongDouble (Elektra * elektra, const char * keyname, kdb_long_double_t value, ElektraError ** error);
-
-#endif
 
 // endregion Setters
 
@@ -187,12 +177,7 @@ kdb_long_long_t elektraGetLongLongArrayElement (Elektra * elektra, const char * 
 kdb_unsigned_long_long_t elektraGetUnsignedLongLongArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index);
 kdb_float_t elektraGetFloatArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index);
 kdb_double_t elektraGetDoubleArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index);
-
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 kdb_long_double_t elektraGetLongDoubleArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index);
-
-#endif
 
 // endregion Array-Getters
 
@@ -224,13 +209,8 @@ void elektraSetUnsignedLongLongArrayElement (Elektra * elektra, const char * key
 void elektraSetFloatArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_float_t value, ElektraError ** error);
 void elektraSetDoubleArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_double_t value,
 				   ElektraError ** error);
-
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 void elektraSetLongDoubleArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_long_double_t value,
 				       ElektraError ** error);
-
-#endif
 
 // endregion Array-Setters
 

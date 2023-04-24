@@ -10,11 +10,10 @@
 
 #include "./cache.h"
 
-#ifdef HAVE_KDBCONFIG_H
-#include <internal/kdb/config.h>
-#endif
 
 #include <elektra/kdb/errors.h>
+
+#include <internal/config.h>
 #include <internal/kdbprivate.h>
 #include <internal/pluginload/module.h>
 #include <internal/utility/assert.h>

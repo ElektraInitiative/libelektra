@@ -407,9 +407,6 @@ int elektraKeyToDouble (const Key * key ELEKTRA_UNUSED, kdb_double_t * variable 
 #undef KDB_TYPE
 }
 
-
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 /**
  * Converts a Key to long_double.
  *
@@ -439,8 +436,6 @@ int elektraKeyToLongDouble (const Key * key ELEKTRA_UNUSED, kdb_long_double_t * 
 
 #undef KDB_TYPE
 }
-
-#endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 /**
  * Converts a boolean to string
@@ -596,8 +591,6 @@ char * elektraDoubleToString (kdb_double_t value)
 	return elektraFormat ("%.17g", value);
 }
 
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 /**
  * Converts a long double to string
  *
@@ -611,8 +604,6 @@ char * elektraLongDoubleToString (kdb_long_double_t value)
 {
 	return elektraFormat ("%.21Lg", value);
 }
-
-#endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 #ifdef __cplusplus
 };

@@ -352,12 +352,7 @@ TEST_F (Highlevel, PrimitveGetters)
 		makeKey (KDB_TYPE_UNSIGNED_LONG_LONG, "unsignedlonglongkey", "1"),
 		makeKey (KDB_TYPE_FLOAT, "floatkey", "1.1"),
 		makeKey (KDB_TYPE_DOUBLE, "doublekey", "1.1"),
-
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 		makeKey (KDB_TYPE_LONG_DOUBLE, "longdoublekey", "1.1"),
-
-#endif
 	});
 
 	createElektra ();
@@ -375,12 +370,7 @@ TEST_F (Highlevel, PrimitveGetters)
 
 	EXPECT_EQ (elektraGetFloat (elektra, "floatkey"), 1.1f) << "Wrong key value.";
 	EXPECT_EQ (elektraGetDouble (elektra, "doublekey"), 1.1) << "Wrong key value.";
-
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 	EXPECT_EQ (elektraGetLongDouble (elektra, "longdoublekey"), 1.1L) << "Wrong key value.";
-
-#endif
 }
 
 TEST_F (Highlevel, ArrayGetters)
@@ -398,12 +388,7 @@ TEST_F (Highlevel, ArrayGetters)
 		makeArray (KDB_TYPE_UNSIGNED_LONG_LONG, "unsignedlonglongarraykey", { "1", "2" }),
 		makeArray (KDB_TYPE_FLOAT, "floatarraykey", { "1.1", "-2.1" }),
 		makeArray (KDB_TYPE_DOUBLE, "doublearraykey", { "1.1", "-2.1" }),
-
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 		makeArray (KDB_TYPE_LONG_DOUBLE, "longdoublearraykey", { "1.1", "-2.1" }),
-
-#endif
 	});
 
 	createElektra ();
@@ -457,13 +442,9 @@ TEST_F (Highlevel, ArrayGetters)
 	EXPECT_EQ (elektraGetDoubleArrayElement (elektra, "doublearraykey", 0), 1.1) << "Wrong key value.";
 	EXPECT_EQ (elektraGetDoubleArrayElement (elektra, "doublearraykey", 1), -2.1) << "Wrong key value.";
 
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 	EXPECT_EQ (elektraArraySize (elektra, "longdoublearraykey"), 2) << "Wrong array size";
 	EXPECT_EQ (elektraGetLongDoubleArrayElement (elektra, "longdoublearraykey", 0), 1.1L) << "Wrong key value.";
 	EXPECT_EQ (elektraGetLongDoubleArrayElement (elektra, "longdoublearraykey", 1), -2.1L) << "Wrong key value.";
-
-#endif
 }
 
 TEST_F (Highlevel, PrimitiveSetters)
@@ -481,12 +462,7 @@ TEST_F (Highlevel, PrimitiveSetters)
 		makeKey (KDB_TYPE_UNSIGNED_LONG_LONG, "unsignedlonglongkey", "1"),
 		makeKey (KDB_TYPE_FLOAT, "floatkey", "1.1"),
 		makeKey (KDB_TYPE_DOUBLE, "doublekey", "1.1"),
-
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 		makeKey (KDB_TYPE_LONG_DOUBLE, "longdoublekey", "1.1"),
-
-#endif
 	});
 
 	createElektra ();
@@ -507,11 +483,7 @@ TEST_F (Highlevel, PrimitiveSetters)
 	elektraSetFloat (elektra, "floatkey", 1.1f, &error);
 	elektraSetDouble (elektra, "doublekey", 1.1, &error);
 
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 	elektraSetLongDouble (elektra, "longdoublekey", 1.1L, &error);
-
-#endif
 
 	// Add new keys.
 	elektraSetString (elektra, "newstringkey", "A string", &error);
@@ -527,11 +499,7 @@ TEST_F (Highlevel, PrimitiveSetters)
 	elektraSetFloat (elektra, "newfloatkey", 1.1f, &error);
 	elektraSetDouble (elektra, "newdoublekey", 1.1, &error);
 
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 	elektraSetLongDouble (elektra, "newlongdoublekey", 1.1L, &error);
-
-#endif
 
 	ASSERT_EQ (error, nullptr) << "A setter failed" << &error << std::endl;
 
@@ -564,13 +532,9 @@ TEST_F (Highlevel, PrimitiveSetters)
 	ss << std::setprecision (17) << 1.1;
 	EXPECT_KEYVALUE (config.lookup (testRoot + "doublekey"), ss.str ()) << "Wrong key value.";
 
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 	ss.str ("");
 	ss << std::setprecision (21) << 1.1L;
 	EXPECT_KEYVALUE (config.lookup (testRoot + "longdoublekey"), ss.str ()) << "Wrong key value.";
-
-#endif
 
 	// Check new keys.
 	EXPECT_KEYVALUE (config.lookup (testRoot + "newstringkey"), "A string") << "Wrong key value.";
@@ -592,13 +556,9 @@ TEST_F (Highlevel, PrimitiveSetters)
 	ss << std::setprecision (17) << 1.1;
 	EXPECT_KEYVALUE (config.lookup (testRoot + "newdoublekey"), ss.str ()) << "Wrong key value.";
 
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 	ss.str ("");
 	ss << std::setprecision (21) << 1.1L;
 	EXPECT_KEYVALUE (config.lookup (testRoot + "newlongdoublekey"), ss.str ()) << "Wrong key value.";
-
-#endif
 }
 
 TEST_F (Highlevel, ArraySetters)
@@ -616,12 +576,7 @@ TEST_F (Highlevel, ArraySetters)
 		makeArray (KDB_TYPE_UNSIGNED_LONG_LONG, "unsignedlonglongarraykey", { "", "" }),
 		makeArray (KDB_TYPE_FLOAT, "floatarraykey", { "", "" }),
 		makeArray (KDB_TYPE_DOUBLE, "doublearraykey", { "", "" }),
-
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 		makeArray (KDB_TYPE_LONG_DOUBLE, "longdoublearraykey", { "", "" }),
-
-#endif
 	});
 
 	createElektra ();
@@ -671,12 +626,8 @@ TEST_F (Highlevel, ArraySetters)
 	elektraSetDoubleArrayElement (elektra, "doublearraykey", 0, 1.1, &error);
 	elektraSetDoubleArrayElement (elektra, "doublearraykey", 1, 2.1, &error);
 
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 	elektraSetLongDoubleArrayElement (elektra, "longdoublearraykey", 0, 1.1L, &error);
 	elektraSetLongDoubleArrayElement (elektra, "longdoublearraykey", 1, 2.1L, &error);
-
-#endif
 
 	// Add new keys.
 
@@ -722,12 +673,8 @@ TEST_F (Highlevel, ArraySetters)
 	elektraSetDoubleArrayElement (elektra, "newdoublearraykey", 0, 1.1, &error);
 	elektraSetDoubleArrayElement (elektra, "newdoublearraykey", 1, 2.1, &error);
 
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 	elektraSetLongDoubleArrayElement (elektra, "newlongdoublearraykey", 0, 1.1L, &error);
 	elektraSetLongDoubleArrayElement (elektra, "newlongdoublearraykey", 1, 2.1L, &error);
-
-#endif
 
 	ASSERT_EQ (error, nullptr) << "A setter failed" << &error << std::endl;
 
@@ -796,8 +743,6 @@ TEST_F (Highlevel, ArraySetters)
 	ss << std::setprecision (17) << 2.1;
 	EXPECT_KEYVALUE (config.lookup (testRoot + "doublearraykey/#1"), ss.str ()) << "Wrong key value.";
 
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 	EXPECT_KEYMETA (config.lookup (testRoot + "longdoublearraykey"), "array", "#1") << "Wrong array size";
 	ss.str ("");
 	ss << std::setprecision (21) << 1.1L;
@@ -806,7 +751,6 @@ TEST_F (Highlevel, ArraySetters)
 	ss << std::setprecision (21) << 2.1L;
 	EXPECT_KEYVALUE (config.lookup (testRoot + "longdoublearraykey/#1"), ss.str ()) << "Wrong key value.";
 
-#endif
 	// Check new keys.
 
 	EXPECT_KEYMETA (config.lookup (testRoot + "newstringarraykey"), "array", "#1") << "Wrong array size";
@@ -857,8 +801,6 @@ TEST_F (Highlevel, ArraySetters)
 	ss << std::setprecision (17) << 2.1;
 	EXPECT_KEYVALUE (config.lookup (testRoot + "newdoublearraykey/#1"), ss.str ()) << "Wrong key value.";
 
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 	EXPECT_KEYMETA (config.lookup (testRoot + "newlongdoublearraykey"), "array", "#1") << "Wrong array size";
 	ss.str ("");
 	ss << std::setprecision (21) << 1.1L;
@@ -866,8 +808,6 @@ TEST_F (Highlevel, ArraySetters)
 	ss.str ("");
 	ss << std::setprecision (21) << 2.1L;
 	EXPECT_KEYVALUE (config.lookup (testRoot + "newlongdoublearraykey/#1"), ss.str ()) << "Wrong key value.";
-
-#endif
 }
 
 TEST_F (Highlevel, DefaultValues)

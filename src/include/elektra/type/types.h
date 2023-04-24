@@ -3,26 +3,19 @@
  *
  * @brief Elektra’s data types for C and C++11.
  *
- * This header file defines portable Types used in Elektra for C and
- * C++11.
+ * This header file defines portable Types used in Elektra for C and C++.
  *
- * They are not used within the API, but only for generated front ends
- * see "kdb gen" how to use these types properly.
- *
- * The CORBA Type System is currently used.
- *
- * See "OMG Language Mapping" if you want to map the types to another
- * programming language.
- *
- * This files defines mappings to C89, C++03 and C++11.
+ * The names used are based on the CORBA Type System,
+ * but they are mapped 1:1 onto the C99 stdint types.
+ * Therefore C99/C++11 is required.
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 // clang-format off
 
-#ifndef KDBTYPES_H
-#define KDBTYPES_H
+#ifndef ELEKTRA_TYPE_TYPES_H
+#define ELEKTRA_TYPE_TYPES_H
 
 #ifdef __cplusplus
 #include <cinttypes>
@@ -84,22 +77,7 @@ typedef uint64_t kdb_unsigned_long_long_t;
 #define ELEKTRA_UNSIGNED_LONG_LONG_S strtoull
 
 #else // for C89
-typedef unsigned char kdb_boolean_t;
-typedef unsigned char kdb_octet_t;
-typedef signed short kdb_short_t;
-typedef unsigned short kdb_unsigned_short_t;
-typedef @INT32_T@ kdb_long_t;
-typedef @UINT32_T@ kdb_unsigned_long_t;
-typedef @INT64_T@ kdb_long_long_t;
-typedef @UINT64_T@ kdb_unsigned_long_long_t;
-
-#define ELEKTRA_LONG_F "%" @PRI_I32@
-#define ELEKTRA_UNSIGNED_LONG_F "%" @PRI_U32@
-#define ELEKTRA_LONG_LONG_F "%" @PRI_I64@
-#define ELEKTRA_LONG_LONG_S @STRTOLL@
-#define ELEKTRA_UNSIGNED_LONG_LONG_F "%" @PRI_U64@
-#define ELEKTRA_UNSIGNED_LONG_LONG_S @STRTOULL@
-
+#error "C++11 or newer or C99 or newer is required"
 #endif // for C++11 or later/C99+/C89
 
 // for C (and C++)
@@ -107,21 +85,8 @@ typedef @UINT64_T@ kdb_unsigned_long_long_t;
 typedef unsigned char kdb_char_t;
 typedef float kdb_float_t;
 typedef double kdb_double_t;
-
-// typedef wchar_t kdb_wchar_t; // wchar_t not supported!
-
-#cmakedefine ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-// the long double data type represents an IEEE double-extended
-// floating-point number, which has an exponent of at least 15 bits in
-// length and a signed fraction of at least 64 bits
 typedef long double kdb_long_double_t;
-#endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
-#define ELEKTRA_TIME_USEC_F @ELEKTRA_TIME_USEC_F@
-
-#define ELEKTRA_STAT_ST_SIZE_F @ELEKTRA_STAT_ST_SIZE_F@
+// typedef wchar_t kdb_wchar_t; // wchar_t not supported!
 
 // check floating point types
 #ifdef __cplusplus
@@ -138,12 +103,17 @@ static_assert (std::numeric_limits<double>::radix == 2 && std::numeric_limits<do
 		       sizeof (double) == 8,
 	       "double has to be IEEE-754 double precision");
 static_assert (std::numeric_limits<long double>::is_iec559, "long double has to be IEEE-754 compliant");
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
+#ifdef ELEKTRA_REQUIRE_LONG_DOUBLE
 static_assert (std::numeric_limits<long double>::radix == 2 && std::numeric_limits<long double>::digits >= 64 &&
 		       std::numeric_limits<long double>::max_exponent >= 1 << 14 &&
 		       std::numeric_limits<long double>::min_exponent <= -(1 << 14) + 3 && sizeof (long double) >= 10,
 	       "long double has to be at least 80 bits (1 bit sign, 15 bits exponent, 64 bits mantissa)");
-#endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
+#else
+static_assert (std::numeric_limits<long double>::radix == 2 && std::numeric_limits<long double>::digits >= 53 &&
+		       std::numeric_limits<long double>::max_exponent >= 1024 && std::numeric_limits<long double>::min_exponent <= -1021 &&
+		       sizeof (long double) >= 8,
+	       "double has to be at least 64 bits (1 bit sign, 11 bits exponent, 52 bits mantissa)");
+#endif
 #else
 #include <float.h>
 
@@ -154,15 +124,17 @@ static_assert (std::numeric_limits<long double>::radix == 2 && std::numeric_limi
 #error "double must be 64 bit floating point type with 1 bit sign, 11 bits exponent and 52 bits mantissa"
 #endif
 
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
+#ifdef ELEKTRA_REQUIRE_LONG_DOUBLE
+// only check size if asked to, otherwise accept if it is same as double
 #if FLT_RADIX != 2 || LDBL_MANT_DIG < 64 || LDBL_MAX_EXP < (1 << 14) || LDBL_MIN_EXP > -(1 << 14) + 3
 #error "long double must be at least 80 bit floating point type with 1 bit sign, at least 15 bits exponent and at least 64 bits mantissa"
 #endif
+#else
+#if FLT_RADIX != 2 || LDBL_MANT_DIG < 53 || LDBL_MAX_EXP < 1024 || LDBL_MIN_EXP > -1021
+#error "double must be at least 64 bit floating point type with 1 bit sign, at least 11 bits exponent and at least 52 bits mantissa"
+#endif
+#endif
 
-#endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 #endif // __cplusplus
 
-#define KDB_OPMPHM_MAX_N @KDB_OPMPHM_MAX_N@
-
-#endif // KDBTYPES_H
+#endif // ELEKTRA_TYPE_TYPES_H
