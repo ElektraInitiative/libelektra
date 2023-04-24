@@ -366,11 +366,11 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ### Use Cases
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Add specification use case for [array-specification](../usecases/specification/array-specification.md) _(Tomislav Makar @tmakar)_
+- Add specification use case for [underline-specification](../usecases/specification/underline-specification.md) _(Tomislav Makar @tmakar)_
+- Add specification use case for [simple-specification](../usecases/specification/simple-specification.md) _(Tomislav Makar @tmakar)_
+- Add specification use case for [enum-specification](../usecases/specification/enum-specification.md) _(Tomislav Makar @tmakar)_
+- Add complete specification for `dockerd` configuration file (`daemon.json`) _(Tomislav Makar @tmakar)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
