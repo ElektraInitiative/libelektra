@@ -270,7 +270,7 @@ getters do not accept an error variable as argument. If there is however a sever
 not specified correctly, then the library will call the error callback set with `elektraFatalErrorHandler` to prevent data inconsistencies
 or exceptions further down in your application.
 
-You can find the complete list of the available functions for all supported value types in [elektra.h](/src/include/elektra.h)
+You can find the complete list of the available functions for all supported value types in [highlevel.h](/src/include/elektra/highlevel.h)
 
 ### Writing Values to the KDB
 
