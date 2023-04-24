@@ -11,13 +11,13 @@
 
 - **Precondition:** None.
 - **Main success scenario:**
-    - The Dev-Ops Engineer wants to write a specification for the `default runtime` in the `dockerd` configuration.
-    - The configuration key is `default/runtime`.
-    - The configuration key uses `type`, `description` and `default` as metakeys.
-    - The keys are all stored for the `spec` namespace.
+  - The Dev-Ops Engineer wants to write a specification for the `default runtime` in the `dockerd` configuration.
+  - The configuration key is `default/runtime`.
+  - The configuration key uses `type`, `description` and `default` as metakeys.
+  - The keys are all stored for the `spec` namespace.
 - **Alternative scenario:** None.
 - **Error scenario:**
-    - Wrong metakeys are used (yielded as error to the user).
+  - Wrong metakeys are used (yielded as error to the user).
 - **Postcondition:** None.
 - **Non-functional Constraints:** None.
 

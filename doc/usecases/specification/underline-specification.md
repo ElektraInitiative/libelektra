@@ -11,19 +11,19 @@
 
 - **Precondition:** None.
 - **Main success scenario:**
-    - The Dev-Ops Engineer wants to write a specification for the `runtimes` in the `dockerd` configuration file.
-    - The underline specification configuration keys are `runtimes/_`, `runtimes/_/path`, `runtimes/_/runtimeArgs/#`.
-    - The specification uses `type`, `description` and `example` as metakeys.
-    - The underline configuration is defined by the wildcard character `_`.
-    - The keys are all stored for the `spec` namespace.
+  - The Dev-Ops Engineer wants to write a specification for the `runtimes` in the `dockerd` configuration file.
+  - The underline specification configuration keys are `runtimes/_`, `runtimes/_/path`, `runtimes/_/runtimeArgs/#`.
+  - The specification uses `type`, `description` and `example` as metakeys.
+  - The underline configuration is defined by the wildcard character `_`.
+  - The keys are all stored for the `spec` namespace.
 - **Alternative scenario:**
-    - Define the storage type with an array specification.
-    - The array specification configuration keys are `runtimes/#`, `runtimes/#/path`, `runtimes/#/runtimeArgs/#`.
-    - The configuration key `runtimes/#` uses `array/min`, `description` and `example` as metakeys.
-    - The configuration key `runtimes/#/path` uses `type`, `description` and `example`.
-    - The configuration key `runtimes/#/runtimeArgs/#` still uses `array/min`, `description` and `example`.
+  - Define the storage type with an array specification.
+  - The array specification configuration keys are `runtimes/#`, `runtimes/#/path`, `runtimes/#/runtimeArgs/#`.
+  - The configuration key `runtimes/#` uses `array/min`, `description` and `example` as metakeys.
+  - The configuration key `runtimes/#/path` uses `type`, `description` and `example`.
+  - The configuration key `runtimes/#/runtimeArgs/#` still uses `array/min`, `description` and `example`.
 - **Error scenario:**
-    - Wrong metakeys are used (yielded as error to the user).
+  - Wrong metakeys are used (yielded as error to the user).
 - **Postcondition:** None.
 - **Non-functional Constraints:** None.
 
