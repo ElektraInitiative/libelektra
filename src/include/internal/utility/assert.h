@@ -10,9 +10,9 @@
 #define ELEKTRA_KDBASSERT_H
 
 #include <elektra/macros/attributes.h>
+#include <elektra/macros/utils.h>
 #include <internal/kdb/config.h>
 #include <internal/macros/attributes.h>
-#include <internal/macros/utils.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
