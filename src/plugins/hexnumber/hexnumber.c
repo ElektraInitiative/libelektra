@@ -9,7 +9,8 @@
 
 #include "./hexnumber.h"
 
-#include <elektra/ease/old_ease.h>
+#include <elektra/ease/array.h>
+#include <elektra/ease/utils.h>
 #include <elektra/kdb/errors.h>
 #include <internal/utility/old_helper.h>
 #include <limits.h>

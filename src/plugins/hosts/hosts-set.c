@@ -14,7 +14,8 @@
 #include <internal/utility/old_helper.h>
 
 #include <elektra/ease/meta.h>
-#include <elektra/ease/old_ease.h>
+#include <elektra/ease/array.h>
+#include <elektra/ease/utils.h>
 static int keyCmpOrderWrapper (const void * a, const void * b)
 {
 	return elektraKeyCmpOrder (*((const Key **) a), *((const Key **) b));

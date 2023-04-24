@@ -11,7 +11,8 @@
 #include "./type.h"
 #include "./types.h"
 
-#include <elektra/ease/old_ease.h>
+#include <elektra/type/conversion.h>
+#include <elektra/ease/array.h>
 #include <elektra/kdb/errors.h>
 
 #include <internal/utility/old_helper.h>

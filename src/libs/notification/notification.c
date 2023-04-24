@@ -8,7 +8,6 @@
  *
  */
 
-#include <elektra/ease/old_ease.h>
 #include <elektra/notifications.h>
 #include <elektra/plugin/invoke.h>
 #include <elektra/plugin/plugin.h>

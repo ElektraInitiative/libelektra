@@ -7,7 +7,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <elektra/ease/old_ease.h>
+#include <elektra/ease/array.h>
 #include <elektra/opts.h>
 #include <internal/utility/old_helper.h>
 

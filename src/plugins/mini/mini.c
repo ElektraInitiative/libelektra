@@ -15,7 +15,7 @@
 #define _WITH_GETLINE
 #include <stdio.h>
 
-#include <elektra/ease/old_ease.h>
+#include <elektra/ease/name.h>
 #include <elektra/kdb/errors.h>
 #include <internal/macros/plugin_errors.h>
 #include <internal/utility/assert.h>

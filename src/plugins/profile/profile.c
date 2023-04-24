@@ -14,7 +14,7 @@
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 #include <elektra/core/namespace.h>
-#include <elektra/ease/old_ease.h> //elektraKeyGetRelativeName
+#include <elektra/ease/name.h>
 #include <stdio.h>
 #include <string.h>
 

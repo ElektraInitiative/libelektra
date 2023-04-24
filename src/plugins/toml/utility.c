@@ -8,7 +8,7 @@
 
 #include "./utility.h"
 
-#include <elektra/ease/old_ease.h>
+#include <elektra/ease/array.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/old_helper.h>
 #include <stdio.h>

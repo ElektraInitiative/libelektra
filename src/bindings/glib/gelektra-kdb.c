@@ -1,5 +1,4 @@
 #include <elektra/ease/meta.h>
-#include <elektra/ease/old_ease.h>
 #include <elektra/glib/gelektra-kdb.h>
 #include <string.h>
 

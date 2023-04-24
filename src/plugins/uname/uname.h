@@ -11,7 +11,6 @@
 
 #include <elektra/core.h>
 #include <elektra/ease/meta.h>
-#include <elektra/ease/old_ease.h>
 #include <elektra/plugin/plugin.h>
 
 int elektraUnameGet (Plugin * handle, KeySet * returned, Key * parentKey);

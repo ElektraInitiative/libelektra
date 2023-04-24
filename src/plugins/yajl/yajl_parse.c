@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <elektra/ease/old_ease.h>
+#include <elektra/ease/array.h>
 #include <elektra/kdb/errors.h>
 #include <internal/macros/attributes.h>
 #include <internal/macros/plugin_errors.h>

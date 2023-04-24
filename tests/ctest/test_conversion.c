@@ -6,8 +6,6 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <elektra/ease/old_ease.h>
-
 #include "tests.h"
 
 #define TEST_TO_STRING(Type, value, expect)                                                                                                \

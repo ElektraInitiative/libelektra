@@ -9,7 +9,7 @@
 #include "./write.hpp"
 #include "./yaml-cpp/yaml.h"
 
-#include <elektra/ease/old_ease.h>
+#include <elektra/ease/array.h>
 #include <internal/utility/logger.h>
 #include <kdb.hpp>
 

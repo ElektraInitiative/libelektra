@@ -9,7 +9,7 @@
 #include "./enums.hpp"
 #include "./common.hpp"
 #include <command.hpp>
-#include <elektra/ease/old_ease.h>
+#include <elektra/ease/array.h>
 #include <internal/utility/old_helper.h>
 
 kainjow::mustache::list EnumProcessor::getValues (const std::string & prefix, const kdb::Key & key, std::string & fromStringSwitch,

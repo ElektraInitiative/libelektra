@@ -21,7 +21,7 @@
 #include <locale>
 #include <map>
 
-#include <elektra/ease/old_ease.h>
+#include <elektra/ease/array.h>
 #include <internal/utility/logger.h>
 #include <key.hpp>
 

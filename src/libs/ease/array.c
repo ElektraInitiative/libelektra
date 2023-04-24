@@ -10,7 +10,8 @@
 
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
-#include <elektra/ease/old_ease.h>
+#include <elektra/ease/array.h>
+#include <elektra/ease/utils.h>
 #include <elektra/type/types.h>
 #include <internal/kdbprivate.h> // for elektraIsArrayPart
 #include <internal/utility/old_helper.h>

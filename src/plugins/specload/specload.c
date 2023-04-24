@@ -12,7 +12,7 @@
 #include <elektra/kdb/errors.h>
 #include <internal/utility/old_helper.h>
 
-#include <elektra/ease/old_ease.h>
+#include <elektra/ease/array.h>
 #include <elektra/plugin/invoke.h>
 #include <internal/pluginload/module.h>
 #include <stdio.h>

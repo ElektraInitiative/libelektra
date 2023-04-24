@@ -7,7 +7,7 @@
  */
 
 #include <ctype.h>
-#include <elektra/ease/old_ease.h>
+#include <elektra/type/conversion.h>
 #include <errno.h>
 #include <internal/utility/old_helper.h>
 #include <stdint.h>
