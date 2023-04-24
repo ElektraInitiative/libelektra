@@ -7,6 +7,7 @@
  */
 
 #include "tests.h"
+#include <elektra/type/conversion.h>
 
 #define TEST_TO_STRING(Type, value, expect)                                                                                                \
 	do                                                                                                                                 \

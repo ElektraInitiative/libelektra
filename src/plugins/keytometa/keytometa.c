@@ -9,9 +9,10 @@
 
 #include "./keytometa.h"
 
+#include <elektra/ease/utils.h>
+
 #include <internal/kdb/config.h>
 #include <internal/utility/old_helper.h>
-
 
 #include <errno.h>
 #include <stdbool.h>

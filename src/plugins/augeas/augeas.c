@@ -11,6 +11,7 @@
 #define _GNU_SOURCE
 #include <stdio.h>
 
+#include <elektra/ease/utils.h>
 #include <elektra/kdb/errors.h>
 #include <internal/kdb/config.h>
 #include <internal/macros/plugin_errors.h>

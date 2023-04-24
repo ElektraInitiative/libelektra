@@ -9,6 +9,17 @@
 #ifndef ELEKTRA_TYPE_CONVERSION_H
 #define ELEKTRA_TYPE_CONVERSION_H
 
+#include <elektra/core/key.h>
+#include <elektra/type/types.h>
+
+#ifdef __cplusplus
+namespace ckdb
+{
+extern "C" {
+using Key = ckdb::Key;
+using KeySet = ckdb::KeySet;
+#endif
+
 int elektraKeyToString (const Key * key, const char ** variable);
 int elektraKeyToBoolean (const Key * key, kdb_boolean_t * variable);
 int elektraKeyToChar (const Key * key, kdb_char_t * variable);
@@ -41,5 +52,11 @@ int elektraKeyToLongDouble (const Key * key, kdb_long_double_t * variable);
 char * elektraLongDoubleToString (kdb_long_double_t value);
 
 #endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
+
+
+#ifdef __cplusplus
+}
+}
+#endif
 
 #endif // ELEKTRA_TYPE_CONVERSION_H

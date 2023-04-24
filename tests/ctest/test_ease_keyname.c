@@ -8,6 +8,8 @@
 
 #include "tests.h"
 
+#include <elektra/ease/name.h>
+
 #define ERROR_STRING_SIZE 1024
 
 #define test_relative(expected, child, parent)                                                                                             \

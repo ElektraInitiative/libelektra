@@ -9,7 +9,6 @@
 
 #include <numeric>
 
-#include <elektra/ease/old_ease.h>
 #include <elektra/kdb/errors.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
@@ -27,9 +26,11 @@ using std::range_error;
 using std::string;
 using std::tie;
 
-using ckdb::elektraArrayValidateBaseNameString;
-
 using KeySetPair = pair<kdb::KeySet, kdb::KeySet>;
+
+#include <elektra/ease/array.h>
+#include <elektra/ease/name.h>
+
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 

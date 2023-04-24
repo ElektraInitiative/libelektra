@@ -13,6 +13,8 @@
 
 #include <internal/kdbprivate.h>
 
+#include <elektra/ease/array.h>
+
 #include <algorithm>
 #include <iterator>
 #include <regex>

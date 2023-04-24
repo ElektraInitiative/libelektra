@@ -17,7 +17,7 @@
 #include <internal/kdbprivate.h>
 #include <internal/pluginload/module.h>
 
-#include <elektra/ease/old_ease.h> // for ckdb::elektraArrayIncName
+#include <elektra/ease/array.h> // for ckdb::elektraArrayIncName
 
 #include <algorithm>
 
