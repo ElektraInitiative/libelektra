@@ -9,7 +9,7 @@
 
 ## Scenarios
 
-- **Precondition:** None.
+- **Precondition:** The Dev-Ops Engineer has a understanding of `docker` and the daemon `dockerd`.
 - **Main success scenario:**
   - The Dev-Ops Engineer wants to write a specification for the `default runtime` in the `dockerd` configuration.
   - The configuration key is `default/runtime`.
@@ -18,7 +18,7 @@
 - **Alternative scenario:** None.
 - **Error scenario:**
   - Wrong metakeys are used (yielded as error to the user).
-- **Postcondition:** None.
+- **Postcondition:** The keys are all stored for the `spec` namespace..
 - **Non-functional Constraints:** None.
 
 ## Example
