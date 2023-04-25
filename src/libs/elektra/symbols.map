@@ -171,6 +171,7 @@ libelektra_1.0 {
 	elektraDiffRemoveKey;
 	elektraDiffCut;
 	elektraDiffAppend;
+	elektraDiffUndo;
 };
 
 libelektraprivate_1.0 {

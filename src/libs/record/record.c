@@ -507,19 +507,7 @@ bool elektraRecordUndo (KDB * handle, KDB * sessionStorageHandle, Key * parentKe
 			goto cleanup;
 		}
 
-		KeySet * keysToRemove = elektraDiffGetAddedKeys (undoDiff);
-		KeySet * keysToModify = elektraDiffGetModifiedKeys (undoDiff);
-		KeySet * keysToAdd = elektraDiffGetRemovedKeys (undoDiff);
-
-		for (elektraCursor i = 0; i < ksGetSize (keysToRemove); i++)
-		{
-			Key * toRemove = ksAtCursor (keysToRemove, i);
-			Key * key = ksLookup (ks, toRemove, KDB_O_POP);
-			keyDel (key);
-		}
-
-		ksAppend (ks, keysToModify);
-		ksAppend (ks, keysToAdd);
+		elektraDiffUndo (undoDiff, ks);
 
 		// Disable session recording for now
 		Key * activeKey = ksLookupByName (handle->global, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, KDB_O_POP);
@@ -546,9 +534,6 @@ bool elektraRecordUndo (KDB * handle, KDB * sessionStorageHandle, Key * parentKe
 			ksAppendKey (handle->global, activeKey);
 		}
 
-		ksDel (keysToRemove);
-		ksDel (keysToModify);
-		ksDel (keysToAdd);
 		ksDel (ks);
 
 		if (!successful)

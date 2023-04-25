@@ -908,6 +908,28 @@ KeySet * elektraDiffGetModifiedMetaKeys (const ElektraDiff * ksd, Key * key)
 }
 
 /**
+ * Undos the changes that are presented in the diff.
+ *  - Added keys get removed from @p ks
+ *  - Removed keys get added back to @p ks,
+ *  - Modified keys will get their old values and meta data in @p ks
+ *
+ * @param ksd the diff
+ * @param ks the keyset that shall be undone
+ */
+void elektraDiffUndo (ElektraDiff * ksd, KeySet * ks)
+{
+	for (elektraCursor i = 0; i < ksGetSize (ksd->addedKeys); i++)
+	{
+		Key * toRemove = ksAtCursor (ksd->addedKeys, i);
+		Key * key = ksLookup (ks, toRemove, KDB_O_POP);
+		keyDel (key);
+	}
+
+	ksAppend (ks, ksd->modifiedKeys);
+	ksAppend (ks, ksd->removedKeys);
+}
+
+/**
  * @brief Increment the reference counter of a ElektraDiff object
  *
  * @note The reference counter can never exceed `UINT16_MAX - 1`. `UINT16_MAX` is

@@ -856,6 +856,40 @@ static void test_elektraDiffDup_shouldDuplicate (void)
 	keyDel (parentKey);
 }
 
+static void test_elektraDiffUndo (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange
+	KeySet * keyset = ksNew (1,
+			     keyNew ("user:/added", KEY_VALUE, "1234", KEY_END),
+			     keyNew ("user:/modified", KEY_VALUE, "modified value", KEY_END),
+			     KS_END);
+
+	Key * parentKey = keyNew ("/", KEY_END);
+
+	ElektraDiff * diff = elektraDiffNew (
+			ksNew (1, keyNew ("user:/added", KEY_VALUE, "1234", KEY_END), KS_END),
+			ksNew (1, keyNew ("user:/removed", KEY_VALUE, "removed key", KEY_END), KS_END),
+			ksNew (1, keyNew ("user:/modified", KEY_VALUE, "old value", KEY_END), KS_END),
+			ksNew (1, keyNew ("user:/modified", KEY_VALUE, "new value", KEY_END), KS_END),
+			parentKey
+		);
+
+	// Act
+	elektraDiffUndo (diff, keyset);
+
+
+	// Assert
+	succeed_if_fmt (ksGetSize (keyset) == 2, "expected 2 keys, got %zu", ksGetSize (keyset));
+	succeed_if_keyset_contains_key_with_string (keyset, "user:/removed", "removed key");
+	succeed_if_keyset_contains_key_with_string (keyset, "user:/modified", "old value");
+
+	ksDel (keyset);
+	keyDel (parentKey);
+	elektraDiffDel (diff);
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("DIFF                 TESTS\n");
@@ -918,6 +952,8 @@ int main (int argc, char ** argv)
 	test_elektraDiffCut_shouldWork ();
 
 	test_elektraDiffDup_shouldDuplicate ();
+
+	test_elektraDiffUndo ();
 
 	elektraDiffDel (demoDiff);
 

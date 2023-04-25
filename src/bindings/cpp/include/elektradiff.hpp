@@ -37,6 +37,8 @@ public:
 	inline static ElektraDiff calculateDiff (const KeySet & newKeys, const KeySet & oldKeys, const std::string & parentKeyName);
 	inline static ElektraDiff calculateDiff (const KeySet & newKeys, const KeySet & oldKeys, const Key & parentKey);
 
+	inline void undo (KeySet & ks);
+
 	// reference handling
 
 	inline void operator++ (int) const;
@@ -166,6 +168,15 @@ inline ElektraDiff ElektraDiff::calculateDiff (const KeySet & newKeys, const Key
 {
 	ckdb::ElektraDiff * diff = ckdb::elektraDiffCalculate (newKeys.getKeySet (), oldKeys.getKeySet (), parentKey.getKey ());
 	return ElektraDiff (diff);
+}
+
+/**
+ * Undo the changes represented in this diff
+ * @param ks the keyset where the changs should be undone
+ */
+inline void ElektraDiff::undo (KeySet & ks)
+{
+	ckdb::elektraDiffUndo (diff, ks.getKeySet());
 }
 
 /**
