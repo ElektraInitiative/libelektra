@@ -34,7 +34,7 @@ int ShowMetaCommand::execute (Cmdline const & cl)
 	if (!k)
 	{
 		cerr << "Key not found" << endl;
-		return 1;
+		return 11;
 	}
 
 	ckdb::KeySet * metaKeys = ckdb::keyMeta (k.getKey ());

@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre3
-.TH "KDB\-SET" "1" "February 2022" ""
+.TH "KDB\-SET" "1" "April 2023" ""
 .SH "NAME"
 \fBkdb\-set\fR \- Set the value of a key
 .SH "SYNOPSIS"
@@ -41,6 +41,18 @@ Give debug information\. Prints additional debug information in case of errors/w
 .TP
 \fB\-f\fR, \fB\-\-force\fR
 Do not perform a cascading lookup if the key provided has a namespace\. For example, this bypasses validation specified in the spec: namespace for the given key\.
+.SH "RETURN VALUES"
+This command will return the following values as an exit status:
+.br
+.TP
+0
+No errors\.
+.TP
+11
+Not a valid keyname\.
+.TP
+12
+Setting a non\-existing key without a namespace is not possible\.
 .SH "KDB"
 .TP
 \fB/sw/elektra/kdb/#0/current/verbose\fR

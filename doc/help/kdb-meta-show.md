@@ -38,6 +38,15 @@ This command will return the following values as an exit status:<br>
 - `-d`, `--debug`:
   Give debug information. Prints additional debug information in case of errors/warnings.
 
+## RETURN VALUES
+
+This command will return the following values as an exit status:<br>
+
+- 0:
+  No errors.
+- 11:
+  Key not found. (Invalid `path`)
+
 ## EXAMPLES
 
 ```sh

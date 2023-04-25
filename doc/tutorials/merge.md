@@ -155,7 +155,7 @@ Now we will examine the result KeySet with the different strategies.
 
 ```sh
 kdb merge -s preserve user:/tests/ours user:/tests/theirs user:/tests/base user:/tests/result
-# RET: 255
+# RET: 11
 # STDERR: 1 conflicts were detected that could not be resolved automatically:⏎user:/tests/result/key4⏎ours: CONFLICT_DELETE, theirs: CONFLICT_MODIFY⏎⏎Merge unsuccessful.
 ```
 

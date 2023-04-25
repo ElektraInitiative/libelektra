@@ -90,7 +90,7 @@ int PluginInfoCommand::execute (Cmdline const & cl)
 		else
 		{
 			cerr << "clause not found" << std::endl;
-			return 1;
+			return 11;
 		}
 	}
 
