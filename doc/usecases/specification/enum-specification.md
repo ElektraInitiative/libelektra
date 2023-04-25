@@ -9,7 +9,7 @@
 
 ## Scenarios
 
-- **Precondition:** None.
+- **Precondition:** The Dev-Ops Engineer has a understanding of `docker` and the daemon `dockerd`.
 - **Main success scenario:**
   - The Dev-Ops Engineer wants to write a specification for the `log level` in the `dockerd` configuration.
   - The configuration key is `log/level`.
@@ -19,7 +19,7 @@
 - **Alternative scenario:** None.
 - **Error scenario:**
   - Wrong metakeys are used (yielded as error to the user).
-- **Postcondition:** None.
+- **Postcondition:** The keys are all stored for the `spec` namespace..
 - **Non-functional Constraints:** None.
 
 ## Example
@@ -34,7 +34,7 @@ meta:/enum/check/#0 = debug
 meta:/enum/check/#1 = info
 meta:/enum/check/#2 = warn
 meta:/enum/check/#3 = error
-meta:/enum/check/#1 = fatal
+meta:/enum/check/#4 = fatal
 meta:/default = info
 ```
 

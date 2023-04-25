@@ -9,7 +9,7 @@
 
 ## Scenarios
 
-- **Precondition:** None.
+- **Precondition:** The Dev-Ops Engineer has a understanding of `docker` and the daemon `dockerd`.
 - **Main success scenario:**
   - The Dev-Ops Engineer wants to write a specification for the `runtimes` in the `dockerd` configuration file.
   - The underline specification configuration keys are `runtimes/_`, `runtimes/_/path`, `runtimes/_/runtimeArgs/#`.
@@ -24,7 +24,7 @@
   - The configuration key `runtimes/#/runtimeArgs/#` still uses `array/min`, `description` and `example`.
 - **Error scenario:**
   - Wrong metakeys are used (yielded as error to the user).
-- **Postcondition:** None.
+- **Postcondition:** The keys are all stored for the `spec` namespace..
 - **Non-functional Constraints:** None.
 
 ## Example

@@ -9,7 +9,7 @@
 
 ## Scenarios
 
-- **Precondition:** None.
+- **Precondition:** The Dev-Ops Engineer has a understanding of `docker` and the daemon `dockerd`.
 - **Main success scenario:**
   - The Dev-Ops Engineer wants to write a specification for the `storage options` in the `dockerd` configuration file.
   - The array specification configuration key is `storage/opts/#`.
@@ -22,7 +22,7 @@
   - The configuration uses `array/min` and `description` as metakeys.
 - **Error scenario:**
   - Wrong metakeys are used (yielded as error to the user).
-- **Postcondition:** None.
+- **Postcondition:** The keys are all stored for the `spec` namespace.
 - **Non-functional Constraints:** None.
 
 ## Example

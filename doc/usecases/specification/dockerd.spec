@@ -8,14 +8,14 @@ meta:/type = string
 meta:/description = The path to the OCI compatible runtime
 meta:/example = /usr/local/bin/my-runc-replacement
 
-[runtimes/_/runtimeArgs/#]
+[runtimes/_/runtimeArgs]
 meta:/array/min = 0
-meta:/description = The runtime arguments for the OCI compatible runtime
+meta:/description = List of runtime arguments for the OCI compatible runtime
 meta:/example = --debug
 
-[allow-nondistributable-artifacts/#]
+[allow-nondistributable-artifacts]
 meta:/array/min = 0
-meta:/description = Allow push of nondistributable artifacts to registry
+meta:/description = Allow push of nondistributable artifacts to registry (list)
 
 [api-cors-header]
 meta:/type = string
@@ -77,9 +77,9 @@ meta:/default = /var/lib/docker
 meta:/type = boolean
 meta:/description = Enable debug mode
 
-[default/address-pools/#]
+[default/address-pools]
 meta:/array/min = 0
-meta:/description = Default address pools for node specific local networks
+meta:/description = Default address pools for node specific local networks (list)
 
 [default/address-pools/#/base]
 meta:/type = string
@@ -211,9 +211,9 @@ meta:/default = false
 meta:/type = string
 meta:/description = Path to the docker-init binary
 
-[insecure-registries/#]
+[insecure-registries]
 meta:/array/min = 0
-meta:/description = Enable insecure registry communication by specifying the insecure-registries.
+meta:/description = Enable insecure registry communication by specifying the insecure-registries. (list)
 
 [ip]
 meta:/description = Default IP when binding container ports
@@ -266,7 +266,7 @@ meta:/enum/check/#0 = debug
 meta:/enum/check/#1 = info
 meta:/enum/check/#2 = warn
 meta:/enum/check/#3 = error
-meta:/enum/check/#1 = fatal
+meta:/enum/check/#4 = fatal
 meta:/default = info
 
 [log/opts/cache/disabled]
@@ -343,14 +343,14 @@ meta:/type = boolean
 meta:/description = Set no-new-privileges by default for new containers
 meta:/default = false
 
-[no-proxy/#]
+[no-proxy]
 meta:/type = string
-meta:/description = Comma-separated list of hosts or IP addresses for which the proxy is skipped
+meta:/description = List of hosts or IP addresses for which the proxy is skipped
 meta:/array/min = 0
 
-[node-generic-resource/#]
+[node-generic-resource]
 meta:/array/min = 0
-meta:/description = Advertise user-defined resource
+meta:/description = List of advertise user-defined resources
 meta:/example = NVIDIA-GPU=UUID1
 
 [oom-score-adjust]
@@ -367,9 +367,9 @@ meta:/type = boolean
 meta:/description = Full timestamps without ANSI coloring
 meta:/default = false
 
-[registry-mirrors/#]
+[registry-mirrors]
 meta:/array/min = 0
-meta:/description = Preferred registry mirror
+meta:/description = List of preferred registry mirror
 
 [rootless]
 meta:/type = boolean
@@ -395,9 +395,9 @@ meta:/default = 15
 meta:/type = string
 meta:/description = Storage driver to use
 
-[storage/opts/#]
+[storage/opts]
 meta:/array/min = 0
-meta:/description = Storage driver options
+meta:/description = List of storage driver options
 
 [swarm-default-advertise-addr]
 meta:/type = string
