@@ -2498,6 +2498,17 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 
 		ElektraDiff * diff = elektraDiffCalculate (backendData->keys, handle->allKeys, backendKey);
 
+		// As backends can be nested, we need to remove all backends from the diff that are mounted below the current backend
+		elektraCursor hierarchyEnd = 0;
+		for (elektraCursor it = ksFindHierarchy (backends, backendKey, &hierarchyEnd); it < hierarchyEnd; ++it)
+		{
+			Key * otherBackend = ksAtCursor (backends, it);
+			if (keyCmp (backendKey, otherBackend) != 0)
+			{
+				elektraDiffRemoveSameOrBelow (diff, otherBackend);
+			}
+		}
+
 		bool readOnly = keyGetMeta (backendKey, "meta:/internal/kdbreadonly") != NULL;
 		bool changed = !elektraDiffIsEmpty (diff) || backendData->getSize != (size_t) ksGetSize (backendData->keys);
 
