@@ -359,25 +359,6 @@ int elektraMergeGetConflicts (Key * informationKey)
 	return getTotalNonOverlaps (informationKey) + getTotalOverlaps (informationKey);
 }
 
-/**
- * @brief Removes one string from the other
- * @param sub this will be removed from string
- * @param string sub is removed from this char *
- * @returns the resulting string
- */
-static char * strremove (char * string, const char * sub)
-{
-	size_t length = strlen (sub);
-	if (length > 0)
-	{
-		char * p = string;
-		while ((p = strstr (p, sub)) != NULL)
-		{
-			memmove (p, p + length, strlen (p + length) + 1);
-		}
-	}
-	return string;
-}
 
 /**
  * Prepends the given @p string to the name of the given @p key.
@@ -392,26 +373,28 @@ static char * strremove (char * string, const char * sub)
  */
 static Key * prependStringToKeyName (const Key * key, const char * string, Key * informationKey)
 {
+	Key * duplicateKey = keyDup (key, KEY_CP_ALL); // keySetName returns -1 if key was inserted to a keyset before
+
 	bool isRoot = strcmp (keyName (key), "/root") == 0;
-	size_t size = strlen (string);
-	if (isRoot)
+	ssize_t retval;
+	if (!isRoot)
 	{
-		size += 1;
+		Key * oldPrefix = keyNew("/", KEY_END);
+		Key * newPrefix = keyNew(string, KEY_END);
+
+		keySetNamespace (oldPrefix, keyGetNamespace (duplicateKey));
+		keySetNamespace (newPrefix, keyGetNamespace (duplicateKey));
+
+		retval = keyReplacePrefix (duplicateKey, oldPrefix, newPrefix);
+		keyDel (oldPrefix);
+		keyDel (newPrefix);
 	}
 	else
 	{
-		size += keyGetNameSize (key);
+		retval = keySetName (duplicateKey, string);
 	}
-	char * newName = elektraMalloc (size);
-	strcpy (newName, string);
-	if (!isRoot)
-	{
-		strcat (newName, keyName (key));
-	}
-	Key * duplicateKey = keyDup (key, KEY_CP_ALL); // keySetName returns -1 if key was inserted to a keyset before
-	ssize_t status = keySetName (duplicateKey, newName);
-	elektraFree (newName);
-	if (status < 0)
+
+	if (retval < 0)
 	{
 		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not set key name.");
 	}
@@ -488,8 +471,20 @@ static Key * removeRootFromKey (const Key * currentKey, const Key * root, Key * 
 	ssize_t retVal;
 	if (keyIsBelow (root, currentKey))
 	{
-		currentKeyNameString = strremove (currentKeyNameString, keyName (root));
-		retVal = keySetName (duplicateKey, currentKeyNameString);
+		Key * newPrefix = keyNew ("/", KEY_END);
+		Key * oldPrefix = keyDup (root, KEY_CP_ALL);
+
+		keySetNamespace (newPrefix, keyGetNamespace (duplicateKey));
+
+		if (keyGetNamespace (root) == KEY_NS_CASCADING)
+		{
+			keySetNamespace (oldPrefix, keyGetNamespace (duplicateKey));
+		}
+
+		retVal = keyReplacePrefix (duplicateKey, oldPrefix, newPrefix);
+
+		keyDel (newPrefix);
+		keyDel (oldPrefix);
 	}
 	else
 	{
