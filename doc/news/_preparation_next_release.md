@@ -276,15 +276,15 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ## Tools
 
-### <<Tool>>
+### elektrad
 
-- <<TODO>>
+- Adding bulk creation request for configuration keys _(Tomislav Makar @tmakar)_
 - <<TODO>>
 - <<TODO>>
 
-### <<Tool>>
+### webd
 
-- <<TODO>>
+- Adding bulk creation request for configuration keys _(Tomislav Makar @tmakar)_
 - <<TODO>>
 - <<TODO>>
 
