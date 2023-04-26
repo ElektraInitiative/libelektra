@@ -48,6 +48,17 @@ const set = (host, path, value) =>
     return { status: res.status };
   });
 
+const setAll = (host, path, configurations) =>
+  fetch(`${host}/kdbAll/${encodePath(path)}`, {
+     method: "PUT",
+     headers: {
+         "Content-Type": "application/json",
+     },
+     body: JSON.stringify(value || ""),
+  }).then((res) => {
+     return { status: res.status }
+  });
+
 const rm = (host, path) =>
   fetch(`${host}/kdb/${encodePath(path)}`, { method: "DELETE" }).then((res) => {
     return { status: res.status };
@@ -97,4 +108,15 @@ const rmmeta = (host, path, key) =>
     return { status: res.status };
   });
 
-export default { version, get, set, rm, mv, cp, setmeta, rmmeta, find };
+export default {
+    version,
+    get,
+    set,
+    setAll,
+    rm,
+    mv,
+    cp,
+    setmeta,
+    rmmeta,
+    find
+};
