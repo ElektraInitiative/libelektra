@@ -125,7 +125,21 @@ export default function initInstanceRoutes(app) {
       .catch((err) => errorResponse(res, err))
   );
 
-  app
+    app
+    .route("/api/instances/:id/kdbAll/*")
+    .put((req, res) =>
+      getInstance(req.params.id)
+        .then((instance) =>
+            remoteKdb.set(instance.host, req.params[0], req.body)
+        )
+        .then((instanceRes) =>
+            setSessionID(req.params.id, req.session, instanceRes)
+        )
+        .then((output) => successResponse(res, output))
+        .catch((err) => errorResponse(res, err))
+    );
+
+    app
     .route("/api/instances/:id/kdb/*")
     .get((req, res) =>
       getInstance(req.params.id)
