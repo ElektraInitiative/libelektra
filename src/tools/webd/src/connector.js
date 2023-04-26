@@ -50,13 +50,13 @@ const set = (host, path, value) =>
 
 const setAll = (host, path, configurations) =>
   fetch(`${host}/kdbAll/${encodePath(path)}`, {
-     method: "PUT",
-     headers: {
-         "Content-Type": "application/json",
-     },
-     body: JSON.stringify(value || ""),
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(value || ""),
   }).then((res) => {
-     return { status: res.status }
+    return { status: res.status };
   });
 
 const rm = (host, path) =>
@@ -109,14 +109,14 @@ const rmmeta = (host, path, key) =>
   });
 
 export default {
-    version,
-    get,
-    set,
-    setAll,
-    rm,
-    mv,
-    cp,
-    setmeta,
-    rmmeta,
-    find
+  version,
+  get,
+  set,
+  setAll,
+  rm,
+  mv,
+  cp,
+  setmeta,
+  rmmeta,
+  find,
 };
