@@ -183,3 +183,28 @@ func getKey(t *testing.T, keyName string) elektra.Key {
 
 	return ks.Lookup(parentKey)
 }
+
+func assertContains(t *testing.T, configSet keyConfigurationSet) {
+	kdb := elektra.New()
+	err := kdb.Open()
+	Checkf(t, err, "could not open kdb: %v", err)
+
+	ks := elektra.NewKeySet()
+
+	found := false
+	keyNameNotFound := ""
+	for _, configuration := range configSet.Configurations {
+		for _, existingConfigurationKeyName := range ks.KeyNames() {
+			if existingConfigurationKeyName == configuration.Key {
+				found = true
+			}
+		}
+
+		if !found {
+			keyNameNotFound = configuration.Key
+			return
+		}
+	}
+
+	Assertf(t, found, "key with name %s was not found", keyNameNotFound)
+}
