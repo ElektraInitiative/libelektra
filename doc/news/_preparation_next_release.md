@@ -294,12 +294,14 @@ This section keeps you up-to-date with the multi-language support provided by El
 ### elektrad
 
 - Implemented new request to add multiple metakeys for one key _(Tomislav Makar @tmakar)_
+- Adding bulk creation request for configuration keys _(Tomislav Makar @tmakar)_
 - <<TODO>>
 - <<TODO>>
 
 ### webd
 
 - Implemented new request to add multiple metakeys for one key _(Tomislav Makar @tmakar)_
+- Adding bulk creation request for configuration keys _(Tomislav Makar @tmakar)_
 - <<TODO>>
 - <<TODO>>
 
