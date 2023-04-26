@@ -8,18 +8,24 @@ import (
 	elektra "go.libelektra.org/kdb"
 )
 
+type keyConfigurationSet struct {
+	Configurations []keyValueBody
+}
+
 // getKdbHandler loads returns various information about a key.
 // about the Key.
 //
 // Arguments:
-//		keyName		the name of the key to lookup, URL path param.
-// 		preload 	determines how many levels of Children are
-// 					loaded. Optional query parameter (int).
-//					Value must be 0-9. Default is 0.
+//
+//	keyName		the name of the key to lookup, URL path param.
+//	preload 	determines how many levels of Children are
+//				loaded. Optional query parameter (int).
+//				Value must be 0-9. Default is 0.
 //
 // Response Code:
-//		200 OK if the request is successfull
-// 		400 Bad Request if the key name or preload is invalid.
+//
+//	200 OK if the request is successfull
+//	400 Bad Request if the key name or preload is invalid.
 //
 // Returns: JSON marshaled `lookupResult` struct.
 //
@@ -78,13 +84,16 @@ func (s *server) getKdbHandler(w http.ResponseWriter, r *http.Request) {
 // putKdbHandler creates a new Key.
 //
 // Arguments:
-//		keyName		the name of the (new) Key. URL path param.
-//		value		the (optional) value of the Key. JSON string POST body.
+//
+//	keyName		the name of the (new) Key. URL path param.
+//	value		the (optional) value of the Key. JSON string POST body.
 //
 // Response Code:
-//		200 OK if the value was set on an existing key.
-//		201 Created if a new key was created.
-// 		400 Bad Request if the key name is invalid or the body is not a JSON
+//
+//	200 OK if the value was set on an existing key.
+//	201 Created if a new key was created.
+//	400 Bad Request if the key name is invalid or the body is not a JSON
+//
 // string.
 //
 // Example: `curl -X PUT -d '"world"' localhost:33333/kdb/user/test/hello`
@@ -157,15 +166,93 @@ func (s *server) putKdbHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// putAllKdbHandler creating new keys or updating the values of existing keys
+//
+// Arguments:
+//
+//	parentKey The key in the path.
+//	configurations a list of key-value pairs.
+//
+// Response Code:
+//
+//	201 Created if a new key was created.
+//	400 Bad Request if the key name is invalid or the body is not a JSON
+//
+// All keys will be created below the parent key.
+//
+// Example: `curl -X PUT -d '"world"' localhost:33333/kdb/user:/tests`
+func (s *server) putAllKdbHandler(w http.ResponseWriter, r *http.Request) {
+	var configurations keyConfigurationSet
+
+	parentKey := parseKeyNameFromURL(r)
+
+	if err := parseFor(r, &configurations); err != nil {
+		writeError(w, err)
+		return
+	}
+
+	errKey, err := elektra.NewKey(parentKey)
+
+	if err != nil {
+		internalServerError(w)
+		return
+	}
+
+	defer errKey.Close()
+
+	handle, ks := getHandle(r)
+
+	_, err = handle.Get(ks, errKey)
+
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	if err := createOrResetValue(parentKey, configurations, ks); err != nil {
+		writeError(w, err)
+		return
+	}
+
+	created(w)
+}
+
+func createOrResetValue(parentKeyName string, configSet keyConfigurationSet, ks elektra.KeySet) error {
+	for _, configuration := range configSet.Configurations {
+
+		newKey, err := elektra.NewKey(parentKeyName + "/" + configuration.Key)
+		if err != nil {
+			return err
+		}
+
+		if err := newKey.SetString(*configuration.Value); err != nil {
+			return err
+		}
+
+		existingKey := ks.Lookup(newKey)
+		if existingKey != nil {
+			if err := existingKey.SetString(newKey.String()); err != nil {
+				return err
+			}
+		} else {
+			ks.AppendKey(newKey)
+		}
+	}
+
+	return nil
+}
+
 // deleteKdbHandler deletes a Key.
 //
 // Arguments:
-// 		keyName		the name of the key to be deleted. URL path param.
+//
+//	keyName		the name of the key to be deleted. URL path param.
 //
 // Response Code:
-//		204 No Content if the key was deleted.
-// 		400 Bad Request if the key name is invalid.
-//      404 Not Found if they key to delete was not found.
+//
+//			204 No Content if the key was deleted.
+//			400 Bad Request if the key name is invalid.
+//	     404 Not Found if they key to delete was not found.
 //
 // Example: `curl -X DELETE localhost:33333/kdb/user/test/hello`
 func (s *server) deleteKdbHandler(w http.ResponseWriter, r *http.Request) {

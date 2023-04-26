@@ -44,6 +44,43 @@ func TestPutKdb(t *testing.T) {
 	Assertf(t, retrievedValue == value, "wrong key value %s, expected %s", retrievedValue, value)
 }
 
+func TestPutAllKdb(t *testing.T) {
+	parentKeyName := "user:/tests/elektrad/kdb/all/put"
+
+	value1 := "value1"
+	value2 := "value2"
+	value3 := "value3"
+	value4 := "value4"
+
+	configurations := keyConfigurationSet{
+		[]keyValueBody{
+			{
+				Key:   "key1",
+				Value: &value1,
+			},
+			{
+				Key:   "key2",
+				Value: &value2,
+			},
+			{
+				Key:   "key3",
+				Value: &value3,
+			},
+			{
+				Key:   "key4",
+				Value: &value4,
+			},
+		},
+	}
+
+	w := testPut(t, "/kdb/"+parentKeyName, configurations)
+
+	code := w.Result().StatusCode
+	Assertf(t, code == http.StatusCreated, "wrong status code: %v", code)
+
+	assertContains(t, configurations)
+}
+
 func TestDeleteKdb(t *testing.T) {
 	keyName := "user:/tests/elektrad/kdb/delete"
 
