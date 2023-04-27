@@ -360,12 +360,8 @@ bool elektraRecordRecord (KDB * handle, KDB * sessionStorageHandle, KeySet * new
 		return true;
 	}
 
-	KeySet * blacklistedKeys = ksNew (4,
-					  recordConfigurationKey,
-					  keyDup (sessionRecordingKey, KEY_CP_ALL),
-					  keyNew ("system:/elektra/modules", KEY_END),
-					  keyNew ("system:/elektra/version", KEY_END),
-					  KS_END);
+	KeySet * blacklistedKeys = ksNew (4, recordConfigurationKey, keyDup (sessionRecordingKey, KEY_CP_ALL),
+					  keyNew ("system:/elektra/modules", KEY_END), keyNew ("system:/elektra/version", KEY_END), KS_END);
 
 	// Remove all keys that belong to the recording tool or are blacklisted
 	KeySet * toRecord = ksDup (newKeys);
@@ -408,7 +404,7 @@ bool elektraRecordRecord (KDB * handle, KDB * sessionStorageHandle, KeySet * new
 	ElektraDiff * partDiff = elektraChangeTrackingCalculateDiff (toRecord, changeTrackingContext, parentKeyForDiff);
 	for (elektraCursor it = 0; it < ksGetSize (blacklistedKeys); it++)
 	{
-		elektraDiffRemoveSameOrBelow(partDiff, ksAtCursor (blacklistedKeys, it));
+		elektraDiffRemoveSameOrBelow (partDiff, ksAtCursor (blacklistedKeys, it));
 	}
 
 	bool successful = true;

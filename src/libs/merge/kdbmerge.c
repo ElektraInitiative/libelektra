@@ -379,8 +379,8 @@ static Key * prependStringToKeyName (const Key * key, const char * string, Key *
 	ssize_t retval;
 	if (!isRoot)
 	{
-		Key * oldPrefix = keyNew("/", KEY_END);
-		Key * newPrefix = keyNew(string, KEY_END);
+		Key * oldPrefix = keyNew ("/", KEY_END);
+		Key * newPrefix = keyNew (string, KEY_END);
 
 		keySetNamespace (oldPrefix, keyGetNamespace (duplicateKey));
 		keySetNamespace (newPrefix, keyGetNamespace (duplicateKey));

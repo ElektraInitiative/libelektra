@@ -861,20 +861,15 @@ static void test_elektraDiffUndo (void)
 	printf ("Test %s\n", __func__);
 
 	// Arrange
-	KeySet * keyset = ksNew (1,
-			     keyNew ("user:/added", KEY_VALUE, "1234", KEY_END),
-			     keyNew ("user:/modified", KEY_VALUE, "modified value", KEY_END),
-			     KS_END);
+	KeySet * keyset = ksNew (1, keyNew ("user:/added", KEY_VALUE, "1234", KEY_END),
+				 keyNew ("user:/modified", KEY_VALUE, "modified value", KEY_END), KS_END);
 
 	Key * parentKey = keyNew ("/", KEY_END);
 
-	ElektraDiff * diff = elektraDiffNew (
-			ksNew (1, keyNew ("user:/added", KEY_VALUE, "1234", KEY_END), KS_END),
-			ksNew (1, keyNew ("user:/removed", KEY_VALUE, "removed key", KEY_END), KS_END),
-			ksNew (1, keyNew ("user:/modified", KEY_VALUE, "old value", KEY_END), KS_END),
-			ksNew (1, keyNew ("user:/modified", KEY_VALUE, "new value", KEY_END), KS_END),
-			parentKey
-		);
+	ElektraDiff * diff = elektraDiffNew (ksNew (1, keyNew ("user:/added", KEY_VALUE, "1234", KEY_END), KS_END),
+					     ksNew (1, keyNew ("user:/removed", KEY_VALUE, "removed key", KEY_END), KS_END),
+					     ksNew (1, keyNew ("user:/modified", KEY_VALUE, "old value", KEY_END), KS_END),
+					     ksNew (1, keyNew ("user:/modified", KEY_VALUE, "new value", KEY_END), KS_END), parentKey);
 
 	// Act
 	elektraDiffUndo (diff, keyset);

@@ -176,7 +176,7 @@ inline ElektraDiff ElektraDiff::calculateDiff (const KeySet & newKeys, const Key
  */
 inline void ElektraDiff::undo (KeySet & ks)
 {
-	ckdb::elektraDiffUndo (diff, ks.getKeySet());
+	ckdb::elektraDiffUndo (diff, ks.getKeySet ());
 }
 
 /**
