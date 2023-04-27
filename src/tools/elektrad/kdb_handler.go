@@ -209,7 +209,7 @@ func (s *server) putAllKdbHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := createOrResetValue(parentKey, configurations, ks); err != nil {
+	if err := createOrUpdateValues(parentKey, configurations, ks); err != nil {
 		writeError(w, err)
 		return
 	}
@@ -217,7 +217,7 @@ func (s *server) putAllKdbHandler(w http.ResponseWriter, r *http.Request) {
 	created(w)
 }
 
-func createOrResetValue(parentKeyName string, configSet keyConfigurationSet, ks elektra.KeySet) error {
+func createOrUpdateValues(parentKeyName string, configSet keyConfigurationSet, ks elektra.KeySet) error {
 	for _, configuration := range configSet.Configurations {
 
 		newKey, err := elektra.NewKey(parentKeyName + "/" + configuration.Key)
