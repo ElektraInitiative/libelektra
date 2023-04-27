@@ -360,17 +360,26 @@ bool elektraRecordRecord (KDB * handle, KDB * sessionStorageHandle, KeySet * new
 		return true;
 	}
 
-	// Remove all keys that belong to the recording tool
+	KeySet * blacklistedKeys = ksNew (4,
+					  recordConfigurationKey,
+					  keyDup (sessionRecordingKey, KEY_CP_ALL),
+					  keyNew ("system:/elektra/modules", KEY_END),
+					  keyNew ("system:/elektra/version", KEY_END),
+					  KS_END);
+
+	// Remove all keys that belong to the recording tool or are blacklisted
 	KeySet * toRecord = ksDup (newKeys);
-	ksDel (ksCut (toRecord, sessionRecordingKey));
-	ksDel (ksCut (toRecord, recordConfigurationKey));
+	for (elektraCursor it = 0; it < ksGetSize (blacklistedKeys); it++)
+	{
+		ksDel (ksCut (toRecord, ksAtCursor (blacklistedKeys, it)));
+	}
 
 	if (ksGetSize (toRecord) == 0 && ksGetSize (newKeys) != 0)
 	{
 		// after clearing out all keys that belong to the recording tool there are no more keys
 		// do nothing, but still successful
 		keyDel (sessionRecordingKey);
-		keyDel (recordConfigurationKey);
+		ksDel (blacklistedKeys);
 		ksDel (toRecord);
 		return true;
 	}
@@ -380,7 +389,7 @@ bool elektraRecordRecord (KDB * handle, KDB * sessionStorageHandle, KeySet * new
 	{
 		ELEKTRA_SET_INTERNAL_ERROR (errorKey, "Could not get changetracking context from KDB");
 		keyDel (sessionRecordingKey);
-		keyDel (recordConfigurationKey);
+		ksDel (blacklistedKeys);
 		ksDel (toRecord);
 		return false;
 	}
@@ -397,8 +406,10 @@ bool elektraRecordRecord (KDB * handle, KDB * sessionStorageHandle, KeySet * new
 	}
 
 	ElektraDiff * partDiff = elektraChangeTrackingCalculateDiff (toRecord, changeTrackingContext, parentKeyForDiff);
-	elektraDiffRemoveSameOrBelow (partDiff, sessionRecordingKey);
-	elektraDiffRemoveSameOrBelow (partDiff, recordConfigurationKey);
+	for (elektraCursor it = 0; it < ksGetSize (blacklistedKeys); it++)
+	{
+		elektraDiffRemoveSameOrBelow(partDiff, ksAtCursor (blacklistedKeys, it));
+	}
 
 	bool successful = true;
 	if (!elektraDiffIsEmpty (partDiff))
@@ -439,8 +450,8 @@ bool elektraRecordRecord (KDB * handle, KDB * sessionStorageHandle, KeySet * new
 
 cleanup:
 	keyDel (sessionRecordingKey);
-	keyDel (recordConfigurationKey);
 	keyDel (sessionRecordingParentKey);
+	ksDel (blacklistedKeys);
 	ksDel (toRecord);
 	elektraDiffDel (partDiff);
 
