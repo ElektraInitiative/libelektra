@@ -102,6 +102,9 @@ else ()
 	# merge module
 	add_python_binding (merge merge.i elektra-merge)
 
+	# record module
+	add_python_binding (record record.i elektra-record)
+
 	# errors module
 	add_python_binding (errors errors.i elektra-kdb)
 
