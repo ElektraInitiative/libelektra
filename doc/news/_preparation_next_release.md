@@ -264,6 +264,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - Add commands for session recording. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
+- The `kdb mount` command will now automatically detect whether the given path is an absolute path. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 
 ### <<Tool>>
