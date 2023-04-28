@@ -9,7 +9,7 @@ import (
 )
 
 type keyConfigurationSet struct {
-	Configurations []keyValueBody
+	Configurations []keyValueBody `json:"configurations"`
 }
 
 // getKdbHandler loads returns various information about a key.
@@ -180,7 +180,7 @@ func (s *server) putKdbHandler(w http.ResponseWriter, r *http.Request) {
 //
 // All keys will be created below the parent key.
 //
-// Example: `curl -X PUT -d '"world"' localhost:33333/kdb/user:/tests`
+// Example: `curl -X PUT -d '"world"' localhost:33333/kdbAll/user:/tests`
 func (s *server) putAllKdbHandler(w http.ResponseWriter, r *http.Request) {
 	var configurations keyConfigurationSet
 
