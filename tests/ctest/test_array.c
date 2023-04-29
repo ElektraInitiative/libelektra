@@ -208,7 +208,7 @@ static void test_elektraArrayGetPrefix (void)
 	result = elektraArrayGetPrefix (NULL);
 	succeed_if (result == NULL, "should return NULL if key is NULL");
 
-	Key * k = keyNew("/", KEY_END);
+	Key * k = keyNew ("/", KEY_END);
 
 	result = elektraArrayGetPrefix (k);
 	succeed_if (result == NULL, "should return NULL if key is not valid array syntax");

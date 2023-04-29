@@ -98,8 +98,8 @@ int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex)
 /**
  * Get the base name of the passed array.
  *
-* e.g. user:/abc/\#9 will return
-*      user:/abc
+ * e.g. user:/abc/\#9 will return
+ *      user:/abc
  * @param key
  * @return
  */
@@ -137,7 +137,7 @@ char * elektraArrayGetPrefix (Key * key)
 		ptr++;
 	}
 
-	if (offset == strlen(wholeName))
+	if (offset == strlen (wholeName))
 	{
 		return NULL;
 	}
