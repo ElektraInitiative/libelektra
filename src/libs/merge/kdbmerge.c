@@ -971,7 +971,7 @@ static char * getValuesAsArray (KeySet * ks, const Key * arrayStart, Key * infor
  * @param informationKey for errors
  * @returns the KeySet
  */
-static KeySet * ksFromArray (const char * array, int length, Key * informationKey)
+static KeySet * ksFromArray (const char * array, int length, const char * prefix, Key * informationKey)
 {
 	if (array == NULL)
 	{
@@ -984,7 +984,15 @@ static KeySet * ksFromArray (const char * array, int length, Key * informationKe
 		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (informationKey);
 		return NULL;
 	}
-	Key * iterator = keyNew ("/#0", KEY_END);
+
+	if (prefix == NULL)
+	{
+		prefix = "/";
+	}
+
+	Key * iterator = keyNew (prefix, KEY_END);
+	keyAddBaseName (iterator, "#0");
+
 	if (iterator == NULL)
 	{
 		ksDel (result);
@@ -1107,7 +1115,19 @@ static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, K
 			{
 				if (out.automergeable)
 				{
-					toAppend = ksFromArray (out.ptr, out.len, informationKey);
+					char * prefix = elektraArrayGetPrefix (keyInOur);
+					if (prefix == NULL)
+					{
+						prefix = elektraArrayGetPrefix (keyInTheir);
+					}
+
+					toAppend = ksFromArray (out.ptr, out.len, prefix, informationKey);
+
+					if (prefix != NULL)
+					{
+						free (prefix);
+					}
+
 					ELEKTRA_LOG ("libgit successfully handled an array");
 				}
 				else

@@ -546,6 +546,43 @@ static void test_changed_same_key_their_cascading_root (void)
 	ksDel (trashcan);
 }
 
+static void test_array (void)
+{
+	printf ("test merge with array\n");
+
+	// Arrange
+	KeySet * base = ksNew(1, keyNew("system:/elektra/mountpoints/user:\\/test\\/ansible\\/record/definition/positions/set/precommit/#0", KEY_VALUE, "test", KEY_END), KS_END);
+	KeySet * theirs = ksNew(1, keyNew("system:/elektra/mountpoints/user:\\/test\\/ansible\\/record/definition/positions/set/precommit/#0", KEY_VALUE, "test", KEY_END), KS_END);
+	KeySet * ours = ksNew(2,
+			       keyNew("system:/elektra/mountpoints/user:\\/test\\/ansible\\/record/definition/positions/set/precommit/#0", KEY_VALUE, "test", KEY_END),
+			       keyNew("user:/test", KEY_VALUE, "test", KEY_END),
+			       KS_END);
+
+	Key * baseParent = keyNew("/", KEY_END);
+	Key * theirsParent = keyNew("/", KEY_END);
+	Key * oursParent = keyNew("/", KEY_END);
+	Key * resultParent = keyNew("/", KEY_END);
+	Key * informationKey = keyNew("/", KEY_END);
+
+	// Act
+	KeySet * result = elektraMerge (ours, oursParent, theirs, theirsParent, base, baseParent, resultParent, MERGE_STRATEGY_OUR, informationKey);
+
+	// Assert
+	succeed_if_fmt (ksGetSize (result) == 2, "result is supposed to have 2 keys, but was %zu", ksGetSize (result));
+	succeed_if_keyset_contains_key_with_string (result, "system:/elektra/mountpoints/user:\\/test\\/ansible\\/record/definition/positions/set/precommit/#0", "test");
+	succeed_if_keyset_contains_key_with_string (result, "user:/test", "test");
+
+	ksDel (result);
+	ksDel (base);
+	ksDel (theirs);
+	ksDel (ours);
+	keyDel (baseParent);
+	keyDel (theirsParent);
+	keyDel (oursParent);
+	keyDel (resultParent);
+	keyDel (informationKey);
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("MERGE       TESTS\n");
@@ -561,6 +598,7 @@ int main (int argc, char ** argv)
 	test_changed_same_key_our ();
 	test_changed_same_key_our_cascading_root ();
 	test_changed_same_key_their_cascading_root ();
+	test_array ();
 
 	printf ("\ntest_merge RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
