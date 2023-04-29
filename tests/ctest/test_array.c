@@ -141,7 +141,7 @@ static void test_startArray (void)
 
 static void test_getArray (void)
 {
-	printf ("Test get array");
+	printf ("Test get array\n");
 
 	KeySet * keys =
 		ksNew (10, keyNew ("user:/test/key1", KEY_END), keyNew ("user:/test/key2", KEY_END), keyNew ("user:/test/array", KEY_END),
@@ -164,7 +164,7 @@ static void test_getArray (void)
 
 static void test_getArrayNext (void)
 {
-	printf ("Test get array next");
+	printf ("Test get array next\n");
 
 	KeySet * array = ksNew (10, keyNew ("user:/test/array/#0", KEY_END), keyNew ("user:/test/array/#1", KEY_END),
 
@@ -186,7 +186,7 @@ static void test_getArrayNext (void)
 
 static void test_baseName (void)
 {
-	printf ("Test validate base name");
+	printf ("Test validate base name\n");
 
 	succeed_if (elektraArrayValidateBaseNameString ("#") == 0, "Start not detected correctly");
 	succeed_if (elektraArrayValidateBaseNameString ("#0") == 1, "#0 should be valid");
@@ -197,6 +197,43 @@ static void test_baseName (void)
 	succeed_if (elektraArrayValidateBaseNameString ("#___________________123456789012345678901") == -1,
 		    "#__________12345678901 should not be valid");
 	succeed_if (elektraArrayValidateBaseNameString ("monkey") == -1, "monkey should not be valid");
+}
+
+static void test_elektraArrayGetPrefix (void)
+{
+	printf ("Test elektraArrayGetName\n");
+
+	char * result = NULL;
+
+	result = elektraArrayGetPrefix (NULL);
+	succeed_if (result == NULL, "should return NULL if key is NULL");
+
+	Key * k = keyNew("/", KEY_END);
+
+	result = elektraArrayGetPrefix (k);
+	succeed_if (result == NULL, "should return NULL if key is not valid array syntax");
+
+	keySetName (k, "/#0");
+	result = elektraArrayGetPrefix (k);
+	succeed_if_same_string (result, "/");
+	free (result);
+
+	keySetName (k, "system:/#0");
+	result = elektraArrayGetPrefix (k);
+	succeed_if_same_string (result, "system:/");
+	free (result);
+
+	keySetName (k, "system:/abc/#0");
+	result = elektraArrayGetPrefix (k);
+	succeed_if_same_string (result, "system:/abc");
+	free (result);
+
+	keySetName (k, "system:/abc/def/#0");
+	result = elektraArrayGetPrefix (k);
+	succeed_if_same_string (result, "system:/abc/def");
+	free (result);
+
+	keyDel (k);
 }
 
 int main (int argc, char ** argv)
@@ -213,6 +250,7 @@ int main (int argc, char ** argv)
 	test_getArray ();
 	test_getArrayNext ();
 	test_baseName ();
+	test_elektraArrayGetPrefix ();
 
 	printf ("\ntest_array RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

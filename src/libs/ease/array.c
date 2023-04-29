@@ -95,6 +95,63 @@ int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex)
 	return 0;
 }
 
+/**
+ * Get the base name of the passed array.
+ *
+* e.g. user:/abc/\#9 will return
+*      user:/abc
+ * @param key
+ * @return
+ */
+char * elektraArrayGetPrefix (Key * key)
+{
+	if (key == NULL)
+	{
+		return NULL;
+	}
+
+	const char * wholeName = keyName (key);
+	const char * ptr = wholeName;
+
+	size_t offset = 0;
+	size_t slash_count = 0;
+	bool last_is_slash = false;
+	while (*ptr != '\0')
+	{
+		if (*ptr == '#')
+		{
+			break;
+		}
+
+		if (*ptr == '/')
+		{
+			slash_count++;
+			last_is_slash = true;
+		}
+		else
+		{
+			last_is_slash = false;
+		}
+
+		offset++;
+		ptr++;
+	}
+
+	if (offset == strlen(wholeName))
+	{
+		return NULL;
+	}
+
+	char * name = elektraCalloc (sizeof (char) * (offset + 1));
+	strncpy (name, wholeName, offset);
+
+	if (last_is_slash && slash_count > 1)
+	{
+		name[offset - 1] = '\0';
+	}
+
+	return name;
+}
 
 /**
  * @brief Increment the name of the key by one

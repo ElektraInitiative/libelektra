@@ -154,9 +154,9 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 
-### <<Library>>
+### ease
 
-- <<TODO>>
+- Add `elektraArrayGetPrefix` function. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 

@@ -45,6 +45,8 @@ libelektra_0.9 {
 	elektraKsToMemArray;
 
 	calculateSpecificationToken;
+
+	elektraArrayGetPrefix;
 };
 
 libelektraprivate_1.0 {
