@@ -47,8 +47,8 @@ ckdb::_Key * ksAt (ckdb::_KeySet * ks, ssize_t pos) {
       return self.what()
   %}
 }
-%include "keyexcept.hpp"
-%include "kdbexcept.hpp"
+%include <keyexcept.hpp>
+%include <kdbexcept.hpp>
 
 
 /*

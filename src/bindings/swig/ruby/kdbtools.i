@@ -61,18 +61,18 @@ namespace std {
 
 
 %{
-  #include "./pluginspec.hpp"
-  #include "./plugin.hpp"
-  #include "./plugins.hpp"
-  #include "./plugindatabase.hpp"
-  #include "./modules.hpp"
-  #include "./backendparser.hpp"
-  #include "./backend.hpp"
-  #include "./backends.hpp"
-  #include "./backendbuilder.hpp"
-  #include "./specreader.hpp"
+  #include <pluginspec.hpp>
+  #include <plugin.hpp>
+  #include <plugins.hpp>
+  #include <plugindatabase.hpp>
+  #include <modules.hpp>
+  #include <backendparser.hpp>
+  #include <backend.hpp>
+  #include <backends.hpp>
+  #include <backendbuilder.hpp>
+  #include <specreader.hpp>
 
-  #include "./toolexcept.hpp"
+  #include <toolexcept.hpp>
 
   using namespace kdb::tools;
 %}
