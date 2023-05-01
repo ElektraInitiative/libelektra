@@ -339,7 +339,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Added Hannes Laimer to `AUTHORS.md` _(Hannes Laimer @hannes99)_
 - Add README to tools/kdb _(Hannes Laimer @hannes99)_
 - <<TODO>>
-- Fixed shel-recorder test in [`install-webui.md`](../tutorials/install-webui.md) _(Tomislav Makar @tmakar)_
+- Fixed shell-recorder test in [`install-webui.md`](../tutorials/install-webui.md) _(Tomislav Makar @tmakar)_
 - Add new shell-recorder test in [`install-webui.md`](../tutorials/install-webui.md) for newly implemented request for adding multiple metakeys for one key _(Tomislav Makar @tmakar)_
 - <<TODO>>
 - <<TODO>>
