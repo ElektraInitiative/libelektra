@@ -30,6 +30,7 @@ func setupRouter(app *server) http.Handler {
 	// r.HandleFunc("/kdbCp/{path:.*", app.postCopyHandler).Methods("POST")
 
 	r.HandleFunc("/kdbMeta/{path:.*}", app.postMetaHandler).Methods("POST")
+	r.HandleFunc("/kdbMetaBulk/{path:.*}", app.postMetaBulkHandler).Methods("POST")
 	r.HandleFunc("/kdbMeta/{path:.*}", app.deleteMetaHandler).Methods("DELETE")
 
 	return r

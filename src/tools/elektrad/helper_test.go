@@ -183,3 +183,22 @@ func getKey(t *testing.T, keyName string) elektra.Key {
 
 	return ks.Lookup(parentKey)
 }
+
+func containsMeta(t *testing.T, keyName string, expectedMeta []keyValueBody) {
+	key := getKey(t, keyName)
+	removeKey(t, keyName)
+
+	for _, actualMeta := range key.MetaSlice() {
+		metaName := actualMeta.Name()
+		metaValue := actualMeta.String()
+
+		found := false
+		for _, expectedMeta := range expectedMeta {
+			if expectedMeta.Key == metaName && *expectedMeta.Value == metaValue {
+				found = true
+			}
+		}
+
+		Assertf(t, found, "Expected meta name %s with value %s not found", metaName, metaValue)
+	}
+}

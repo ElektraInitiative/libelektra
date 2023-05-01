@@ -132,7 +132,7 @@ First create a new key-value pair `user:/test` and set its value to 5. This can 
   ```
 - through the rest API using curl
   ```sh
-  curl -X PUT -H "Content-Type: text/plain" --data "5" http://localhost:33333/kdb/user/test
+  curl -X PUT -H "Content-Type: text/plain" --data "5" http://localhost:33333/kdb/user:/test
   ```
 
 The output of the commandline tool will be `Set string to "5"` if the key did not exist before.
@@ -142,8 +142,8 @@ Elektrad will respond with code `200`.
 The command
 
 ```sh
-curl http://localhost:33333/kdb/user/test
-#> {"exists":true,"name":"test","path":"user/test","ls":["user/test"],"value":"5","meta":""}
+curl http://localhost:33333/kdb/user:/test
+#> {"exists":true,"name":"test","path":"user:/test","ls":["user:/test"],"value":"5","meta":""}
 ```
 
 will now return the value of the specified key `user:/test`, which is stored in the database.
@@ -160,6 +160,44 @@ will now return the value of the specified key `user:/test`, which is stored in 
     ],
     "value": "5",
     "meta": ""
+}
+```
+
+<!-- prettier-ignore-end -->
+
+The command
+
+```sh
+curl -X POST -H "Content-Type: application/json" -d '{"meta": [{"key": "metakey1", "value": "value1"},{"key": "metakey2", "value": "value2"}]}' http://localhost:33333/kdbMetaBulk/user:/test
+```
+
+will now create multiple metakeys at once.
+In this case, it will create two (`metakey1` and `metakey2`).
+
+The command
+
+```sh
+curl http://localhost:33333/kdb/user:/test
+#> {"exists":true,"name":"test","path":"user:/test","ls":["user:/test"],"value":"1","meta":{"metakey1":"value1","metakey2":"value2"}}
+```
+
+will now also return the two metakeys.
+
+<!-- prettier-ignore-start -->
+
+```json
+{
+    "exists": true,
+    "name": "test",
+    "path": "user:/test",
+    "ls": [
+        "user:/test"
+    ],
+    "value": "5",
+    "meta": {
+        "metakey1": "value1",
+        "metakey2": "value2"
+    }
 }
 ```
 
