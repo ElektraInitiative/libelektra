@@ -45,7 +45,7 @@ docker run -it elektra/elektra
 ## Highlights
 
 - New Changetracking API
-- <<HIGHLIGHT>>
+- New spec plugin
 - <<HIGHLIGHT>>
 
 ### New Changetracking API
@@ -85,7 +85,22 @@ There seems to be about 10 % overhead, but we don't expect it to be noticeable i
 |          50000 |                        5730261920 |                        6340292587 |                  10,65 % |
 |         500000 |                      104614374974 |                      110702166761 |                   5,82 % |
 
-### <<HIGHLIGHT>>
+### New spec plugin
+
+The spec plugin was rewritten to use the standardized error handling in Elektra.
+It is now strictly defined that the `spec` plugin throws a warning on `kdbGet` and on any other call an error.
+
+Default values are now created in the `default` namespace.
+The instantiated array specifications are now also created in the `default` namespace.
+
+Keys with a require metakey and no default metakey do throw an error now.
+
+Known limitations:
+
+- `#` and `_` keys do not work on MINGW
+- No defaults for `_` globbing character
+
+For more information see [Spec Plugin](../../src/plugins/spec/README.md).
 
 ### <<HIGHLIGHT>>
 
@@ -93,9 +108,9 @@ There seems to be about 10 % overhead, but we don't expect it to be noticeable i
 
 The following text lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-### <<Plugin>>
+### spec
 
-- <<TODO>>
+- Rewrite spec plugin, fix bugs and use correct error handling _(Tomislav Makar @tmakar)_
 - <<TODO>>
 - <<TODO>>
 
@@ -327,6 +342,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - Adapt and remove outdated docs https://issues.libelektra.org/4882 _(Tomislav Makar @tmakar)_
 - Added missing dependencies in COMPILE.md for APT-based systems _(Michael Tucek @tucek)_
+- Add `default` namespace to [namespaces documentation](../tutorials/namespaces.md) _(Tomislav Makar @tmakar)_
 - <<TODO>>
 - Added Tomislav Makar to `AUTHORS.md` _(Tomislav Makar @tmakar)_
 - <<TODO>>

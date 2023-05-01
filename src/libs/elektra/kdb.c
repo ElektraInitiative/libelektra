@@ -2496,11 +2496,23 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	ksClear (setKs);
 	backendsMerge (backends, setKs);
 
+	// there is no guarantee that the keys in the spec namespace are included in setKs
+	// adding it before removing metadata
+	Key * specNamespace = keyNew ("spec:/", KEY_END);
+	KeySet * allKeysInSpecNamespace = ksBelow (ks, specNamespace);
+	ksAppend (allKeysInSpecNamespace, setKs);
+
 	// Step 9: run the spec plugin to remove copied metadata
-	if (handle->hooks.spec.plugin && handle->hooks.spec.remove (handle->hooks.spec.plugin, setKs, parentKey) == -1)
+	if (handle->hooks.spec.plugin && handle->hooks.spec.remove (handle->hooks.spec.plugin, allKeysInSpecNamespace, parentKey) == -1)
 	{
+		ksDel (allKeysInSpecNamespace);
+		keyDel (specNamespace);
+
 		goto rollback;
 	}
+
+	ksDel (allKeysInSpecNamespace);
+	keyDel (specNamespace);
 
 	// Step 10: split setKs for remaining phases
 	if (!backendsDivide (backends, setKs))
