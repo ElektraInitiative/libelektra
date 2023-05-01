@@ -27,7 +27,7 @@
 #include <libgen.h>
 #include <mutex>
 
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 using namespace ckdb;
 
 #define PYTHON_PLUGIN_NAME_STR2(x) ELEKTRA_QUOTE (x)

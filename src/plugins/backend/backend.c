@@ -3,7 +3,7 @@
 #include "./backend.h"
 #include "./backendprivate.h"
 
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 #include <internal/kdbprivate.h>
 #include <internal/utility/logger.h>
 

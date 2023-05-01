@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_CPP_TEMPLATE_DELEGATE_HPP
 #define ELEKTRA_CPP_TEMPLATE_DELEGATE_HPP
 
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 #include <kdbplugin.hpp>
 
 namespace elektra

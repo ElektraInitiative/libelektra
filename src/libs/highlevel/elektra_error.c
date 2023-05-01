@@ -7,8 +7,8 @@
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
+#include <elektra/core/errors.h>
 #include <elektra/highlevel/errors.h>
-#include <elektra/kdb/errors.h>
 #include <elektra/type/conversion.h>
 #include <internal/kdbprivate.h>
 #include <internal/utility/old_helper.h>

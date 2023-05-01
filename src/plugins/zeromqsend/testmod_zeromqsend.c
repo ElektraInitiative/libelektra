@@ -12,8 +12,8 @@
 #include <time.h>   // time()
 #include <unistd.h> // usleep()
 
-#include <elektra/io/plugin.h>	// ElektraIoPluginSetBinding
-#include <elektra/kdb/errors.h> // TIMEOUT ERROR
+#include <elektra/core/errors.h> // TIMEOUT ERROR
+#include <elektra/io/plugin.h>	 // ElektraIoPluginSetBinding
 
 #include <tests.h>
 #include <tests_plugin.h>

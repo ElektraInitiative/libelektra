@@ -8,7 +8,7 @@
  */
 
 #include "./file.h"
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 #include <fcntl.h>
 #include <internal/utility/old_helper.h>
 #include <stdio.h>

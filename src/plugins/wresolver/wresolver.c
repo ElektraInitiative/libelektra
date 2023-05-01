@@ -11,7 +11,8 @@
 #endif
 
 
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
+#include <internal/macros/attributes.h>
 #include <internal/macros/os.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/old_helper.h>

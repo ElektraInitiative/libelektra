@@ -9,7 +9,7 @@
 
 #include "./gopts.h"
 
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 #include <elektra/opts.h>
 #include <elektra/type/conversion.h>
 #include <internal/utility/assert.h>

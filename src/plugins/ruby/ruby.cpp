@@ -27,7 +27,7 @@
 /* for global variable access */
 #include <mutex>
 
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
 

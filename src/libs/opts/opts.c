@@ -11,12 +11,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <elektra/core/errors.h>
 #include <elektra/ease/array.h>
 #include <elektra/ease/meta.h>
 #include <elektra/type/conversion.h>
 #include <internal/utility/old_helper.h>
 
-#include <elektra/kdb/errors.h>
 #include <internal/utility/assert.h>
 
 #ifdef _WIN32

@@ -6,10 +6,10 @@
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
+#include <elektra/core/errors.h>
 #include <elektra/ease/spec.h>
 #include <elektra/highlevel.h>
 #include <elektra/highlevel/types.h>
-#include <elektra/kdb/errors.h>
 #include <elektra/type/conversion.h>
 #include <internal/kdbprivate.h>
 #include <internal/macros/symver.h>

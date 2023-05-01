@@ -14,7 +14,8 @@
 #include "./read.hpp"
 #include "./write.hpp"
 
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
+#include <internal/macros/attributes.h>
 #include <internal/utility/logger.h>
 #include <kdb.hpp>
 

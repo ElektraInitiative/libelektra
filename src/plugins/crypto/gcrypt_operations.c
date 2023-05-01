@@ -13,7 +13,7 @@
 #include "./gpg.h"
 #include "./helper.h"
 
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 #include <elektra/type/types.h>
 #include <errno.h>
 #include <gcrypt.h>

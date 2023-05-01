@@ -60,7 +60,7 @@ for check in $CHECKS; do
 		# Exceptions:
 		#   kdb/errors_log.h - uses #ifdef guarded included controlled via CMake
 		INTERNAL_IN_PUBLIC=$(git grep -on --untracked -E -e '^\s*#include\s+["<]internal/.*[">]' -- 'src/include/elektra' \
-			':^src/include/elektra/kdb/errors_log.h' ||
+			':^src/include/elektra/core/errors_log.h' ||
 			true)
 
 		if [ -n "$INTERNAL_IN_PUBLIC" ]; then

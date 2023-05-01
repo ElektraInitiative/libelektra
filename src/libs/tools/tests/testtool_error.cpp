@@ -7,7 +7,7 @@
  *
  */
 
-#include <elektra/kdb/errors.h> // for code and description constants
+#include <elektra/core/errors.h> // for code and description constants
 #include <errors/errorFactory.hpp>
 #include <errors/errorTypes.hpp>
 #include <errors/warningTypes.hpp>

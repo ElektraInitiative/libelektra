@@ -7,7 +7,7 @@
  *
  */
 
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 #include <kdbplugin.hpp>
 
 #include "./directoryvalue.hpp"

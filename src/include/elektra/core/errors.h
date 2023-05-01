@@ -9,9 +9,9 @@
 #ifndef ELEKTRA_KDB_ERRORS_H
 #define ELEKTRA_KDB_ERRORS_H
 
+#include <elektra/core/errors_log.h>
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
-#include <elektra/kdb/errors_log.h>
 #include <elektra/macros/utils.h>
 
 #ifdef __cplusplus

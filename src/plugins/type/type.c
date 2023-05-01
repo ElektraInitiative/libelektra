@@ -11,8 +11,8 @@
 #include "./type.h"
 #include "./types.h"
 
+#include <elektra/core/errors.h>
 #include <elektra/ease/array.h>
-#include <elektra/kdb/errors.h>
 #include <elektra/type/conversion.h>
 #include <elektra/type/types.h>
 

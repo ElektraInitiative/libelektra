@@ -12,8 +12,8 @@
 #define ELEKTRA_PLUGIN_KEYTOMETA_H
 
 #include <elektra/core.h>
+#include <elektra/core/errors.h>
 #include <elektra/ease/meta.h>
-#include <elektra/kdb/errors.h>
 #include <elektra/plugin/plugin.h>
 
 int elektraKeyToMetaGet (Plugin * handle, KeySet * ks, Key * parentKey);

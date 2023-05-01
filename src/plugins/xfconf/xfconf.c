@@ -8,7 +8,7 @@
  */
 
 #include "./xfconf.h"
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>

@@ -9,7 +9,7 @@
 
 #include <numeric>
 
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
 

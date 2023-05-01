@@ -48,7 +48,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 #include <elektra/plugin/invoke.h>
 #include <internal/kdbprivate.h> // To access the plugin function pointers
 #include <internal/pluginprocess.h>

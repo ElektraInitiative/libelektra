@@ -9,7 +9,7 @@
 
 #include "./modules.h"
 
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 #include <internal/kdbprivate.h> // for struct _Plugin internals
 #include <internal/utility/old_helper.h>
 

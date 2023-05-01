@@ -10,7 +10,7 @@
 #define ELEKTRA_PLUGIN_NETWORK_H
 
 #include <elektra/core.h>
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 #include <elektra/plugin/plugin.h>
 
 #include <arpa/inet.h>

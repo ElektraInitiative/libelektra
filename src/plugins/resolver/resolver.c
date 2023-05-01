@@ -31,7 +31,7 @@
 
 #include <dirent.h>
 
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 #include <internal/macros/attributes.h>
 #include <internal/utility/logger.h>
 

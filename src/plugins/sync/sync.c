@@ -8,7 +8,7 @@
 
 #include "./sync.h"
 
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 
 #include <internal/kdb/config.h>
 #include <internal/utility/old_helper.h>

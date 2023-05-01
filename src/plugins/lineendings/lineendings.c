@@ -13,8 +13,9 @@
 #endif
 
 #include "./lineendings.h"
-#include <elektra/kdb/errors.h>
-#include <internal/utility/old_helper.h>
+#include <elektra/core/errors.h>
+#include <internal/macros/attributes.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>

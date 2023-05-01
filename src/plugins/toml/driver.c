@@ -18,8 +18,11 @@
 
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
+
+#include <internal/macros/attributes.h>
 #include <internal/utility/assert.h>
+#include <internal/utility/string.h>
 #include <internal/utility/old_helper.h>
 
 #include "./driver.h"

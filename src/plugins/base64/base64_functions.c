@@ -1,5 +1,5 @@
 #include "./base64_functions.h"
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/old_helper.h>
 

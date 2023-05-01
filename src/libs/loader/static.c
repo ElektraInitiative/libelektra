@@ -13,8 +13,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <elektra/kdb/errors.h>
-#include <exported_symbols.h>
+#include <elektra/core/errors.h>
+
+#include <internal/exported_symbols.h>
+#include <internal/macros/attributes.h>
 #include <internal/pluginload/module.h>
 
 

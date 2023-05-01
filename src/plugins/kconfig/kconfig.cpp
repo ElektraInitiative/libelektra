@@ -11,7 +11,7 @@
 #include "./kconfig_delegate.hpp"
 #include "./kconfig_serializer.hpp"
 
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 #include <fstream>
 #include <internal/utility/old_helper.h>
 

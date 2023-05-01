@@ -11,8 +11,9 @@
 
 #include <errno.h>
 
-#include <elektra/kdb/errors.h>
-#include <internal/kdb/config.h>
+#include <elektra/core/errors.h>
+#include <internal/config.h>
+#include <internal/macros/attributes.h>
 #include <internal/macros/plugin_errors.h>
 
 #include <stdio.h>

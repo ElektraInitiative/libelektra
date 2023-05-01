@@ -15,7 +15,7 @@
 //
 //! [plugin errors include]
 // using namespace ckdb; // for C++
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 //! [plugin errors include]
 
 #include <stdio.h>

@@ -7,6 +7,8 @@
  *
  */
 
+#include <elektra/core/errors.h>
+#include <elektra/ease/meta.h>
 
 #ifndef HAVE_KDBCONFIG
 #include <internal/kdb/config.h>
@@ -14,7 +16,6 @@
 
 #include <ctype.h>
 #include <elektra/ease/meta.h>
-#include <elektra/kdb/errors.h>
 #include <errno.h>
 #include <internal/utility/old_helper.h>
 #include <math.h>

@@ -9,7 +9,9 @@
 
 #include "./c.h"
 
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
+
+#include <internal/macros/attributes.h>
 #include <internal/macros/plugin_errors.h>
 #include <internal/utility/old_helper.h>
 

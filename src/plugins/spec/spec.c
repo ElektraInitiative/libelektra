@@ -9,10 +9,10 @@
 
 #include "./spec.h"
 
+#include <elektra/core/errors.h>
 #include <elektra/ease/array.h>
 #include <elektra/ease/globbing.h>
 #include <elektra/ease/meta.h>
-#include <elektra/kdb/errors.h>
 #include <elektra/type/types.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>

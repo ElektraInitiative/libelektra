@@ -9,7 +9,10 @@
 #include "./ccode.hpp"
 #include "./coder.hpp"
 
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
+
+#include <internal/macros/attributes.h>
+
 #include <kdbplugin.hpp>
 
 using ckdb::keyNew;

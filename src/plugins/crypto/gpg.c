@@ -9,7 +9,7 @@
 
 #include "./gpg.h"
 #include <assert.h>
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 #include <errno.h>
 #include <internal/utility/old_helper.h>
 #include <stdio.h>

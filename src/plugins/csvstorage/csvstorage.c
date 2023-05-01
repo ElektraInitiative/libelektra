@@ -14,7 +14,7 @@
 
 #include "./csvstorage.h"
 #include <elektra/ease/array.h>
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 #include <errno.h>
 #include <internal/kdbprivate.h> // for ksRenameKeys
 #include <internal/macros/plugin_errors.h>

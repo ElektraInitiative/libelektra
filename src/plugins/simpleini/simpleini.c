@@ -14,8 +14,8 @@
 #include "./simpleini.h"
 #include <errno.h>
 
+#include <elektra/core/errors.h>
 #include <elektra/ease/name.h>
-#include <elektra/kdb/errors.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
 #include <internal/utility/string.h>

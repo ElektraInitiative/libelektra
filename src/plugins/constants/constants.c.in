@@ -16,7 +16,7 @@
 #include <internal/macros/plugin_errors.h>
 #include <string.h>
 
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 
 int elektraConstantsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED);
 int elektraConstantsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED);

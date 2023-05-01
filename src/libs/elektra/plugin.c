@@ -30,10 +30,10 @@
 #include <string.h>
 #endif
 
+#include <elektra/core/errors.h>
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 #include <elektra/ease/meta.h>
-#include <elektra/kdb/errors.h>
 #include <elektra/plugin/plugin.h>
 #include <internal/kdb/config.h>
 #include <internal/kdbprivate.h>

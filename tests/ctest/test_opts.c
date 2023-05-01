@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 #include <elektra/opts.h>
 
 #include "tests.h"

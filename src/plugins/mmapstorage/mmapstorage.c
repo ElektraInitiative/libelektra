@@ -14,8 +14,12 @@
 #include "./dynarray.h"
 #include "./internal.h"
 
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 #include <internal/kdbprivate.h>
+
+#include <internal/macros/attributes.h>
+#include <internal/macros/bitfields.h>
+#include <internal/macros/os.h> // SSIZE_MAX
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
 #include <internal/utility/old_helper.h>

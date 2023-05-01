@@ -17,8 +17,8 @@
 
 #include "./line.h"
 
+#include <elektra/core/errors.h>
 #include <elektra/ease/array.h>
-#include <elektra/kdb/errors.h>
 
 #include <errno.h>
 #include <stddef.h>

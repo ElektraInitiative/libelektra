@@ -25,9 +25,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <elektra/core/errors.h>
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
-#include <elektra/kdb/errors.h>
 #include <elektra/type/types.h>
 #include <internal/macros/attributes.h>
 #include <internal/utility/old_helper.h>

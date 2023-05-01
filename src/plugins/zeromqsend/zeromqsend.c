@@ -11,7 +11,7 @@
 #include <internal/kdb/config.h>
 #endif
 
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 
 #include "./zeromqsend.h"
 

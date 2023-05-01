@@ -26,7 +26,7 @@
 #include <internal/kdb/config.h>
 #include <internal/macros/attributes.h>
 
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 #include <internal/pluginload/module.h>
 #include <internal/utility/old_helper.h>
 

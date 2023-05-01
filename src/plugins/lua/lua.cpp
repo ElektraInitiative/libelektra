@@ -25,7 +25,7 @@ extern "C" {
 }
 #include "./runtime.h"
 
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 using namespace ckdb;
 
 #ifndef LUA_OK

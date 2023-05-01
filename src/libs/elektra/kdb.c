@@ -6,14 +6,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-
-#ifdef HAVE_KDBCONFIG_H
-#include <internal/kdb/config.h>
-#endif
-
 #include <stdio.h>
 
-#include <internal/utility/assert.h>
+#include <internal/utility/old_helper.h>
 
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
@@ -43,14 +38,14 @@
 #include <errno.h>
 #endif
 
+#include <elektra/core/errors.h>
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 #include <elektra/core/namespace.h>
 #include <elektra/ease/meta.h>
-#include <elektra/kdb/errors.h>
 #include <elektra/kdb/kdb.h>
 #include <elektra/plugin/plugin.h>
-#include <internal/kdb/config.h>
+#include <internal/config.h>
 #include <internal/kdbprivate.h>
 #include <internal/pluginload/module.h>
 #include <internal/utility/logger.h>

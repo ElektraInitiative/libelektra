@@ -11,7 +11,7 @@
 
 #include "../resolver/shared.h"
 
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 #include <elektra/plugin/invoke.h>
 #include <elektra/type/types.h>
 

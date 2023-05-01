@@ -16,7 +16,7 @@
 #include <sys/stat.h>
 
 #include <elektra/core.h>
-#include <elektra/kdb/errors.h>
+#include <elektra/core/errors.h>
 #include <elektra/plugin/plugin.h>
 #include <sys/types.h>
 #include <unistd.h>
