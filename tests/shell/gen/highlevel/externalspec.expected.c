@@ -32,13 +32,12 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <internal/utility/old_helper.h>
-#include <elektra/plugin/invoke.h>
-#include <elektra/opts.h>
 #include <elektra/kdb/contracts/gopts.h>
-
+#include <elektra/opts.h>
+#include <elektra/plugin/invoke.h>
 #include <elektra/type/conversion.h>
 
+#include <internal/utility/old_helper.h>
 
 
 static const char * helpFallback = "Usage: tests_script_gen_highlevel_externalspec [OPTION...]\n\nOPTIONS\n  --help                      Print this help message\n";

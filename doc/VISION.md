@@ -44,7 +44,7 @@ Or using some compiled language like C
 with neither code generation nor error handling):
 
 ```c
-#include <elektra.h>
+#include <elektra/highlevel.h>
 
 int main ()
 {
