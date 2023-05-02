@@ -28,10 +28,8 @@ EXTERNAL_FOLDER="@CMAKE_SOURCE_DIR@/examples/codegen/econf"
 check_if_parent_exists() {
 	if grep -e "spec:\/sw\/example\/econf/\#0\/current\/format\/#$"; then
 		echo "array parent was found"
-		return 0
 	else
 		echo "did not find array parent spec:/sw/example/econf/#0/current/format/#"
-		return 1
 	fi
 }
 
