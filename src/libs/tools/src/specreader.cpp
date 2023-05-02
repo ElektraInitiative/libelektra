@@ -4,9 +4,9 @@
 
 #include <helper/keyhelper.hpp>
 
-#include "../../../tools/kdb/command.hpp"
 #include <unordered_set>
 
+#include "./command.hpp"
 
 namespace kdb
 {

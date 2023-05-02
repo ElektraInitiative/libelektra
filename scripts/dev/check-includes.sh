@@ -33,10 +33,12 @@ for check in $CHECKS; do
 		#   .../highlevel.*.mustache - contains mustache placeholders in includes
 		#   testmod_ - tests
 		#   qt-gui/unittest - tests
+		#   src/libs/tools/src/command.hpp - needs access to CommandAbortException from kdb tool
 		QUOTE_NOT_DOT_SLASH=$(git grep -on --untracked -E -e '^\s*#include\s+".+"' --and --not -e '^\s*#include\s+"\./.*"' -- 'src' \
 			':^src/tools/kdb/gen/templates/highlevel.*.mustache' \
 			':^src/plugins/*/testmod_*' \
-			':^src/tools/qt-gui/unittest' ||
+			':^src/tools/qt-gui/unittest' \
+			':^src/libs/tools/src/command.hpp' ||
 			true)
 
 		if [ -n "$QUOTE_NOT_DOT_SLASH" ]; then
@@ -47,7 +49,11 @@ for check in $CHECKS; do
 		;;
 
 	"dotdot")
-		QUOTE_WITH_DOT_DOT=$(git grep -n --untracked -E -e '^\s*#include\s+["<].*/\.\./.*[">]' -- 'src' || true)
+		# Exceptions:
+		#   src/libs/tools/src/command.hpp - needs access to CommandAbortException from kdb tool
+		QUOTE_WITH_DOT_DOT=$(git grep -n --untracked -E -e '^\s*#include\s+["<].*/\.\./.*[">]' -- 'src' \
+			':^src/libs/tools/src/command.hpp' ||
+			true)
 
 		if [ -n "$QUOTE_WITH_DOT_DOT" ]; then
 			HAS_ERROR=1
@@ -58,7 +64,7 @@ for check in $CHECKS; do
 
 	"internal")
 		# Exceptions:
-		#   kdb/errors_log.h - uses #ifdef guarded included controlled via CMake
+		#   kdb/errors_log.h - uses #ifdef guarded include controlled via CMake
 		INTERNAL_IN_PUBLIC=$(git grep -on --untracked -E -e '^\s*#include\s+["<]internal/.*[">]' -- 'src/include/elektra' \
 			':^src/include/elektra/core/errors_log.h' ||
 			true)
