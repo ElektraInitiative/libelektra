@@ -30,7 +30,7 @@ check_if_parent_exists() {
 		echo "array parent was found"
 		return 0
 	else
-	  echo "did not find array parent spec:/sw/example/econf/#0/current/format/#"
+		echo "did not find array parent spec:/sw/example/econf/#0/current/format/#"
 		return 1
 	fi
 }
@@ -45,7 +45,7 @@ do_tests() {
 	"$KDB" rm -r "$UKEY"
 	"$KDB" rm -r "$SPECKEY"
 
-	"$KDB" mount `pwd`/spec.ini "$SPECKEY" ni
+	"$KDB" mount $(pwd)/spec.ini "$SPECKEY" ni
 	"$KDB" import "$SPECKEY" ni < "$EXTERNAL_FOLDER/spec.ini"
 	"$KDB" spec-mount "$KEY"
 
