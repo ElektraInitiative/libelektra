@@ -15,13 +15,14 @@
 
 #include <cmdline.hpp>
 #include <command.hpp>
+#include <csignal>
 #include <external.hpp>
 #include <factory.hpp>
-#include <signal.h>
-#include <toolexcept.hpp>
 
 #include <kdb.hpp>
 #include <key.hpp>
+
+#include <cpp-main.h>
 
 using namespace kdb;
 using namespace std;
@@ -129,7 +130,7 @@ void setupSignals ()
 	setupSignal (SIGSEGV);
 }
 
-int main (int argc, char ** argv)
+int cpp_main (int argc, char ** argv)
 {
 	setupSignals ();
 	Factory f;
