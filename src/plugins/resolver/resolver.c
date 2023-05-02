@@ -7,33 +7,28 @@
  */
 
 #include "./resolver.h"
-#include "./stat.h"
 
-#include <internal/kdb/config.h>
+#include <elektra/core/errors.h>
+
+#include <internal/config.h>
 #include <internal/kdbprivate.h> // KDB_CACHE_PREFIX
+#include <internal/macros/attributes.h>
+#include <internal/resolver/stat.h>
+#include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>
+#include <internal/utility/logger.h>
 #include <internal/utility/old_helper.h> // elektraStrDup
 
-#include <stdlib.h>
-
-#ifdef HAVE_CTYPE_H
 #include <ctype.h>
-#endif
-
-/* Needs posix */
+#include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <unistd.h>
-
-#include <dirent.h>
-
-#include <elektra/core/errors.h>
-#include <internal/macros/attributes.h>
-#include <internal/utility/logger.h>
 
 #ifdef ELEKTRA_LOCK_MUTEX
 #include <pthread.h>

@@ -1,4 +1,5 @@
-#ifndef ELEKTRA_PLUGIN_RESOLVER_STAT_H
+#ifndef ELEKTRA_RESOLVER_STAT_H
+#define ELEKTRA_RESOLVER_STAT_H
 
 #if defined(__APPLE__)
 #define ELEKTRA_STAT_SECONDS(status) status.st_mtime
@@ -11,4 +12,4 @@
 #define ELEKTRA_STAT_NANO_SECONDS(status) status.st_mtim.tv_nsec
 #endif
 
-#endif
+#endif // ELEKTRA_RESOLVER_STAT_H

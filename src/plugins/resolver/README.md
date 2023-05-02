@@ -148,7 +148,7 @@ resolves `path` in with namespace `namespace`, creates a temporary file to work 
 Signature:
 `ElektraResolved * filename (elektraNamespace namespace, const char * path, ElektraResolveTempfile tempFile, Key * warningsKey)`
 
-`ElektraResolved` and `ElektraResolveTempfile` are both defined in [shared.h](shared.h).
+`ElektraResolved` and `ElektraResolveTempfile` are both defined in [shared.h](/src/include/internal/resolver/shared.h).
 
 `ElektraResolved` is a struct with the following members:
 

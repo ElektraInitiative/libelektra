@@ -33,7 +33,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "../resolver/shared.h"
+#include <internal/resolver/shared.h>
 #include <elektra/plugin/invoke.h>
 
 #define DEFAULT_RESOLVER "resolver"

@@ -9,13 +9,13 @@
 
 #include "./gitresolver.h"
 
-#include "../resolver/shared.h"
-
 #include <elektra/core/errors.h>
 #include <elektra/plugin/invoke.h>
 #include <elektra/type/types.h>
 
 #include <internal/config.h>
+#include <internal/macros/attributes.h>
+#include <internal/resolver/shared.h>
 #include <internal/utility/old_helper.h>
 #include <internal/utility/string.h>
 
@@ -70,8 +70,7 @@ static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFi
 		goto RESOLVE_FAILED;
 	}
 	ElektraResolved * resolved = NULL;
-	typedef ElektraResolved * (*resolveFileFunc) (elektraNamespace, const char *, ElektraResolveTempfile, Key *);
-	resolveFileFunc resolveFunc = *(resolveFileFunc *) elektraInvokeGetFunction (handle, "filename");
+	elektraResolveFileFunc resolveFunc = *(elektraResolveFileFunc *) elektraInvokeGetFunction (handle, "filename");
 
 	if (!resolveFunc)
 	{
@@ -79,8 +78,7 @@ static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFi
 		goto RESOLVE_FAILED;
 	}
 
-	typedef void (*freeHandleFunc) (ElektraResolved *);
-	freeHandleFunc freeHandle = *(freeHandleFunc *) elektraInvokeGetFunction (handle, "freeHandle");
+	elektraFreeResolvedFunc freeHandle = *(elektraFreeResolvedFunc *) elektraInvokeGetFunction (handle, "freeHandle");
 
 	if (!freeHandle)
 	{
