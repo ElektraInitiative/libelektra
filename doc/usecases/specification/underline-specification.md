@@ -9,7 +9,7 @@
 
 ## Scenarios
 
-- **Precondition:** The Dev-Ops Engineer has a understanding of `docker` and the daemon `dockerd`.
+- **Precondition:** The Dev-Ops Engineer has a working setup for `docker` and the daemon `dockerd`.
 - **Main success scenario:**
   - The Dev-Ops Engineer wants to write a specification for the `runtimes` in the `dockerd` configuration file.
   - The underline specification configuration keys are `runtimes/_`, `runtimes/_/path`, `runtimes/_/runtimeArgs/#`.

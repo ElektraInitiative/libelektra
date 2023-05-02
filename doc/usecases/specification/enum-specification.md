@@ -9,7 +9,7 @@
 
 ## Scenarios
 
-- **Precondition:** The Dev-Ops Engineer has a understanding of `docker` and the daemon `dockerd`.
+- **Precondition:** The Dev-Ops Engineer has a working setup for `docker` and the daemon `dockerd`.
 - **Main success scenario:**
   - The Dev-Ops Engineer wants to write a specification for the `log level` in the `dockerd` configuration.
   - The configuration key is `log/level`.
