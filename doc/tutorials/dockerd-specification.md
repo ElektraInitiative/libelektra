@@ -113,7 +113,7 @@ In this example for `dockerd` we will be using 3 types of specifications:
 - Enum specifications (for keys were only a set of possible options can be used)
 - Array and wildcard specifications (for keys where a list of possible options can be used)
 
-As the `dockerd` specification is big we will just present one of each of the above mentioned specification types. 
+As the `dockerd` specification is big we will just present one of each of the above mentioned specification types.
 
 > NOTE: In Elektra we use `/` instead of `-` to seperate key names.
 > This results in a hierarchical structure of key names.
@@ -131,7 +131,7 @@ meta:/default = /var/lib/docker
 In order to get the above specification we will need the following commands:
 
 ```sh
-kdb meta-set spec:/sw/dockerd/data/root type string 
+kdb meta-set spec:/sw/dockerd/data/root type string
 
 kdb meta-set spec:/sw/dockerd/data/root description "Root directory of persistent Docker state"
 
