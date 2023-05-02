@@ -34,4 +34,4 @@ meta:/default = runc
 
 In case the key `default/runtime` does not exist, `spec` plugin creates a `default` key with value `runc` in the default namespace.
 
-For the full specification of the `dockerd` configuration file see [dockerd-spec](dockerd.spec).
+For the full specification of the `dockerd` configuration file see [dockerd-spec](../../../examples/spec/dockerd.ini).

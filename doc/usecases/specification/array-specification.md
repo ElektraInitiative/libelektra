@@ -35,4 +35,4 @@ meta:/array/min = 0
 meta:/description = Storage driver options
 ```
 
-For the full specification of the `dockerd` configuration file see [dockerd-spec](dockerd.spec).
+For the full specification of the `dockerd` configuration file see [dockerd-spec](../../../examples/spec/dockerd.ini).

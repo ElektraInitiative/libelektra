@@ -48,4 +48,4 @@ meta:/description = The runtime arguments for the OCI compatible runtime
 meta:/example = --debug
 ```
 
-For the full specification of the `dockerd` configuration file see [dockerd-spec](dockerd.spec).
+For the full specification of the `dockerd` configuration file see [dockerd-spec](../../../examples/spec/dockerd.ini).
