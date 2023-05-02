@@ -28,6 +28,16 @@ fi
 	set +e
 ) || exit 1
 
-if [ -n "$KDB" ]; then
-	"$KDB" run_all
+if [ "$RUN_KDB" = "1" ]; then
+	if command -v kdb > /dev/null; then
+		kdb run_all
+	fi
+
+	if command -v kdb-full > /dev/null; then
+		KDB=kdb-full kdb-full run_all
+	fi
+
+	if command -v kdb-static > /dev/null; then
+		KDB=kdb-static kdb-static run_all
+	fi
 fi
