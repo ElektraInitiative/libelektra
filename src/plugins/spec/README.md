@@ -96,7 +96,7 @@ The spec plugin does not know what specification to take in this case, so it app
 
 ## Error Handling
 
-In case there is an error, warning or information, it is appended to the `parent key`.
+In case there is an error or warning, it is appended to the `parent key`.
 
 ### Example
 
@@ -108,9 +108,6 @@ system:/sw/org/error/...
 
 # in case there is a warning
 system:/sw/org/warning/...
-
-# in case there is an info
-system:/sw/org/info/description
 ```
 
 If there is an error, the `spec` plugin returns `ELEKTRA_PLUGIN_STATUS_ERROR`, otherwise `ELEKTRA_PLUGIN_STATUS_SUCCESS`.
@@ -119,8 +116,6 @@ If there is an error, the `spec` plugin returns `ELEKTRA_PLUGIN_STATUS_ERROR`, o
 
 - Key is required but does not exist
   - In this case an `error` is appended to the `parent key`
-- Key is in specification but does not exist in any other namespace
-  - Just append an info to the `parent key`
 - Key has default but does not exist
   - In this case the key is created
 
