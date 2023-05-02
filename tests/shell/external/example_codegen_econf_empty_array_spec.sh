@@ -53,10 +53,10 @@ do_tests() {
 	"$KDB" ls "spec:/sw/example/econf/#0" | check_if_parent_exists
 
 	"$KDB" rm -r "$UKEY"
-  "$KDB" rm -r "$SPECKEY"
-  "$KDB" umount "$SPECKEY"
-  "$KDB" umount "$UKEY"
-  "$KDB" umount "$KEY"
+	"$KDB" rm -r "$SPECKEY"
+	"$KDB" umount "$SPECKEY"
+	"$KDB" umount "$UKEY"
+	"$KDB" umount "$KEY"
 }
 
 echo "Testing build with cmake"
