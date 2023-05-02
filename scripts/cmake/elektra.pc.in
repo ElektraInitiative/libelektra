@@ -11,4 +11,4 @@ Name: @PACKAGE_NAME@
 Description: @PACKAGE_DESCRIPTION@
 Version: @KDB_VERSION@
 Libs: -L${libdir} @PACKAGE_LIBS@
-Cflags: -I${includedir}
+Cflags: -I${prefix}/include

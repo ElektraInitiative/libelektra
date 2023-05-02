@@ -11,4 +11,4 @@ Description: Elektra I/O interface
 Requires:
 Version: @KDB_VERSION@
 Libs: -L${libdir} -l@LIBRARY_NAME@
-Cflags: -I${includedir}
+Cflags: -I${prefix}/include

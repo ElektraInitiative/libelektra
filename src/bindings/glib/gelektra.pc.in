@@ -11,4 +11,4 @@ Description: GElektra
 Requires: gobject-2.0
 Version: @KDB_VERSION@
 Libs: -L${libdir} -l@PACKAGE_NAME@ -l@GELEKTRA_LIBRARY@
-Cflags: -I${includedir}
+Cflags: -I${prefix}/include

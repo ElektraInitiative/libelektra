@@ -21,7 +21,7 @@ if (NOT elektra_imported_targets)
 	set (elektra_imported_targets TRUE)
 endif ()
 
-set (Elektra_INCLUDE_DIRS "@CMAKE_INSTALL_PREFIX@/include/@TARGET_INCLUDE_FOLDER@")
+set (Elektra_INCLUDE_DIRS "@CMAKE_INSTALL_PREFIX@/include" "@CMAKE_INSTALL_PREFIX@/include/@TARGET_INCLUDE_FOLDER@")
 set (Elektra_LIBRARIES @Elektra_LIBRARIES@)
 
 set (ElektraHighlevel_LIBRARIES @ElektraHighlevel_LIBRARIES@)
