@@ -23,6 +23,8 @@
 #include <kdb.hpp>
 #include <key.hpp>
 
+#include <cpp-main.h>
+
 using namespace kdb;
 using namespace std;
 
@@ -129,7 +131,7 @@ void setupSignals ()
 	setupSignal (SIGSEGV);
 }
 
-int main (int argc, char ** argv)
+int cpp_main (int argc, char ** argv)
 {
 	setupSignals ();
 	Factory f;
