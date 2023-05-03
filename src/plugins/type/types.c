@@ -18,8 +18,8 @@
 #include <elektra/core/errors.h>
 #include <elektra/type/conversion.h>
 
-#include <internal/utility/old_helper.h>
 #include <internal/macros/attributes.h>
+#include <internal/utility/old_helper.h>
 
 
 #define CHECK_TYPE(key, var, toValue)                                                                                                      \

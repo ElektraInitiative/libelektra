@@ -7,8 +7,8 @@
  */
 
 
-#include <internal/core/opmphm.h>
 #include <internal/config.h>
+#include <internal/core/opmphm.h>
 #include <internal/kdbprivate.h>
 #include <internal/macros/attributes.h>
 #include <internal/utility/assert.h>

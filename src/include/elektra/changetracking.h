@@ -1,8 +1,8 @@
 #ifndef ELEKTRA_KDBCHANGETRACKING_H
 #define ELEKTRA_KDBCHANGETRACKING_H
 
-#include <elektra/kdb/kdb.h>
 #include <elektra/diff.h>
+#include <elektra/kdb/kdb.h>
 #include <elektra/plugin/plugin.h>
 
 #ifdef __cplusplus

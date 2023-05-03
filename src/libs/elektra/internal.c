@@ -41,10 +41,10 @@
 #include <ctype.h>
 #endif
 
+#include <elektra/core/errors.h>
 #include <elektra/core/key.h>
 #include <elektra/core/namespace.h>
 #include <elektra/ease/meta.h>
-#include <elektra/core/errors.h>
 #include <elektra/plugin/plugin.h>
 #include <internal/config.h>
 #include <internal/kdbprivate.h>

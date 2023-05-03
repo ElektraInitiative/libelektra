@@ -30,7 +30,10 @@ else
 	exit
 fi
 
-if /usr/bin/env python2 -V &> /dev/null; then
+if
+	/usr/bin/env python2 -V &
+	> /dev/null
+then
 	echo "python available"
 else
 	echo "no python available"

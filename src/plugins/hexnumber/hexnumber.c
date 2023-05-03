@@ -12,7 +12,6 @@
 #include <elektra/core/errors.h>
 #include <elektra/ease/array.h>
 #include <elektra/ease/utils.h>
-#include <elektra/core/errors.h>
 #include <internal/utility/old_helper.h>
 #include <limits.h>
 #include <stdbool.h>

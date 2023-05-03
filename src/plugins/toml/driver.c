@@ -16,14 +16,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <elektra/core/errors.h>
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
-#include <elektra/core/errors.h>
 
 #include <internal/macros/attributes.h>
 #include <internal/utility/assert.h>
-#include <internal/utility/string.h>
 #include <internal/utility/old_helper.h>
+#include <internal/utility/string.h>
 
 #include "./driver.h"
 #include "./error.h"
