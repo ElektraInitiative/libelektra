@@ -6,22 +6,18 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#compiler-settings
-directiveStartToken = @
-cheetahVarStartToken = $
-useAutocalling = false
-#end compiler-settings
-@from support.nested import *
-@from util import util
-@from cpp_util import cpp_util
-@set support = NestedSupport()
-$util.header($args.output)
+#compiler - settings
+directiveStartToken = @cheetahVarStartToken = $ useAutocalling = false
+#end compiler - settings
+								 @from support.nested import * @from util import util
+								 @from cpp_util import cpp_util
+								 @set support = NestedSupport () $util.header ($args.output)
 #include "./kdb.hpp"
 #include "./kdbtypes.h"
 
 #include <string>
 
-namespace kdb
+											namespace kdb
 {
 
 $cpp_util.generateenum($support, $parameters)
@@ -52,16 +48,18 @@ namespace ${support.nsnpretty($n)}
 @end for
 
 /** @brief class */
-class ${hierarchy.prettyclassname($support)}
+class $
+{
+	hierarchy.prettyclassname ($support)
+}
 {
 public:
-
-
 	/** @brief Constructor for * ${hierarchy.prettyclassname($support)}
 	 * \param ks keyset to work with
 	 */
-	${hierarchy.prettyclassname($support)}(kdb::KeySet & ks) : ks(ks)
-	{}
+	${ hierarchy.prettyclassname ($support) }(kdb::KeySet & ks) : ks (ks)
+	{
+	}
 
 @for k in hierarchy.childrenWithChildren
 @set lnsname = $support.nspretty(k.dirname)
@@ -69,22 +67,22 @@ public:
 @set nestedclassname = $support.classpretty(k.basename)
 	/** \return nested subclass */
 	$lnsname$nestedclassname& ${nestedname}()
-	{
-		// works in C++11 because classes are layout compatible
-		return reinterpret_cast<$lnsname$nestedclassname&>(*this);
-	}
+{
+	// works in C++11 because classes are layout compatible
+	return reinterpret_cast<$lnsname$nestedclassname &> (*this);
+}
 
-	/** \return nested subclass */
-	$lnsname$nestedclassname const& ${nestedname}() const
-	{
-		// works in C++11 because classes are layout compatible
-		return reinterpret_cast<$lnsname$nestedclassname const&>(*this);
-	}
+/** \return nested subclass */
+$lnsname$nestedclassname const & ${ nestedname }() const
+{
+	// works in C++11 because classes are layout compatible
+	return reinterpret_cast<$lnsname$nestedclassname const &> (*this);
+}
 @end for
 
 @for k in hierarchy.childrenWithType
 	$support.typeof(k.info) get${support.funcname(k.name)}() const;
-	void ${support.setfuncname(k.name)}($support.typeof(k.info) n);
+void ${ support.setfuncname (k.name) }($support.typeof (k.info) n);
 @end for
 
 private:
@@ -132,13 +130,18 @@ $outputClasses(support, hierarchy)
  *
  * \return the value of the parameter, default if it could not be found
  */
-inline $support.typeof(info) $support.nsname($key)${support.classname($key)}::$support.getfuncname($key)() const
+inline $support.typeof(info) $support.nsname($key)$
 {
-	$support.typeof(info) value $support.valof(info)
+support.classname ($key)
+}
+::$support.getfuncname ($key) () const
+{
+$support.typeof (info) value
+	$support.valof (info)
 
-	$cpp_util.generateGetBySpec(support, key, info)
+		$cpp_util.generateGetBySpec (support, key, info)
 
-	return value;
+			return value;
 }
 
 /** @brief Set parameter $key
@@ -149,23 +152,27 @@ inline $support.typeof(info) $support.nsname($key)${support.classname($key)}::$s
  *
  * \param n is the value to set in the parameter
  */
-inline void $support.nsname($key)${support.classname($key)}::$support.setfuncname($key)($support.typeof(info) n)
+inline void $support.nsname ($key) $
 {
-	kdb::Key found = ks.lookup("$key", 0);
+support.classname ($key)
+}
+::$support.setfuncname ($key) ($support.typeof (info) n)
+{
+kdb::Key found = ks.lookup ("$key", 0);
 
-	if (!found)
-	{
-		kdb::Key k("$support.userkey(key)", KEY_END);
-		k.set<$support.typeof(info)>(n);
-		ks.append(k);
-	}
-	else
-	{
-		found.set<$support.typeof(info)>(n);
-	}
+if (!found)
+{
+kdb::Key k ("$support.userkey(key)", KEY_END);
+k.set<$support.typeof (info)> (n);
+ks.append (k);
+}
+else
+{
+found.set<$support.typeof (info)> (n);
+}
 }
 
 @end for
 
 } // namespace kdb
-$util.footer($args.output)
+$util.footer ($args.output)
