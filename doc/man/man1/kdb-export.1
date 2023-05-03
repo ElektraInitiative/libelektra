@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre3
-.TH "KDB\-EXPORT" "1" "November 2020" ""
+.TH "KDB\-EXPORT" "1" "May 2023" ""
 .SH "NAME"
 \fBkdb\-export\fR \- Export keys from the key database
 .SH "SYNOPSIS"
@@ -18,7 +18,7 @@ Where \fBsource\fR is the path of the key(s) you want to export\. Additionally, 
 .br
 The \fBformat\fR attribute relies on Elektra’s plugin system to export the keys in the desired format\.The user can view all plugins available for use by running the kdb\-plugin\-list(1) command\. To learn about any plugin, the user can simply use the kdb\-plugin\-info(1) command\.
 .br
-The \fBstorage\fR plugin can be configured at compile\-time or changed by the link \fBlibelektra\-storage\.so\fR\.
+The \fBstorage\fR plugin can be configured at compile\-time or changed by the link \fBlibelektra\-plugin\-storage\.so\fR\.
 .SH "OPTIONS"
 .TP
 \fB\-H\fR, \fB\-\-help\fR

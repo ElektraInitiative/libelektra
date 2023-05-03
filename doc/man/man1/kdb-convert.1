@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre3
-.TH "KDB\-CONVERT" "1" "June 2019" ""
+.TH "KDB\-CONVERT" "1" "May 2023" ""
 .SH "NAME"
 \fBkdb\-convert\fR \- Convert configuration files using elektra
 .SH "SYNOPSIS"
@@ -14,7 +14,7 @@ This command uses plugins to specify and convert between formats, it is only lim
 .SH "USAGE"
 Where \fBimport\-format\fR is the format that the current configuration file is using, \fBexport\-format\fR is the format the user wishes to convert it to, \fBimport\-file\fR is the full path to the current configuration file, and \fBexport\-file\fR is where the converted configuration file should be saved\.
 .P
-If either \fBimport\-format\fR or \fBexport\-format\fR is not specified, the \fBstorage\fR plugin will be used instead\. The \fBstorage\fR plugin can be configured at compile\-time or changed by the link \fBlibelektra\-storage\.so\fR\. If either \fBimport\-file\fR or \fBexport\-file\fR are not specified, \fBstdin\fR and \fBstdout\fR are used respectively\.
+If either \fBimport\-format\fR or \fBexport\-format\fR is not specified, the \fBstorage\fR plugin will be used instead\. The \fBstorage\fR plugin can be configured at compile\-time or changed by the link \fBlibelektra\-plugin\-storage\.so\fR\. If either \fBimport\-file\fR or \fBexport\-file\fR are not specified, \fBstdin\fR and \fBstdout\fR are used respectively\.
 .SH "OPTIONS"
 .TP
 \fB\-H\fR, \fB\-\-help\fR
