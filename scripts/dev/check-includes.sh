@@ -34,11 +34,13 @@ for check in $CHECKS; do
 		#   testmod_ - tests
 		#   qt-gui/unittest - tests
 		#   src/libs/tools/src/command.hpp - needs access to CommandAbortException from kdb tool
+		#   src/tools/pythongen - deprecated will be removed at some point
 		QUOTE_NOT_DOT_SLASH=$(git grep -on --untracked -E -e '^\s*#include\s+".+"' --and --not -e '^\s*#include\s+"\./.*"' -- 'src' \
 			':^src/tools/kdb/gen/templates/highlevel.*.mustache' \
 			':^src/plugins/*/testmod_*' \
 			':^src/tools/qt-gui/unittest' \
-			':^src/libs/tools/src/command.hpp' ||
+			':^src/libs/tools/src/command.hpp' \
+			':^src/tools/pythongen/*' ||
 			true)
 
 		if [ -n "$QUOTE_NOT_DOT_SLASH" ]; then
