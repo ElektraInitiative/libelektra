@@ -637,8 +637,8 @@ function (add_plugin PLUGIN_SHORT_NAME)
 
 	if (BUILD_SHARED)
 		add_library (${PLUGIN_NAME} MODULE ${ARG_SOURCES} ${ARG_OBJECT_SOURCES})
-		# switch to -plugin- in CMake targets
-		set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME "elektra-plugin-${PLUGIN_NAME}")
+		# TODO: switch to -plugin- in CMake targets
+		set_target_properties (${PLUGIN_NAME} PROPERTIES OUTPUT_NAME "plugin-${PLUGIN_NAME}")
 
 		if (ARG_DEPENDS)
 			add_dependencies (${PLUGIN_NAME} ${ARG_DEPENDS})
