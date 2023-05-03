@@ -33,7 +33,7 @@ if [ "$?" -ne 0 ]; then
 	echo "$RESOLVER is not a valid resolver"
 	exit 1
 else
-	unlink "${WORKINGDIR}/libelektra-resolver.so" > /dev/null 2>&1
-	ln -srL "${WORKINGDIR}/libelektra-${RESOLVER}.so" "${WORKINGDIR}libelektra-resolver.so" > /dev/null 2>&1
+	unlink "${WORKINGDIR}/libelektra-plugin-resolver.so" > /dev/null 2>&1
+	ln -srL "${WORKINGDIR}/libelektra-plugin-${RESOLVER}.so" "${WORKINGDIR}libelektra-plugin-resolver.so" > /dev/null 2>&1
 fi
 exit 0

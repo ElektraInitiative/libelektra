@@ -33,7 +33,7 @@ if [ "$?" -ne 0 ]; then
 	echo "$STORAGE is not a valid storage plugin"
 	exit 1
 else
-	unlink "${WORKINGDIR}/libelektra-storage.so" > /dev/null 2>&1
-	ln -srL "${WORKINGDIR}/libelektra-${STORAGE}.so" "${WORKINGDIR}/libelektra-storage.so" > /dev/null 2>&1
+	unlink "${WORKINGDIR}/libelektra-plugin-storage.so" > /dev/null 2>&1
+	ln -srL "${WORKINGDIR}/libelektra-plugin-${STORAGE}.so" "${WORKINGDIR}/libelektra-plugin-storage.so" > /dev/null 2>&1
 fi
 exit 0

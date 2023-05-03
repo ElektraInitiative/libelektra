@@ -15,7 +15,7 @@ This command can also be used to view full key(s) including their values.<br>
 Where `source` is the path of the key(s) you want to export.
 Additionally, the user can specify a format to use by passing it as the option argument `format`.<br>
 The `format` attribute relies on Elektra’s plugin system to export the keys in the desired format.The user can view all plugins available for use by running the kdb-plugin-list(1) command. To learn about any plugin, the user can simply use the kdb-plugin-info(1) command.<br>
-The `storage` plugin can be configured at compile-time or changed by the link `libelektra-storage.so`.
+The `storage` plugin can be configured at compile-time or changed by the link `libelektra-plugin-storage.so`.
 
 ## OPTIONS
 

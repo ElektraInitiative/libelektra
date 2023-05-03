@@ -30,8 +30,8 @@ finally returns a `KDB` object that contains all this information.
 
 The reading of the mount point configuration and the consequential self
 configuring of the system is called _bootstrapping_. Elektra builds
-itself up with a default backend (consisting of `libelektra-resolver`
-and `libelektra-storage`).
+itself up with a default backend (consisting of `libelektra-plugin-resolver`
+and `libelektra-plugin-storage`).
 [Read more about bootstrapping here](/doc/help/elektra-bootstrapping.md)
 
 `kdbOpen()` creates a `Split` object. It adds all backend handles and

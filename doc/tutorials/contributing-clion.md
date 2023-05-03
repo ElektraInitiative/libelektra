@@ -390,7 +390,7 @@ link for further information.
 ### Resolving Missing \*.so Library Error In Debug Mode
 
 In case you fail to run Elektra with the message like this one
-`Reason: of module: libelektra-resolver.so, because: libelektra-resolver.so: cannot open shared object file: No such file or directory`
+`Reason: of module: libelektra-plugin-resolver.so, because: libelektra-plugin-resolver.so: cannot open shared object file: No such file or directory`
 you can solve it by defining the LD_LIBRARY_PATH variable directly in CLion.
 Click on the debug configurations dropdown in the upper right corner and choose 'Edit Configurations...'.
 Then find 'Environmental Variables' field and add the following:
