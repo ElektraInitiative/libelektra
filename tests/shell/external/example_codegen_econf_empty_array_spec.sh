@@ -43,7 +43,7 @@ do_tests() {
 	"$KDB" rm -r "$UKEY"
 	"$KDB" rm -r "$SPECKEY"
 
-	"$KDB" mount $(pwd)/spec.ini "$SPECKEY" ni
+	"$KDB" mount "$(pwd)/spec.ini" "$SPECKEY" ni
 	"$KDB" import "$SPECKEY" ni < "$EXTERNAL_FOLDER/spec.ini"
 	"$KDB" spec-mount "$KEY"
 
@@ -66,7 +66,7 @@ mkdir build
 cd build || exit
 
 # manually set Elektra_DIR and KDB to support non-standard install locations
-cmake ../cmake -DElektra_DIR:PATH="$(realpath $(dirname "$0")/../../cmake/Elektra)" -DKDB:PATH="$KDB"
+cmake ../cmake -DElektra_DIR:PATH="$(realpath "$(dirname "$0")"/../../cmake/Elektra)" -DKDB:PATH="$KDB"
 succeed_if "could not run cmake"
 
 cmake --build .
