@@ -10,6 +10,8 @@
 
 #include "kdb.h"
 
+#include "kdb.h"
+
 #include <tests_plugin.h>
 
 #include <stdio.h>

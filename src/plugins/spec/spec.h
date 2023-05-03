@@ -18,6 +18,10 @@
 #define INFO_KEY "info/spec"
 #endif
 
+#ifndef INFO_KEY
+#define INFO_KEY "info/spec"
+#endif
+
 int elektraSpecGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraSpecCopy (Plugin * handle, KeySet * returned, Key * parentKey, bool isKdbGet);
 int elektraSpecRemove (Plugin * handle, KeySet * returned, Key * parentKey);
