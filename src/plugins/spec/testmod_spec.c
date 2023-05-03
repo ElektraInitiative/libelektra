@@ -8,9 +8,7 @@
 
 #include "./spec.h"
 
-#include "kdb.h"
-
-#include "kdb.h"
+#include <elektra/kdb.h>
 
 #include <tests_plugin.h>
 

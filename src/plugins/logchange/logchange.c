@@ -13,7 +13,6 @@
 
 #include <elektra/changetracking.h>
 
-#include <kdbchangetracking.h>
 #include <stdio.h>
 #include <string.h>
 

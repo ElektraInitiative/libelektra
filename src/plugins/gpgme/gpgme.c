@@ -7,9 +7,6 @@
  *
  */
 
-#ifndef HAVE_KDBCONFIG
-#include <internal/config.h>
-#endif
 #include "./gpgme.h"
 #include "./keylist.h"
 
@@ -18,6 +15,10 @@
 #include <elektra/core/keyset.h>
 #include <elektra/core/namespace.h>
 #include <elektra/type/types.h>
+
+#include <internal/config.h>
+#include <internal/utility/old_helper.h>
+
 #include <gpgme.h>
 #include <locale.h>
 #include <stdlib.h>
