@@ -238,9 +238,9 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 
-### <<Library>>
+### loader
 
-- <<TODO>>
+- Adapt target rename with `-plugin-` in `dl.c` _(Tomislav Makar @tmakar)_ 
 - <<TODO>>
 - <<TODO>>
 
