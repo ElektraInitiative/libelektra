@@ -73,7 +73,7 @@ elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Ke
 	char * moduleName = elektraMalloc (sizeof ("libelektra-") + strlen (name) + sizeof (elektraPluginPostfix) + 1);
 
 	strcpy (moduleName, "libelektra-");
-	strcat (moduleName, "-plugin-");
+	strcat (moduleName, "plugin-");
 	strcat (moduleName, name);
 	strcat (moduleName, elektraPluginPostfix);
 
