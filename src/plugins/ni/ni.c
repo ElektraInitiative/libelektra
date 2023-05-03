@@ -8,7 +8,7 @@
 
 #include "./ni.h"
 
-#include <internal/kdb/config.h>
+#include <internal/config.h>
 #include <internal/macros/plugin_errors.h>
 
 #include <elektra/core/errors.h>

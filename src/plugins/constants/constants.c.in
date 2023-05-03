@@ -11,7 +11,7 @@
 #include <elektra/core/keyset.h>
 #include <elektra/macros/utils.h>
 #include <elektra/plugin/plugin.h>
-#include <internal/kdb/config.h>
+#include <internal/config.h>
 #include <internal/macros/attributes.h>
 #include <internal/macros/plugin_errors.h>
 #include <string.h>

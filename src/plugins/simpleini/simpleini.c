@@ -7,7 +7,7 @@
  */
 
 #define _GNU_SOURCE
-#include <internal/kdb/config.h>
+#include <internal/config.h>
 #include <internal/macros/plugin_errors.h>
 #include <internal/utility/old_helper.h>
 

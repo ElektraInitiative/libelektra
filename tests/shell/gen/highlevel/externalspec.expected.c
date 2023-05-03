@@ -40,6 +40,7 @@
 #include <internal/utility/old_helper.h>
 
 
+
 static const char * helpFallback = "Usage: tests_script_gen_highlevel_externalspec [OPTION...]\n\nOPTIONS\n  --help                      Print this help message\n";
 
 static int isHelpMode (int argc, const char * const * argv)

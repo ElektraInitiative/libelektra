@@ -10,7 +10,7 @@
 #include "./dbus.h"
 
 #ifndef HAVE_KDBCONFIG
-#include <internal/kdb/config.h>
+#include <internal/config.h>
 #endif
 
 #include <internal/utility/logger.h>

@@ -8,7 +8,7 @@
  */
 
 #include <backendbuilder.hpp>
-#include <internal/kdb/config.h>
+#include <internal/config.h>
 #include <kdbtimer.hpp>
 
 #include <unistd.h>

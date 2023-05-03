@@ -7,7 +7,7 @@
  *
  */
 
-#include <internal/kdb/config.h>
+#include <internal/config.h>
 
 #include "./dbus.h"
 

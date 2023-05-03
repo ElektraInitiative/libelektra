@@ -12,7 +12,7 @@
 #include <elektra/ease/meta.h>
 #include <elektra/kdb/kdb.h>
 #include <elektra/plugin/plugin.h>
-#include <internal/kdb/config.h>
+#include <internal/config.h>
 #include <internal/kdbprivate.h>
 #include <internal/pluginload/module.h>
 #include <internal/utility/logger.h>

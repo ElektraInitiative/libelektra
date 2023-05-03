@@ -8,6 +8,8 @@
 
 #include "./conv.h"
 
+#include <internal/utility/old_helper.h>
+
 static inline const char * getFrom (Plugin * handle)
 {
 	const char * from;

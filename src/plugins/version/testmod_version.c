@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <internal/kdb/config.h>
+#include <internal/config.h>
 #include <tests_plugin.h>
 
 static void test_basics (void)

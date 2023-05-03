@@ -11,7 +11,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <internal/kdb/config.h>
+#include <internal/config.h>
 
 #include <tests_plugin.h>
 

@@ -8,7 +8,7 @@
 
 #include "./network.h"
 
-#include <internal/kdb/config.h>
+#include <internal/config.h>
 #include <internal/utility/old_helper.h>
 
 

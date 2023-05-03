@@ -9,7 +9,7 @@
 #include <cmdline.hpp>
 
 #include <backendparser.hpp>
-#include <internal/kdb/config.h>
+#include <internal/config.h>
 #include <kdb.hpp>
 #include <keysetget.hpp>
 #include <keysetio.hpp>

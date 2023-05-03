@@ -10,7 +10,7 @@
 #define TESTS_H
 
 #include <elektra/macros/utils.h>
-#include <internal/kdb/config.h>
+#include <internal/config.h>
 
 #include <stdio.h>
 #include <stdlib.h>

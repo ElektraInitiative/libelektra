@@ -14,7 +14,6 @@
 #include <internal/kdbprivate.h> // KDB_CACHE_PREFIX
 #include <internal/macros/attributes.h>
 #include <internal/resolver/stat.h>
-#include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
 #include <internal/utility/old_helper.h> // elektraStrDup

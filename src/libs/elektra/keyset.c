@@ -11,7 +11,7 @@
 #include <elektra/core/namespace.h>
 #include <internal/kdbprivate.h>
 #ifdef HAVE_KDBCONFIG_H
-#include <internal/kdb/config.h>
+#include <internal/config.h>
 #endif
 
 #include <stdio.h>
@@ -40,7 +40,7 @@
 #include <elektra/core/keyset.h>
 #include <elektra/core/namespace.h>
 #include <elektra/plugin/plugin.h>
-#include <internal/kdb/config.h>
+#include <internal/config.h>
 #include <internal/kdbprivate.h>
 #include <internal/pluginload/module.h>
 #include <internal/utility/assert.h>

@@ -10,7 +10,7 @@
 #include <elektra/core/keyset.h>
 #include <elektra/kdb/kdb.h>
 #include <external.hpp>
-#include <internal/kdb/config.h>
+#include <internal/config.h>
 #include <internal/macros/os.h>
 #include <kdb.hpp>
 

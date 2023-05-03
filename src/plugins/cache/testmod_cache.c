@@ -13,7 +13,7 @@
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 #include <elektra/kdb/kdb.h>
-#include <internal/kdb/config.h>
+#include <internal/config.h>
 
 #include <tests_plugin.h>
 

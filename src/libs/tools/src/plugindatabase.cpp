@@ -15,7 +15,7 @@
 
 #include <algorithm>
 #include <helper/keyhelper.hpp>
-#include <internal/kdb/config.h>
+#include <internal/config.h>
 #include <internal/macros/attributes.h>
 #include <internal/utility/logger.h>
 

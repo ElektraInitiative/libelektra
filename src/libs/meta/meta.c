@@ -12,7 +12,7 @@
 #include <elektra/ease/meta.h>
 #include <elektra/ease/utils.h>
 #include <elektra/type/types.h>
-#include <internal/kdb/config.h>
+#include <internal/config.h>
 #include <internal/kdbprivate.h>
 #include <internal/macros/os.h>
 

@@ -33,10 +33,9 @@ extern "C" {
 #endif
 
 #include <elektra/highlevel.h>
-#include <elektra/utility/alloc.h>
-#include <internal/utility/format.h>
 
 #include <internal/utility/old_helper.h>
+
 #include <string.h>
 
 

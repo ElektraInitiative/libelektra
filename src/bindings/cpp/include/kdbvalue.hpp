@@ -10,7 +10,7 @@
 #define ELEKTRA_KDBVALUE_HPP
 
 #ifdef HAVE_KDBCONFIG_H
-#include <internal/kdb/config.h>
+#include <internal/config.h>
 #else
 #define DEBUG 0
 #define VERBOSE 0

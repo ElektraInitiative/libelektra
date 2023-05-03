@@ -10,7 +10,7 @@
 
 #include <backends.hpp>
 #include <elektra/ease/array.h>
-#include <internal/kdb/config.h> // for DEBUG and VERBOSE
+#include <internal/config.h> // for DEBUG and VERBOSE
 #include <modules.hpp>
 #include <plugin.hpp>
 #include <plugins.hpp>

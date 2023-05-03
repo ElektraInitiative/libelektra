@@ -10,7 +10,14 @@
 #ifndef ELEKTRA_MACROS_SYMVER_INTERNAL_H
 #define ELEKTRA_MACROS_SYMVER_INTERNAL_H
 
+#include <elektra/macros/symver.h>
+#include <elektra/macros/utils.h>
+
 #include <internal/config.h>
+
+#ifndef ELEKTRA_SYMVER_COMMAND
+#error "ELEKTRA_SYMVER_COMMAND must be externally defined to the correct .symver assembler pseudo command"
+#endif
 
 /**
  * Declares another version of a symbol using the `.symver` assembler pseudo command

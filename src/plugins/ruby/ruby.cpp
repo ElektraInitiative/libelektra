@@ -14,7 +14,7 @@
 #include <ruby.h>
 
 #ifndef HAVE_KDBCONFIG
-#include <internal/kdb/config.h>
+#include <internal/config.h>
 #endif
 
 #include <internal/macros/attributes.h>

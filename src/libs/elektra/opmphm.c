@@ -8,7 +8,7 @@
 
 
 #include <internal/core/opmphm.h>
-#include <internal/kdb/config.h>
+#include <internal/config.h>
 #include <internal/kdbprivate.h>
 #include <internal/macros/attributes.h>
 #include <internal/utility/assert.h>
