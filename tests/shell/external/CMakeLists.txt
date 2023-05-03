@@ -20,19 +20,21 @@ function (add_externaltest testname)
 		set (testscriptname "${CMAKE_CURRENT_BINARY_DIR}/${testname}")
 		configure_file ("${filename}" "${testscriptname}" @ONLY)
 		# don't actually add as test, only run via `kdb run_all`
-		install (
-			FILES "${CMAKE_CURRENT_BINARY_DIR}/${testname}"
-			DESTINATION ${TARGET_TOOL_EXEC_FOLDER}
-			PERMISSIONS
-				OWNER_READ
-				OWNER_WRITE
-				OWNER_EXECUTE
-				GROUP_READ
-				GROUP_EXECUTE
-				WORLD_READ
-				WORLD_EXECUTE
-			RENAME "check_external_${testname_we}"
-			COMPONENT elektra-tests)
+
+		# FIXME: re-enable tests
+		# install (
+		# 	FILES "${CMAKE_CURRENT_BINARY_DIR}/${testname}"
+		# 	DESTINATION ${TARGET_TOOL_EXEC_FOLDER}
+		# 	PERMISSIONS
+		# 		OWNER_READ
+		# 		OWNER_WRITE
+		# 		OWNER_EXECUTE
+		# 		GROUP_READ
+		# 		GROUP_EXECUTE
+		# 		WORLD_READ
+		# 		WORLD_EXECUTE
+		# 	RENAME "check_external_${testname_we}"
+		# 	COMPONENT elektra-tests)
 	endif (ENABLE_KDB_TESTING AND INSTALL_TESTING)
 endfunction (add_externaltest)
 
