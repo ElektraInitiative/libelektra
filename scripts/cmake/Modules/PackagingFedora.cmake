@@ -52,7 +52,8 @@ set (
 
 if (CPACK_PACKAGE_ARCHITECTURE MATCHES "x86_64")
 	# workaround because rpm autoprov doesn't include symlinks
-	set (CPACK_RPM_LIBELEKTRA${SO_VERSION}_PACKAGE_PROVIDES "libelektra-plugin-resolver.so()(64bit), libelektra-plugin-storage.so()(64bit)")
+	set (CPACK_RPM_LIBELEKTRA${SO_VERSION}_PACKAGE_PROVIDES
+	     "libelektra-plugin-resolver.so()(64bit), libelektra-plugin-storage.so()(64bit)")
 endif ()
 
 set (CPACK_RPM_LIBELEKTRA${SO_VERSION}_PACKAGE_NAME "${CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}_DISPLAY_NAME}")
