@@ -20,6 +20,7 @@ func setupRouter(app *server) http.Handler {
 	r.HandleFunc("/kdb", app.getKdbHandler).Methods("GET")
 	r.HandleFunc("/kdb/{path:.*}", app.getKdbHandler).Methods("GET")
 	r.HandleFunc("/kdb/{path:.*}", app.putKdbHandler).Methods("PUT")
+	r.HandleFunc("/kdbAll/{path:.*}", app.putAllKdbHandler).Methods("PUT")
 	r.HandleFunc("/kdb/{path:.*}", app.deleteKdbHandler).Methods("DELETE")
 
 	r.HandleFunc("/kdbFind/{path:.*}", app.getFindHandler).Methods("GET")
@@ -56,6 +57,11 @@ func stringBody(r *http.Request) (string, error) {
 	}
 
 	return value, nil
+}
+
+func parseFor(r *http.Request, configurations *keyConfigurationSet) error {
+	decoder := json.NewDecoder(r.Body)
+	return decoder.Decode(configurations)
 }
 
 func notFound(w http.ResponseWriter) {
