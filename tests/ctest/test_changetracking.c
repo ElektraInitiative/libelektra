@@ -1,4 +1,7 @@
+#include <elektra/kdb.h>
+
 #include <elektra/changetracking.h>
+
 #include <tests.h>
 
 static void test_contextShouldNotBeNull (void)
@@ -111,6 +114,10 @@ static void test_shouldFindKeysWithModifiedStringValue (void)
 	succeed_if (ksGetSize (removedKeys) == 0, "removedKeys should contain no keys");
 	succeed_if (ksGetSize (modifiedKeys) == 1, "modifiedKeys should contain exactly 1 key");
 
+	// Cleanup
+	keyDel (ksLookupByName (ks, "user:/test/modify/123", KDB_O_POP));
+	kdbSet (kdb, ks, parentKey);
+
 	kdbClose (kdb, parentKey);
 	keyDel (parentKey);
 	ksDel (contract);
@@ -168,6 +175,9 @@ static void test_shouldFindRemoved (void)
 	succeed_if (ksGetSize (addedKeys) == 0, "addedKeys should contain no keys");
 	succeed_if (ksGetSize (removedKeys) == 1, "removedKeys should contain exactly 1 key");
 	succeed_if (ksGetSize (modifiedKeys) == 0, "modifiedKeys should contain no keys");
+
+	// Cleanup
+	kdbSet (kdb, ks, parentKey);
 
 	kdbClose (kdb, parentKey);
 	keyDel (parentKey);
