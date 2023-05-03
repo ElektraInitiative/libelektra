@@ -240,7 +240,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### loader
 
-- Adapt target rename with `-plugin-` in `dl.c` _(Tomislav Makar @tmakar)_ 
+- Adapt target rename with `-plugin-` in `dl.c` _(Tomislav Makar @tmakar)_
 - <<TODO>>
 - <<TODO>>
 
