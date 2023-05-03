@@ -57,8 +57,6 @@ static int elektraLogStdErr (int level ELEKTRA_UNUSED, const char * function ELE
 #endif
 
 #ifdef USE_SYSLOG_SINK
-static int syslogOpened = 0;
-
 static int elektraLogSyslog (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED, const char * file ELEKTRA_UNUSED,
 			     const int line ELEKTRA_UNUSED, const char * msg)
 {
@@ -88,12 +86,7 @@ static int elektraLogSyslog (int level ELEKTRA_UNUSED, const char * function ELE
 		vlevel = LOG_CRIT;
 	}
 
-	if (!syslogOpened)
-	{
-		openlog ("Elektra", LOG_PID, LOG_USER);
-		syslogOpened = 1;
-	}
-
+	openlog ("Elektra", LOG_PID, LOG_USER);
 	syslog (vlevel, "%s", msg);
 	return 0;
 }

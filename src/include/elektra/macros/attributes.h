@@ -30,4 +30,10 @@
 #define ELEKTRA_ATTRIBUTE_NO_RETURN
 #endif
 
+#if defined(__GNUC__) || defined(__clang__)
+#undef ELEKTRA_WEAK
+#define ELEKTRA_WEAK __attribute__ ((weak))
+#endif
+
+
 #endif // ELEKTRA_MACROS_ATTRIBUTES_H

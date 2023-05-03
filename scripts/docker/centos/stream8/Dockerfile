@@ -1,5 +1,7 @@
 FROM quay.io/centos/centos:stream8
 
+# Install DNF config manager plugin
+RUN dnf install -y 'dnf-command(config-manager)'
 # Enable PowerTools repo
 RUN dnf config-manager --set-enabled powertools
 # Enable EPEL repo
@@ -104,7 +106,7 @@ RUN useradd \
     jenkins
 
 # download and install gradle
-RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-8.0.1-bin.zip && unzip gradle-8.0.1-bin.zip && rm gradle-8.0.1-bin.zip && mv gradle-8.0.1 /opt/gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-8.0.2-bin.zip && unzip gradle-8.0.2-bin.zip && rm gradle-8.0.2-bin.zip && mv gradle-8.0.2 /opt/gradle
 RUN alternatives --set java java-11-openjdk.$(uname -m) && alternatives --set javac java-11-openjdk.$(uname -m)
 ENV PATH="${PATH}:/opt/gradle/bin" \
     JAVA_HOME="/etc/alternatives/jre"

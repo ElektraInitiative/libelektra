@@ -38,6 +38,7 @@
 #include <errno.h>
 #endif
 
+#include <elektra/changetracking.h>
 #include <elektra/core/errors.h>
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
@@ -45,22 +46,33 @@
 #include <elektra/ease/meta.h>
 #include <elektra/kdb/kdb.h>
 #include <elektra/plugin/plugin.h>
+
 #include <internal/config.h>
 #include <internal/kdbprivate.h>
 #include <internal/pluginload/module.h>
 #include <internal/utility/logger.h>
+
 #define KDB_GET_PHASE_POST_STORAGE_SPEC (KDB_GET_PHASE_POST_STORAGE "/spec")
 #define KDB_GET_PHASE_POST_STORAGE_NONSPEC (KDB_GET_PHASE_POST_STORAGE "/nonspec")
 
 /**
- * removes the SYNC flag on all keys of the provided KeySet
- * @param ks the KeySet
+ * @internal
+ *
+ * @brief appends duplicated keys from @p toAppend to @p ks
+ *
+ * @param ks the KeySet that will receive the Keys
+ * @param toAppend the KeySet that provides the Keys that will be duplicated
  */
-static void clearAllSync (KeySet * ks)
+static void ksAppendDup (KeySet * ks, const KeySet * toAppend)
 {
-	for (elektraCursor i = 0; i < ksGetSize (ks); i++)
+	if (ks == NULL || toAppend == NULL)
 	{
-		keyClearSync (ksAtCursor (ks, i));
+		return;
+	}
+
+	for (elektraCursor i = 0; i < ksGetSize (toAppend); i++)
+	{
+		ksAppendKey (ks, keyDup (ksAtCursor (toAppend, i), KEY_CP_ALL));
 	}
 }
 
@@ -310,7 +322,6 @@ static void addMountpoint (KeySet * backends, Key * mountpoint, Plugin * backend
 		.definition = definition,
 		.getSize = 0,
 		.initialized = false,
-		.keyNeedsSync = false,
 	};
 	keySetBinary (mountpoint, &backendData, sizeof (backendData));
 	ksAppendKey (backends, mountpoint);
@@ -1002,6 +1013,10 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 	keyDel (initialParent);
 	errno = errnosave;
 
+	handle->allKeys = ksNew (0, KS_END);
+	ksIncRef (handle->allKeys);
+	handle->changeTrackingContext.oldKeys = handle->allKeys;
+
 	return handle;
 
 error:
@@ -1054,6 +1069,13 @@ int kdbClose (KDB * handle, Key * errorKey)
 
 	Key * initialParent = keyDup (errorKey, KEY_CP_ALL);
 	int errnosave = errno;
+
+	if (handle->allKeys)
+	{
+		ksDecRef (handle->allKeys);
+		ksDel (handle->allKeys);
+		handle->allKeys = NULL;
+	}
 
 	if (handle->backends)
 	{
@@ -1937,11 +1959,13 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	// Step 18: merge data into ks and return
-	backendsMerge (backends, ks);
-	clearAllSync (ks);
+	ksClear (dataKs);
+	backendsMerge (backends, dataKs);
+	ksAppend (ks, dataKs);
 
 	// TODO (atmaxinger): should we have a default:/ backend?
 	ksAppend (ks, defaults);
+	ksAppend (dataKs, defaults);
 	ksDel (defaults);
 	keyDel (defaultCutpoint);
 
@@ -1964,6 +1988,12 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	ksDel (backends);
 	ksDel (allBackends);
+
+	if (handle->allKeys != NULL)
+	{
+		ksDel (ksCut (handle->allKeys, parentKey));
+		ksAppendDup (handle->allKeys, dataKs);
+	}
 	ksDel (dataKs);
 
 	errno = errnosave;
@@ -2264,7 +2294,7 @@ static bool runSetPhase (KeySet * backends, Key * parentKey, ElektraKdbPhase pha
  *
  * @par Optimization
  * Only backends that
- * - contain at least changed key according to keyNeedSync(),
+ * - contain at least changed key according to elektraDiffCalculate(),
  * - contain fewer keys than at the end of kdbGet()
  * will be called.
  * There won't be an unnecessary write for unchanged keys.
@@ -2420,8 +2450,12 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		Key * backendKey = ksAtCursor (backends, i);
 		const BackendData * backendData = keyValue (backendKey);
 
+		ElektraDiff * diff = elektraDiffCalculate (backendData->keys, handle->allKeys, backendKey);
+
 		bool readOnly = keyGetMeta (backendKey, "meta:/internal/kdbreadonly") != NULL;
-		bool changed = backendData->keyNeedsSync || backendData->getSize != (size_t) ksGetSize (backendData->keys);
+		bool changed = !elektraDiffIsEmpty (diff) || backendData->getSize != (size_t) ksGetSize (backendData->keys);
+
+		elektraDiffDel (diff);
 
 		// issue warning, if readonly but changed
 		if (readOnly && changed)
@@ -2467,11 +2501,23 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	ksClear (setKs);
 	backendsMerge (backends, setKs);
 
+	// there is no guarantee that the keys in the spec namespace are included in setKs
+	// adding it before removing metadata
+	Key * specNamespace = keyNew ("spec:/", KEY_END);
+	KeySet * allKeysInSpecNamespace = ksBelow (ks, specNamespace);
+	ksAppend (allKeysInSpecNamespace, setKs);
+
 	// Step 9: run the spec plugin to remove copied metadata
-	if (handle->hooks.spec.plugin && handle->hooks.spec.remove (handle->hooks.spec.plugin, setKs, parentKey) == -1)
+	if (handle->hooks.spec.plugin && handle->hooks.spec.remove (handle->hooks.spec.plugin, allKeysInSpecNamespace, parentKey) == -1)
 	{
+		ksDel (allKeysInSpecNamespace);
+		keyDel (specNamespace);
+
 		goto rollback;
 	}
+
+	ksDel (allKeysInSpecNamespace);
+	keyDel (specNamespace);
 
 	// Step 10: split setKs for remaining phases
 	if (!backendsDivide (backends, setKs))
@@ -2521,12 +2567,16 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		sendNotificationHook = sendNotificationHook->next;
 	}
 
-	clearAllSync (ks);
-
 	keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 	keyDel (initialParent);
 	ksDel (setKs);
 	ksDel (backends);
+
+	if (handle->allKeys != NULL)
+	{
+		ksDel (ksCut (handle->allKeys, parentKey));
+		ksAppendDup (handle->allKeys, ks);
+	}
 
 	errno = errnosave;
 

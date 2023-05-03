@@ -23,7 +23,6 @@
 #include "./scalar.h"
 #include "./table_array.h"
 
-
 typedef struct _ParentList
 {
 	Key * key;
@@ -92,17 +91,6 @@ void driverError (Driver * driver, int err, int lineno, const char * format, ...
  * @param callee Name of function causing the error.
  */
 void driverErrorGeneric (Driver * driver, int err, const char * caller, const char * callee);
-
-
-/**
- * @brief Wraps a driverError call, for errors emitted by Flex/bison.
- *
- * @param driver Driver on which to set the error.
- * @param msg Message to write.
- *
- * @retval 0
- */
-int yyerror (Driver * driver, const char * msg);
 
 
 /**

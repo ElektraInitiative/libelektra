@@ -1,3 +1,5 @@
+- infos/maintainer = Tomislav Makar <tmakar23@gmail.com>
+
 # elektra-web
 
 _an API and web user interface to remotely manage Elektra instances_
@@ -22,12 +24,6 @@ To build Elektra with the elektra-web tool:
 - Configure libelektra build with the elektra-web tool, e.g. `cmake .. -DTOOLS="kdb;web"`
 - Build libelektra: `make`
 - Install libelektra: `sudo make install`
-
-## Getting Started
-
-- Start an elektrad instance: `kdb run-elektrad`
-- Start the client: `kdb run-webd`
-- You can now access the client on: [http://localhost:33334](http://localhost:33334)
 
 ## Getting Started (docker)
 
@@ -70,7 +66,7 @@ instance, you must first start elektrad via `kdb run-elektrad`. Afterwards, you 
 client with:
 
 ```sh
-INSTANCE="http://localhost:33333" kdb run-webd
+export INSTANCE="http://localhost:33333" && npm start
 ```
 
 It is also possible to set visibility by prefixing the host with `VISIBILITY@`.
@@ -78,7 +74,7 @@ It is also possible to set visibility by prefixing the host with `VISIBILITY@`.
 For example (`advanced` visibility, `user` is default):
 
 ```sh
-INSTANCE="advanced@http://localhost:33333" kdb run-webd
+export INSTANCE="advanced@http://localhost:33333" && npm start
 ```
 
 Now, when you open [http://localhost:33334](http://localhost:33334) in your
@@ -136,7 +132,7 @@ First create a new key-value pair `user:/test` and set its value to 5. This can 
   ```
 - through the rest API using curl
   ```sh
-  curl -X PUT -H "Content-Type: text/plain" --data "5" http://localhost:33333/kdb/user/test
+  curl -X PUT -H "Content-Type: text/plain" --data "5" http://localhost:33333/kdb/user:/test
   ```
 
 The output of the commandline tool will be `Set string to "5"` if the key did not exist before.
@@ -146,8 +142,8 @@ Elektrad will respond with code `200`.
 The command
 
 ```sh
-curl http://localhost:33333/kdb/user/test
-#> {"exists":true,"name":"test","path":"user/test","ls":["user/test"],"value":"5","meta":""}
+curl http://localhost:33333/kdb/user:/test
+#> {"exists":true,"name":"test","path":"user:/test","ls":["user:/test"],"value":"5","meta":""}
 ```
 
 will now return the value of the specified key `user:/test`, which is stored in the database.
@@ -164,6 +160,44 @@ will now return the value of the specified key `user:/test`, which is stored in 
     ],
     "value": "5",
     "meta": ""
+}
+```
+
+<!-- prettier-ignore-end -->
+
+The command
+
+```sh
+curl -X POST -H "Content-Type: application/json" -d '{"meta": [{"key": "metakey1", "value": "value1"},{"key": "metakey2", "value": "value2"}]}' http://localhost:33333/kdbMetaBulk/user:/test
+```
+
+will now create multiple metakeys at once.
+In this case, it will create two (`metakey1` and `metakey2`).
+
+The command
+
+```sh
+curl http://localhost:33333/kdb/user:/test
+#> {"exists":true,"name":"test","path":"user:/test","ls":["user:/test"],"value":"1","meta":{"metakey1":"value1","metakey2":"value2"}}
+```
+
+will now also return the two metakeys.
+
+<!-- prettier-ignore-start -->
+
+```json
+{
+    "exists": true,
+    "name": "test",
+    "path": "user:/test",
+    "ls": [
+        "user:/test"
+    ],
+    "value": "5",
+    "meta": {
+        "metakey1": "value1",
+        "metakey2": "value2"
+    }
 }
 ```
 

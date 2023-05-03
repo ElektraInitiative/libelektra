@@ -22,6 +22,15 @@ This command writes into the `/etc` directory and as such it requires root permi
 - `-v`, `--verbose`:
   Show which mount points were considered.
 
+## RETURN VALUES
+
+This command will return the following values as an exit status:<br>
+
+- 0:
+  No errors.
+- 11:
+  Mountpoint does not exist.
+
 ## SEE ALSO
 
 - [kdb-mount(1)](kdb-mount.md).

@@ -118,11 +118,12 @@ TEST_F (Error, AgainRepeat)
 
 	for (auto code = errorCodes.begin (); code != errorCodes.end (); ++code)
 	{
-		ks.append (Key ("system:" + testRoot + "key", KEY_END));
+		ks.clear ();
+		ks.append (Key ("system:" + testRoot + "key" + code->c_str (), KEY_END));
 
 		EXPECT_NO_THROW (kdb.set (ks, parentKey)) << "no error trigger?";
 
-		ks.append (Key ("system:" + testRoot + "key", KEY_META, "trigger/error", code->c_str (), KEY_END));
+		ks.append (Key ("system:" + testRoot + "key" + code->c_str (), KEY_META, "trigger/error", code->c_str (), KEY_END));
 
 		EXPECT_THROW (kdb.set (ks, parentKey), kdb::KDBException) << "could not trigger error (again)";
 

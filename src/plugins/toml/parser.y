@@ -7,7 +7,7 @@
  *
  */
 
-%{
+%code requires{
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,24 +18,26 @@
 #include "./scalar.h"
 #include "./driver.h"
 
+#ifndef YY_TYPEDEF_YY_SCANNER_T
+#define YY_TYPEDEF_YY_SCANNER_T
+typedef void* yyscan_t;
+#endif
 
-extern int yylex(Driver * driver);
-
-%}
-%locations
-
-%lex-param { Driver * driver }
-%parse-param { Driver * driver }
-%define parse.error verbose
-
-%code requires {
-#include "./scalar.h"
-#include "./driver.h"
+#define yylval_param lval
+#define yylloc_param lloc
+#define YY_DECL int yylex (YYSTYPE* lval, YYLTYPE * lloc, Driver * driver, yyscan_t yyscanner)
 }
 
-%code provides {
-#define YY_DECL int yylex (Driver * driver)
+
+%define api.pure full
+%lex-param { Driver * driver } { yyscan_t yyscanner }
+%parse-param { Driver * driver } { yyscan_t yyscanner }
+%locations
+%define parse.error verbose
+
+%code provides{
 YY_DECL;
+int yyerror(YYLTYPE * lloc, Driver * driver, yyscan_t yyscanner, const char* message);
 }
 
 %union {
@@ -100,7 +102,7 @@ OptComment	:	COMMENT { driverExitComment (driver, $1); }
 		;
 
 NewlinesBetweenNodes	:	NEWLINE	/* Not counted because it's the normal line ending newline between nodes, not one indicating an empty line.*/
-			|	NewlinesBetweenNodes NEWLINE { driverExitNewline (driver); }
+			|	NewlinesBetweenNodes NEWLINE { yynerrs = 1*yynerrs; /* dummy use of yynerrs to suppress unused warning */ driverExitNewline (driver); }
 			;
 
 NewlinesLeading		:	%empty

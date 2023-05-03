@@ -13,6 +13,9 @@ plugins {
 allprojects {
     version = project.properties['releaseVersion'] ?: 'SNAPSHOT'
     group = 'org.libelektra'
+    ext {
+        isReleaseVersion = !project.version.contains("SNAPSHOT")
+    }
 }
 
 nexusPublishing {
@@ -32,12 +35,6 @@ if (versionSettings.exists()) {
     apply from: versionSettings
 }
 
-allprojects {
-    ext {
-        isReleaseVersion = !project.version.contains("SNAPSHOT")
-    }
-}
-
 // log task graph
 gradle.taskGraph.whenReady { taskGraph ->
     logger.lifecycle("Building Elektra Java bindings version: ${rootProject.version}")
@@ -49,20 +46,20 @@ gradle.taskGraph.whenReady { taskGraph ->
         task.dependsOn.forEach { dep ->
             logger.lifecycle("  - $dep")
         }
-        task.inputs.files.each { input ->
-            logger.lifecycle("  IF $input")
-        }
+        // task.inputs.files.each { input ->
+        //     logger.lifecycle("  IF $input")
+        // }
 
         // task.inputs.properties.each { input ->
         //     logger.lifecycle("  IP $input")
         // }
 
-        task.outputs.files.each { output ->
-            logger.lifecycle("  OF $output")
-        }
+        // task.outputs.files.each { output ->
+        //     logger.lifecycle("  OF $output")
+        // }
     }
     if (rootProject.version == 'undefined' || rootProject.version == '0.9.4-1') {
-        throw new GradleException("Version '${rootProject.version}' is blacklisted. see https://issues.sonatype.org/browse/OSSRH-66930")
+        throw new RuntimeException("Version '${rootProject.version}' is blacklisted. see https://issues.sonatype.org/browse/OSSRH-66930")
     }
 }
 

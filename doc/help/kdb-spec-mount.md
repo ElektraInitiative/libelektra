@@ -9,8 +9,6 @@
 - `plugin` are extra Elektra plugins to be used (next to the one specified in `spec:/<mountpoint>`).
 - Plugins may be followed by a `,` separated list of `keys=values` pairs which will be used as plugin configuration.
 
-`kdb smount` is an alias and can be used in the same way as `kdb spec-mount`.
-
 ## DESCRIPTION
 
 This command allows a user to mount a new _backend_ described by a previously mounted specification.

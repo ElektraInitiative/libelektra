@@ -46,13 +46,37 @@
 
 /* -- Global declarations---------------------------------------------------------------------------------------------------------------- */
 
-static KeySet magicKeySet;
-static Key magicKey;
-static MmapMetaData magicMmapMetaData;
+#ifndef ELEKTRA_MMAP_MAGIC_NUMBER
+#error ELEKTRA_MMAP_MAGIC_NUMBER should be defined by CMake
+#endif
+
+static const KeySet magicKeySet = (KeySet){
+	// FIXME: new magic data for COW
+};
+static const Key magicKey = (Key){
+	// FIXME: new magic data for COW
+};
+static const MmapMetaData magicMmapMetaData = (MmapMetaData){
+	.numKeySets = SIZE_MAX,
+	.ksAlloc = 0,
+	.numKeys = SIZE_MAX / 2,
+};
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-static Opmphm magicOpmphm;
-static OpmphmPredictor magicOpmphmPredictor;
+static const Opmphm magicOpmphm = (Opmphm){
+	.hashFunctionSeeds = (void *) ELEKTRA_MMAP_MAGIC_NUMBER,
+	.rUniPar = INT8_MAX,
+	.componentSize = SIZE_MAX / 2,
+	.graph = (void *) ~ELEKTRA_MMAP_MAGIC_NUMBER,
+	.size = SIZE_MAX,
+};
+static const OpmphmPredictor magicOpmphmPredictor = (OpmphmPredictor){
+	.history = UINT16_MAX,
+	.patternTable = (void *) ELEKTRA_MMAP_MAGIC_NUMBER,
+	.size = SIZE_MAX / 2,
+	.lookupCount = 0,
+	.ksSize = SIZE_MAX,
+};
 #endif
 
 typedef enum
@@ -373,110 +397,6 @@ static void writeMagicData (const char * mappedRegion)
 }
 
 /* -- Verification Functions  ----------------------------------------------------------------------------------------------------------- */
-
-/**
- * @brief Generate magic number depending on pointer size.
- *
- * Generates magic number to detect arbitrary byte swaps.
- * For each byte of the number, a different value is assigned.
- * E.g.: Systems with 8-byte pointers will have the magic number 0x0706050403020100.
- *
- * @return generated magic number
- */
-static uintptr_t generateMagicNumber (void)
-{
-	uintptr_t ret = 0;
-
-	size_t ptrBytes = sizeof (void *);
-	for (uintptr_t i = 0; i < ptrBytes; ++i)
-	{
-		ret |= (i << (i * 8));
-	}
-
-	return ret;
-}
-
-/**
- * @brief Magic KeySet initializer.
- *
- * @param magicNumber to detect arbitrary byte-swaps
- */
-static void initMagicKeySet (const uintptr_t magicNumber)
-{
-	magicKeySet.array = (Key **) magicNumber;
-	magicKeySet.size = SIZE_MAX;
-	magicKeySet.alloc = 0;
-	magicKeySet.cursor = (Key *) ~magicNumber;
-	magicKeySet.current = SIZE_MAX / 2;
-	magicKeySet.flags = KS_FLAG_MMAP_ARRAY | KS_FLAG_SYNC;
-	magicKeySet.refs = UINT16_MAX;
-	magicKeySet.reserved = 0;
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	magicKeySet.opmphm = (Opmphm *) ELEKTRA_MMAP_MAGIC_BOM;
-	magicKeySet.opmphmPredictor = 0;
-#endif
-}
-
-/**
- * @brief Magic Key initializer.
- *
- * @param magicNumber to detect arbitrary byte-swaps
- */
-static void initMagicKey (const uintptr_t magicNumber)
-{
-	magicKey.data.v = (void *) ~magicNumber;
-	magicKey.dataSize = SIZE_MAX;
-	magicKey.key = (char *) magicNumber;
-	magicKey.keySize = UINT16_MAX;
-	magicKey.ukey = 0;
-	magicKey.keyUSize = 0;
-	magicKey.meta = (KeySet *) ELEKTRA_MMAP_MAGIC_BOM;
-	magicKey.flags = KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_DATA | KEY_FLAG_MMAP_KEY | KEY_FLAG_SYNC;
-	magicKey.refs = UINT16_MAX / 2;
-	magicKey.reserved = UINT16_MAX;
-}
-
-/**
- * @brief Magic MmapMetaData initializer.
- *
- * @param magicNumber to detect arbitrary byte-swaps
- */
-static void initMagicMmapMetaData (void)
-{
-	magicMmapMetaData.numKeySets = SIZE_MAX;
-	magicMmapMetaData.ksAlloc = 0;
-	magicMmapMetaData.numKeys = SIZE_MAX / 2;
-}
-
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-/**
- * @brief Magic Opmphm initializer.
- *
- * @param magicNumber to detect arbitrary byte-swaps
- */
-static void initMagicOpmphm (const uintptr_t magicNumber)
-{
-	magicOpmphm.hashFunctionSeeds = (void *) magicNumber;
-	magicOpmphm.rUniPar = INT8_MAX;
-	magicOpmphm.componentSize = SIZE_MAX / 2;
-	magicOpmphm.graph = (void *) ~magicNumber;
-	magicOpmphm.size = SIZE_MAX;
-}
-
-/**
- * @brief Magic OpmphmPredictor initializer.
- *
- * @param magicNumber to detect arbitrary byte-swaps
- */
-static void initMagicOpmphmPredictor (const uintptr_t magicNumber)
-{
-	magicOpmphmPredictor.history = UINT16_MAX;
-	magicOpmphmPredictor.patternTable = (void *) magicNumber;
-	magicOpmphmPredictor.size = SIZE_MAX / 2;
-	magicOpmphmPredictor.lookupCount = 0;
-	magicOpmphmPredictor.ksSize = SIZE_MAX;
-}
-#endif
 
 /**
  * @brief Verify the magic KeySet.
@@ -1272,17 +1192,6 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle ELEKTRA_UNUSED, Key * errorK
 	if (offsetof (MmapHeader, reservedB) != STATIC_HEADER_OFFSETOF_RESERVED_B) goto error;
 	if (sizeof (MmapFooter) != STATIC_SIZEOF_MMAPFOOTER) goto error;
 	if (offsetof (MmapFooter, mmapMagicNumber) != STATIC_FOOTER_OFFSETOF_MAGICNUMBER) goto error;
-
-	// initialize magic data
-	const uintptr_t magicNumber = generateMagicNumber ();
-	if (magicKeySet.array == 0) initMagicKeySet (magicNumber);
-	if (magicKey.data.v == 0) initMagicKey (magicNumber);
-	if (magicMmapMetaData.numKeys == 0) initMagicMmapMetaData ();
-
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	if (magicOpmphm.size == 0) initMagicOpmphm (magicNumber);
-	if (magicOpmphmPredictor.ksSize == 0) initMagicOpmphmPredictor (magicNumber);
-#endif
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 

@@ -18,10 +18,11 @@
 typedef int Counter;
 #define COUNTER_FMT "%d"
 
-static Counter elektraCountOpen = 0;
 
 int elektraCounterOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
+	static Counter elektraCountOpen;
+
 	elektraCountOpen += 1;
 	KeySet * config = elektraPluginGetConfig (handle);
 	if (ksLookupByName (config, "/module", 0))
@@ -39,10 +40,10 @@ int elektraCounterOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	return 1; /* success */
 }
 
-static Counter elektraCountClose = 0;
-
 int elektraCounterClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
+	static Counter elektraCountClose;
+
 	elektraCountClose += 1;
 	KeySet * config = elektraPluginGetConfig (handle);
 	if (ksLookupByName (config, "/module", 0))

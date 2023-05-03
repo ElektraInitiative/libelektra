@@ -18,10 +18,10 @@
 #include <ctype.h>
 #include <stdio.h>
 
-static const char * toEscape = "\"'\\?\n\r\t";
-static const char * escapes = "\"'\\?nrt";
+static const char * const toEscape = "\"'\\?\n\r\t";
+static const char * const escapes = "\"'\\?nrt";
 
-static const char * hex = "0123456789abcdef";
+static const char * const hex = "0123456789abcdef";
 
 static char * escapeString (char ** str)
 {

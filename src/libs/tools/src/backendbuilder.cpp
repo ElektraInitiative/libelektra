@@ -527,7 +527,7 @@ void GlobalPluginsBuilder::serialize (kdb::KeySet & ret)
 /**
  * @brief Below this path is the configuration for global plugins
  */
-const char * GlobalPluginsBuilder::globalPluginsPath = "system:/elektra/globalplugins";
+const char * const GlobalPluginsBuilder::globalPluginsPath = "system:/elektra/globalplugins";
 
 
 void MountBackendBuilder::status (std::ostream & os) const

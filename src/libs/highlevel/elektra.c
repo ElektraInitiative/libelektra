@@ -513,20 +513,20 @@ void elektraClose (Elektra * elektra)
 
 // Private definitions
 
-KDBType KDB_TYPE_STRING = "string";
-KDBType KDB_TYPE_BOOLEAN = "boolean";
-KDBType KDB_TYPE_CHAR = "char";
-KDBType KDB_TYPE_OCTET = "octet";
-KDBType KDB_TYPE_SHORT = "short";
-KDBType KDB_TYPE_UNSIGNED_SHORT = "unsigned_short";
-KDBType KDB_TYPE_LONG = "long";
-KDBType KDB_TYPE_UNSIGNED_LONG = "unsigned_long";
-KDBType KDB_TYPE_LONG_LONG = "long_long";
-KDBType KDB_TYPE_UNSIGNED_LONG_LONG = "unsigned_long_long";
-KDBType KDB_TYPE_FLOAT = "float";
-KDBType KDB_TYPE_LONG_DOUBLE = "long_double";
-KDBType KDB_TYPE_DOUBLE = "double";
-KDBType KDB_TYPE_ENUM = "enum";
+KDBType const KDB_TYPE_STRING = "string";
+KDBType const KDB_TYPE_BOOLEAN = "boolean";
+KDBType const KDB_TYPE_CHAR = "char";
+KDBType const KDB_TYPE_OCTET = "octet";
+KDBType const KDB_TYPE_SHORT = "short";
+KDBType const KDB_TYPE_UNSIGNED_SHORT = "unsigned_short";
+KDBType const KDB_TYPE_LONG = "long";
+KDBType const KDB_TYPE_UNSIGNED_LONG = "unsigned_long";
+KDBType const KDB_TYPE_LONG_LONG = "long_long";
+KDBType const KDB_TYPE_UNSIGNED_LONG_LONG = "unsigned_long_long";
+KDBType const KDB_TYPE_FLOAT = "float";
+KDBType const KDB_TYPE_LONG_DOUBLE = "long_double";
+KDBType const KDB_TYPE_DOUBLE = "double";
+KDBType const KDB_TYPE_ENUM = "enum";
 
 void elektraSetLookupKey (Elektra * elektra, const char * name)
 {

@@ -62,7 +62,6 @@ public class ReadableKey implements Comparable<ReadableKey> {
    * @param pointer Optional JNA {@link Pointer} to key
    * @return New {@link ReadableKey} instance if {@code pointer} is non-null, {@link
    *     Optional#empty()} otherwise
-   * @see #release()
    */
   @Nonnull
   protected static Optional<ReadableKey> createReadOnly(@Nullable Pointer pointer) {
@@ -73,7 +72,6 @@ public class ReadableKey implements Comparable<ReadableKey> {
    * Constructor associating a new {@link ReadableKey} instance with a JNA pointer
    *
    * @param pointer JNA {@link Pointer} to key
-   * @see #release()
    */
   protected ReadableKey(Pointer pointer) {
     this(pointer, false);
@@ -88,12 +86,10 @@ public class ReadableKey implements Comparable<ReadableKey> {
    * @param pointer JNA {@link Pointer} to key
    * @param suppressCleanUp True to suppress native reference clean-up as soon as this {@link Key}
    *     instance becomes phantom reachable, false otherwise
-   * @see #release()
    */
   protected ReadableKey(Pointer pointer, boolean suppressCleanUp) {
     argNotNull(pointer, "Pointer 'pointer'");
     this.pointer = pointer;
-    ReferenceCleaner.keyWrapperCreated(this);
     cleanable = (suppressCleanUp ? null : ReferenceCleaner.registerKeyCleanUp(this)); // see #3825
   }
 
@@ -101,13 +97,8 @@ public class ReadableKey implements Comparable<ReadableKey> {
    * Clean-up method to release key reference by first decrementing its reference counter and then
    * trying to free the native reference<br>
    * <br>
-   * Call this method if you do not longer need a {@link ReadableKey} and obtained it via any of its
-   * public methods or the public methods of {@link KeySet}. If you do not manually release such
-   * {@link ReadableKey keys}, they will get cleaned up by garbage collection as soon as they get
-   * phantom reachable. Therefore its encouraged to release {@link ReadableKey key instances} as
-   * soon as you do not use them anymore.
-   *
-   * <p>{@link ReadableKey}s should not be manually released.
+   * {@link ReadableKey keys}, will get cleaned up by garbage collection as soon as they get phantom
+   * reachable.
    */
   protected void release() {
     if (cleanable != null) {
@@ -226,7 +217,6 @@ public class ReadableKey implements Comparable<ReadableKey> {
    * @throws KeyException if copying failed
    * @throws IllegalStateException if this {@link ReadableKey} has already been released
    * @see #dup(int)
-   * @see #release()
    */
   @Nonnull
   public Key dup() {
@@ -243,7 +233,6 @@ public class ReadableKey implements Comparable<ReadableKey> {
    * @throws KeyException if copying failed
    * @throws IllegalStateException if this {@link ReadableKey} has already been released
    * @see #dup()
-   * @see #release()
    * @see #KEY_CP_ALL
    * @see #KEY_CP_META
    * @see #KEY_CP_NAME
@@ -415,7 +404,7 @@ public class ReadableKey implements Comparable<ReadableKey> {
   @Nonnull
   protected Pointer getPointer() {
     if (pointer == null) {
-      throw new IllegalStateException();
+      throw new IllegalStateException("Native resource pointer is null.");
     }
     return pointer;
   }

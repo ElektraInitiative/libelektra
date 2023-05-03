@@ -326,7 +326,7 @@ kdb set -f user:/tests/range/value2 11
 
 # validation fails now
 kdb validate /tests/range
-# RET:1
+# RET:11
 
 # clean up
 kdb rm -r /tests/range/

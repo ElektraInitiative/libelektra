@@ -51,7 +51,6 @@ public class KDBExceptionTest {
 
     assertEquals(expectedErrorMessage, exception.getMessage());
     assertFalse(exception.hasWarnings());
-    assertEquals(errorKey, exception.getErrorKey());
   }
 
   @Test

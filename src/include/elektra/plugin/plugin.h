@@ -10,6 +10,8 @@
 #define KDBPLUGIN_H
 
 #include <elektra/core/keyset.h>
+#include <elektra/kdb/kdb.h>
+
 #include <errno.h>
 #include <string.h>
 
@@ -130,6 +132,7 @@ Plugin * elektraPluginExport (const char * pluginName, ...);
 KeySet * elektraPluginGetConfig (Plugin * handle);
 void elektraPluginSetData (Plugin * plugin, void * handle);
 void * elektraPluginGetData (Plugin * plugin);
+KDB * elektraPluginGetKdb (Plugin * plugin);
 
 KeySet * elektraPluginGetGlobalKeySet (Plugin * plugin);
 ElektraKdbPhase elektraPluginGetPhase (Plugin * plugin);

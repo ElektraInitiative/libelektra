@@ -28,21 +28,21 @@
 #define TIME_OFFSET "(Z|([+-]" DIG2 ":" DIG2 "))"
 #define TIME_SEPARATOR "[T ]"
 
-const char * decStr = "^[+-]?" SEP_NUM_NZERO_START "$";
-const char * floatStr = "^[+-]?(0|" SEP_NUM_NZERO_START
-			")" // PRE-DOT DIGITS
-			"((" AFTER_DOT
-			")|" // NEED EITHER DOT AND NUMBERS
-			"("
-			"(" AFTER_DOT ")?[eE][+-]?" SEPARATED_DIGITS ("[0-9]") "))$"; // OR DOT+NUMBERS+EXPONENT+NUMBERS
-const char * floatSpecialStr = "^[+-]?(nan|inf)$";
+const char * const decStr = "^[+-]?" SEP_NUM_NZERO_START "$";
+const char * const floatStr = "^[+-]?(0|" SEP_NUM_NZERO_START
+			      ")" // PRE-DOT DIGITS
+			      "((" AFTER_DOT
+			      ")|" // NEED EITHER DOT AND NUMBERS
+			      "("
+			      "(" AFTER_DOT ")?[eE][+-]?" SEPARATED_DIGITS ("[0-9]") "))$"; // OR DOT+NUMBERS+EXPONENT+NUMBERS
+const char * const floatSpecialStr = "^[+-]?(nan|inf)$";
 // const char * bareStr = "^[a-zA-Z0-9_-]+$";
 
 
-const char * offsetDateTimeStr = "^" FULL_DATE TIME_SEPARATOR PARTIAL_TIME TIME_OFFSET "$";
-const char * localDateTimeStr = "^" FULL_DATE TIME_SEPARATOR PARTIAL_TIME "$";
-const char * localDateStr = "^" FULL_DATE "$";
-const char * localTimeStr = "^" PARTIAL_TIME "$";
+const char * const offsetDateTimeStr = "^" FULL_DATE TIME_SEPARATOR PARTIAL_TIME TIME_OFFSET "$";
+const char * const localDateTimeStr = "^" FULL_DATE TIME_SEPARATOR PARTIAL_TIME "$";
+const char * const localDateStr = "^" FULL_DATE "$";
+const char * const localTimeStr = "^" PARTIAL_TIME "$";
 
 static bool validFullDateValues (const char * fullDate);
 static bool validFullTimeValues (const char * fullTime);

@@ -1590,16 +1590,12 @@ static void test_keyCopy (void)
 
 
 	orig = keyNew ("user:/orig", KEY_END);
-	succeed_if (keyNeedSync (orig), "fresh key does not need sync?");
 	KeySet * ks = ksNew (20, KS_END);
 	ksAppendKey (ks, orig);
 	copy = keyNew ("user:/othername", KEY_END);
-	succeed_if (keyNeedSync (copy), "fresh key does not need sync?");
 	succeed_if (keyGetRef (orig) == 1, "orig ref counter should be 1");
 	succeed_if (keyGetRef (copy) == 0, "copy ref counter should be 0");
 	succeed_if (keyCopy (orig, copy, KEY_CP_ALL) == NULL, "copy should not be allowed when key is already referred to");
-	succeed_if (keyNeedSync (orig), "copied key does not need sync?");
-	succeed_if (keyNeedSync (copy), "copied key does not need sync?");
 
 	succeed_if (keyGetRef (orig) == 1, "orig ref counter should be 1");
 	succeed_if (keyGetRef (copy) == 0, "copy ref counter should be 1");

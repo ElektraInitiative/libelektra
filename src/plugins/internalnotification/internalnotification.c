@@ -9,11 +9,13 @@
 
 #include "./internalnotification.h"
 
+#include <elektra/changetracking.h>
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 #include <elektra/core/namespace.h>
 #include <elektra/kdb/kdb.h>
 #include <elektra/type/types.h>
+
 #include <internal/notifications.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
@@ -31,7 +33,6 @@
 struct _KeyRegistration
 {
 	char * name;
-	char * lastValue;
 	int sameOrBelow;
 	int freeContext;
 	ElektraNotificationChangeCallback callback;
@@ -200,7 +201,6 @@ static KeyRegistration * elektraInternalnotificationAddNewRegistration (PluginSt
 		return NULL;
 	}
 	item->next = NULL;
-	item->lastValue = NULL;
 	item->name = elektraStrDup (keyName (key));
 	item->callback = callback;
 	item->context = context;
@@ -247,20 +247,29 @@ static int keySetContainsSameOrBelow (Key * check, KeySet * ks)
 }
 
 /**
- * Updates all KeyRegistrations according to data from the given KeySet
+ * Walk through all registered key and determine whether they are contained in the diff.
+ * If they are, call their notifiaction callback.
  * @internal
  *
  * @param plugin    internal plugin handle
- * @param keySet    key set retrieved from hooks
+ * @param diff      diff as determined in the hook functions
  *                  e.g. elektraInternalnotificationGet or elektraInternalnotificationCommit)
  *
  */
-void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * keySet)
+void elektraInternalnotificationNotifyChangedKeys (Plugin * plugin, const ElektraDiff * diff)
 {
 	PluginState * pluginState = elektraPluginGetData (plugin);
 	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
 
+	KeySet * modifiedKeys = elektraDiffGetModifiedKeys (diff);
+	KeySet * addedKeys = elektraDiffGetAddedKeys (diff);
+	KeySet * removedKeys = elektraDiffGetRemovedKeys (diff);
+
+	ksAppend (modifiedKeys, addedKeys);
+	ksAppend (modifiedKeys, removedKeys);
+
 	KeyRegistration * registeredKey = pluginState->head;
+
 	while (registeredKey != NULL)
 	{
 		int changed = 0;
@@ -268,7 +277,7 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 		if (registeredKey->sameOrBelow)
 		{
 			Key * checkKey = keyNew (registeredKey->name, KEY_END);
-			if (keySetContainsSameOrBelow (checkKey, keySet))
+			if (keySetContainsSameOrBelow (checkKey, modifiedKeys))
 			{
 				changed = 1;
 				key = checkKey;
@@ -280,35 +289,10 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 		}
 		else
 		{
-			key = ksLookupByName (keySet, registeredKey->name, 0);
+			key = ksLookupByName (modifiedKeys, registeredKey->name, 0);
 			if (key != NULL)
 			{
-				// Detect changes for string keys
-				if (!keyIsString (key))
-				{
-					// always notify for binary keys
-					changed = 1;
-				}
-				else
-				{
-					const char * currentValue = keyString (key);
-					changed = registeredKey->lastValue == NULL || strcmp (currentValue, registeredKey->lastValue) != 0;
-
-					if (changed)
-					{
-						// Save last value
-						char * buffer = elektraStrDup (currentValue);
-						if (buffer)
-						{
-							if (registeredKey->lastValue != NULL)
-							{
-								// Free previous value
-								elektraFree (registeredKey->lastValue);
-							}
-							registeredKey->lastValue = buffer;
-						}
-					}
-				}
+				changed = 1;
 			}
 		}
 
@@ -329,6 +313,10 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 		// proceed with next registered key
 		registeredKey = registeredKey->next;
 	}
+
+	ksDel (modifiedKeys);
+	ksDel (addedKeys);
+	ksDel (removedKeys);
 }
 
 // Generate register and conversion functions
@@ -566,7 +554,16 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 		return 1;
 	}
 
-	elektraInternalnotificationUpdateRegisteredKeys (handle, returned);
+	const ChangeTrackingContext * context = elektraChangeTrackingGetContextFromPlugin (handle);
+
+	// As this plugin is a hooks plugin, it will get called before the internal cache for changetracking is updated on kdbGet
+	// Thus we receive the new keys in "returned" and have the old keys still in "context" and can therefore successfully
+	// detect changes that have been made externally on disk
+	ElektraDiff * diff = elektraChangeTrackingCalculateDiff (returned, context, parentKey);
+
+	elektraInternalnotificationNotifyChangedKeys (handle, diff);
+
+	elektraDiffDel (diff);
 
 	return 1;
 }
@@ -582,9 +579,14 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
  * @retval 1 on success
  * @retval -1 on failure
  */
-int elektraInternalnotificationCommit (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
+int elektraInternalnotificationCommit (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	elektraInternalnotificationUpdateRegisteredKeys (handle, returned);
+	const ChangeTrackingContext * context = elektraChangeTrackingGetContextFromPlugin (handle);
+	ElektraDiff * diff = elektraChangeTrackingCalculateDiff (returned, context, parentKey);
+
+	elektraInternalnotificationNotifyChangedKeys (handle, diff);
+
+	elektraDiffDel (diff);
 
 	return 1;
 }
@@ -660,10 +662,7 @@ int elektraInternalnotificationClose (Plugin * handle, Key * parentKey ELEKTRA_U
 		{
 			next = current->next;
 			elektraFree (current->name);
-			if (current->lastValue != NULL)
-			{
-				elektraFree (current->lastValue);
-			}
+
 			if (current->freeContext)
 			{
 				elektraFree (current->context);

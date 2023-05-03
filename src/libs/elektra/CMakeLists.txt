@@ -65,7 +65,9 @@ if (BUILD_SHARED)
 		hooks.c
 		backends.c
 		plugin.c
-		contracts.c)
+		contracts.c
+		changetracking.c
+		diff.c)
 	set (CORE_FILES ${SOURCES})
 	list (REMOVE_ITEM CORE_FILES ${KDB_FILES})
 	set (KDB_FILES ${KDB_FILES} ${HDR_FILES})

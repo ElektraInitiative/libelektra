@@ -37,3 +37,14 @@ from the key database has issued warnings.
   Print version info.
 - `-C <when>`, `--color <when>`:
   Print `never/auto(default)/always` colored output.
+
+## RETURN VALUES
+
+This command will return the following values as an exit status:<br>
+
+- 0:
+  Validated correctly.
+- 11:
+  Could not get the values.
+- 12:
+  Error occurred while writing back the values.

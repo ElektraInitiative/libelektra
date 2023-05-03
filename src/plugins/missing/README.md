@@ -1,5 +1,6 @@
 - infos = Information about the template plugin is in keys below
 - infos/author = Vid Leskovar <vid.leskovar5@gmail.com>
+- infos/maintainer = Florian Lindner <florian.lindner@student.tuwien.ac.at>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = missing

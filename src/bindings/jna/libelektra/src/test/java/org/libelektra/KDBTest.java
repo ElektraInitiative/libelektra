@@ -52,18 +52,15 @@ public class KDBTest {
       var oFoundKey = keySet.lookup(key1);
       assertTrue(oFoundKey.isPresent());
       assertEquals(key1.toString(), oFoundKey.get().toString());
-      oFoundKey.get().release(); // optional clean-up
 
       oFoundKey = keySet.lookup(key2);
       assertTrue(oFoundKey.isPresent());
       assertEquals(key2.toString(), oFoundKey.get().toString());
-      oFoundKey.get().release(); // optional clean-up
 
       // should not be found because not below setParentKey
       oFoundKey = keySet.lookup(key0);
       assertTrue(oFoundKey.isPresent());
       assertEquals(key0.toString(), oFoundKey.get().toString());
-      oFoundKey.get().release(); // optional clean-up
     }
 
     // remove them
@@ -77,17 +74,9 @@ public class KDBTest {
             || next.getName().equals(key0.getName())) {
           keyIter.remove();
         }
-        next.release(); // optional clean-up
       }
       kdb.set(keySet, getParentKey);
-      keySet.release(); // optional clean-up
     }
-
-    // optional clean-up
-    key2.release();
-    key1.release();
-    key0.release();
-    getParentKey.release();
   }
 
   @Test
@@ -127,13 +116,6 @@ public class KDBTest {
       keySet.remove(key2);
 
       kdb.set(keySet, getParentKey);
-      keySet.release(); // optional clean-up
     }
-
-    // optional clean-up
-    key2.release();
-    key1.release();
-    key0.release();
-    getParentKey.release();
   }
 }

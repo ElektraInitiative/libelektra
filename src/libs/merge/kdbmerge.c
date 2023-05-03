@@ -18,11 +18,11 @@
 
 #define INT_BUF_SIZE 11 // Avoid math.h. int has at most 10 digits, +1 for \0
 
-const char * META_ELEKTRA_MERGE_CONFLICT = "meta:/elektra/merge/conflict";
-const char * META_ELEKTRA_MERGE_ROOT_OUR = "meta:/elektra/merge/root/our";
-const char * META_ELEKTRA_MERGE_ROOT_THEIR = "meta:/elektra/merge/root/their";
-const char * META_ELEKTRA_MERGE_ROOT_BASE = "meta:/elektra/merge/root/base";
-const char * META_ELEKTRA_MERGE_ROOT_RESULT = "meta:/elektra/merge/root/result";
+const char * const META_ELEKTRA_MERGE_CONFLICT = "meta:/elektra/merge/conflict";
+const char * const META_ELEKTRA_MERGE_ROOT_OUR = "meta:/elektra/merge/root/our";
+const char * const META_ELEKTRA_MERGE_ROOT_THEIR = "meta:/elektra/merge/root/their";
+const char * const META_ELEKTRA_MERGE_ROOT_BASE = "meta:/elektra/merge/root/base";
+const char * const META_ELEKTRA_MERGE_ROOT_RESULT = "meta:/elektra/merge/root/result";
 
 static Key * prependStringToKeyName (const Key * key, const char * string, Key * informationKey);
 static Key * removeRootFromKey (const Key * currentKey, const Key * root, Key * informationKey);

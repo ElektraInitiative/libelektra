@@ -203,7 +203,7 @@ kdb set user:/tests/storage/map ""
 kdb set user:/tests/storage/map/#0 ""
 kdb set user:/tests/storage/map/#1 ""
 kdb meta-get user:/tests/storage/map array
-# RET: 2
+# RET: 12
 
 # Undo modifications to the key database
 kdb rm -r user:/tests/storage

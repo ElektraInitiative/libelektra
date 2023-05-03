@@ -12,7 +12,7 @@ public class NativePlugin implements Plugin {
 
   private ElektraPlugin elektraPlugin;
 
-  // TODO shouldn't natove plugin be closable: Elektra.INSTANCE.elektraPluginOpen
+  // TODO shouldn't native plugin be closable: Elektra.INSTANCE.elektraPluginOpen
   // TODO has Plugin::open to be called for native plugin? and if not, because
   // elektra did that already, isn't Plugin the wrong interface
   // TODO is there a need for Java plugins directly being accessed via Java

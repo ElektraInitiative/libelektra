@@ -691,29 +691,6 @@ static ERL_NIF_TERM key_cmp (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[
 	return term;
 }
 
-// int keyNeedSync (const Key *key);
-static ERL_NIF_TERM key_need_sync (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
-{
-	Key ** key_resource;
-
-	if (is_null_atom (env, argv[0]))
-	{
-		key_resource = NULL;
-	}
-	else if (!enif_get_resource (env, argv[0], KEY_RESOURCE_TYPE, (void *) &key_resource))
-	{
-		return enif_make_badarg (env);
-	}
-
-	Key * key = key_resource == NULL ? NULL : *key_resource;
-
-	int result = keyNeedSync (key);
-
-	ERL_NIF_TERM term = enif_make_int (env, result);
-
-	return term;
-}
-
 // int keyIsBelow (const Key *key, const Key *check);
 static ERL_NIF_TERM key_is_below (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
@@ -1881,7 +1858,6 @@ static ErlNifFunc funcs[] = {
 	{"key_set_meta", 3, key_set_meta, 0},
 	{"key_meta", 1, key_meta, 0},
 	{"key_cmp", 2, key_cmp, 0},
-	{"key_need_sync", 1, key_need_sync, 0},
 	{"key_is_below", 2, key_is_below, 0},
 	{"key_is_below_or_same", 2, key_is_below_or_same, 0},
 	{"key_is_directly_below", 2, key_is_directly_below, 0},

@@ -11,6 +11,8 @@
 
 #include "./dbus.h"
 
+#include <elektra/changetracking.h>
+
 #include <internal/utility/old_helper.h>
 
 int elektraDbusOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
@@ -20,7 +22,6 @@ int elektraDbusOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	if (!data)
 	{
 		data = elektraMalloc (sizeof (*data));
-		data->keys = NULL;
 		data->systemBus = NULL;
 		data->sessionBus = NULL;
 	}
@@ -29,7 +30,7 @@ int elektraDbusOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	return 1; /* success */
 }
 
-int elektraDbusGet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraDbusGet (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/dbus"))
 	{
@@ -49,14 +50,6 @@ int elektraDbusGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 		return 1; /* success */
 	}
-
-	// remember all keys
-	ElektraDbusPluginData * pluginData = elektraPluginGetData (handle);
-	ELEKTRA_NOT_NULL (pluginData);
-
-	KeySet * ks = pluginData->keys;
-	if (ks) ksDel (ks);
-	pluginData->keys = ksDup (returned);
 
 	return 1; /* success */
 }
@@ -88,31 +81,14 @@ int elektraDbusCommit (Plugin * handle, KeySet * returned, Key * parentKey)
 	ElektraDbusPluginData * pluginData = elektraPluginGetData (handle);
 	ELEKTRA_NOT_NULL (pluginData);
 
-	// because elektraLogchangeGet will always be executed before elektraLogchangeCommit
-	// we know that oldKeys must exist here!
-	KeySet * oldKeys = pluginData->keys;
+	const ChangeTrackingContext * context = elektraChangeTrackingGetContextFromPlugin (handle);
 
-	KeySet * addedKeys = ksDup (returned);
-	KeySet * changedKeys = ksNew (0, KS_END);
-	KeySet * removedKeys = ksNew (0, KS_END);
+	// we do a fresh calculation here, because we want the most current diff to avoid false positives as much as possible
+	ElektraDiff * diff = elektraChangeTrackingCalculateDiff (returned, context, parentKey);
 
-	for (elektraCursor it = 0; it < ksGetSize (oldKeys); ++it)
-	{
-		Key * k = ksAtCursor (oldKeys, it);
-		Key * p = ksLookup (addedKeys, k, KDB_O_POP);
-		// Note: keyDel not needed, because at least two references exist
-		if (p)
-		{
-			if (keyNeedSync (p))
-			{
-				ksAppendKey (changedKeys, p);
-			}
-		}
-		else
-		{
-			ksAppendKey (removedKeys, k);
-		}
-	}
+	KeySet * addedKeys = elektraDiffGetAddedKeys (diff);
+	KeySet * changedKeys = elektraDiffGetModifiedKeys (diff);
+	KeySet * removedKeys = elektraDiffGetRemovedKeys (diff);
 
 	Key * resolvedParentKey = parentKey;
 	// Resolve cascaded parent key to get its namespace
@@ -150,13 +126,11 @@ int elektraDbusCommit (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 
 
-	ksDel (oldKeys);
 	ksDel (addedKeys);
 	ksDel (changedKeys);
 	ksDel (removedKeys);
 
-	// for next invocation of elektraLogchangeCommit, remember our current keyset
-	pluginData->keys = ksDup (returned);
+	elektraDiffDel (diff);
 
 	return 1; /* success */
 }
@@ -168,9 +142,6 @@ int elektraDbusClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	{
 		return 1;
 	}
-
-	KeySet * ks = pluginData->keys;
-	if (ks) ksDel (ks);
 
 	if (pluginData->systemBus)
 	{

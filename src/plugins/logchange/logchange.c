@@ -11,6 +11,8 @@
 #include <internal/config.h>
 #include <internal/macros/attributes.h>
 
+#include <elektra/changetracking.h>
+
 #include <stdio.h>
 #include <string.h>
 
@@ -25,7 +27,7 @@ static void logKeys (KeySet * ks, const char * message)
 	}
 }
 
-int elektraLogchangeGet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
+int elektraLogchangeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/logchange"))
 	{
@@ -47,11 +49,6 @@ int elektraLogchangeGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 		return 1; /* success */
 	}
 
-	// remember all keys
-	KeySet * ks = (KeySet *) elektraPluginGetData (handle);
-	if (ks) ksDel (ks);
-	elektraPluginSetData (handle, ksDup (returned));
-
 	if (strncmp (keyString (ksLookupByName (elektraPluginGetConfig (handle), "/log/get", 0)), "1", 1) == 0)
 	{
 		KeySet * logset = ksNew (1, keyDup (parentKey, KEY_CP_ALL), KS_END);
@@ -64,42 +61,22 @@ int elektraLogchangeGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 
 int elektraLogchangeCommit (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
-	// because elektraLogchangeGet will always be executed before elektraLogchangeCommit
-	// we know that oldKeys must exist here!
-	KeySet * oldKeys = (KeySet *) elektraPluginGetData (handle);
-	KeySet * addedKeys = ksDup (returned);
-	KeySet * changedKeys = ksNew (0, KS_END);
-	KeySet * removedKeys = ksNew (0, KS_END);
+	const ChangeTrackingContext * context = elektraChangeTrackingGetContextFromPlugin (handle);
+	ElektraDiff * diff = elektraChangeTrackingCalculateDiff (returned, context, parentKey);
 
-	for (elektraCursor it = 0; it < ksGetSize (oldKeys); ++it)
-	{
-		Key * k = ksAtCursor (oldKeys, it);
-		Key * p = ksLookup (addedKeys, k, KDB_O_POP);
-		// Note: keyDel not needed, because at least two references exist
-		if (p)
-		{
-			if (keyNeedSync (p))
-			{
-				ksAppendKey (changedKeys, p);
-			}
-		}
-		else
-		{
-			ksAppendKey (removedKeys, k);
-		}
-	}
+	KeySet * addedKeys = elektraDiffGetAddedKeys (diff);
+	KeySet * changedKeys = elektraDiffGetModifiedKeys (diff);
+	KeySet * removedKeys = elektraDiffGetRemovedKeys (diff);
 
 	logKeys (addedKeys, "added key");
 	logKeys (changedKeys, "changed key");
 	logKeys (removedKeys, "removed key");
 
-	ksDel (oldKeys);
 	ksDel (addedKeys);
 	ksDel (changedKeys);
 	ksDel (removedKeys);
 
-	// for next invocation of elektraLogchangeCommit, remember our current keyset
-	elektraPluginSetData (handle, ksDup (returned));
+	elektraDiffDel (diff);
 
 	return 1; /* success */
 }

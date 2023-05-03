@@ -52,61 +52,6 @@
  *
  */
 
-/**
- * @internal
- *
- * Clear sync flag of a key.
- *
- * @param key the key object to work with
- * @ingroup keytest
- *
- */
-void keyClearSync (Key * key)
-{
-	if (!key) return;
-
-	key->needsSync = false;
-}
-
-
-/**
- * Test if a key needs to be synced to backend storage.
- *
- * If any Key modification took place the Key will be flagged
- * so that kdbSet() knows which keys were modified
- * and which not.
- *
- * After keyNew() the flag will normally be set, but after kdbGet()
- * and kdbSet() the flag will be removed. When you modify the key
- * the flag will be set again.
- *
- * In your application you can make use of that flag to know
- * if you changed something in a key after a kdbGet() or kdbSet().
- *
- * @note Note that the sync status will be updated on any change,
- * including metadata.
- *
- * @deprecated The handling of synchronization is done internally and
- * does not need to be checked by neither application nor plugins.
- *
- * @param key the Key which should be checked
- *
- * @retval 1 if @p key was changed in memory
- * @retval 0 if @p key wasn't changed
- * @retval -1 on NULL pointer
- *
- * @since 1.0.0
- * @ingroup keytest
- * @see keyNew(), keyDup() Keys need to be synced after calling those functions
- */
-int keyNeedSync (const Key * key)
-{
-	if (!key) return -1;
-
-	return key->needsSync ? 1 : 0;
-}
-
-
 int keyIsSpec (const Key * key)
 {
 	return keyGetNamespace (key) == KEY_NS_SPEC;
@@ -117,12 +62,10 @@ int keyIsProc (const Key * key)
 	return keyGetNamespace (key) == KEY_NS_PROC;
 }
 
-
 int keyIsDir (const Key * key)
 {
 	return keyGetNamespace (key) == KEY_NS_DIR;
 }
-
 
 /**
  * @internal

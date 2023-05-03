@@ -10,7 +10,8 @@ add_plugin (
 	dbus
 	SOURCES dbus.h dbus.c sendmessage.c
 	INCLUDE_DIRECTORIES ${DBUS_INCLUDE_DIR} ${DBUS_ARCH_INCLUDE_DIR}
-	LINK_LIBRARIES ${DBUS_LIBRARIES} COMPONENT libelektra${SO_VERSION}-dbus)
+	LINK_LIBRARIES ${DBUS_LIBRARIES}
+	LINK_ELEKTRA elektra-kdb COMPONENT libelektra${SO_VERSION}-dbus)
 
 add_plugintest (dbus testmod_dbus.c receivemessage.c INCLUDE_DIRECTORIES ${DBUS_INCLUDE_DIR} ${DBUS_ARCH_INCLUDE_DIR})
 

@@ -30,7 +30,7 @@ internal class KeySetEncoder(
     private var currentMapKey: String? = null
 
     override val serializersModule: SerializersModule
-        get() = EmptySerializersModule
+        get() = EmptySerializersModule()
 
     override fun encodeTaggedValue(tag: String, value: Any) {
         val keyName = tag.toKeyName()

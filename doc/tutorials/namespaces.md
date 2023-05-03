@@ -51,6 +51,7 @@ Every key in Elektra belongs to one of these namespaces:
 - **dir** for dir keys in current working directory
 - **user** for user keys in home directory
 - **system** for system keys in `/etc` or `/`
+- **default** for keys which are created with default value (if specification requires the key to exist, has default and key was missing)
 
 All namespaces save their keys in a _separate hierarchical structure_ from the other namespaces.
 

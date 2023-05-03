@@ -31,19 +31,19 @@
 #include <streambuf>
 #include <string>
 
-const char * HighlevelGenTemplate::Params::InitFunctionName = "initFn";
-const char * HighlevelGenTemplate::Params::HelpFunctionName = "helpFn";
-const char * HighlevelGenTemplate::Params::SpecloadFunctionName = "specloadFn";
-const char * HighlevelGenTemplate::Params::RunCommandsFunctionName = "runCmdFn";
-const char * HighlevelGenTemplate::Params::TagPrefix = "tagPrefix";
-const char * HighlevelGenTemplate::Params::EnumConversion = "enumConv";
-const char * HighlevelGenTemplate::Params::AdditionalHeaders = "headers";
-const char * HighlevelGenTemplate::Params::GenerateSetters = "genSetters";
-const char * HighlevelGenTemplate::Params::EmbeddedSpec = "embeddedSpec";
-const char * HighlevelGenTemplate::Params::InstallPrefix = "installPrefix";
-const char * HighlevelGenTemplate::Params::EmbedHelpFallback = "embedHelpFallback";
-const char * HighlevelGenTemplate::Params::UseCommands = "useCommands";
-const char * HighlevelGenTemplate::Params::InitWithPointers = "initWithPointers";
+const char * const HighlevelGenTemplate::Params::InitFunctionName = "initFn";
+const char * const HighlevelGenTemplate::Params::HelpFunctionName = "helpFn";
+const char * const HighlevelGenTemplate::Params::SpecloadFunctionName = "specloadFn";
+const char * const HighlevelGenTemplate::Params::RunCommandsFunctionName = "runCmdFn";
+const char * const HighlevelGenTemplate::Params::TagPrefix = "tagPrefix";
+const char * const HighlevelGenTemplate::Params::EnumConversion = "enumConv";
+const char * const HighlevelGenTemplate::Params::AdditionalHeaders = "headers";
+const char * const HighlevelGenTemplate::Params::GenerateSetters = "genSetters";
+const char * const HighlevelGenTemplate::Params::EmbeddedSpec = "embeddedSpec";
+const char * const HighlevelGenTemplate::Params::InstallPrefix = "installPrefix";
+const char * const HighlevelGenTemplate::Params::EmbedHelpFallback = "embedHelpFallback";
+const char * const HighlevelGenTemplate::Params::UseCommands = "useCommands";
+const char * const HighlevelGenTemplate::Params::InitWithPointers = "initWithPointers";
 
 enum class EmbeddedSpec
 {

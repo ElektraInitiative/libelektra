@@ -317,14 +317,6 @@ void elektraUnlink (const char * filename)
 	unlink (filename);
 }
 
-void clear_sync (KeySet * ks)
-{
-	Key * k;
-	ksRewind (ks);
-	while ((k = ksNext (ks)) != 0)
-		keyClearSync (k);
-}
-
 void output_meta (Key * k)
 {
 	KeySet * metaKeys = keyMeta (k);

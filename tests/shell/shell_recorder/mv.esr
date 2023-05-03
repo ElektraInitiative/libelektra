@@ -1,0 +1,38 @@
+Mountpoint: user:/tests/mv
+
+RET: 0
+STDOUT: Create a new key user:/tests/mv/foo with string "bar"
+< kdb set $Mountpoint/foo bar
+
+RET: 0
+STDOUT: Create a new key user:/tests/mv/foo/two with string "bar2"
+< kdb set $Mountpoint/foo/two bar2
+
+RET: 0
+STDOUT: user:/tests/mv/foo⏎user:/tests/mv/foo/two
+< kdb ls $Mountpoint/
+
+RET: 0
+< kdb mv $Mountpoint/foo $Mountpoint/new
+
+RET: 0
+STDOUT: user:/tests/mv/foo/two⏎user:/tests/mv/new
+< kdb ls $Mountpoint/
+
+RET: 0
+STDOUT: Create a new key user:/tests/mv/foo with string "bar"
+< kdb set $Mountpoint/foo bar
+
+RET: 0
+STDOUT: user:/tests/mv/foo⏎user:/tests/mv/foo/two⏎user:/tests/mv/new
+< kdb ls $Mountpoint/
+
+RET: 0
+< kdb mv -r $Mountpoint/foo $Mountpoint/other
+
+RET: 0
+STDOUT: user:/tests/mv/new⏎user:/tests/mv/other⏎user:/tests/mv/other/two
+< kdb ls $Mountpoint/
+
+RET: 0
+< kdb rm -r $Mountpoint/

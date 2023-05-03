@@ -658,80 +658,6 @@ static void test_keyAddName (void)
 	keyDel (k);
 }
 
-static void test_keyNeedSync (void)
-{
-	printf ("Test key need sync\n");
-
-	succeed_if (keyNeedSync (0) == -1, "No error on NULL Key");
-
-	Key * k = keyNew ("/", KEY_END);
-	succeed_if (keyNeedSync (k), "fresh key should need sync");
-
-	k->needsSync = true;
-	succeed_if (keyNeedSync (k), "sync bit was set");
-	k->needsSync = false;
-	succeed_if (!keyNeedSync (k), "sync bit was cleared");
-
-	keySetName (k, "/");
-	succeed_if (keyNeedSync (k), "nothing done, but synced (impl-dep, could be optimized)");
-
-	k->needsSync = false;
-	keySetName (k, "user:/abc");
-	succeed_if (keyNeedSync (k), "new name, should definitely need sync");
-
-	k->needsSync = false;
-	keySetString (k, "a str");
-	succeed_if (keyNeedSync (k), "new string, should definitely need sync");
-
-	k->needsSync = false;
-	keySetBinary (k, "a str", 4);
-	succeed_if (keyNeedSync (k), "new binary, should definitely need sync");
-
-	k->needsSync = false;
-	keySetMeta (k, "metakey", "metaval");
-	succeed_if (keyNeedSync (k), "new meta, should definitely need sync");
-
-	k->needsSync = false;
-	Key * d = keyDup (k, KEY_CP_ALL);
-	succeed_if (keyNeedSync (d), "dup key, should definitely need sync");
-
-	k->needsSync = false;
-	d->needsSync = false;
-	succeed_if (keyCopy (d, k, 0) != NULL, "copy not successful");
-	succeed_if (keyNeedSync (d), "copy key, should definitely need sync");
-	succeed_if (!keyNeedSync (k), "sources sync flag should not be affected");
-	keyDel (d);
-
-	keyIncRef (k);
-	succeed_if (!keyNeedSync (k), "ref counter should not affect sync");
-	keyDecRef (k);
-	succeed_if (!keyNeedSync (k), "ref counter should not affect sync");
-
-
-	keySetName (k, "");
-	k->needsSync = false;
-
-	succeed_if (keySetBaseName (k, "") != -1, "could not set base name");
-	succeed_if (keyNeedSync (k), "name set, sync should be there");
-
-	keySetName (k, "user:/abc");
-	succeed_if (keyNeedSync (k), "name set, sync should be there");
-
-	k->needsSync = false;
-	succeed_if (keySetBaseName (k, "xynz") != -1, "could not set base name");
-	succeed_if (keyNeedSync (k), "base name changed, sync should be there");
-
-	k->needsSync = false;
-	succeed_if (keyAddBaseName (k, "foo") != -1, "could not add base name");
-	succeed_if (keyNeedSync (k), "base name changed, sync should be there");
-
-	k->needsSync = false;
-	succeed_if (keyAddName (k, "bar") != -1, "could not add name");
-	succeed_if (keyNeedSync (k), "base name changed, sync should be there");
-
-	keyDel (k);
-}
-
 static void test_keyCopy (void)
 {
 	printf ("test copy key\n");
@@ -1228,7 +1154,6 @@ int main (int argc, char ** argv)
 	test_keyNewExtensions ();
 	test_keyComment ();
 	test_keyLock ();
-	test_keyNeedSync ();
 	test_keyCopy ();
 	test_keyFixedNew ();
 	test_keyFlags ();

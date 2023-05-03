@@ -406,9 +406,6 @@ Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 		}
 	}
 
-	// successful, now do the irreversible stuff: we obviously modified dest
-	dest->needsSync = true;
-
 	// free old resources of destination
 	keyNameRefDecAndDel (orig.keyName);
 	keyDataRefDecAndDel (orig.keyData);
