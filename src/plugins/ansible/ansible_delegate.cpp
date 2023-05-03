@@ -70,21 +70,14 @@ void addKey (YAML::Node & parent, kdb::Key const & key, kdb::NameIterator & name
 		ckdb::KeySet * metaKeys = ckdb::keyMeta (*key);
 
 		// Set value of the node
-		bool needsValueNode = key.getNamespace () != kdb::ElektraNamespace::META;
-
-		if (needsValueNode)
-		{
-			parent["value"] = value;
-		}
-		else
-		{
-			parent = value;
-		}
+		YAML::Node valueNode;
+		valueNode["value"] = value;
+		parent.push_back (valueNode);
 
 		// Append meta keys
 		if (ckdb::ksGetSize (metaKeys) > 0)
 		{
-			auto metaNode = parent["meta"];
+			YAML::Node metaNode;
 
 			for (ssize_t it = 0; it < ckdb::ksGetSize (metaKeys); ++it)
 			{
@@ -93,33 +86,48 @@ void addKey (YAML::Node & parent, kdb::Key const & key, kdb::NameIterator & name
 				metaIterator++;
 				addKey (metaNode, curMeta, metaIterator);
 			}
-		}
 
+			YAML::Node mnode;
+			mnode["meta"] = metaNode;
+			parent.push_back (mnode);
+		}
 		return;
 	}
 
 	auto part = *nameIterator;
 	YAML::Node node = parent[part] ? parent[part] : YAML::Node ();
-	addKey (node, key, ++nameIterator);
-	parent[part] = node;
+	if(node.IsSequence())
+	{
+		// Look whether the sequence already has a "keys" entry
+		for (auto element : node)
+		{
+			if(element["keys"])
+			{
+				YAML::Node keyNode(element);
+				auto kn = keyNode["keys"];
+				addKey (kn, key, ++nameIterator);
+				return;
+			}
+		}
+
+		YAML::Node keysNode;
+		node.push_back (keysNode);
+
+		auto kn = keysNode["keys"];
+		addKey (kn, key, ++nameIterator);
+		return;
+	}
+	else
+	{
+		parent[part]=node;
+	}
+
+	++nameIterator;
+	addKey (node, key, nameIterator);
 }
 
-void addMountpoint (YAML::Emitter & out, kdb::KeySet const & keySet, kdb::Key const & parentKey)
+void addNamespace (YAML::Emitter & out, kdb::KeySet const & keySet, kdb::Key const & parentKey)
 {
-	std::stringstream taskNameStream;
-	taskNameStream << "Set Elektra Keys (" << parentKey.getName ().substr (0, parentKey.getName ().find (':')) << ")";
-	auto taskName = taskNameStream.str ();
-
-	out << YAML::BeginMap;
-	out << YAML::Key << "name";
-	out << YAML::Value << taskName;
-	out << YAML::Key << "elektra";
-
-	out << YAML::BeginMap;
-	out << YAML::Key << "mountpoint";
-	out << YAML::Value << parentKey.getName ();
-	out << YAML::Key << "keys";
-
 	YAML::Node keysNode;
 
 	for (const auto & key : keySet)
@@ -133,9 +141,6 @@ void addMountpoint (YAML::Emitter & out, kdb::KeySet const & keySet, kdb::Key co
 	}
 
 	out << keysNode;
-
-	out << YAML::EndMap;
-	out << YAML::EndMap;
 }
 
 void AnsibleDelegate::createPlaybook (kdb::KeySet const & keySet, kdb::Key const & parentKey)
@@ -149,7 +154,7 @@ void AnsibleDelegate::createPlaybook (kdb::KeySet const & keySet, kdb::Key const
 	std::string name = "My Elektra Ansible Playbook";
 	if (parentKey.hasMeta ("meta:/ansible/name"))
 	{
-		hosts = parentKey.getMeta<std::string> ("meta:/ansible/name");
+		name = parentKey.getMeta<std::string> ("meta:/ansible/name");
 	}
 
 	YAML::Emitter out;
@@ -174,6 +179,16 @@ void AnsibleDelegate::createPlaybook (kdb::KeySet const & keySet, kdb::Key const
 	out << YAML::Value;
 	out << YAML::BeginSeq;
 
+	out << YAML::BeginMap;
+	out << YAML::Key << "name";
+	out << YAML::Value << "Set Elektra Keys";
+	out << YAML::Key << "elektra";
+
+	out << YAML::BeginMap;
+	out << YAML::Key << "keys";
+	out << YAML::Value;
+	out << YAML::BeginSeq;
+
 	kdb::Key namespaceKey;
 	for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ns++)
 	{
@@ -181,11 +196,19 @@ void AnsibleDelegate::createPlaybook (kdb::KeySet const & keySet, kdb::Key const
 		kdb::KeySet below = ckdb::ksBelow (keySet.getKeySet (), *namespaceKey);
 		if (below.size () > 0)
 		{
-			addMountpoint (out, below, namespaceKey);
+			out << YAML::BeginMap;
+			out << YAML::Key << namespaceKey.getName ().substr (0, parentKey.getName ().find (':'));
+			out << YAML::Value;
+
+			addNamespace (out, below, namespaceKey);
+			out << YAML::EndMap;
 		}
 	}
 
-	out << YAML::EndSeq;
+	out << YAML::EndSeq; // keys
+	out << YAML::EndMap; // elektra
+
+	out << YAML::EndSeq; // tasks
 	out << YAML::EndMap;
 	out << YAML::EndSeq;
 
