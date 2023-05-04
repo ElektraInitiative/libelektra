@@ -526,6 +526,7 @@ void elektraDiffAppend (ElektraDiff * target, const ElektraDiff * source, Key * 
 
 	if (target->addedKeys == NULL) target->addedKeys = ksNew (0, KS_END);
 	if (target->modifiedKeys == NULL) target->modifiedKeys = ksNew (0, KS_END);
+	if (target->modifiedNewKeys == NULL) target->modifiedNewKeys = ksNew (0, KS_END);
 	if (target->removedKeys == NULL) target->removedKeys = ksNew (0, KS_END);
 
 	KeySet * metaAdded = ksNew (0, KS_END);
@@ -555,6 +556,10 @@ void elektraDiffAppend (ElektraDiff * target, const ElektraDiff * source, Key * 
 				// key was added again, but with different value -> modified
 				// as modified keys include the old value --> append targetKey
 				ksAppendKey (target->modifiedKeys, targetKey);
+				if (target->modifiedNewKeys)
+				{
+					ksAppendKey (target->modifiedNewKeys, key);
+				}
 				continue;
 			}
 			else
@@ -617,7 +622,7 @@ void elektraDiffAppend (ElektraDiff * target, const ElektraDiff * source, Key * 
 				keyDel (targetKey);
 				if (target->modifiedNewKeys != NULL)
 				{
-					ksLookup (target->modifiedNewKeys, key, KDB_O_POP);
+					keyDel (ksLookup (target->modifiedNewKeys, key, KDB_O_POP));
 				}
 				continue;
 			}
@@ -634,6 +639,10 @@ void elektraDiffAppend (ElektraDiff * target, const ElektraDiff * source, Key * 
 		// Key was not found in target so add it to modified keys
 		// We need to take the key with the old value. Luckily, both keysets must contain the exact same keys
 		ksAppendKey (target->modifiedKeys, ksAtCursor (source->modifiedKeys, i));
+		if (target->modifiedKeys)
+		{
+			ksAppendKey (target->modifiedNewKeys, key);
+		}
 	}
 
 	for (elektraCursor i = 0; i < ksGetSize (source->removedKeys); i++)
@@ -660,7 +669,7 @@ void elektraDiffAppend (ElektraDiff * target, const ElektraDiff * source, Key * 
 			ksAppendKey (target->removedKeys, targetKey);
 			if (target->modifiedNewKeys != NULL)
 			{
-				ksLookup (target->modifiedNewKeys, key, KDB_O_DEL);
+				keyDel (ksLookup (target->modifiedNewKeys, targetKey, KDB_O_POP));
 			}
 			continue;
 		}
@@ -761,6 +770,27 @@ KeySet * elektraDiffGetModifiedKeys (const ElektraDiff * ksd)
 	}
 
 	return ksDup (ksd->modifiedKeys);
+}
+
+/**
+ * Get the modified keys with their new value
+ *
+ * @param ksd the ElektraDiff
+ * @return a new KeySet containing the modified keys OR @p NULL if @p ksd is @p NULL
+ */
+KeySet * elektraDiffGetModifiedNewKeys (const ElektraDiff * ksd)
+{
+	if (ksd == NULL)
+	{
+		return NULL;
+	}
+
+	if (!ksd->modifiedNewKeys)
+	{
+		return ksNew (0, KS_END);
+	}
+
+	return ksDup (ksd->modifiedNewKeys);
 }
 
 /**

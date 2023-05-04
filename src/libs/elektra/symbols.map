@@ -170,7 +170,6 @@ libelektra_1.0 {
 	elektraDiffRemoveOther;
 	elektraDiffRemoveKey;
 	elektraDiffCut;
-	elektraDiffAppend;
 	elektraDiffUndo;
 };
 
@@ -210,6 +209,9 @@ libelektraprivate_1.0 {
 	backendsDivide;
 
 	elektraDiffNew;
+	elektraDiffAppend;
+	elektraDiffGetModifiedNewKeys;
+
 	elektraChangeTrackingCreateContextForTesting;
 	elektraChangeTrackingContextDel;
 
