@@ -469,10 +469,11 @@ static void test_elektraDiffAppend_addedKeys_shouldWork (void)
 		       keyNew ("system:/key/willBeModified", KEY_VALUE, "test4", KEY_END), KS_END);
 	ElektraDiff * target = elektraDiffNew (targetAdded, targetRemoved, targetModified, NULL, NULL);
 
-	KeySet * sourceAdded = ksNew (
-		1, keyNew ("system:/key/addedInSource", KEY_VALUE, "added", KEY_END), keyNew ("system:/key/willBeUntracked", KEY_VALUE, "test2", KEY_END),
-		keyNew ("system:/key/willBeUntrackedAlso", KEY_VALUE, "test3", KEY_META, "meta:/test", "metavalue", KEY_END),
-		keyNew ("system:/key/willBeModified", KEY_VALUE, "modified-test4", KEY_END), KS_END);
+	KeySet * sourceAdded =
+		ksNew (1, keyNew ("system:/key/addedInSource", KEY_VALUE, "added", KEY_END),
+		       keyNew ("system:/key/willBeUntracked", KEY_VALUE, "test2", KEY_END),
+		       keyNew ("system:/key/willBeUntrackedAlso", KEY_VALUE, "test3", KEY_META, "meta:/test", "metavalue", KEY_END),
+		       keyNew ("system:/key/willBeModified", KEY_VALUE, "modified-test4", KEY_END), KS_END);
 	KeySet * sourceModified = ksNew (0, KS_END);
 	KeySet * sourceRemoved = ksNew (0, KS_END);
 	ElektraDiff * source = elektraDiffNew (sourceAdded, sourceRemoved, sourceModified, targetModifiedNew, NULL);
@@ -520,11 +521,11 @@ static void test_elektraDiffAppend_modifiedKeys_shouldWork (void)
 		       keyNew ("system:/key/modifiedInTargetAlso", KEY_VALUE, "test", KEY_META, "meta:/test", "metavalue", KEY_END),
 		       keyNew ("system:/key/willBeUntracked", KEY_VALUE, "test", KEY_END),
 		       keyNew ("system:/key/willBeUntrackedAlso", KEY_VALUE, "test", KEY_META, "meta:/test", "metavalue", KEY_END), KS_END);
-	KeySet * targetModifiedNew =
-		ksNew (1, keyNew ("system:/key/modifiedInTarget", KEY_VALUE, "test", KEY_END),
-		       keyNew ("system:/key/modifiedInTargetAlso", KEY_VALUE, "test-new", KEY_META, "meta:/test", "metavalue", KEY_END),
-		       keyNew ("system:/key/willBeUntracked", KEY_VALUE, "test-new", KEY_END),
-		       keyNew ("system:/key/willBeUntrackedAlso", KEY_VALUE, "test-new", KEY_META, "meta:/test", "metavalue", KEY_END), KS_END);
+	KeySet * targetModifiedNew = ksNew (
+		1, keyNew ("system:/key/modifiedInTarget", KEY_VALUE, "test", KEY_END),
+		keyNew ("system:/key/modifiedInTargetAlso", KEY_VALUE, "test-new", KEY_META, "meta:/test", "metavalue", KEY_END),
+		keyNew ("system:/key/willBeUntracked", KEY_VALUE, "test-new", KEY_END),
+		keyNew ("system:/key/willBeUntrackedAlso", KEY_VALUE, "test-new", KEY_META, "meta:/test", "metavalue", KEY_END), KS_END);
 	KeySet * targetRemoved = ksNew (1, keyNew ("system:/key/completelyRemoved", KEY_VALUE, "test", KEY_END), KS_END);
 	ElektraDiff * target = elektraDiffNew (targetAdded, targetRemoved, targetModified, targetModifiedNew, NULL);
 
@@ -584,12 +585,12 @@ static void test_elektraDiffAppend_removedKeys_shouldWork (void)
 	printf ("Test %s\n", __func__);
 
 	// Arrange
-	KeySet * targetAdded =
-		ksNew (1, keyNew ("system:/key/addedInTarget", KEY_VALUE, "added", KEY_END), keyNew ("system:/key/addedWillBeRemoved", KEY_END), KS_END);
+	KeySet * targetAdded = ksNew (1, keyNew ("system:/key/addedInTarget", KEY_VALUE, "added", KEY_END),
+				      keyNew ("system:/key/addedWillBeRemoved", KEY_END), KS_END);
 	KeySet * targetModified = ksNew (1, keyNew ("system:/key/modifiedInTarget", KEY_VALUE, "test", KEY_END),
 					 keyNew ("system:/key/modifiedWillBeRemoved", KEY_VALUE, "test", KEY_END), KS_END);
 	KeySet * targetModifiedNew = ksNew (1, keyNew ("system:/key/modifiedInTarget", KEY_VALUE, "test-new", KEY_END),
-					 keyNew ("system:/key/modifiedWillBeRemoved", KEY_VALUE, "test-new", KEY_END), KS_END);
+					    keyNew ("system:/key/modifiedWillBeRemoved", KEY_VALUE, "test-new", KEY_END), KS_END);
 	KeySet * targetRemoved = ksNew (1, keyNew ("system:/key/completelyRemoved", KEY_VALUE, "test", KEY_END), KS_END);
 
 	ElektraDiff * target = elektraDiffNew (targetAdded, targetRemoved, targetModified, targetModifiedNew, NULL);

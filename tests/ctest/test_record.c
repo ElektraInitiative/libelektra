@@ -697,9 +697,11 @@ static void test_elektraRecordRemoveKey_nonRecursive_shouldRemoveKeyFromSession 
 	succeed_if_fmt (ksGetSize (sessionStorage) == 6, "expected 4 keys in session storage, was %zu", ksGetSize (sessionStorage));
 	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/test/key3/sub", "3");
 	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_OLD_KEY "/test/key2", "1");
-	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_OLD_KEY "/test/key2/sub", "1");
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_OLD_KEY "/test/key2/sub",
+						    "1");
 	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_NEW_KEY "/test/key2", "2");
-	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_NEW_KEY "/test/key2/sub", "2");
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_NEW_KEY "/test/key2/sub",
+						    "2");
 	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/test/key1", "1");
 
 	closePrefixedKdbInstance (sessionStorageKdb, sessionStorageKey, false);
@@ -774,9 +776,11 @@ static void test_elektraRecordRemoveKey_recursive_shouldRemoveKeyAndBelowFromSes
 
 	succeed_if_fmt (ksGetSize (sessionStorage) == 5, "expected 5 keys in session storage, was %zu", ksGetSize (sessionStorage));
 	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_OLD_KEY "/test/key2", "1");
-	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_OLD_KEY "/test/key2/sub", "1");
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_OLD_KEY "/test/key2/sub",
+						    "1");
 	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_NEW_KEY "/test/key2", "2");
-	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_NEW_KEY "/test/key2/sub", "2");
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_NEW_KEY "/test/key2/sub",
+						    "2");
 	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/test/key1", "1");
 
 	closePrefixedKdbInstance (sessionStorageKdb, sessionStorageKey, false);

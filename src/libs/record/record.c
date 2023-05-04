@@ -264,8 +264,10 @@ static ElektraDiff * getDiffFromSessionStorage (KeySet * recordStorage, Key * se
 	ElektraDiff * sessionDiff = elektraDiffNew (
 		renameKeysInAllNamespaces (ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY, "/", ksCut (recordStorage, sessionDiffAddedKey)),
 		renameKeysInAllNamespaces (ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY, "/", ksCut (recordStorage, sessionDiffRemovedKey)),
-		renameKeysInAllNamespaces (ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_OLD_KEY, "/", ksCut (recordStorage, sessionDiffModifiedOldKey)),
-		renameKeysInAllNamespaces (ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_NEW_KEY, "/", ksCut (recordStorage, sessionDiffModifiedNewKey)),
+		renameKeysInAllNamespaces (ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_OLD_KEY, "/",
+					   ksCut (recordStorage, sessionDiffModifiedOldKey)),
+		renameKeysInAllNamespaces (ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_NEW_KEY, "/",
+					   ksCut (recordStorage, sessionDiffModifiedNewKey)),
 		sessionRecordingParentKey);
 
 	keyDel (sessionDiffAddedKey);
