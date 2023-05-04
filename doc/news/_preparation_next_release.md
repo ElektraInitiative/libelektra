@@ -261,6 +261,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Implemented new request to add multiple metakeys for one key _(Tomislav Makar @tmakar)_
 - Adding bulk creation request for configuration keys _(Tomislav Makar @tmakar)_
+
 ### kdb
 
 - Add commands for session recording. _(Maximilian Irlinger @atmaxinger)_
