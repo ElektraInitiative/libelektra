@@ -143,7 +143,7 @@ char * elektraArrayGetPrefix (Key * key)
 	}
 
 	char * name = elektraCalloc (sizeof (char) * (offset + 1));
-	strncpy (name, wholeName, offset);
+	memcpy (name, wholeName, offset);
 
 	if (last_is_slash && slash_count > 1)
 	{
