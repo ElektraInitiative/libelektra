@@ -156,7 +156,7 @@ void addKey (YAML::Node & parent, kdb::Key const & key, kdb::NameIterator & name
 	addKey (node, key, nameIterator);
 }
 
-void addNamespace (YAML::Emitter & out, kdb::KeySet const & keySet, kdb::Key const & parentKey)
+void addNamespace (YAML::Emitter & out, kdb::KeySet const & keySet)
 {
 	YAML::Node keysNode;
 
@@ -174,7 +174,7 @@ void addNamespace (YAML::Emitter & out, kdb::KeySet const & keySet, kdb::Key con
 	out << keysNode;
 }
 
-void createTask (YAML::Emitter & out, kdb::KeySet const & keySet, kdb::Key const & parentKey, std::string taskName)
+void createTask (YAML::Emitter & out, kdb::KeySet const & keySet, std::string const & taskName)
 {
 	out << YAML::BeginMap;
 	out << YAML::Key << "name";
@@ -198,7 +198,7 @@ void createTask (YAML::Emitter & out, kdb::KeySet const & keySet, kdb::Key const
 			out << YAML::Key << nskn;
 			out << YAML::Value;
 
-			addNamespace (out, below, namespaceKey);
+			addNamespace (out, below);
 			out << YAML::EndMap;
 		}
 	}
@@ -257,21 +257,21 @@ void AnsibleDelegate::createPlaybook (kdb::KeySet & keySet, kdb::Key const & par
 	auto mountpointKeys = keySet.cut ("system:/elektra/mountpoints");
 	if (mountpointKeys.size () > 0)
 	{
-		createTask (out, mountpointKeys, parentKey, "Mount Configuration");
+		createTask (out, mountpointKeys, "Mount Configuration");
 	}
 
 	auto recordKeys = keySet.cut ("/elektra/record");
 
 	if (keySet.size () > 0)
 	{
-		createTask (out, keySet, parentKey, main_task_name);
+		createTask (out, keySet, main_task_name);
 	}
 
 	// We don't need to transfer record config
 	recordKeys.cut ("/elektra/record/config");
 	if (recordKeys.size () > 0)
 	{
-		createTask (out, recordKeys, parentKey, "Set session recording state");
+		createTask (out, recordKeys, "Set session recording state");
 	}
 
 	out << YAML::EndSeq; // tasks
