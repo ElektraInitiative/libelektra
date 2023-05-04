@@ -59,7 +59,8 @@
 #define ELEKTRA_RECORD_CONFIG_ACTIVE_KEY "/elektra/record/config/active"
 #define ELEKTRA_RECORD_SESSION_KEY "/elektra/record/session"
 #define ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/elektra/record/session/diff/added"
-#define ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY "/elektra/record/session/diff/modified"
+#define ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_OLD_KEY "/elektra/record/session/diff/modified/old"
+#define ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_NEW_KEY "/elektra/record/session/diff/modified/new"
 #define ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/elektra/record/session/diff/removed"
 
 #ifdef __cplusplus

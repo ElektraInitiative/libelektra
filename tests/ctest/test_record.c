@@ -339,10 +339,11 @@ static void test_elektraRecordRecord_shouldRecordChanges (void)
 	kdbGet (sessionStorageKdb, sessionStorage, sessionStorageKey);
 	printErrorAndClear (sessionStorageKey);
 
-	succeed_if_fmt (ksGetSize (sessionStorage) == 3, "expected 3 keys, was %zu", ksGetSize (sessionStorage));
+	succeed_if_fmt (ksGetSize (sessionStorage) == 4, "expected 4 keys, was %zu", ksGetSize (sessionStorage));
 	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/test/key3", "2");
 	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/test/key1", "1");
-	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY "/test/key2", "1");
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_OLD_KEY "/test/key2", "1");
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_NEW_KEY "/test/key2", "2");
 
 	ksDel (sessionStorage);
 	keyDel (sessionStorageKey);
@@ -566,7 +567,8 @@ static void test_elektraRecordUndo_shouldUndoChanges (void)
 
 	// We also need to store the session diff right here
 	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/test/key3", KEY_VALUE, "3", KEY_END));
-	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY "/test/key2", KEY_VALUE, "1", KEY_END));
+	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_OLD_KEY "/test/key2", KEY_VALUE, "1", KEY_END));
+	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_NEW_KEY "/test/key2", KEY_VALUE, "2", KEY_END));
 	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/test/key1", KEY_VALUE, "1", KEY_END));
 
 	kdbSet (kdb, keys, parentKey);
@@ -654,8 +656,10 @@ static void test_elektraRecordRemoveKey_nonRecursive_shouldRemoveKeyFromSession 
 
 	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/test/key3", KEY_VALUE, "3", KEY_END));
 	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/test/key3/sub", KEY_VALUE, "3", KEY_END));
-	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY "/test/key2", KEY_VALUE, "1", KEY_END));
-	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY "/test/key2/sub", KEY_VALUE, "1", KEY_END));
+	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_OLD_KEY "/test/key2", KEY_VALUE, "1", KEY_END));
+	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_OLD_KEY "/test/key2/sub", KEY_VALUE, "1", KEY_END));
+	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_NEW_KEY "/test/key2", KEY_VALUE, "2", KEY_END));
+	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_NEW_KEY "/test/key2/sub", KEY_VALUE, "2", KEY_END));
 	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/test/key1", KEY_VALUE, "1", KEY_END));
 
 	kdbSet (kdb, keys, parentKey);
@@ -690,10 +694,12 @@ static void test_elektraRecordRemoveKey_nonRecursive_shouldRemoveKeyFromSession 
 	kdbGet (sessionStorageKdb, sessionStorage, sessionStorageKey);
 	printErrorAndClear (sessionStorageKey);
 
-	succeed_if_fmt (ksGetSize (sessionStorage) == 4, "expected 4 keys in session storage, was %zu", ksGetSize (sessionStorage));
+	succeed_if_fmt (ksGetSize (sessionStorage) == 6, "expected 4 keys in session storage, was %zu", ksGetSize (sessionStorage));
 	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/test/key3/sub", "3");
-	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY "/test/key2", "1");
-	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY "/test/key2/sub", "1");
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_OLD_KEY "/test/key2", "1");
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_OLD_KEY "/test/key2/sub", "1");
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_NEW_KEY "/test/key2", "2");
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_NEW_KEY "/test/key2/sub", "2");
 	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/test/key1", "1");
 
 	closePrefixedKdbInstance (sessionStorageKdb, sessionStorageKey, false);
@@ -728,8 +734,10 @@ static void test_elektraRecordRemoveKey_recursive_shouldRemoveKeyAndBelowFromSes
 
 	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/test/key3", KEY_VALUE, "3", KEY_END));
 	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/test/key3/sub", KEY_VALUE, "3", KEY_END));
-	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY "/test/key2", KEY_VALUE, "1", KEY_END));
-	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY "/test/key2/sub", KEY_VALUE, "1", KEY_END));
+	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_OLD_KEY "/test/key2", KEY_VALUE, "1", KEY_END));
+	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_OLD_KEY "/test/key2/sub", KEY_VALUE, "1", KEY_END));
+	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_NEW_KEY "/test/key2", KEY_VALUE, "2", KEY_END));
+	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_NEW_KEY "/test/key2/sub", KEY_VALUE, "2", KEY_END));
 	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/test/key1", KEY_VALUE, "1", KEY_END));
 
 	kdbSet (kdb, keys, parentKey);
@@ -764,9 +772,11 @@ static void test_elektraRecordRemoveKey_recursive_shouldRemoveKeyAndBelowFromSes
 	kdbGet (sessionStorageKdb, sessionStorage, sessionStorageKey);
 	printErrorAndClear (sessionStorageKey);
 
-	succeed_if_fmt (ksGetSize (sessionStorage) == 3, "expected 3 keys in session storage, was %zu", ksGetSize (sessionStorage));
-	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY "/test/key2", "1");
-	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY "/test/key2/sub", "1");
+	succeed_if_fmt (ksGetSize (sessionStorage) == 5, "expected 5 keys in session storage, was %zu", ksGetSize (sessionStorage));
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_OLD_KEY "/test/key2", "1");
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_OLD_KEY "/test/key2/sub", "1");
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_NEW_KEY "/test/key2", "2");
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_NEW_KEY "/test/key2/sub", "2");
 	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/test/key1", "1");
 
 	closePrefixedKdbInstance (sessionStorageKdb, sessionStorageKey, false);
@@ -800,7 +810,8 @@ static void test_elektraRecordGetDiff_shouldProvideDiff (void)
 	printErrorAndClear (parentKey);
 
 	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/test/key3", KEY_VALUE, "3", KEY_END));
-	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY "/test/key2", KEY_VALUE, "1", KEY_END));
+	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_OLD_KEY "/test/key2", KEY_VALUE, "1", KEY_END));
+	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_NEW_KEY "/test/key2", KEY_VALUE, "2", KEY_END));
 	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/test/key1", KEY_VALUE, "1", KEY_END));
 
 	kdbSet (kdb, keys, parentKey);
@@ -832,6 +843,7 @@ static void test_elektraRecordGetDiff_shouldProvideDiff (void)
 
 	KeySet * addedKeys = elektraDiffGetAddedKeys (diff);
 	KeySet * modifiedKeys = elektraDiffGetModifiedKeys (diff);
+	KeySet * modifiedNewKeys = elektraDiffGetModifiedNewKeys (diff);
 	KeySet * removedKeys = elektraDiffGetRemovedKeys (diff);
 
 	succeed_if_fmt (ksGetSize (addedKeys) == 1, "added keys should contain 1 key, but was %zu", ksGetSize (addedKeys));
@@ -839,6 +851,9 @@ static void test_elektraRecordGetDiff_shouldProvideDiff (void)
 
 	succeed_if_fmt (ksGetSize (modifiedKeys) == 1, "modified keys should contain 1 key, but was %zu", ksGetSize (modifiedKeys));
 	succeed_if_keyset_contains_key_with_string (modifiedKeys, "user:/test/key2", "1");
+
+	succeed_if_fmt (ksGetSize (modifiedNewKeys) == 1, "modified new keys should contain 1 key, but was %zu", ksGetSize (modifiedKeys));
+	succeed_if_keyset_contains_key_with_string (modifiedNewKeys, "user:/test/key2", "2");
 
 	succeed_if_fmt (ksGetSize (removedKeys) == 1, "removed keys should contain 1 key, but was %zu", ksGetSize (removedKeys));
 	succeed_if_keyset_contains_key_with_string (removedKeys, "user:/test/key3", "3");

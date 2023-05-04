@@ -257,18 +257,20 @@ static ElektraDiff * getDiffFromSessionStorage (KeySet * recordStorage, Key * se
 	}
 
 	Key * sessionDiffAddedKey = keyNew (ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY, KEY_END);
-	Key * sessionDiffModifiedKey = keyNew (ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY, KEY_END);
+	Key * sessionDiffModifiedOldKey = keyNew (ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_OLD_KEY, KEY_END);
+	Key * sessionDiffModifiedNewKey = keyNew (ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_NEW_KEY, KEY_END);
 	Key * sessionDiffRemovedKey = keyNew (ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY, KEY_END);
 
 	ElektraDiff * sessionDiff = elektraDiffNew (
 		renameKeysInAllNamespaces (ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY, "/", ksCut (recordStorage, sessionDiffAddedKey)),
 		renameKeysInAllNamespaces (ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY, "/", ksCut (recordStorage, sessionDiffRemovedKey)),
-		renameKeysInAllNamespaces (ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY, "/", ksCut (recordStorage, sessionDiffModifiedKey)),
-		NULL, /* we don't need new keys */
+		renameKeysInAllNamespaces (ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_OLD_KEY, "/", ksCut (recordStorage, sessionDiffModifiedOldKey)),
+		renameKeysInAllNamespaces (ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_NEW_KEY, "/", ksCut (recordStorage, sessionDiffModifiedNewKey)),
 		sessionRecordingParentKey);
 
 	keyDel (sessionDiffAddedKey);
-	keyDel (sessionDiffModifiedKey);
+	keyDel (sessionDiffModifiedOldKey);
+	keyDel (sessionDiffModifiedNewKey);
 	keyDel (sessionDiffRemovedKey);
 
 	return sessionDiff;
@@ -285,17 +287,21 @@ static ElektraDiff * getDiffFromSessionStorage (KeySet * recordStorage, Key * se
 static void putDiffIntoSessionStorage (KeySet * recordStorage, ElektraDiff * sessionDiff)
 {
 	KeySet * addedKeys = renameKeysInAllNamespaces ("/", ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY, elektraDiffGetAddedKeys (sessionDiff));
-	KeySet * modifiedKeys =
-		renameKeysInAllNamespaces ("/", ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY, elektraDiffGetModifiedKeys (sessionDiff));
+	KeySet * modifiedOldKeys =
+		renameKeysInAllNamespaces ("/", ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_OLD_KEY, elektraDiffGetModifiedKeys (sessionDiff));
+	KeySet * modifiedNewKeys =
+		renameKeysInAllNamespaces ("/", ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_NEW_KEY, elektraDiffGetModifiedNewKeys (sessionDiff));
 	KeySet * removedKeys =
 		renameKeysInAllNamespaces ("/", ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY, elektraDiffGetRemovedKeys (sessionDiff));
 
 	ksAppend (recordStorage, addedKeys);
-	ksAppend (recordStorage, modifiedKeys);
+	ksAppend (recordStorage, modifiedOldKeys);
+	ksAppend (recordStorage, modifiedNewKeys);
 	ksAppend (recordStorage, removedKeys);
 
 	ksDel (addedKeys);
-	ksDel (modifiedKeys);
+	ksDel (modifiedOldKeys);
+	ksDel (modifiedNewKeys);
 	ksDel (removedKeys);
 }
 
