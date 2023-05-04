@@ -44,8 +44,6 @@ The following list describes some important keys:
 - `/elektra/record/config/active`
   - If the key is present, session recording is active.
   - The keys value is the parent key
-- `/elektra/record/config/export/ansible/template`
-  - Optional. If we want to perform in-place updates of Ansible files, this key stores the last-used Ansible file.
 - `/record/session`
   - Contains all the recorded data.
   - Should be mounted into separate files in each namespace.
@@ -53,11 +51,11 @@ The following list describes some important keys:
   - Keys that should be asserted
 - `/record/session/diff`
 - `/record/session/diff/added`
-- `/record/session/diff/modified`
+- `/record/session/diff/modified/old`
   - Contains the _old_ values and metadata for the keys that have been modified
-- `/record/session/diff/removed`
-- `/record/session/new`
+- `/record/session/diff/modified/new`
   - Contains the _new_ values and metadata for the keys that have been modified
+- `/record/session/diff/removed`
 
 ## Calculating the Session Diff
 
