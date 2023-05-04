@@ -30,7 +30,10 @@ int RecordRemoveKeyCommand::execute (const Cmdline & cmdline)
 	Key parentKey = cmdline.createKey (0);
 	Key errorKey;
 
-	if (!ckdb::elektraRecordRemoveKey (*kdb, *parentKey, *errorKey))
+	KeySet toRemove;
+	toRemove.append (parentKey);
+
+	if (!ckdb::elektraRecordRemoveKeys (*kdb, toRemove.getKeySet (), cmdline.recursive, *errorKey))
 	{
 		printError (cerr, errorKey, cmdline.verbose, cmdline.debug);
 		return 1;

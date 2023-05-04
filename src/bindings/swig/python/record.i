@@ -19,7 +19,7 @@ bool elektraRecordClearSession (ckdb::KDB * handle, ckdb::Key * errorKey);
 
 bool elektraRecordRecord (ckdb::KDB * handle, ckdb::KDB * sessionStorageHandle, ckdb::KeySet * newKeys, ckdb::Key * parentKey, ckdb::Key * errorKey);
 bool elektraRecordUndo (ckdb::KDB * handle, ckdb::KDB * sessionStorageHandle, ckdb::Key * parentKey, ckdb::Key * errorKey);
-bool elektraRecordRemoveKey (ckdb::KDB * handle, ckdb::Key * toRemove, ckdb::Key * errorKey);
+bool elektraRecordRemoveKeys (ckdb::KDB * handle, ckdb::KeySet * toRemove, bool recursive, ckdb::Key * errorKey);
 bool elektraRecordIsActive (ckdb::KDB * handle);
 
 %inline %{

@@ -18,6 +18,8 @@ This command removes the specified `key` from the recording session.
   Use a different kdb profile.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
+- `-r`, `--recursive`:
+  Work in a recursive mode. Will also remove all keys below `key`.
 - `-v`, `--verbose`:
   Explain what is happening. Prints additional information in case of errors/warnings.
 - `-d`, `--debug`:

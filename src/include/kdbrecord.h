@@ -26,7 +26,7 @@ bool elektraRecordExportSession (KDB * handle, Plugin * plugin, Key * parentKey,
 
 bool elektraRecordRecord (KDB * handle, KDB * sessionStorageHandle, KeySet * newKeys, Key * parentKey, Key * errorKey);
 bool elektraRecordUndo (KDB * handle, KDB * sessionStorageHandle, Key * parentKey, Key * errorKey);
-bool elektraRecordRemoveKey (KDB * handle, Key * toRemove, Key * errorKey);
+bool elektraRecordRemoveKeys (KDB * handle, KeySet * toRemove, bool recursive, Key * errorKey);
 bool elektraRecordGetDiff (KDB * handle, ElektraDiff ** diff, Key * errorKey);
 bool elektraRecordIsActive (KDB * handle);
 

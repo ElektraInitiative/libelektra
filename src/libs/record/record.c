@@ -559,7 +559,19 @@ cleanup:
 	return successful;
 }
 
-bool elektraRecordRemoveKey (KDB * handle, Key * toRemove, Key * errorKey)
+
+/**
+ * Removes the provided keys from the recording session.
+ *
+ * @param handle the KDB instance to use for accessing recording data.
+ * @param toRemove the keys in this keyset will be removed.
+ * @param recursive if @p true, also the keys below every specified key will be removed.
+ * @param errorKey used for reporting errors and warnings.
+ *                 As usual, they will be found as meta keys attached to this key.
+ * @retval true - removal was successful
+ * @retfal false - there was an error during the removal operation - see @p errorKey for further details
+ */
+bool elektraRecordRemoveKeys (KDB * handle, KeySet * toRemove, bool recursive, Key * errorKey)
 {
 	if (handle == NULL)
 	{
@@ -569,8 +581,14 @@ bool elektraRecordRemoveKey (KDB * handle, Key * toRemove, Key * errorKey)
 
 	if (toRemove == NULL)
 	{
-		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "NULL pointer passed for key to remove");
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "NULL pointer passed for keys to remove");
 		return false;
+	}
+
+	if (ksGetSize (toRemove) == 0)
+	{
+		// Nothing to do
+		return true;
 	}
 
 	Key * sessionRecordingKey = keyNew (ELEKTRA_RECORD_SESSION_KEY, KEY_END);
@@ -586,7 +604,20 @@ bool elektraRecordRemoveKey (KDB * handle, Key * toRemove, Key * errorKey)
 	}
 
 	ElektraDiff * sessionDiff = getDiffFromSessionStorage (recordStorage, NULL);
-	elektraDiffRemoveKey (sessionDiff, toRemove);
+
+	for (elektraCursor it = 0; it < ksGetSize (toRemove); it++)
+	{
+		Key * k = ksAtCursor (toRemove, it);
+
+		if (recursive == false)
+		{
+			elektraDiffRemoveKey (sessionDiff, k);
+		}
+		else
+		{
+			elektraDiffRemoveSameOrBelow (sessionDiff, k);
+		}
+	}
 
 	putDiffIntoSessionStorage (recordStorage, sessionDiff);
 

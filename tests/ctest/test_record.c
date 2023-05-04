@@ -636,7 +636,7 @@ static void test_elektraRecordUndo_shouldUndoChanges (void)
 	keyDel (errorKey);
 }
 
-static void test_elektraRecordRemoveKey_shouldRemoveKeyFromSession (void)
+static void test_elektraRecordRemoveKey_nonRecursive_shouldRemoveKeyFromSession (void)
 {
 	printf ("Executing %s\n", __func__);
 
@@ -653,7 +653,9 @@ static void test_elektraRecordRemoveKey_shouldRemoveKeyFromSession (void)
 	printErrorAndClear (parentKey);
 
 	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/test/key3", KEY_VALUE, "3", KEY_END));
+	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/test/key3/sub", KEY_VALUE, "3", KEY_END));
 	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY "/test/key2", KEY_VALUE, "1", KEY_END));
+	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY "/test/key2/sub", KEY_VALUE, "1", KEY_END));
 	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/test/key1", KEY_VALUE, "1", KEY_END));
 
 	kdbSet (kdb, keys, parentKey);
@@ -669,8 +671,8 @@ static void test_elektraRecordRemoveKey_shouldRemoveKeyFromSession (void)
 	printErrorAndClear (parentKey);
 
 	// Act
-	Key * toRemove = keyNew ("user:/test/key3", KEY_END);
-	bool success = elektraRecordRemoveKey (kdb, toRemove, errorKey);
+	KeySet * toRemove = ksNew (1, keyNew ("user:/test/key3", KEY_END), KS_END);
+	bool success = elektraRecordRemoveKeys (kdb, toRemove, false, errorKey);
 	printErrorAndClear (errorKey);
 
 	closePrefixedKdbInstance (kdb, parentKey, false);
@@ -688,8 +690,10 @@ static void test_elektraRecordRemoveKey_shouldRemoveKeyFromSession (void)
 	kdbGet (sessionStorageKdb, sessionStorage, sessionStorageKey);
 	printErrorAndClear (sessionStorageKey);
 
-	succeed_if_fmt (ksGetSize (sessionStorage) == 2, "expected 2 keys in session storage, was %zu", ksGetSize (sessionStorage));
+	succeed_if_fmt (ksGetSize (sessionStorage) == 4, "expected 4 keys in session storage, was %zu", ksGetSize (sessionStorage));
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/test/key3/sub", "3");
 	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY "/test/key2", "1");
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY "/test/key2/sub", "1");
 	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/test/key1", "1");
 
 	closePrefixedKdbInstance (sessionStorageKdb, sessionStorageKey, false);
@@ -700,8 +704,81 @@ static void test_elektraRecordRemoveKey_shouldRemoveKeyFromSession (void)
 
 	keyDel (parentKey);
 	keyDel (errorKey);
-	keyDel (toRemove);
 
+	ksDel (toRemove);
+	ksDel (contract);
+	ksDel (keys);
+}
+
+static void test_elektraRecordRemoveKey_recursive_shouldRemoveKeyAndBelowFromSession (void)
+{
+	printf ("Executing %s\n", __func__);
+
+	// Arrange
+	KeySet * contract = ksNew (0, KS_END);
+	Key * parentKey = keyNew ("/", KEY_END);
+
+	// Fill some keys into kdb before recording
+	KDB * kdb = openPrefixedKdbInstance (contract, parentKey, __func__);
+	printErrorAndClear (parentKey);
+
+	KeySet * keys = ksNew (0, KS_END);
+	kdbGet (kdb, keys, parentKey);
+	printErrorAndClear (parentKey);
+
+	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/test/key3", KEY_VALUE, "3", KEY_END));
+	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/test/key3/sub", KEY_VALUE, "3", KEY_END));
+	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY "/test/key2", KEY_VALUE, "1", KEY_END));
+	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY "/test/key2/sub", KEY_VALUE, "1", KEY_END));
+	ksAppendKey (keys, keyNew ("user:" ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/test/key1", KEY_VALUE, "1", KEY_END));
+
+	kdbSet (kdb, keys, parentKey);
+	printErrorAndClear (parentKey);
+
+	closePrefixedKdbInstance (kdb, parentKey, false);
+	printErrorAndClear (parentKey);
+
+	Key * errorKey = keyNew ("/", KEY_END);
+	printErrorAndClear (parentKey);
+
+	kdb = openPrefixedKdbInstance (contract, parentKey, __func__);
+	printErrorAndClear (parentKey);
+
+	// Act
+	KeySet * toRemove = ksNew (1, keyNew ("user:/test/key3", KEY_END), KS_END);
+	bool success = elektraRecordRemoveKeys (kdb, toRemove, true, errorKey);
+	printErrorAndClear (errorKey);
+
+	closePrefixedKdbInstance (kdb, parentKey, false);
+	printErrorAndClear (parentKey);
+
+	KDB * sessionStorageKdb = openPrefixedKdbInstance (contract, parentKey, __func__);
+	printErrorAndClear (parentKey);
+
+	// Assert
+	succeed_if (success == true, "should return successful status key");
+	succeed_if (ksGetSize (keyMeta (errorKey)) == 0, "should not have any error or warning");
+
+	Key * sessionStorageKey = keyNew (ELEKTRA_RECORD_SESSION_KEY, KEY_END);
+	KeySet * sessionStorage = ksNew (0, KS_END);
+	kdbGet (sessionStorageKdb, sessionStorage, sessionStorageKey);
+	printErrorAndClear (sessionStorageKey);
+
+	succeed_if_fmt (ksGetSize (sessionStorage) == 3, "expected 3 keys in session storage, was %zu", ksGetSize (sessionStorage));
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY "/test/key2", "1");
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_KEY "/test/key2/sub", "1");
+	succeed_if_keyset_contains_key_with_string (sessionStorage, "user:" ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/test/key1", "1");
+
+	closePrefixedKdbInstance (sessionStorageKdb, sessionStorageKey, false);
+	printErrorAndClear (sessionStorageKey);
+
+	ksDel (sessionStorage);
+	keyDel (sessionStorageKey);
+
+	keyDel (parentKey);
+	keyDel (errorKey);
+
+	ksDel (toRemove);
 	ksDel (contract);
 	ksDel (keys);
 }
@@ -793,7 +870,8 @@ int main (int argc, char ** argv)
 	test_elektraRecordRecord_withParentKeySet_shouldRecordOnlyChangesBelowParentKey ();
 	test_elektraRecordRecord_removeEverything_shouldRecordChanges ();
 	test_elektraRecordUndo_shouldUndoChanges ();
-	test_elektraRecordRemoveKey_shouldRemoveKeyFromSession ();
+	test_elektraRecordRemoveKey_nonRecursive_shouldRemoveKeyFromSession ();
+	test_elektraRecordRemoveKey_recursive_shouldRemoveKeyAndBelowFromSession ();
 	test_elektraRecordGetDiff_shouldProvideDiff ();
 
 	printf ("\ntest_record RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
