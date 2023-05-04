@@ -54,4 +54,4 @@ STDOUT: 28
 < kdb get user:/testundo/age
 
 < kdb record-stop
-< kdb record-clear
+< kdb record-reset

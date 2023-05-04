@@ -30,7 +30,7 @@ STDOUT: Recording is active for /⏎⏎Added 1 key(s)⏎Modified 1 key(s)⏎Remo
 < kdb record-state
 
 RET: 0
-< kdb record-clear
+< kdb record-reset
 
 RET: 0
 STDOUT: Recording is active for /⏎⏎Added 0 key(s)⏎Modified 0 key(s)⏎Removed 0 key(s)
@@ -57,5 +57,5 @@ RET: 0
 STDOUT: Recording is active for user:/test/sub⏎⏎Added 1 key(s)⏎Modified 0 key(s)⏎Removed 0 key(s)⏎⏎Added key user:/test/sub/shouldberecorded
 < kdb record-state
 
-< kdb record-clear
+< kdb record-reset
 < kdb record-stop

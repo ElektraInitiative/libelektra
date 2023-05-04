@@ -30,5 +30,5 @@ This command removes the specified `key` from the recording session.
 - [kdb-record-start(1)](kdb-record-start.md) on how to start the recording session
 - [kdb-record-stop(1)](kdb-record-stop.md) on how to stop the recording session
 - [kdb-record-state(1)](kdb-record-state.md) on how to get information about the current recording session
-- [kdb-record-clear(1)](kdb-record-clear.md) on how to remove all keys from the recording session
+- [kdb-record-reset(1)](kdb-record-reset.md) on how to remove all keys from the recording session
 - [kdb-record-undo(1)](kdb-record-undo.md) on how to undo changes that have been recorded

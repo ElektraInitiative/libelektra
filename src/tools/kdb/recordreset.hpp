@@ -6,18 +6,18 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#ifndef ELEKTRA_RECORDCLEAR_HPP
-#define ELEKTRA_RECORDCLEAR_HPP
+#ifndef ELEKTRA_RECORDRESET_HPP
+#define ELEKTRA_RECORDRESET_HPP
 
 #include "coloredkdbio.hpp"
 #include <command.hpp>
 #include <kdb.hpp>
 
-class RecordClearCommand : public Command
+class RecordResetCommand : public Command
 {
 public:
-	RecordClearCommand ();
-	~RecordClearCommand ();
+	RecordResetCommand ();
+	~RecordResetCommand ();
 
 	virtual std::string getShortOptions () override
 	{
@@ -31,16 +31,16 @@ public:
 
 	virtual std::string getShortHelpText () override
 	{
-		return "Clear the recording session.";
+		return "Reset the recording session.";
 	}
 
 	virtual std::string getLongHelpText () override
 	{
-		return "";
+		return "Reset the recording session by removing all keys that are contained in it.";
 	}
 
 	virtual int execute (Cmdline const & cmdline) override;
 };
 
 
-#endif // ELEKTRA_RECORDCLEAR_HPP
+#endif // ELEKTRA_RECORDRESET_HPP

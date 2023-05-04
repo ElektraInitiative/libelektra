@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "recordclear.hpp"
+#include "recordreset.hpp"
 #include "coloredkdbio.hpp"
 #include <cmdline.hpp>
 #include <iostream>
@@ -16,15 +16,15 @@
 using namespace std;
 using namespace kdb;
 
-RecordClearCommand::RecordClearCommand () = default;
-RecordClearCommand::~RecordClearCommand () = default;
+RecordResetCommand::RecordResetCommand () = default;
+RecordResetCommand::~RecordResetCommand () = default;
 
-int RecordClearCommand::execute (const Cmdline & cmdline)
+int RecordResetCommand::execute (const Cmdline & cmdline)
 {
 	KDB kdb;
 	Key errorKey;
 
-	if (!ckdb::elektraRecordClearSession (*kdb, *errorKey))
+	if (!ckdb::elektraRecordResetSession (*kdb, *errorKey))
 	{
 		printError (cerr, errorKey, cmdline.verbose, cmdline.debug);
 		return 1;

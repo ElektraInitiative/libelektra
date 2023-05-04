@@ -8,7 +8,7 @@
 
 This command starts session recording.
 If there is already a previous session, the new changes are appended.
-If you want to make sure you start at a clean state, use `kdb record-clear` first.
+If you want to make sure you start at a clean state, use `kdb record-reset` first.
 By default, all changes to the KDB are recorded.
 The optional parameter `parent_key` can be used to restrict recording to a specific subtree of the KDB.
 
@@ -31,4 +31,4 @@ The optional parameter `parent_key` can be used to restrict recording to a speci
 
 - [kdb-record-stop(1)](kdb-record-stop.md) on how to stop the recording session
 - [kdb-record-state(1)](kdb-record-state.md) on how to get information about the current recording session
-- [kdb-record-clear(1)](kdb-record-clear.md) on how to clear the recording session
+- [kdb-record-reset(1)](kdb-record-reset.md) on how to clear the recording session

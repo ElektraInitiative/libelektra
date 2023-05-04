@@ -1,8 +1,8 @@
-# kdb-record-clear(1) -- Clear the recording session
+# kdb-record-reset(1) -- Reset the recording session
 
 ## SYNOPSIS
 
-`kdb record-clear`<br>
+`kdb record-reset`<br>
 
 ## DESCRIPTION
 

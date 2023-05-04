@@ -9,13 +9,13 @@
 %import "kdb.i"
 
 %{
-#include "kdbrecord.h"
 #include "kdbdiff.h"
-%}
+#include "kdbrecord.h"
+	%}
 
 bool elektraRecordEnableRecording (ckdb::KDB * handle, ckdb::Key * parentKey, ckdb::Key * errorKey);
 bool elektraRecordDisableRecording (ckdb::KDB * handle, ckdb::Key * errorKey);
-bool elektraRecordClearSession (ckdb::KDB * handle, ckdb::Key * errorKey);
+bool elektraRecordResetSession (ckdb::KDB * handle, ckdb::Key * errorKey);
 
 bool elektraRecordRecord (ckdb::KDB * handle, ckdb::KDB * sessionStorageHandle, ckdb::KeySet * newKeys, ckdb::Key * parentKey, ckdb::Key * errorKey);
 bool elektraRecordUndo (ckdb::KDB * handle, ckdb::KDB * sessionStorageHandle, ckdb::Key * parentKey, ckdb::Key * errorKey);
@@ -47,8 +47,8 @@ class RecordUtil:
   def disable(handle: kdb.KDB, error_key: kdb.Key):
     return elektraRecordDisableRecording(handle.getKdb(), error_key.getKey())
 
-  def clear(handle: kdb.KDB, error_key: kdb.Key):
-    return elektraRecordClearSession(handle.getKdb(), error_key.getKey())
+  def reset(handle: kdb.KDB, error_key: kdb.Key):
+    return elektraRecordResetSession(handle.getKdb(), error_key.getKey())
 
   def is_active(handle: kdb.KDB):
     return elektraRecordIsActive(handle.getKdb())

@@ -29,4 +29,4 @@ The recording session will NOT be cleared.
 
 - [kdb-record-start(1)](kdb-record-start.md) on how to start the recording session
 - [kdb-record-state(1)](kdb-record-state.md) on how to get information about the current recording session
-- [kdb-record-clear(1)](kdb-record-clear.md) on how to clear the recording session
+- [kdb-record-reset(1)](kdb-record-reset.md) on how to clear the recording session

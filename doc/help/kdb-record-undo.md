@@ -27,6 +27,6 @@ After execution, the recording session will no longer contain the undone keys.
 
 ## SEE ALSO
 
-- [kdb-record-start(1)](kdb-record-clear.md) on how to start the recording session
+- [kdb-record-start(1)](kdb-record-start.md) on how to start the recording session
 - [kdb-record-state(1)](kdb-record-state.md) on how to get information about the current recording session
 - [kdb-record-stop(1)](kdb-record-stop.md) on how to stop the recording session

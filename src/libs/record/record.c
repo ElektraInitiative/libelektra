@@ -145,7 +145,7 @@ bool elektraRecordDisableRecording (KDB * handle, Key * errorKey)
  * @retval true - recording session has been cleared successfully
  * @retfal false - there was an error clearing the recording session - see @p errorKey for further details
  */
-bool elektraRecordClearSession (KDB * handle, Key * errorKey)
+bool elektraRecordResetSession (KDB * handle, Key * errorKey)
 {
 	if (handle == NULL)
 	{
