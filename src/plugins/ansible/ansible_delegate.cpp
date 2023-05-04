@@ -12,6 +12,9 @@
 #include <kdbprivate.h> // ksBelow
 #include <sstream>
 #include <yaml-cpp/yaml.h>
+#include <keyset.hpp>
+#include <regex>
+#include <vector>
 
 using kdb::Key;
 using kdb::KeySet;
@@ -95,6 +98,11 @@ void addKey (YAML::Node & parent, kdb::Key const & key, kdb::NameIterator & name
 	}
 
 	auto part = *nameIterator;
+	// replace all occurences of / with \/
+	// this is crucial when exporting mountpoints
+	// otherwise, system:/mountpoint/user:\/test becomes system:/mountpoint/user:/test in the YAML file
+	part = std::regex_replace (part, std::regex("/"), "\\/");
+
 	YAML::Node node = parent[part] ? parent[part] : YAML::Node ();
 	if(node.IsSequence())
 	{
@@ -135,6 +143,7 @@ void addNamespace (YAML::Emitter & out, kdb::KeySet const & keySet, kdb::Key con
 		if (key.isString ())
 		{
 			auto nameIterator = key.begin ();
+			// The first part of the iterator is the namespace in binary form -> skip
 			nameIterator++;
 			addKey (keysNode, key, nameIterator);
 		}
@@ -143,8 +152,54 @@ void addNamespace (YAML::Emitter & out, kdb::KeySet const & keySet, kdb::Key con
 	out << keysNode;
 }
 
-void AnsibleDelegate::createPlaybook (kdb::KeySet const & keySet, kdb::Key const & parentKey)
+void createTask (YAML::Emitter & out, kdb::KeySet const & keySet, kdb::Key const & parentKey, std::string taskName)
 {
+	out << YAML::BeginMap;
+	out << YAML::Key << "name";
+	out << YAML::Value << taskName;
+	out << YAML::Key << "elektra";
+
+	out << YAML::BeginMap;
+	out << YAML::Key << "keys";
+	out << YAML::Value;
+	out << YAML::BeginSeq;
+
+	kdb::Key namespaceKey;
+	for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ns++)
+	{
+		ckdb::keySetNamespace (*namespaceKey, ns);
+		kdb::KeySet below = ckdb::ksBelow (keySet.getKeySet (), *namespaceKey);
+		if (below.size () > 0)
+		{
+			out << YAML::BeginMap;
+			auto nskn = namespaceKey.getName ().substr (0, namespaceKey.getName ().find (':'));
+			out << YAML::Key << nskn;
+			out << YAML::Value;
+
+			addNamespace (out, below, namespaceKey);
+			out << YAML::EndMap;
+		}
+	}
+
+	out << YAML::EndSeq; // keys
+	out << YAML::EndMap; // elektra
+	out << YAML::EndMap;
+}
+
+void AnsibleDelegate::createPlaybook (kdb::KeySet & keySet, kdb::Key const & parentKey)
+{
+	// Cut out oll the blacklisted keys
+	for (const auto & key : blacklist)
+	{
+		keySet.cut (key);
+	}
+
+	if (keySet.size() == 0)
+	{
+		// If keyset is empty, no need to do anything
+		return;
+	}
+
 	std::string hosts = "all";
 	if (parentKey.hasMeta ("meta:/ansible/hosts"))
 	{
@@ -179,34 +234,31 @@ void AnsibleDelegate::createPlaybook (kdb::KeySet const & keySet, kdb::Key const
 	out << YAML::Value;
 	out << YAML::BeginSeq;
 
-	out << YAML::BeginMap;
-	out << YAML::Key << "name";
-	out << YAML::Value << "Set Elektra Keys";
-	out << YAML::Key << "elektra";
-
-	out << YAML::BeginMap;
-	out << YAML::Key << "keys";
-	out << YAML::Value;
-	out << YAML::BeginSeq;
-
-	kdb::Key namespaceKey;
-	for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ns++)
+	// Create a separate task for mountpoints
+	// In a perfect world, we'd just use the 'mounts' section of the Ansible module
+	// However, therefore we'd need to create our own mountpoints parser here.
+	// Also, if this exports from a recording session, there's a high likelihood that we only get partial mountpoints
+	// The reason it is a separate task here is that for the "real" keys we already want to use the mountpoints.
+	// Alternatively, we could modify the Ansible module so that it internally separates system:/elektra/mountpoint keys from the rest.
+	auto mountpointKeys = keySet.cut ("system:/elektra/mountpoints");
+	if (mountpointKeys.size() > 0)
 	{
-		ckdb::keySetNamespace (*namespaceKey, ns);
-		kdb::KeySet below = ckdb::ksBelow (keySet.getKeySet (), *namespaceKey);
-		if (below.size () > 0)
-		{
-			out << YAML::BeginMap;
-			out << YAML::Key << namespaceKey.getName ().substr (0, parentKey.getName ().find (':'));
-			out << YAML::Value;
-
-			addNamespace (out, below, namespaceKey);
-			out << YAML::EndMap;
-		}
+		createTask (out, mountpointKeys, parentKey, "Mount Configuration");
 	}
 
-	out << YAML::EndSeq; // keys
-	out << YAML::EndMap; // elektra
+	auto recordKeys = keySet.cut ("/elektra/record");
+
+	if (keySet.size() > 0)
+	{
+		createTask (out, keySet, parentKey, "Set Elektra Keys");
+	}
+
+	// We don't need to transfer record config
+	recordKeys.cut ("/elektra/record/config");
+	if (recordKeys.size() > 0)
+	{
+		createTask (out, recordKeys, parentKey, "Set session recording state");
+	}
 
 	out << YAML::EndSeq; // tasks
 	out << YAML::EndMap;

@@ -12,6 +12,8 @@
 
 #include <kdberrors.h>
 #include <kdbplugin.hpp>
+#include <string>
+#include <vector>
 
 namespace elektra
 {
@@ -39,7 +41,14 @@ public:
 	 */
 	KeySet getConfig (Key const & prefix);
 
-	void createPlaybook (KeySet const & keySet, Key const & parentKey);
+	void createPlaybook (KeySet & keySet, Key const & parentKey);
+
+private:
+	// Key hierarchies that will NEVER be exported
+	std::vector<std::string> blacklist {
+		"system:/elektra/modules",
+		"system:/elektra/version"
+	};
 };
 
 } // end namespace elektra
