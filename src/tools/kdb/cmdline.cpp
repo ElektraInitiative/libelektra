@@ -38,7 +38,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 : synopsis (command->getSynopsis ()), helpText (), invalidOpt (false),
 
   /*XXX: Step 2: initialise your option here.*/
-  debug (), force (), load (), humanReadable (), help (), interactive (), minDepth (0), maxDepth (numeric_limits<int>::max ()),
+  debug (), force (), load (), humanReadable (), help (), includeSessionStorage (false), interactive (), minDepth (0), maxDepth (numeric_limits<int>::max ()),
   noNewline (), test (), recursive (), resolver (KDB_RESOLVER), strategy ("preserve"), verbose (), quiet (), version (), withoutElektra (),
   inputFile (""), null (), first (true), second (true), third (true), withRecommends (false), all (), format (KDB_STORAGE), plugins (""),
   globalPlugins ("spec"), pluginsConfig (""), color ("auto"), editor (), bookmarks (), profile ("current"),
@@ -205,6 +205,12 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		option o = { "editor", required_argument, 0, 'e' };
 		long_options.push_back (o);
 		helpText += "-e --editor <editor>     Which external editor to use.\n";
+	}
+	if (acceptedOptions.find ('S') != string::npos)
+	{
+		option o = { "include-recording-session", no_argument, nullptr, 'S'};
+		long_options.push_back (o);
+		helpText += "-S --include-recording-session     Include recording session in output.\n";
 	}
 	if (acceptedOptions.find ('W') != string::npos)
 	{
@@ -430,6 +436,9 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 			break;
 		case 's':
 			strategy = optarg;
+			break;
+		case 'S':
+			includeSessionStorage = true;
 			break;
 		case 'v':
 			verbose = true;

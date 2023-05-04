@@ -1,13 +1,20 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre3
-.TH "KDB\-RECORD\-EXPORT" "1" "April 2023" ""
+.TH "KDB\-RECORD\-EXPORT" "1" "May 2023" ""
 .SH "NAME"
 \fBkdb\-record\-export\fR \- Export recorded changes
 .SH "SYNOPSIS"
-\fBkdb record\-export <format>\fR
+\fBkdb record\-export [<source>] [<format>]\fR
 .br
 .SH "DESCRIPTION"
-This command exports the recorded changes into the specified output format\. The parameter \fBformat\fR must be a valid storage plugin\.
+This command exports the recorded changes into the specified output format\. Keys are exported to \fBstdout\fR in whichever format is specified\.
+.br
+.SH "USAGE"
+Where \fBsource\fR is the path of the key(s) you want to export\. Additionally, the user can specify a format to use by passing it as the option argument \fBformat\fR\.
+.br
+The \fBformat\fR attribute relies on Elektra’s plugin system to export the keys in the desired format\. The parameter \fBformat\fR must be the name of a valid storage plugin\.
+.P
+Both \fBsource\fR and \fBformat\fR are optional parameters\. By default, \fBsource\fR is \fB/\fR and \fBformat\fR is \fBansible\fR\. If you only specify a single argument, we will whether it is a key or the format\.
 .SH "OPTIONS"
 .TP
 \fB\-H\fR, \fB\-\-help\fR
@@ -21,6 +28,15 @@ Use a different kdb profile\.
 .TP
 \fB\-C\fR, \fB\-\-color <when>\fR
 Print never/auto(default)/always colored output\.
+.TP
+\fB\-E\fR, \fB\-\-without\-elektra\fR
+Omit the \fBsystem:/elektra\fR directory\.
+.TP
+\fB\-S\fR, \fB\-\-include\-recording\-session\fR
+Include the recording session in the output\.
+.TP
+\fB\-c\fR, \fB\-\-plugins\-config <plugins\-config>\fR
+Add a configuration to the format plugin\.
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
 Explain what is happening\. Prints additional information in case of errors/warnings\.

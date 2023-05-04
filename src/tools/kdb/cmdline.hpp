@@ -78,6 +78,7 @@ public:
 	bool first;
 	bool second;
 	bool third;
+	bool includeSessionStorage; /*!< Include kbb record session storage */
 	bool withRecommends;
 	bool all; /*!< Consider all keys for lookup */
 	std::string format;

@@ -30,6 +30,28 @@ namespace elektra
 AnsibleDelegate::AnsibleDelegate (KeySet config)
 {
 	configuration = config;
+
+	if (!configuration.lookup ("/playbook/name").isNull())
+	{
+		playbook_name = configuration.lookup ("/playbook/name").getString ();
+	}
+
+	if (!configuration.lookup ("/playbook/hosts").isNull())
+	{
+		hosts = configuration.lookup ("/playbook/hosts").getString();
+	}
+
+	if (!configuration.lookup ("/playbook").isNull())
+	{
+		auto value = configuration.lookup ("/playbook").getString ();
+		std::transform (value.begin(), value.end(), value.begin(), ::toupper);
+		only_tasks = value == "FALSE";
+	}
+
+	if (!configuration.lookup ("/task/name").isNull())
+	{
+		main_task_name = configuration.lookup ("/task/name").getString ();
+	}
 }
 
 /**
@@ -200,38 +222,30 @@ void AnsibleDelegate::createPlaybook (kdb::KeySet & keySet, kdb::Key const & par
 		return;
 	}
 
-	std::string hosts = "all";
-	if (parentKey.hasMeta ("meta:/ansible/hosts"))
-	{
-		hosts = parentKey.getMeta<std::string> ("meta:/ansible/hosts");
-	}
-
-	std::string name = "My Elektra Ansible Playbook";
-	if (parentKey.hasMeta ("meta:/ansible/name"))
-	{
-		name = parentKey.getMeta<std::string> ("meta:/ansible/name");
-	}
-
 	YAML::Emitter out;
 
 	out << YAML::BeginDoc;
 
-	out << YAML::BeginSeq;
-	out << YAML::BeginMap;
+	if (!only_tasks)
+	{
+		out << YAML::BeginSeq;
+		out << YAML::BeginMap;
 
-	out << YAML::Key << "name";
-	out << YAML::Value << name;
+		out << YAML::Key << "name";
+		out << YAML::Value << playbook_name;
 
-	out << YAML::Key << "hosts";
-	out << YAML::Value << hosts;
+		out << YAML::Key << "hosts";
+		out << YAML::Value << hosts;
 
-	out << YAML::Key << "collections";
-	out << YAML::BeginSeq;
-	out << YAML::Value << "elektra_initiative.libelektra";
-	out << YAML::EndSeq;
+		out << YAML::Key << "collections";
+		out << YAML::BeginSeq;
+		out << YAML::Value << "elektra_initiative.libelektra";
+		out << YAML::EndSeq;
 
-	out << YAML::Key << "tasks";
-	out << YAML::Value;
+		out << YAML::Key << "tasks";
+		out << YAML::Value;
+	}
+
 	out << YAML::BeginSeq;
 
 	// Create a separate task for mountpoints
@@ -250,7 +264,7 @@ void AnsibleDelegate::createPlaybook (kdb::KeySet & keySet, kdb::Key const & par
 
 	if (keySet.size() > 0)
 	{
-		createTask (out, keySet, parentKey, "Set Elektra Keys");
+		createTask (out, keySet, parentKey, main_task_name);
 	}
 
 	// We don't need to transfer record config
@@ -261,8 +275,12 @@ void AnsibleDelegate::createPlaybook (kdb::KeySet & keySet, kdb::Key const & par
 	}
 
 	out << YAML::EndSeq; // tasks
-	out << YAML::EndMap;
-	out << YAML::EndSeq;
+
+	if (!only_tasks)
+	{
+		out << YAML::EndMap;
+		out << YAML::EndSeq;
+	}
 
 	out << YAML::EndDoc;
 

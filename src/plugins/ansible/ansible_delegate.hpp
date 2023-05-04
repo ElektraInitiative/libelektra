@@ -49,6 +49,12 @@ private:
 		"system:/elektra/modules",
 		"system:/elektra/version"
 	};
+
+	std::string playbook_name = "My Elektra Playbook";
+	std::string main_task_name = "Set Elektra Keys";
+	std::string hosts = "all";
+
+	bool only_tasks = false;
 };
 
 } // end namespace elektra

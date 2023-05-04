@@ -34,6 +34,30 @@ int RecordExportCommand::execute (const Cmdline & cmdline)
 	string file = "/dev/stdout";
 #endif
 	std::string format = "ansible";
+	Key parentKey;
+
+	size_t argc = cmdline.arguments.size ();
+	if (argc > 2)
+	{
+		throw invalid_argument ("need 0 to 2 arguments");
+	}
+
+	if (argc == 1)
+	{
+		try
+		{
+			parentKey = cmdline.createKey (0);
+		}
+		catch (exception & ex)
+		{
+			format = cmdline.arguments[0];
+		}
+	}
+	else if (argc == 2)
+	{
+		parentKey = cmdline.createKey (0);
+		format = cmdline.arguments[1];
+	}
 
 	ModulesPluginDatabase pluginDatabase;
 	PluginSpec provides = pluginDatabase.lookupProvides (format);
@@ -43,9 +67,17 @@ int RecordExportCommand::execute (const Cmdline & cmdline)
 	Modules modules;
 	PluginPtr plugin = modules.load (provides.getName (), cmdline.getPluginsConfig ());
 
-	Key parentKey;
 	parentKey.setString (file);
 
+	if (cmdline.withoutElektra)
+	{
+		parentKey.setMeta ("meta:/export/withoutElektra", "true");
+	}
+
+	if (cmdline.includeSessionStorage)
+	{
+		parentKey.setMeta ("meta:/export/includeRecordingSession", "true");
+	}
 
 	if (!ckdb::elektraRecordExportSession (*kdb, plugin->operator->(), *parentKey, *errorKey))
 	{

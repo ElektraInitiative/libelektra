@@ -689,8 +689,39 @@ bool elektraRecordExportSession (KDB * handle, Plugin * plugin, Key * parentKey,
 		return false;
 	}
 
+	bool includeRecordingSession = keyGetMeta (parentKey, "meta:/export/includeRecordingSession") != NULL;
+	KeySet * sessionStorageBackup = NULL;
+	if (includeRecordingSession)
+	{
+		// We need to duplicate the ks, as `getDiffFromSessionStorage` will remove it from sessionStorage
+		sessionStorageBackup = ksDup(ksBelow (sessionStorage, sessionKey));
+
+		// Remove all keys from session storage that are not initiall under parent key
+		ElektraDiff * d = getDiffFromSessionStorage (sessionStorageBackup, parentKey);
+		elektraDiffRemoveOther (d, parentKey);
+		KeySet * tmp = ksNew (0, KS_END);
+		putDiffIntoSessionStorage (tmp, d);
+		ksDel (sessionStorageBackup);
+		sessionStorageBackup = tmp;
+	}
+
 	ElektraDiff * sessionDiff = getDiffFromSessionStorage (sessionStorage, parentKey);
+	elektraDiffRemoveOther (sessionDiff, parentKey);
+
 	KeySet * exportKs = buildExportKeySet (sessionDiff);
+
+	if (keyGetMeta (parentKey, "meta:/export/withoutElektra"))
+	{
+		Key * cutpoint = keyNew ("system:/elektra", KEY_END);
+		ksDel (ksCut (exportKs, cutpoint));
+		keyDel (cutpoint);
+	}
+
+	if (includeRecordingSession)
+	{
+		ksAppend (exportKs, sessionStorageBackup);
+	}
+
 	int result = plugin->kdbSet (plugin, exportKs, parentKey);
 	bool successful = true;
 	if (result == ELEKTRA_PLUGIN_STATUS_ERROR)
@@ -703,6 +734,7 @@ bool elektraRecordExportSession (KDB * handle, Plugin * plugin, Key * parentKey,
 	keyDel (parentKey);
 	keyDel (sessionKey);
 	ksDel (sessionStorage);
+	if (sessionStorageBackup != NULL) ksDel (sessionStorageBackup);
 	ksDel (exportKs);
 
 	return successful;
