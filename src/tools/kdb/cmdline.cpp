@@ -38,10 +38,11 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 : synopsis (command->getSynopsis ()), helpText (), invalidOpt (false),
 
   /*XXX: Step 2: initialise your option here.*/
-  debug (), force (), load (), humanReadable (), help (), includeSessionStorage (false), interactive (), minDepth (0), maxDepth (numeric_limits<int>::max ()),
-  noNewline (), test (), recursive (), resolver (KDB_RESOLVER), strategy ("preserve"), verbose (), quiet (), version (), withoutElektra (),
-  inputFile (""), null (), first (true), second (true), third (true), withRecommends (false), all (), format (KDB_STORAGE), plugins (""),
-  globalPlugins ("spec"), pluginsConfig (""), color ("auto"), editor (), bookmarks (), profile ("current"),
+  debug (), force (), load (), humanReadable (), help (), includeSessionStorage (false), interactive (), minDepth (0),
+  maxDepth (numeric_limits<int>::max ()), noNewline (), test (), recursive (), resolver (KDB_RESOLVER), strategy ("preserve"), verbose (),
+  quiet (), version (), withoutElektra (), inputFile (""), null (), first (true), second (true), third (true), withRecommends (false),
+  all (), format (KDB_STORAGE), plugins (""), globalPlugins ("spec"), pluginsConfig (""), color ("auto"), editor (), bookmarks (),
+  profile ("current"),
 
   executable (), commandName ()
 {
@@ -208,7 +209,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 	}
 	if (acceptedOptions.find ('S') != string::npos)
 	{
-		option o = { "include-recording-session", no_argument, nullptr, 'S'};
+		option o = { "include-recording-session", no_argument, nullptr, 'S' };
 		long_options.push_back (o);
 		helpText += "-S --include-recording-session     Include recording session in output.\n";
 	}

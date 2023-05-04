@@ -45,10 +45,7 @@ public:
 
 private:
 	// Key hierarchies that will NEVER be exported
-	std::vector<std::string> blacklist {
-		"system:/elektra/modules",
-		"system:/elektra/version"
-	};
+	std::vector<std::string> blacklist{ "system:/elektra/modules", "system:/elektra/version" };
 
 	std::string playbook_name = "My Elektra Playbook";
 	std::string main_task_name = "Set Elektra Keys";

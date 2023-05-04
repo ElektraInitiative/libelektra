@@ -694,7 +694,7 @@ bool elektraRecordExportSession (KDB * handle, Plugin * plugin, Key * parentKey,
 	if (includeRecordingSession)
 	{
 		// We need to duplicate the ks, as `getDiffFromSessionStorage` will remove it from sessionStorage
-		sessionStorageBackup = ksDup(ksBelow (sessionStorage, sessionKey));
+		sessionStorageBackup = ksDup (ksBelow (sessionStorage, sessionKey));
 
 		// Remove all keys from session storage that are not initiall under parent key
 		ElektraDiff * d = getDiffFromSessionStorage (sessionStorageBackup, parentKey);

@@ -10,11 +10,11 @@
 #include "ansible_delegate.hpp"
 #include <fstream>
 #include <kdbprivate.h> // ksBelow
-#include <sstream>
-#include <yaml-cpp/yaml.h>
 #include <keyset.hpp>
 #include <regex>
+#include <sstream>
 #include <vector>
+#include <yaml-cpp/yaml.h>
 
 using kdb::Key;
 using kdb::KeySet;
@@ -31,24 +31,24 @@ AnsibleDelegate::AnsibleDelegate (KeySet config)
 {
 	configuration = config;
 
-	if (!configuration.lookup ("/playbook/name").isNull())
+	if (!configuration.lookup ("/playbook/name").isNull ())
 	{
 		playbook_name = configuration.lookup ("/playbook/name").getString ();
 	}
 
-	if (!configuration.lookup ("/playbook/hosts").isNull())
+	if (!configuration.lookup ("/playbook/hosts").isNull ())
 	{
-		hosts = configuration.lookup ("/playbook/hosts").getString();
+		hosts = configuration.lookup ("/playbook/hosts").getString ();
 	}
 
-	if (!configuration.lookup ("/playbook").isNull())
+	if (!configuration.lookup ("/playbook").isNull ())
 	{
 		auto value = configuration.lookup ("/playbook").getString ();
-		std::transform (value.begin(), value.end(), value.begin(), ::toupper);
+		std::transform (value.begin (), value.end (), value.begin (), ::toupper);
 		only_tasks = value == "FALSE";
 	}
 
-	if (!configuration.lookup ("/task/name").isNull())
+	if (!configuration.lookup ("/task/name").isNull ())
 	{
 		main_task_name = configuration.lookup ("/task/name").getString ();
 	}
@@ -123,17 +123,17 @@ void addKey (YAML::Node & parent, kdb::Key const & key, kdb::NameIterator & name
 	// replace all occurences of / with \/
 	// this is crucial when exporting mountpoints
 	// otherwise, system:/mountpoint/user:\/test becomes system:/mountpoint/user:/test in the YAML file
-	part = std::regex_replace (part, std::regex("/"), "\\/");
+	part = std::regex_replace (part, std::regex ("/"), "\\/");
 
 	YAML::Node node = parent[part] ? parent[part] : YAML::Node ();
-	if(node.IsSequence())
+	if (node.IsSequence ())
 	{
 		// Look whether the sequence already has a "keys" entry
 		for (auto element : node)
 		{
-			if(element["keys"])
+			if (element["keys"])
 			{
-				YAML::Node keyNode(element);
+				YAML::Node keyNode (element);
 				auto kn = keyNode["keys"];
 				addKey (kn, key, ++nameIterator);
 				return;
@@ -149,7 +149,7 @@ void addKey (YAML::Node & parent, kdb::Key const & key, kdb::NameIterator & name
 	}
 	else
 	{
-		parent[part]=node;
+		parent[part] = node;
 	}
 
 	++nameIterator;
@@ -216,7 +216,7 @@ void AnsibleDelegate::createPlaybook (kdb::KeySet & keySet, kdb::Key const & par
 		keySet.cut (key);
 	}
 
-	if (keySet.size() == 0)
+	if (keySet.size () == 0)
 	{
 		// If keyset is empty, no need to do anything
 		return;
@@ -255,21 +255,21 @@ void AnsibleDelegate::createPlaybook (kdb::KeySet & keySet, kdb::Key const & par
 	// The reason it is a separate task here is that for the "real" keys we already want to use the mountpoints.
 	// Alternatively, we could modify the Ansible module so that it internally separates system:/elektra/mountpoint keys from the rest.
 	auto mountpointKeys = keySet.cut ("system:/elektra/mountpoints");
-	if (mountpointKeys.size() > 0)
+	if (mountpointKeys.size () > 0)
 	{
 		createTask (out, mountpointKeys, parentKey, "Mount Configuration");
 	}
 
 	auto recordKeys = keySet.cut ("/elektra/record");
 
-	if (keySet.size() > 0)
+	if (keySet.size () > 0)
 	{
 		createTask (out, keySet, parentKey, main_task_name);
 	}
 
 	// We don't need to transfer record config
 	recordKeys.cut ("/elektra/record/config");
-	if (recordKeys.size() > 0)
+	if (recordKeys.size () > 0)
 	{
 		createTask (out, recordKeys, parentKey, "Set session recording state");
 	}
