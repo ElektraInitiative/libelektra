@@ -132,8 +132,9 @@ execute() {
 	# = WARNINGS =
 	# ============
 
-	WARNINGS=$(printf '%s' "$STDERR" | sed -nE 's/.*warning (C[A-Z0-9]+):/\1/p' | tr '\n' ',' | sed 's/.$//')
-
+	WARNINGS=$(printf '%s' "$STDERR" | sed -nE 's/.*(warning|:|: \[)(C[A-Z0-9]+)(:|\]).*/\2/p' | tr '\n' ',' | sed 's/.$//')
+	C_WARNINGS=$(printf '%s' "$STDERR" | sed -nE 's/^WARNING \[([A-Z0-9]+)\]:.*/\1/p' | tr '\n' ',' | sed 's/,$//')
+	WARNINGS="${WARNINGS:-$C_WARNINGS}"
 	[ -n "$WARNINGS" ] && printf 'WARNINGS: %s\n' "$WARNINGS" >> "$OutFile"
 
 	if [ -n "$WARNINGSCMP" ]; then
@@ -150,7 +151,8 @@ execute() {
 	# ==========
 
 	ERROR=$(printf '%s' "$STDERR" | sed -nE 's/.*error (C[A-Z0-9]+):/\1/p')
-
+	C_ERROR=$(printf '%s' "$STDERR" | sed -nE 's/^ERROR \[([A-Z0-9]+)\]:.*/\1/p')
+	ERROR="${ERROR:-$C_ERROR}"
 	[ -n "$ERROR" ] && printf 'ERROR: %s\n' "$ERROR" >> "$OutFile"
 	if [ -n "$ERRORCMP" ]; then
 		executedTests=$((executedTests + 1))
