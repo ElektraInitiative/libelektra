@@ -44,7 +44,7 @@ int SetCommand::execute (Cmdline const & cl)
 		kdb.get (conf, parentKey);
 	}
 	else
-	{ // if not -f, do a cascading lookup so validation is not skipped
+	{ // if not -f, do a cascading lookup in order to also load the spec:/ keys, so validation is not skipped
 		Key cascadingParentKey = parentKey.dup ();
 		cascadingParentKey.setNamespace (kdb::ElektraNamespace::CASCADING);
 		kdb.get (conf, cascadingParentKey);
