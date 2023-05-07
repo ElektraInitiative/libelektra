@@ -82,7 +82,7 @@ int RecordExportCommand::execute (const Cmdline & cmdline)
 	if (!ckdb::elektraRecordExportSession (*kdb, plugin->operator->(), *parentKey, *errorKey))
 	{
 		printError (cerr, errorKey, cmdline.verbose, cmdline.debug);
-		return 1;
+		return 11;
 	}
 
 	printWarnings (cerr, errorKey, cmdline.verbose, cmdline.debug);

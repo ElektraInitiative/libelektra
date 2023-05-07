@@ -25,6 +25,15 @@ This command removes the specified `key` from the recording session.
 - `-d`, `--debug`:
   Give debug information. Prints additional debug information in case of errors/warnings.
 
+## RETURN VALUE
+
+- 0:
+  Successful.
+- 1-10:
+  standard exit codes, see [kdb(1)](kdb.md).s
+- 11:
+  An error occurred during removal of the key(s).
+
 ## SEE ALSO
 
 - [kdb-record-start(1)](kdb-record-start.md) on how to start the recording session

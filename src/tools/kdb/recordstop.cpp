@@ -27,7 +27,7 @@ int RecordStopCommand::execute (const Cmdline & cmdline)
 	if (!ckdb::elektraRecordDisableRecording (*kdb, *errorKey))
 	{
 		printError (cerr, errorKey, cmdline.verbose, cmdline.debug);
-		return 1;
+		return 11;
 	}
 
 	printWarnings (cerr, errorKey, cmdline.verbose, cmdline.debug);

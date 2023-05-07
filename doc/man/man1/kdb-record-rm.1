@@ -30,6 +30,16 @@ Explain what is happening\. Prints additional information in case of errors/warn
 .TP
 \fB\-d\fR, \fB\-\-debug\fR
 Give debug information\. Prints additional debug information in case of errors/warnings\.
+.SH "RETURN VALUE"
+.TP
+0
+Successful\.
+.TP
+1\-10
+standard exit codes, see kdb(1) \fIkdb\.md\fR\.s
+.TP
+11
+An error occurred during removal of the key(s)\.
 .SH "SEE ALSO"
 .IP "\(bu" 4
 kdb\-record\-start(1) \fIkdb\-record\-start\.md\fR on how to start the recording session

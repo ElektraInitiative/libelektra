@@ -38,7 +38,7 @@ int RecordStartCommand::execute (const Cmdline & cmdline)
 	if (!ckdb::elektraRecordEnableRecording (*kdb, *parentKey, *errorKey))
 	{
 		printError (cerr, errorKey, cmdline.verbose, cmdline.debug);
-		return 1;
+		return 11;
 	}
 
 	printWarnings (cerr, errorKey, cmdline.verbose, cmdline.debug);

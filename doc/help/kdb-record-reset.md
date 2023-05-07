@@ -25,6 +25,15 @@ This command can be executed while recording is active and when it is not active
 - `-d`, `--debug`:
   Give debug information. Prints additional debug information in case of errors/warnings.
 
+## RETURN VALUE
+
+- 0:
+  Successful.
+- 1-10:
+  standard exit codes, see [kdb(1)](kdb.md).
+- 11:
+  An error occurred during reset.
+
 ## SEE ALSO
 
 - [kdb-record-start(1)](kdb-record-start.md) on how to start the recording session

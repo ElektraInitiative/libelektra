@@ -27,6 +27,15 @@ The optional parameter `parent_key` can be used to restrict recording to a speci
 - `-d`, `--debug`:
   Give debug information. Prints additional debug information in case of errors/warnings.
 
+## RETURN VALUE
+
+- 0:
+  Successful.
+- 1-10:
+  standard exit codes, see [kdb(1)](kdb.md).
+- 11:
+  An error occurred during starting the recording.
+
 ## SEE ALSO
 
 - [kdb-record-stop(1)](kdb-record-stop.md) on how to stop the recording session

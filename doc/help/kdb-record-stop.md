@@ -25,6 +25,15 @@ The recording session will NOT be cleared.
 - `-d`, `--debug`:
   Give debug information. Prints additional debug information in case of errors/warnings.
 
+## RETURN VALUE
+
+- 0:
+  Successful.
+- 1-10:
+  standard exit codes, see [kdb(1)](kdb.md)
+- 11:
+  An error occurred during stopping the recording.
+
 ## SEE ALSO
 
 - [kdb-record-start(1)](kdb-record-start.md) on how to start the recording session
