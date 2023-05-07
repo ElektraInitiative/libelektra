@@ -1,66 +1,71 @@
 - infos = Information about the ansible plugin is in keys below
-- infos/author = Author Name <elektra@libelektra.org>
+- infos/author = Maximilian Irlinger <max@maxirlinger.at>
 - infos/licence = BSD
 - infos/needs =
-- infos/provides =
+- infos/provides = storage/ansible
 - infos/recommends =
-- infos/placements = prerollback rollback postrollback getresolver pregetstorage getstorage procgetstorage postgetstorage setresolver presetstorage setstorage precommit commit postcommit
-- infos/status = recommended productive maintained reviewed conformant compatible coverage specific unittest shelltest tested nodep libc configurable final preview memleak experimental difficult unfinished old nodoc concept orphan obsolete discouraged -1000000
+- infos/placements = setstorage
+- infos/status = recommended productive maintained conformant
 - infos/metadata =
-- infos/description = one-line description of ansible
+- infos/description = export Ansible playbooks
 
 ## Introduction
 
-Copy this ansible if you want to start a new
-plugin written in C++.
-
-## Installation
-
-See [installation](/doc/INSTALL.md).
-The package is called `libelektra5-experimental`.
-
-## Usage
-
-You can use `scripts/copy-ansible`
-to automatically rename everything to your
-plugin name:
-
-```bash
-cd src/plugins
-../../scripts/copy-ansible yourplugin
-```
-
-Then update the `README.md` of your newly created plugin:
-
-- enter your full name+email in `infos/author`
-- make sure `status`, `placements`, and other clauses conform to
-  descriptions in `doc/CONTRACT.ini`
-- update the one-line description above
-- write an introduction what your plugin does
-- add your plugin in `src/plugins/README.md`
-- and rewrite the rest of this `README.md` to give a great
-  explanation of what your plugin does
+Provides a write-only storage plugin for use with `kdb export` and `kdb record-export`.
+The output format is an Ansible playbook that utilized the [ansible-libelektra](https://github.com/ElektraInitiative/ansible-libelektra) module.
 
 ## Plugin Configuration
 
-None.
+You can use the following configuration keys to modify the behaviour and output of the plugin:
+
+| Key              | Default Value       | Description                                                      |
+| :--------------- | :------------------ | :--------------------------------------------------------------- |
+| `playbook`       | `true`              | Whether to generate a whole playbook or just a (list of) task(s) |
+| `playbook/name`  | My Elektra Playbook | The `name` property of the playbook                              |
+| `playbook/hosts` | all                 | The `hosts` property of the playbook                             |
+| `task/main/name` | Set Elektra Keys    | The name of the 'main' task of the playbook                      |
 
 ## Dependencies
 
-None.
+This plugin requires [yaml-cpp][]. On a Debian based OS the package for the library is called [`libyaml-cpp-dev`](https://packages.debian.org/libyaml-cpp-dev). On macOS you can install the package [`yaml-cpp`](https://repology.org/project/yaml-cpp) via [HomeBrew](https://brew.sh).
 
 ## Examples
 
 ```sh
 # Backup-and-Restore: user:/tests/ansible
 
-kdb set user:/tests/ansible/key value
-#> Create a new key user:/tests/ansible/key with string "value"
+kdb set user:/company/roles/ceo Hans
+#> Create a new key user:/company/roles/ceo with string "Hans"
 
-kdb get /tests/ansible/key
-#> value
+kdb export user:/company ansible -c playbook/name="Company Roles",task/main/name="I can customize this too"
+#> RET:0
+```
+
+```yaml
+---
+- name: Company Roles
+  hosts: all
+  collections:
+    - elektra_initiative.libelektra
+  tasks:
+    - name: I can customize this too
+      elektra:
+        keys:
+          - user:
+              company:
+                roles:
+                  ceo:
+                    - value: Hans
 ```
 
 ## Limitations
 
-None.
+- This plugin only supports writing of Ansible Playbooks.
+  It is currently not possible to read them with this plugin.
+  Do not use this plugin as a general-purpose storage plugin.
+
+- If keys below `system:/elektra/mountpoints` are included, we will always create a second task for them instead of using the `mount` operation of the ansible-libelektra module.
+  This task will be created first.
+  Keys created during the 'main' task will then already be able to use the correctly mounted files.
+
+[yaml-cpp]: https://github.com/jbeder/yaml-cpp
