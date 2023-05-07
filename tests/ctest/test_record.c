@@ -866,6 +866,7 @@ static void test_elektraRecordGetDiff_shouldProvideDiff (void)
 
 	ksDel (addedKeys);
 	ksDel (modifiedKeys);
+	ksDel (modifiedNewKeys);
 	ksDel (removedKeys);
 
 	keyDel (parentKey);
