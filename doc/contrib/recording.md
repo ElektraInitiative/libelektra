@@ -79,4 +79,4 @@ This new functionality will be implemented as `elektraDiffMerge`.
 The core recording feature has two main components:
 
 1. Recording C API (`libelektra-record`): Implements everything the tooling needs.
-2. Recording Plugin (`libelektra-recorder`): Gets loaded as a hook plugin, calculates the changes and persists the diff.
+2. Recording Plugin (`libelektra-recorder`): Gets loaded as a hook plugin and calls the appropriate functions in `libelektra-record`.
