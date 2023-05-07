@@ -38,7 +38,7 @@ kdb set user:/company/roles/ceo Hans
 #> Create a new key user:/company/roles/ceo with string "Hans"
 
 kdb export user:/company ansible -c playbook/name="Company Roles",task/main/name="I can customize this too"
-#> RET:0
+# RET:0
 ```
 
 ```yaml
