@@ -48,9 +48,9 @@ AnsibleDelegate::AnsibleDelegate (KeySet config)
 		only_tasks = value == "FALSE";
 	}
 
-	if (!configuration.lookup ("/task/name").isNull ())
+	if (!configuration.lookup ("/task/main/name").isNull ())
 	{
-		main_task_name = configuration.lookup ("/task/name").getString ();
+		main_task_name = configuration.lookup ("/task/main/name").getString ();
 	}
 }
 
