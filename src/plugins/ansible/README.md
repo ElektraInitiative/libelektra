@@ -16,7 +16,7 @@ The output format is an Ansible playbook that utilized the [ansible-libelektra](
 
 ## Plugin Configuration
 
-You can use the following configuration keys to modify the behaviour and output of the plugin:
+You can use the following configuration keys to modify the behavior and output of the plugin:
 
 | Key              | Default Value       | Description                                                      |
 | :--------------- | :------------------ | :--------------------------------------------------------------- |
