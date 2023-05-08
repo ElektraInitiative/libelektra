@@ -79,10 +79,6 @@ RUN pip3 install wheel
 # see https://github.com/docker-library/golang/issues/225
 ENV XDG_CACHE_HOME=/tmp/.cache
 
-# see https://github.com/golang/go/wiki/InvalidFlag
-ENV CGO_CFLAGS_ALLOW="directory.*"
-ENV LD_LIBRARY_PATH=directory/lib:${LD_LIBRARY_PATH}
-
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
 ARG GTEST_VER=release-1.12.1
