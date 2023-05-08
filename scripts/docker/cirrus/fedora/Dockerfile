@@ -54,6 +54,8 @@ RUN dnf upgrade --refresh -y && dnf install -y \
 # see https://github.com/docker-library/golang/issues/225
 ENV XDG_CACHE_HOME=/tmp/.cache
 
+ENV CGO_CFLAGS_ALLOW="directory.*"
+
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
 ARG GTEST_VER=release-1.12.1

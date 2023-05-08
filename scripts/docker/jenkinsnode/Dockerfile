@@ -50,6 +50,8 @@ RUN pip3 install wheel
 # see https://github.com/docker-library/golang/issues/225
 ENV XDG_CACHE_HOME=/tmp/.cache
 
+ENV CGO_CFLAGS_ALLOW="directory.*"
+
 # TODO use Elektra for the configuration steps below
 
 # Google Test

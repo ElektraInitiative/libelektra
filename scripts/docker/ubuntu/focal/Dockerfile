@@ -65,6 +65,8 @@ RUN pip3 install wheel
 # see https://github.com/docker-library/golang/issues/225
 ENV XDG_CACHE_HOME=/tmp/.cache
 
+ENV CGO_CFLAGS_ALLOW="directory.*"
+
 RUN wget https://downloads.sourceforge.net/swig/swig-4.0.2.tar.gz && \
     tar -xvzf swig-4.0.2.tar.gz && \
     cd swig-4.0.2 && \

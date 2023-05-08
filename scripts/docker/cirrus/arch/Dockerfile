@@ -25,6 +25,8 @@ RUN pip3 install wheel
 # see https://github.com/docker-library/golang/issues/225
 ENV XDG_CACHE_HOME=/tmp/.cache
 
+ENV CGO_CFLAGS_ALLOW="directory.*"
+
 # The root user is not allowed to use `makepkg`. We therefore install software from Arch’s User Software repository as user `makepkg`.
 ARG ELEKTRA_USER=makepkg
 RUN useradd -m -d /home/${ELEKTRA_USER} ${ELEKTRA_USER} \
