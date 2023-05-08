@@ -222,6 +222,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - The `__meta__` attribute on a key now returns a proper keyset _(Maximilian Irlinger @atmaxinger)_
 - Add new module `kbd.errors` to simplify extracting errors and warnings from keys _(Maximilian Irlinger @atmaxinger)_
 - Add new module `kdb.record` for interfacing with the session recording capabilities of Elektra _(Maximilian Irlinger @atmaxinger)_
+- Add `getConflictingKeys` method to `kdb.merge.MergeResult`. _(Maximilian Irlinger @atmaxinger)_
 
 ### <<Binding>>
 

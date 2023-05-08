@@ -15,6 +15,7 @@
 ckdb::KeySet * elektraMerge (ckdb::KeySet * our, ckdb::Key * ourRoot, ckdb::KeySet * their, ckdb::Key * theirRoot, ckdb::KeySet * base, ckdb::Key * baseRoot, ckdb::Key * resultKey,
 		      ckdb::MergeStrategy strategy, ckdb::Key * informationKey);
 int elektraMergeGetConflicts (ckdb::Key * informationKey);
+ckdb::KeySet * elektraMergeGetConflictingKeys (ckdb::Key * informationKey, ckdb::Key * root);
 
 %inline %{
  	// we wrap the elektraMerge function, because I haven't found a way to correctly wrap the enum ...
@@ -48,6 +49,10 @@ class MergeResult:
 
   def hasConflicts(self):
     return self.mergedKeys is None or elektraMergeGetConflicts(self.mergeInformation.getKey()) > 0
+
+  def getConflictingKeys(self, rootKey = kdb.Key("/")):
+    ckeys = elektraMergeGetConflictingKeys(self.mergeInformation.getKey(), rootKey.getKey())
+    return kdb.KeySet(ckeys)
 
 class Merger:
   def merge(self, base, ours, theirs, root, conflictStrategy):
