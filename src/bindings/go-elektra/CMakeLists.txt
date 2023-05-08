@@ -5,7 +5,7 @@ if (GO_EXECUTABLE)
 
 	# build
 	add_custom_command (
-		OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/target/release/libelektra.golib"
+		OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/lib/libelektra.golib"
 		COMMAND ${GO_EXECUTABLE} build ./kdb
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
