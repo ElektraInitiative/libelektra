@@ -20,7 +20,7 @@ else ()
 
 	# install files to destination
 	install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-elektrad ${CMAKE_CURRENT_BINARY_DIR}/run-elektrad
-		 ${CMAKE_CURRENT_BINARY_DIR}/build-elektrad DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+			  ${CMAKE_CURRENT_BINARY_DIR}/build-elektrad DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 	if (BUILD_SHARED)
 		set (ELEKTRA_LIBS_ELEKTRAD elektra-core elektra-kdb elektra-plugin elektra-ease elektra-meta)
