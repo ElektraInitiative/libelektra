@@ -111,7 +111,7 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 ### spec
 
 - Rewrite spec plugin, fix bugs and use correct error handling _(Tomislav Makar @tmakar)_
-- <<TODO>>
+- Remove info metakey from spec plugin _(Tomislav Makar @tmakar)_
 - <<TODO>>
 
 ### <<Plugin>>
