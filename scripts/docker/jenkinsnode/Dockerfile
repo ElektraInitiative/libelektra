@@ -51,6 +51,7 @@ RUN pip3 install wheel
 ENV XDG_CACHE_HOME=/tmp/.cache
 
 ENV CGO_CFLAGS_ALLOW="directory.*"
+ENV CGO_LDFLAGS_ALLOW="directory.*"
 
 # TODO use Elektra for the configuration steps below
 

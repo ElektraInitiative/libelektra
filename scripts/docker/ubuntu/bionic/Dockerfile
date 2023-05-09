@@ -57,6 +57,7 @@ RUN pip3 install wheel
 ENV XDG_CACHE_HOME=/tmp/.cache
 
 ENV CGO_CFLAGS_ALLOW="directory.*"
+ENV CGO_LDFLAGS_ALLOW="directory.*"
 
 # use lua5.3 because dh-lua installs liblua5.3-dev which sets the
 # dependency on the generated package to lua5.3

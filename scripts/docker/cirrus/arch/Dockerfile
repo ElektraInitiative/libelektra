@@ -26,6 +26,7 @@ RUN pip3 install wheel
 ENV XDG_CACHE_HOME=/tmp/.cache
 
 ENV CGO_CFLAGS_ALLOW="directory.*"
+ENV CGO_LDFLAGS_ALLOW="directory.*"
 
 # The root user is not allowed to use `makepkg`. We therefore install software from Arch’s User Software repository as user `makepkg`.
 ARG ELEKTRA_USER=makepkg

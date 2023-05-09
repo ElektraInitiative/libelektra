@@ -66,6 +66,7 @@ RUN pip3 install wheel
 ENV XDG_CACHE_HOME=/tmp/.cache
 
 ENV CGO_CFLAGS_ALLOW="directory.*"
+ENV CGO_LDFLAGS_ALLOW="directory.*"
 
 RUN wget https://downloads.sourceforge.net/swig/swig-4.0.2.tar.gz && \
     tar -xvzf swig-4.0.2.tar.gz && \

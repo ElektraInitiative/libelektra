@@ -55,6 +55,7 @@ RUN dnf upgrade --refresh -y && dnf install -y \
 ENV XDG_CACHE_HOME=/tmp/.cache
 
 ENV CGO_CFLAGS_ALLOW="directory.*"
+ENV CGO_LDFLAGS_ALLOW="directory.*"
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
