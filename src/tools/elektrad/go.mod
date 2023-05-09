@@ -3,7 +3,9 @@ module github.com/ElektraInitiative/libelektra/elektrad
 go 1.13
 
 require (
+	github.com/ElektraInitiative/libelektra/go-elektra v0.0.0-00010101000000-000000000000 // indirect
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
-	go.libelektra.org v0.0.0-20230321081411-7a7dc1493aee
 )
+
+replace github.com/ElektraInitiative/libelektra/go-elektra => ../../bindings/go-elektra

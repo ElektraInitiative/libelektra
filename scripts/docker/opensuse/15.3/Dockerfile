@@ -61,7 +61,7 @@ RUN zypper update -y && zypper install -y \
         yaml-cpp-devel \
         zeromq-devel \
         zlib-devel \
-        python3-pip \
+        python3-pip
 
 # Build dependency for libelektra-fuse
 RUN pip3 install wheel

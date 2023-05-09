@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"regexp"
 
-	elektra "go.libelektra.org/kdb"
+	elektra "github.com/ElektraInitiative/libelektra/go-elektra/kdb"
 )
 
 // getFindHandler searches for Keys via a Regex expression.
