@@ -24,7 +24,7 @@ Instantiating a KDB Handle for every request is expensive, espescially for big K
 
 You can compile `elektrad` manually or via CMake.
 
-If [go-elektra](https://github.com/ElektraInitiative/go-elektra) fails to compile checkout the [README.md](https://github.com/ElektraInitiative/go-elektra/blob/master/README.md) for troubleshooting.
+If `go-elektra` fails to compile checkout the [README.md](../../bindings/go-elektra/README.md) for troubleshooting.
 
 ### Manually
 
