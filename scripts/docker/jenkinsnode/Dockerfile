@@ -40,18 +40,11 @@ RUN apt-get -y install \
   valgrind \
   wget \
   python3-pip \
-  golang \
 && apt-get clean && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Build dependency for libelektra-fuse
 RUN pip3 install wheel
-
-# see https://github.com/docker-library/golang/issues/225
-ENV XDG_CACHE_HOME=/tmp/.cache
-
-ENV CGO_CFLAGS_ALLOW=".*"
-ENV CGO_LDFLAGS_ALLOW=".*"
 
 # TODO use Elektra for the configuration steps below
 

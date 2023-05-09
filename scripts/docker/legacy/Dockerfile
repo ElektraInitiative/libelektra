@@ -33,7 +33,6 @@ RUN apt-get -qq update && apt-get -qq -y install \
 	checkinstall \
 	valgrind \
 	python3-pip \
-    golang \
 && gem install ronn-ng -v 0.10.1.pre3 \
 && rm -rf /var/lib/apt/lists/*
 

@@ -57,17 +57,10 @@ RUN apt-get update && apt-get -y install \
         unzip \
         valgrind \
         python3-pip \
-    	golang \
     && rm -rf /var/lib/apt/lists/*
 
 # Build dependency for libelektra-fuse
 RUN pip3 install wheel
-
-# see https://github.com/docker-library/golang/issues/225
-ENV XDG_CACHE_HOME=/tmp/.cache
-
-ENV CGO_CFLAGS_ALLOW=".*"
-ENV CGO_LDFLAGS_ALLOW=".*"
 
 # use lua5.4 since dh-lua installs liblua5.4-dev which sets the
 # dependency on the generated package to lua5.4
