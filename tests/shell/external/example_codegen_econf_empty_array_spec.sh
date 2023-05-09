@@ -30,6 +30,7 @@ check_if_parent_exists() {
 		echo "array parent was found"
 	else
 		echo "did not find array parent spec:/sw/example/econf/#0/current/format/#"
+		exit 1
 	fi
 }
 
