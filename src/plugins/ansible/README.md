@@ -5,7 +5,7 @@
 - infos/provides = storage/ansible
 - infos/recommends =
 - infos/placements = setstorage
-- infos/status = recommended productive maintained conformant
+- infos/status = recommended productive maintained conformant writeonly
 - infos/metadata =
 - infos/description = export Ansible playbooks
 
