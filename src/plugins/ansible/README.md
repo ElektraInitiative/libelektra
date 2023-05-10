@@ -32,12 +32,12 @@ This plugin requires [yaml-cpp][]. On a Debian based OS the package for the libr
 ## Examples
 
 ```sh
-# Backup-and-Restore: user:/tests/ansible
+# Backup-and-Restore: user:/tests
 
-kdb set user:/company/roles/ceo Hans
-#> Create a new key user:/company/roles/ceo with string "Hans"
+kdb set user:/tests/company/roles/ceo Hans
+#> Create a new key user:/tests/company/roles/ceo with string "Hans"
 
-kdb export user:/company ansible -c playbook/name="Company Roles",task/main/name="I can customize this too"
+kdb export user:/tests/company ansible -c playbook/name="Company Roles",task/main/name="I can customize this too"
 # RET:0
 ```
 
@@ -52,10 +52,11 @@ kdb export user:/company ansible -c playbook/name="Company Roles",task/main/name
       elektra:
         keys:
           - user:
-              company:
-                roles:
-                  ceo:
-                    - value: Hans
+              tests:
+                company:
+                  roles:
+                    ceo:
+                      - value: Hans
 ```
 
 ## Limitations
