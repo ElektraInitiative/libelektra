@@ -1,3 +1,9 @@
+- infos = information about go binding can be found below
+- infos/author = Tomislav Makar <tmakar23@gmail.com>
+- infos/status = experimental maintained
+- infos/provides =
+- infos/description =
+
 # Go Bindings for Elektra
 
 This folder contains Go bindings for the low-level API for Elektra as found in `kdb.h`.
