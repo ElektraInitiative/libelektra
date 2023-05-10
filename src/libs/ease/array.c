@@ -97,11 +97,13 @@ int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex)
 
 /**
  * Get the base name of the passed array.
+ * The returned value must be freed (if not null)
  *
  * e.g. user:/abc/\#9 will return
  *      user:/abc
  * @param key
- * @return
+ * @retval @p NULL if key is not array
+ * @retval new allocated memory (free with elektraFree)
  */
 char * elektraArrayGetPrefix (Key * key)
 {
@@ -110,47 +112,40 @@ char * elektraArrayGetPrefix (Key * key)
 		return NULL;
 	}
 
-	const char * wholeName = keyName (key);
-	const char * ptr = wholeName;
-
-	size_t offset = 0;
-	size_t slash_count = 0;
-	bool last_is_slash = false;
-	while (*ptr != '\0')
-	{
-		if (*ptr == '#')
-		{
-			break;
-		}
-
-		if (*ptr == '/')
-		{
-			slash_count++;
-			last_is_slash = true;
-		}
-		else
-		{
-			last_is_slash = false;
-		}
-
-		offset++;
-		ptr++;
-	}
-
-	if (offset == strlen (wholeName))
+	if (elektraArrayValidateName (key) != 1)
 	{
 		return NULL;
 	}
 
-	char * name = elektraCalloc (sizeof (char) * (offset + 1));
-	memcpy (name, wholeName, offset);
+	Key * k = keyNew ("/", KEY_END);
 
-	if (last_is_slash && slash_count > 1)
+	const char * un = keyUnescapedName (key);
+	ssize_t unsize = keyGetUnescapedNameSize (key);
+
+	keySetNamespace (k, (elektraNamespace) un[0]);
+
+	ssize_t index = 2;
+	while (index < unsize)
 	{
-		name[offset - 1] = '\0';
+		const char * t = un + index;
+		size_t partLen = strlen (t);
+		if (elektraIsArrayPart (t) != 0)
+		{
+			break;
+		}
+
+		keyAddBaseName (k, t);
+		index += partLen + 1;
 	}
 
-	return name;
+	const char * newKeyName = keyName (k);
+
+	size_t newKeyLen = strlen (newKeyName);
+	char * prefix = elektraCalloc (sizeof (char) * (newKeyLen + 1));
+	memcpy (prefix, newKeyName, newKeyLen);
+	keyDel (k);
+
+	return prefix;
 }
 
 /**
