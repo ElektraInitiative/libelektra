@@ -65,6 +65,7 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         zeromq-devel \
         zlib-devel \
         python3-pip \
+    	golang \
     && dnf debuginfo-install -y \
         bison \
         flex \

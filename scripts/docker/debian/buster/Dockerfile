@@ -81,6 +81,7 @@ RUN apt-get update && apt-get -y install \
         valgrind \
         virtualenv \
         wine \
+    	golang \
     && rm -rf /var/lib/apt/lists/*
 
 # Build dependency for libelektra-fuse

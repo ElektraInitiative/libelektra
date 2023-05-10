@@ -24,6 +24,7 @@ RUN apt-get update && apt-get -y install \
         ruby-dev \
         valgrind \
         python3-pip \
+    	golang \
     && rm -rf /var/lib/apt/lists/*
 
 # Build dependency for libelektra-fuse

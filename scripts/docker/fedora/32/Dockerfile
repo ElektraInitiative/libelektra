@@ -50,6 +50,7 @@ RUN dnf upgrade -y && dnf install -y \
         yaml-cpp-devel \
         zlib-devel \
         python3-pip \
+    	golang \
     && dnf debuginfo-install -y \
         bison \
         flex \

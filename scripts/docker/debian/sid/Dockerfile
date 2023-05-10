@@ -66,6 +66,7 @@ RUN apt-get update && apt-get -y install \
         unzip \
         valgrind \
         wget \
+    	golang \
     && rm -rf /var/lib/apt/lists/*
 
 # Add Clang 15 to path
