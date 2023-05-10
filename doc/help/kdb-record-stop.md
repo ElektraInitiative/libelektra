@@ -9,6 +9,7 @@
 This command stops the current recording session.
 Changes that are made to KDB after this command will no longer be recorded.
 The recording session will NOT be cleared.
+You can use `kdb record-start` to resume the session.
 
 ## OPTIONS
 

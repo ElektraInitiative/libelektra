@@ -10,7 +10,8 @@ This command prints out information about the current state of the recording ses
 This includes:
 
 - Whether recording is currently enabled or not
-- What parts of the KDB will be recorded
+- What parts of the KDB will be recorded in the future.
+  (The session may already contain changes from other parts of the KDB)
 - How many keys have been recorded
 - Which keys have been recorded
 

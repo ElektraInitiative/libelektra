@@ -7,7 +7,7 @@
 ## DESCRIPTION
 
 This command starts session recording.
-If there is already a previous session, the new changes are appended.
+If there is already a previous session, this only changes the parent key.
 If you want to make sure you start at a clean state, use `kdb record-reset` first.
 By default, all changes to the KDB are recorded.
 The optional parameter `parent_key` can be used to restrict recording to a specific subtree of the KDB.

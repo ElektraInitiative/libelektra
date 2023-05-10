@@ -7,6 +7,8 @@
 ## DESCRIPTION
 
 This command removes the specified `key` from the recording session.
+As far as the recording session is concerned, it's as if the key was never changed.
+If the key is changed again after it was removed from the session, it will be put back into the session.
 
 ## OPTIONS
 
