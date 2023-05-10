@@ -3,8 +3,8 @@ package kdb_test
 import (
 	"testing"
 
-	elektra "go.libelektra.org/kdb"
-	. "go.libelektra.org/test"
+	elektra "github.com/ElektraInitiative/libelektra/go-elektra/kdb"
+	. "github.com/ElektraInitiative/libelektra/go-elektra/test"
 )
 
 func TestCreateKeySet(t *testing.T) {

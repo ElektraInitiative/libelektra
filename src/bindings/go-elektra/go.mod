@@ -1,3 +1,3 @@
-module github.org/ElektraInitiative/libelektra/go-elektra
+module github.com/ElektraInitiative/libelektra/go-elektra
 
-go 1.13
+go 1.20

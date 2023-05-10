@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	elektra "go.libelektra.org/kdb"
-	. "go.libelektra.org/test"
+	elektra "github.com/ElektraInitiative/libelektra/go-elektra/kdb"
+	. "github.com/ElektraInitiative/libelektra/go-elektra/test"
 )
 
 func TestOpen(t *testing.T) {
