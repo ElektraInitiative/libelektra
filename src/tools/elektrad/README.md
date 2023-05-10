@@ -4,8 +4,9 @@
 
 ## Introduction
 
-A server that provides an [HTTP API](http://docs.elektrad.apiary.io) to access
-Elektra remotely, built using [Go](https://golang.org).
+A server that provides an [HTTP API](http://docs.elektrad.apiary.io) to access Elektra remotely, built using [Go](https://golang.org).
+
+`Elektrad` uses the [go-elektra](../../bindings/go-elektra/README.md) binding to access the `libelektra` core functionalities which are written in C.
 
 ## Lifetime of KDB handles
 
