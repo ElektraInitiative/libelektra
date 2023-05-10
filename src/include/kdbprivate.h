@@ -105,6 +105,8 @@ typedef int (*kdbHookSpecRemovePtr) (Plugin * handle, KeySet * returned, Key * p
 typedef int (*kdbHookSendNotificationGetPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 typedef int (*kdbHookSendNotificationSetPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 
+typedef int (*kdbHookRecordLockPtr) (Plugin * handle, Key * parentKey);
+typedef int (*kdbHookRecordUnlockPtr) (Plugin * handle, Key * parentKey);
 typedef int (*kdbHookRecordPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 
 typedef Plugin * (*OpenMapper) (const char *, const char *, KeySet *);
@@ -509,6 +511,8 @@ struct _KDB
 		struct
 		{
 			struct _Plugin * plugin;
+			kdbHookRecordLockPtr lock;
+			kdbHookRecordUnlockPtr unlock;
 			kdbHookRecordPtr record;
 		} record;
 	} hooks;

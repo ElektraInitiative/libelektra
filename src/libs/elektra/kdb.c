@@ -2585,6 +2585,17 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto rollback;
 	}
 
+	if (handle->hooks.record.lock != NULL)
+	{
+		// We need to use initialParent here, because it contains the original parent key
+		int lockRes = handle->hooks.record.lock (handle->hooks.record.plugin, initialParent);
+		if (lockRes == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			elektraCopyError (parentKey, initialParent);
+			goto rollback;
+		}
+	}
+
 	// Step 11a: run storage phase
 	if (!runSetPhase (backends, parentKey, ELEKTRA_KDB_SET_PHASE_STORAGE, false, KDB_SET_FN_SET))
 	{
@@ -2629,6 +2640,11 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		handle->hooks.record.record (handle->hooks.record.plugin, setKs, parentKey);
 	}
 
+	if (handle->hooks.record.unlock != NULL)
+	{
+		handle->hooks.record.unlock (handle->hooks.record.plugin, initialParent);
+	}
+
 	keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 	keyDel (initialParent);
 	ksDel (setKs);
@@ -2655,6 +2671,11 @@ rollback:
 	runSetPhase (backends, parentKey, ELEKTRA_KDB_SET_PHASE_POST_ROLLBACK, true, KDB_SET_FN_ERROR);
 
 error:
+	if (handle->hooks.record.unlock != NULL)
+	{
+		handle->hooks.record.unlock (handle->hooks.record.plugin, initialParent);
+	}
+
 	keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 	keyDel (initialParent);
 	ksDel (setKs);

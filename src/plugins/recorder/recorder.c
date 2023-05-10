@@ -12,20 +12,50 @@
 #include <kdb.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
+#include <kdbprivate.h>
 #include <kdbrecord.h>
+
+#include <fcntl.h>
+#include <stdio.h> // dprintf
+#include <unistd.h>
+
 
 int elektraRecorderOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
-	// plugin initialization logic
-	// this function is optional
+	struct recorderData * p = elektraCalloc (sizeof (struct recorderData));
+	p->lockFileFd = -1;
+	p->recordingSessionKey = keyNew (ELEKTRA_RECORD_SESSION_KEY, KEY_END);
+	p->recordingConfigKey = keyNew (ELEKTRA_RECORD_CONFIG_KEY, KEY_END);
+
+	const char * lockFilePath = ELEKTRA_RECORDER_DEFAULT_LOCK_FILE_PATH;
+	KeySet * config = elektraPluginGetConfig (handle);
+	Key * lockFilePathKey = NULL;
+
+	if (config != NULL && (lockFilePathKey = ksLookupByName (config, "/lockfile", 0)) != NULL)
+	{
+		lockFilePath = keyString (lockFilePathKey);
+	}
+
+	p->lockFilePath = elektraCalloc (sizeof (char) * (strlen (lockFilePath) + 1));
+	strcpy (p->lockFilePath, lockFilePath);
+
+	elektraPluginSetData (handle, p);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 int elektraRecorderClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
-	// free all plugin resources and shut it down
-	// this function is optional
+	struct recorderData * p = elektraPluginGetData (handle);
+	if (p != NULL)
+	{
+		keyDel (p->recordingSessionKey);
+		keyDel (p->recordingConfigKey);
+		elektraFree (p->lockFilePath);
+		elektraFree (p);
+
+		elektraPluginSetData (handle, NULL);
+	}
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
@@ -40,6 +70,8 @@ int elektraRecorderGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 			keyNew ("system:/elektra/modules/recorder/exports/open", KEY_FUNC, elektraRecorderOpen, KEY_END),
 			keyNew ("system:/elektra/modules/recorder/exports/close", KEY_FUNC, elektraRecorderClose, KEY_END),
 			keyNew ("system:/elektra/modules/recorder/exports/get", KEY_FUNC, elektraRecorderGet, KEY_END),
+			keyNew ("system:/elektra/modules/recorder/exports/hook/record/lock", KEY_FUNC, elektraRecorderLock, KEY_END),
+			keyNew ("system:/elektra/modules/recorder/exports/hook/record/unlock", KEY_FUNC, elektraRecorderUnlock, KEY_END),
 			keyNew ("system:/elektra/modules/recorder/exports/hook/record/record", KEY_FUNC, elektraRecorderRecord, KEY_END),
 #include ELEKTRA_README
 			keyNew ("system:/elektra/modules/recorder/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
@@ -53,14 +85,14 @@ int elektraRecorderGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
-int elektraRecorderRecord (Plugin * handle, KeySet * returned, Key * parentKey)
+static KDB * getKdb (Plugin * handle, Key * parentKey)
 {
 	KeySet * global = elektraPluginGetGlobalKeySet (handle);
 	Key * kdbKey = ksLookupByName (global, "system:/elektra/kdb", 0);
 	if (kdbKey == NULL)
 	{
 		ELEKTRA_SET_INTERNAL_ERROR (parentKey, "Key system:/elektra/kdb was not present in global keyset");
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
+		return NULL;
 	}
 
 	const void * kdbPtr = keyValue (kdbKey);
@@ -68,6 +100,87 @@ int elektraRecorderRecord (Plugin * handle, KeySet * returned, Key * parentKey)
 	if (hostKdb == NULL)
 	{
 		ELEKTRA_SET_INTERNAL_ERROR (parentKey, "No valid KDB instance found");
+		return NULL;
+	}
+
+	return hostKdb;
+}
+
+int elektraRecorderLock (Plugin * handle, Key * parentKey)
+{
+	KDB * hostKdb = getKdb (handle, parentKey);
+	if (hostKdb == NULL)
+	{
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	if (!elektraRecordIsActive (hostKdb))
+	{
+		// If recording is not active -> no need to require lock
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	}
+
+	struct recorderData * recorderData = elektraPluginGetData (handle);
+
+	if (recorderData == NULL)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "Recorder plugin data is NULL!");
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	if (keyIsBelowOrSame (recorderData->recordingSessionKey, parentKey) ||
+	    keyIsBelowOrSame (recorderData->recordingConfigKey, parentKey))
+	{
+		// Don't try to lock, we won't record anything anyway.
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	}
+
+	int fd = open (recorderData->lockFilePath, O_CREAT | O_EXCL | O_WRONLY, 0666);
+	if (fd == -1)
+	{
+		ELEKTRA_SET_INTERNAL_ERRORF (parentKey, "Could not create lockfile %s. Reason: %s", recorderData->lockFilePath,
+					     strerror (errno));
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	recorderData->lockFileFd = fd;
+
+	dprintf (fd, "%d", getpid ());
+
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+
+int elektraRecorderUnlock (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
+{
+	struct recorderData * recorderData = elektraPluginGetData (handle);
+
+	if (recorderData == NULL)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "Recorder plugin data is NULL!");
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	if (recorderData->lockFileFd != -1)
+	{
+		close (recorderData->lockFileFd);
+		recorderData->lockFileFd = -1;
+		int res = unlink (recorderData->lockFilePath);
+		if (res == -1)
+		{
+			ELEKTRA_SET_INTERNAL_ERRORF (parentKey, "Could not unlink lockfile %s. Reason: %s", recorderData->lockFilePath,
+						     strerror (errno));
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+	}
+
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+
+int elektraRecorderRecord (Plugin * handle, KeySet * returned, Key * parentKey)
+{
+	KDB * hostKdb = getKdb (handle, parentKey);
+	if (hostKdb == NULL)
+	{
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 

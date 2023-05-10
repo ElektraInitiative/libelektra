@@ -116,9 +116,11 @@ static int initHooksRecord (KDB * kdb, Plugin * plugin, Key * errorKey)
 		return -1;
 	}
 
+	kdb->hooks.record.lock = (kdbHookRecordLockPtr) getFunction (plugin, "hook/record/lock", errorKey);
+	kdb->hooks.record.unlock = (kdbHookRecordLockPtr) getFunction (plugin, "hook/record/unlock", errorKey);
 	kdb->hooks.record.record = (kdbHookRecordPtr) getFunction (plugin, "hook/record/record", errorKey);
 
-	if (kdb->hooks.record.record == NULL)
+	if (kdb->hooks.record.record == NULL || kdb->hooks.record.lock == NULL || kdb->hooks.record.unlock == NULL)
 	{
 		elektraPluginClose (plugin, errorKey);
 		return -1;

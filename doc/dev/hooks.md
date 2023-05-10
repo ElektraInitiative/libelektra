@@ -70,8 +70,24 @@ Hard coded to search for a plugin named `recorder`.
 The following function must be exported:
 
 - `record`:
+
   - Signature: `(Plugin * handle, KeySet * returned, Key * parentKey)`
   - Called in `kdbSet` after the storage phase.
+  - Must not modify the `returned` keyset.
+  - Calculates the changes and stores them.
+
+- `lock`:
+
+  - Signature: `int (Plugin * handle, Key * parentKey)`
+  - Called in `kdbSet` before the storage phase.
+  - Must ensure that this is only process that can record changes until `unlock` is called.
+    - If successful, must return `ELEKTRA_PLUGIN_STATUS_SUCCESS`.
+    - If not successful, must return `ELEKTRA_PLUGIN_STATUS_ERROR`
+
+- `unlock`:
+  - Signature: `int (Plugin * handle, Key * parentKey)`
+  - Called in `kdbSet` before returning, after `lock` has been called.
+  - Must remove any acquired locks and mutexes, so that other processes can record changes again.
 
 ## Lifecycle
 
