@@ -15,6 +15,8 @@ We tried to limit the impact of these conflicts through locking.
 
 All persistable namespaces are monitored for changes.
 
+We currently have no way of recording changes done outside of Elektra, i.e. when the configuration files got edited manually.
+
 ## Storage of the Session Diff
 
 The session diff is persisted in the respective namespace under `<namespace>:/elektra/record/session`.
