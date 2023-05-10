@@ -49,6 +49,25 @@ docker run -it elektra/elektra
 - <<HIGHLIGHT>>
 
 ### <<HIGHLIGHT>>
+- Session Recording
+- New Changetracking API
+- New spec plugin
+- <<HIGHLIGHT>>
+
+### Session Recording
+
+Elektra now comes with a powerful new feature that allows users to record and export changes made to the KDB: session recording.
+This feature enables you to easily track changes made to the configuration database over time, which helps troubleshoot issues, diagnose errors, and improve system performance.
+It even lets you undo the changes you've performed!
+
+You can also export the changes as Ansible playbooks using the new Ansible storage plugin!
+This makes it easy to automate and reproduce system configurations.
+We think that this feature offers significant time savings and improved accuracy when managing complex systems.
+
+Whether you're a system administrator, developer, or DevOps engineer, we believe that the session recording feature in Elektra will become an essential tool for managing and maintaining system configurations.
+[Try it today](../tutorials/recording.md) and experience the benefits of streamlined configuration management.
+
+### New Changetracking API
 
 ### <<HIGHLIGHT>>
 
