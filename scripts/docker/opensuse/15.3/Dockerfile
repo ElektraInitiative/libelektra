@@ -67,6 +67,9 @@ RUN zypper update -y && zypper install -y \
 # Build dependency for libelektra-fuse
 RUN pip3 install wheel
 
+# see https://github.com/docker-library/golang/issues/225
+ENV XDG_CACHE_HOME=/tmp/.cache
+
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
 ARG GTEST_VER=release-1.12.1

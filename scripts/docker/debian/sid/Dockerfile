@@ -72,6 +72,9 @@ RUN apt-get update && apt-get -y install \
 # Add Clang 15 to path
 ENV PATH="/usr/lib/llvm-15/bin:$PATH"
 
+# see https://github.com/docker-library/golang/issues/225
+ENV XDG_CACHE_HOME=/tmp/.cache
+
 # Update cache for shared libraries
 RUN ldconfig
 

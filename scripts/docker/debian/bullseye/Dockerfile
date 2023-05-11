@@ -89,6 +89,9 @@ RUN apt-get update && apt-get -y install \
 # Build dependency for libelektra-fuse
 RUN pip3 install wheel reuse
 
+# see https://github.com/docker-library/golang/issues/225
+ENV XDG_CACHE_HOME=/tmp/.cache
+
 # use lua5.4 since dh-lua installs liblua5.4-dev which sets the
 # dependency on the generated package to lua5.4
 RUN update-alternatives --set lua-interpreter /usr/bin/lua5.4
