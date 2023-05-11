@@ -947,13 +947,7 @@ KeySet * elektraDiffGetModifiedMetaKeys (const ElektraDiff * ksd, Key * key)
  */
 void elektraDiffUndo (ElektraDiff * ksd, KeySet * ks)
 {
-	for (elektraCursor i = 0; i < ksGetSize (ksd->addedKeys); i++)
-	{
-		Key * toRemove = ksAtCursor (ksd->addedKeys, i);
-		Key * key = ksLookup (ks, toRemove, KDB_O_POP);
-		keyDel (key);
-	}
-
+	ksSubtract (ks, ksd->addedKeys);
 	ksAppend (ks, ksd->modifiedKeys);
 	ksAppend (ks, ksd->removedKeys);
 }
