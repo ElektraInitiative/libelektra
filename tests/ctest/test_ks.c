@@ -610,21 +610,11 @@ static void test_ksSubtract_1 (void)
 	printf ("Testing ksSubtract (1)\n");
 
 	// Arrange
-	KeySet * total = ksNew (10,
-				keyNew ("user:/test/k1", KEY_END),
-				keyNew ("user:/test/k2", KEY_END),
-				keyNew ("user:/test/k3", KEY_END),
-				keyNew ("user:/test/k4", KEY_END),
-				keyNew ("user:/test/k5", KEY_END),
-				KS_END);
+	KeySet * total = ksNew (10, keyNew ("user:/test/k1", KEY_END), keyNew ("user:/test/k2", KEY_END), keyNew ("user:/test/k3", KEY_END),
+				keyNew ("user:/test/k4", KEY_END), keyNew ("user:/test/k5", KEY_END), KS_END);
 
-	KeySet * sub  = ksNew (10,
-			      keyNew ("user:/test/k1", KEY_END),
-			      keyNew ("user:/test/k2", KEY_END),
-			      keyNew ("user:/test/k3", KEY_END),
-			      keyNew ("user:/test/k4", KEY_END),
-			      keyNew ("user:/test/k5", KEY_END),
-			      KS_END);
+	KeySet * sub = ksNew (10, keyNew ("user:/test/k1", KEY_END), keyNew ("user:/test/k2", KEY_END), keyNew ("user:/test/k3", KEY_END),
+			      keyNew ("user:/test/k4", KEY_END), keyNew ("user:/test/k5", KEY_END), KS_END);
 
 	// Act
 	ssize_t result = ksSubtract (total, sub);
@@ -642,18 +632,10 @@ static void test_ksSubtract_2 (void)
 	printf ("Testing ksSubtract (2)\n");
 
 	// Arrange
-	KeySet * total = ksNew (10,
-				keyNew ("user:/test/k2", KEY_END),
-				keyNew ("user:/test/k3", KEY_END),
-				KS_END);
+	KeySet * total = ksNew (10, keyNew ("user:/test/k2", KEY_END), keyNew ("user:/test/k3", KEY_END), KS_END);
 
-	KeySet * sub  = ksNew (10,
-			      keyNew ("user:/test/k1", KEY_END),
-			      keyNew ("user:/test/k2", KEY_END),
-			      keyNew ("user:/test/k3", KEY_END),
-			      keyNew ("user:/test/k4", KEY_END),
-			      keyNew ("user:/test/k5", KEY_END),
-			      KS_END);
+	KeySet * sub = ksNew (10, keyNew ("user:/test/k1", KEY_END), keyNew ("user:/test/k2", KEY_END), keyNew ("user:/test/k3", KEY_END),
+			      keyNew ("user:/test/k4", KEY_END), keyNew ("user:/test/k5", KEY_END), KS_END);
 
 	// Act
 	ssize_t result = ksSubtract (total, sub);
@@ -671,20 +653,12 @@ static void test_ksSubtract_3 (void)
 	printf ("Testing ksSubtract (3)\n");
 
 	// Arrange
-	KeySet * total = ksNew (10,
-				keyNew ("user:/test/k1", KEY_END),
-				keyNew ("user:/test/k2", KEY_END),
-				keyNew ("user:/test/k3", KEY_END),
-				keyNew ("user:/test/k4", KEY_END),
-				keyNew ("user:/test/k5", KEY_END),
-				keyNew ("user:/test/k6", KEY_END),
-				KS_END);
+	KeySet * total =
+		ksNew (10, keyNew ("user:/test/k1", KEY_END), keyNew ("user:/test/k2", KEY_END), keyNew ("user:/test/k3", KEY_END),
+		       keyNew ("user:/test/k4", KEY_END), keyNew ("user:/test/k5", KEY_END), keyNew ("user:/test/k6", KEY_END), KS_END);
 
-	KeySet * sub  = ksNew (10,
-			      keyNew ("user:/test/k2", KEY_END),
-			      keyNew ("user:/test/k3", KEY_END),
-			      keyNew ("user:/test/k5", KEY_END),
-			      KS_END);
+	KeySet * sub =
+		ksNew (10, keyNew ("user:/test/k2", KEY_END), keyNew ("user:/test/k3", KEY_END), keyNew ("user:/test/k5", KEY_END), KS_END);
 
 	// Act
 	ssize_t result = ksSubtract (total, sub);
@@ -705,22 +679,12 @@ static void test_ksSubtract_4 (void)
 	printf ("Testing ksSubtract (4)\n");
 
 	// Arrange
-	KeySet * total = ksNew (10,
-				keyNew ("user:/test/b1", KEY_END),
-				keyNew ("user:/test/c2", KEY_END),
-				keyNew ("user:/test/d3", KEY_END),
-				keyNew ("user:/test/e4", KEY_END),
-				keyNew ("user:/test/f5", KEY_END),
-				keyNew ("user:/test/zz", KEY_END),
-				KS_END);
+	KeySet * total =
+		ksNew (10, keyNew ("user:/test/b1", KEY_END), keyNew ("user:/test/c2", KEY_END), keyNew ("user:/test/d3", KEY_END),
+		       keyNew ("user:/test/e4", KEY_END), keyNew ("user:/test/f5", KEY_END), keyNew ("user:/test/zz", KEY_END), KS_END);
 
-	KeySet * sub  = ksNew (10,
-			      keyNew ("user:/test/aa", KEY_END),
-			      keyNew ("user:/test/c2", KEY_END),
-			      keyNew ("user:/test/d1", KEY_END),
-			      keyNew ("user:/test/e4", KEY_END),
-			      keyNew ("user:/test/f5", KEY_END),
-			      KS_END);
+	KeySet * sub = ksNew (10, keyNew ("user:/test/aa", KEY_END), keyNew ("user:/test/c2", KEY_END), keyNew ("user:/test/d1", KEY_END),
+			      keyNew ("user:/test/e4", KEY_END), keyNew ("user:/test/f5", KEY_END), KS_END);
 
 	// Act
 	ssize_t result = ksSubtract (total, sub);
@@ -741,15 +705,9 @@ static void test_ksSubtract_5 (void)
 	printf ("Testing ksSubtract (5)\n");
 
 	// Arrange
-	KeySet * total = ksNew (10,
-				keyNew ("user:/test/a", KEY_END),
-				keyNew ("user:/test/b", KEY_END),
-				KS_END);
+	KeySet * total = ksNew (10, keyNew ("user:/test/a", KEY_END), keyNew ("user:/test/b", KEY_END), KS_END);
 
-	KeySet * sub  = ksNew (10,
-			      keyNew ("user:/test/c", KEY_END),
-			      keyNew ("user:/test/d", KEY_END),
-			      KS_END);
+	KeySet * sub = ksNew (10, keyNew ("user:/test/c", KEY_END), keyNew ("user:/test/d", KEY_END), KS_END);
 
 	// Act
 	ssize_t result = ksSubtract (total, sub);
