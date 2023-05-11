@@ -17,6 +17,7 @@
 
 #include <fcntl.h>
 #include <stdio.h> // dprintf
+#include <sys/file.h>
 #include <unistd.h>
 
 
@@ -135,7 +136,7 @@ int elektraRecorderLock (Plugin * handle, Key * parentKey)
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	int fd = open (recorderData->lockFilePath, O_CREAT | O_EXCL | O_WRONLY, 0666);
+	int fd = open (recorderData->lockFilePath, O_CREAT | O_WRONLY, 0666);
 	if (fd == -1)
 	{
 		ELEKTRA_SET_INTERNAL_ERRORF (parentKey, "Could not create lockfile %s. Reason: %s", recorderData->lockFilePath,
@@ -143,8 +144,17 @@ int elektraRecorderLock (Plugin * handle, Key * parentKey)
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
+	int res = flock (fd, LOCK_EX | LOCK_NB);
+	if (res == -1)
+	{
+		close (fd);
+		ELEKTRA_SET_INTERNAL_ERRORF (parentKey, "Could not lock file %s. Reason: %s", recorderData->lockFilePath, strerror (errno));
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
 	recorderData->lockFileFd = fd;
 
+	ftruncate (fd, 0);
 	dprintf (fd, "%d", getpid ());
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -162,6 +172,7 @@ int elektraRecorderUnlock (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 
 	if (recorderData->lockFileFd != -1)
 	{
+		// close also removes the lock obtained by flock for this process
 		close (recorderData->lockFileFd);
 		recorderData->lockFileFd = -1;
 		int res = unlink (recorderData->lockFilePath);
