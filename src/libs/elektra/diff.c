@@ -437,7 +437,7 @@ ElektraDiff * elektraDiffCut (ElektraDiff * original, const Key * cutpoint)
 /**
  * @internal
  *
- * Removes all keys that are not at or below @p cutpoint form the keyset
+ * Removes all keys that are not at or below @p cutpoint from the keyset
  * After execution, @p ks will point to another keyset!
  *
  * @param ks the keyset that shall be cut.
