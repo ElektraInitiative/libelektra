@@ -593,23 +593,22 @@ void elektraDiffAppend (ElektraDiff * target, const ElektraDiff * source, Key * 
 			continue;
 		}
 
-		Key * targetKey = ksLookup (target->addedKeys, key, KDB_O_POP);
+		Key * targetKey = ksLookup (target->addedKeys, key, KDB_O_NONE);
 		if (targetKey != NULL)
 		{
 			// Key was added and now modified -> still in added
 			ksAppendKey (target->addedKeys, key);
-			keyDel (targetKey);
 			continue;
 		}
 
-		targetKey = ksLookup (target->modifiedKeys, key, KDB_O_POP);
-		if (targetKey != NULL)
+		ssize_t pos = ksSearch (target->modifiedKeys, key);
+		if (pos >= 0)
 		{
+			targetKey = ksAtCursor (target->modifiedKeys, pos);
 			if (keyValueDifferent (targetKey, key) || keyMetaDifferent (targetKey, key, metaAdded, metaRemoved, metaModified))
 			{
-				// key value is different than the old key --> still modified
-				// as modified keys include the old value --> append targetKey
-				ksAppendKey (target->modifiedKeys, targetKey);
+				// key value is different from the old key --> still modified
+				// the "old" value stays the same, but we set the new value to the value of this key
 				if (target->modifiedNewKeys != NULL)
 				{
 					ksAppendKey (target->modifiedNewKeys, key);
@@ -619,10 +618,10 @@ void elektraDiffAppend (ElektraDiff * target, const ElektraDiff * source, Key * 
 			else
 			{
 				// key was modified back to original value --> remove from target
-				keyDel (targetKey);
+				keyDel (elektraKsPopAtCursor (target->modifiedKeys, pos));
 				if (target->modifiedNewKeys != NULL)
 				{
-					keyDel (ksLookup (target->modifiedNewKeys, key, KDB_O_POP));
+					keyDel (elektraKsPopAtCursor (target->modifiedNewKeys, pos));
 				}
 				continue;
 			}
