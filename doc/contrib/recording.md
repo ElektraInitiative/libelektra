@@ -24,7 +24,7 @@ I.e. all keys in the diff of the `system` namespace are under `system:/elektra/r
 
 The recording plugin needs its own KDB instance to store the session diff within Elektra.
 For concurrency and performance reasons, the storage should be a separately mounted file under each namespace.
-This means we provide hard-coded default mountpoints for the
+This means we provide hard coded default mountpoints for the
 
 - `dir:/elektra/record/session`,
 - `system:/elektra/record/session`,
