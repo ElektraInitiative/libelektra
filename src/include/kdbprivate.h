@@ -646,6 +646,8 @@ ssize_t ksRename (KeySet * ks, const Key * root, const Key * newRoot);
 elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCursor * end);
 KeySet * ksBelow (const KeySet * ks, const Key * root);
 
+ssize_t ksSubtract (KeySet * total, const KeySet * sub);
+
 /*Used for internal memcpy/memmove*/
 ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size);
 ssize_t elektraMemmove (Key ** array1, Key ** array2, size_t size);

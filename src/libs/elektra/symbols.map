@@ -203,6 +203,8 @@ libelektraprivate_1.0 {
 
 	ksBelow;
 
+	ksSubtract;
+
 	elektraIsArrayPart;
 
 	# TODO [new_backend]: should be removed, tests should depend differently on this

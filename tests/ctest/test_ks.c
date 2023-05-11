@@ -563,6 +563,205 @@ static void test_ksSearch (void)
 	ksDel (a);
 }
 
+static void test_ksSubtract_nullParameters (void)
+{
+	printf ("Testing ksSubtract (NULL as parameters)\n");
+
+	KeySet * total = ksNew (0, KS_END);
+	KeySet * sub = ksNew (0, KS_END);
+
+	ssize_t result = ksSubtract (NULL, NULL);
+	succeed_if (result == -1, "should return -1 when both are NULL");
+
+	result = ksSubtract (NULL, sub);
+	succeed_if (result == -1, "should return -1 when total is NULL");
+
+	result = ksSubtract (total, NULL);
+	succeed_if (result == -1, "should return -1 when sub is NULL");
+
+	ksDel (total);
+	ksDel (sub);
+}
+
+static void test_ksSubtract_emptyParameters (void)
+{
+	printf ("Testing ksSubtract (empty parameters)\n");
+
+	KeySet * total = ksNew (0, KS_END);
+	KeySet * sub = ksNew (0, KS_END);
+	KeySet * nonEmpty = ksNew (1, keyNew ("user:/test", KEY_END), KS_END);
+
+	ssize_t result = ksSubtract (total, sub);
+	succeed_if (result == 0, "should return 0 when both are empty");
+
+	result = ksSubtract (nonEmpty, sub);
+	succeed_if (result == 0, "should return 0 when total is empty");
+
+	result = ksSubtract (total, nonEmpty);
+	succeed_if (result == 0, "should return 0 when sub is empty");
+
+	ksDel (total);
+	ksDel (sub);
+	ksDel (nonEmpty);
+}
+
+static void test_ksSubtract_1 (void)
+{
+	printf ("Testing ksSubtract (1)\n");
+
+	// Arrange
+	KeySet * total = ksNew (10,
+				keyNew ("user:/test/k1", KEY_END),
+				keyNew ("user:/test/k2", KEY_END),
+				keyNew ("user:/test/k3", KEY_END),
+				keyNew ("user:/test/k4", KEY_END),
+				keyNew ("user:/test/k5", KEY_END),
+				KS_END);
+
+	KeySet * sub  = ksNew (10,
+			      keyNew ("user:/test/k1", KEY_END),
+			      keyNew ("user:/test/k2", KEY_END),
+			      keyNew ("user:/test/k3", KEY_END),
+			      keyNew ("user:/test/k4", KEY_END),
+			      keyNew ("user:/test/k5", KEY_END),
+			      KS_END);
+
+	// Act
+	ssize_t result = ksSubtract (total, sub);
+
+	// Assert
+	succeed_if_fmt (result == 5, "should have removed 5 keys (was %zu)", result);
+	succeed_if (ksGetSize (total) == 0, "total should be empty");
+
+	ksDel (total);
+	ksDel (sub);
+}
+
+static void test_ksSubtract_2 (void)
+{
+	printf ("Testing ksSubtract (2)\n");
+
+	// Arrange
+	KeySet * total = ksNew (10,
+				keyNew ("user:/test/k2", KEY_END),
+				keyNew ("user:/test/k3", KEY_END),
+				KS_END);
+
+	KeySet * sub  = ksNew (10,
+			      keyNew ("user:/test/k1", KEY_END),
+			      keyNew ("user:/test/k2", KEY_END),
+			      keyNew ("user:/test/k3", KEY_END),
+			      keyNew ("user:/test/k4", KEY_END),
+			      keyNew ("user:/test/k5", KEY_END),
+			      KS_END);
+
+	// Act
+	ssize_t result = ksSubtract (total, sub);
+
+	// Assert
+	succeed_if_fmt (result == 2, "should have removed 2 keys (was %zu)", result);
+	succeed_if (ksGetSize (total) == 0, "total should be empty");
+
+	ksDel (total);
+	ksDel (sub);
+}
+
+static void test_ksSubtract_3 (void)
+{
+	printf ("Testing ksSubtract (3)\n");
+
+	// Arrange
+	KeySet * total = ksNew (10,
+				keyNew ("user:/test/k1", KEY_END),
+				keyNew ("user:/test/k2", KEY_END),
+				keyNew ("user:/test/k3", KEY_END),
+				keyNew ("user:/test/k4", KEY_END),
+				keyNew ("user:/test/k5", KEY_END),
+				keyNew ("user:/test/k6", KEY_END),
+				KS_END);
+
+	KeySet * sub  = ksNew (10,
+			      keyNew ("user:/test/k2", KEY_END),
+			      keyNew ("user:/test/k3", KEY_END),
+			      keyNew ("user:/test/k5", KEY_END),
+			      KS_END);
+
+	// Act
+	ssize_t result = ksSubtract (total, sub);
+
+	// Assert
+	succeed_if_fmt (result == 3, "should have removed 3 keys (was %zu)", result);
+	succeed_if (ksGetSize (total) == 3, "total should still have 3 keys");
+	succeed_if (ksLookupByName (total, "user:/test/k1", 0) != NULL, "total should contain user:/test/k1");
+	succeed_if (ksLookupByName (total, "user:/test/k4", 0) != NULL, "total should contain user:/test/k4");
+	succeed_if (ksLookupByName (total, "user:/test/k6", 0) != NULL, "total should contain user:/test/k6");
+
+	ksDel (total);
+	ksDel (sub);
+}
+
+static void test_ksSubtract_4 (void)
+{
+	printf ("Testing ksSubtract (4)\n");
+
+	// Arrange
+	KeySet * total = ksNew (10,
+				keyNew ("user:/test/b1", KEY_END),
+				keyNew ("user:/test/c2", KEY_END),
+				keyNew ("user:/test/d3", KEY_END),
+				keyNew ("user:/test/e4", KEY_END),
+				keyNew ("user:/test/f5", KEY_END),
+				keyNew ("user:/test/zz", KEY_END),
+				KS_END);
+
+	KeySet * sub  = ksNew (10,
+			      keyNew ("user:/test/aa", KEY_END),
+			      keyNew ("user:/test/c2", KEY_END),
+			      keyNew ("user:/test/d1", KEY_END),
+			      keyNew ("user:/test/e4", KEY_END),
+			      keyNew ("user:/test/f5", KEY_END),
+			      KS_END);
+
+	// Act
+	ssize_t result = ksSubtract (total, sub);
+
+	// Assert
+	succeed_if_fmt (result == 3, "should have removed 3 keys (was %zu)", result);
+	succeed_if (ksGetSize (total) == 3, "total should still contain 3 keys");
+	succeed_if (ksLookupByName (total, "user:/test/b1", 0) != NULL, "total should contain user:/test/k1");
+	succeed_if (ksLookupByName (total, "user:/test/d3", 0) != NULL, "total should contain user:/test/k3");
+	succeed_if (ksLookupByName (total, "user:/test/zz", 0) != NULL, "total should contain user:/test/zz");
+
+	ksDel (total);
+	ksDel (sub);
+}
+
+static void test_ksSubtract_5 (void)
+{
+	printf ("Testing ksSubtract (5)\n");
+
+	// Arrange
+	KeySet * total = ksNew (10,
+				keyNew ("user:/test/a", KEY_END),
+				keyNew ("user:/test/b", KEY_END),
+				KS_END);
+
+	KeySet * sub  = ksNew (10,
+			      keyNew ("user:/test/c", KEY_END),
+			      keyNew ("user:/test/d", KEY_END),
+			      KS_END);
+
+	// Act
+	ssize_t result = ksSubtract (total, sub);
+
+	// Assert
+	succeed_if_fmt (result == 0, "should have removed 0 keys (was %zu)", result);
+	succeed_if (ksGetSize (total) == 2, "total should still have 2 entries");
+
+	ksDel (total);
+	ksDel (sub);
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("KS         TESTS\n");
@@ -579,6 +778,13 @@ int main (int argc, char ** argv)
 	test_ksRename ();
 	test_ksFindHierarchy ();
 	test_ksSearch ();
+	test_ksSubtract_nullParameters ();
+	test_ksSubtract_emptyParameters ();
+	test_ksSubtract_1 ();
+	test_ksSubtract_2 ();
+	test_ksSubtract_3 ();
+	test_ksSubtract_4 ();
+	test_ksSubtract_5 ();
 
 	printf ("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

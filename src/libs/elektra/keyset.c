@@ -2799,6 +2799,76 @@ Key * ksLookupByName (KeySet * ks, const char * name, elektraLookupFlags options
 	return found;
 }
 
+/**
+ * Remove all the keys in @p sub from @p total.
+ *
+ * @param total the keyset where the keys should be removed from
+ * @param sub the keys to remove
+ * @retval -1 on @p NULL pointers
+ * @retval the number of keys removed from @p total
+ */
+ssize_t ksSubtract (KeySet * total, const KeySet * sub)
+{
+	if (sub == NULL || total == NULL)
+	{
+		return -1;
+	}
+
+	ssize_t totalSize = ksGetSize (total);
+	ssize_t subSize = ksGetSize (sub);
+
+	if (totalSize == 0 || subSize == 0)
+	{
+		return 0;
+	}
+
+	ssize_t removedCount = 0;
+
+	elektraCursor subI = 0;
+	elektraCursor totalI = -1;
+	for (elektraCursor i = 0; i < subSize && totalI < 0; i++)
+	{
+		totalI = ksSearch (total, ksAtCursor (sub, i));
+		subI = i;
+	}
+
+	if (totalI < 0)
+	{
+		return 0;
+	}
+
+	while (subI < subSize && totalI < totalSize)
+	{
+		Key * subKey = ksAtCursor (sub, subI);
+		Key * totalKey = ksAtCursor (total, totalI);
+
+		if (subKey == NULL || totalKey == NULL)
+		{
+			break;
+		}
+
+		int cmpres = keyCmp (subKey, totalKey);
+		if (cmpres == 0)
+		{
+			keyDel (elektraKsPopAtCursor (total, totalI));
+
+			removedCount++;
+			subI++;
+		}
+		else if (cmpres < 0)
+		{
+			subI++;
+		}
+		else
+		{
+			totalI++;
+		}
+	}
+
+	return removedCount;
+}
+
+
 /*********************************************************************
  *                Data constructors (protected)                      *
  *********************************************************************/
