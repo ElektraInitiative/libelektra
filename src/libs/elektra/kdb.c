@@ -2591,7 +2591,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		int lockRes = handle->hooks.record.lock (handle->hooks.record.plugin, initialParent);
 		if (lockRes == ELEKTRA_PLUGIN_STATUS_ERROR)
 		{
-			elektraCopyError (parentKey, initialParent);
+			elektraCopyErrorAndWarnings (parentKey, initialParent);
 			goto rollback;
 		}
 	}

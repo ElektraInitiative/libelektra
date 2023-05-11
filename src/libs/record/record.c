@@ -41,7 +41,7 @@ bool elektraRecordEnableRecording (KDB * handle, const Key * parentKey, Key * er
 
 	if (kdbGet (handle, config, configKey) == -1)
 	{
-		elektraCopyError (errorKey, configKey);
+		elektraCopyErrorAndWarnings (errorKey, configKey);
 		keyDel (configKey);
 		ksDel (config);
 		return false;
@@ -65,7 +65,7 @@ bool elektraRecordEnableRecording (KDB * handle, const Key * parentKey, Key * er
 
 	if (kdbSet (handle, config, configKey) == -1)
 	{
-		elektraCopyError (errorKey, configKey);
+		elektraCopyErrorAndWarnings (errorKey, configKey);
 
 		keyDel (configKey);
 		// This will also automatically delete activeKey
@@ -104,7 +104,7 @@ bool elektraRecordDisableRecording (KDB * handle, Key * errorKey)
 	KeySet * config = ksNew (0, KS_END);
 	if (kdbGet (handle, config, configKey) == -1)
 	{
-		elektraCopyError (errorKey, configKey);
+		elektraCopyErrorAndWarnings (errorKey, configKey);
 		keyDel (configKey);
 		ksDel (config);
 		return false;
@@ -118,7 +118,7 @@ bool elektraRecordDisableRecording (KDB * handle, Key * errorKey)
 
 	if (kdbSet (handle, config, configKey) == -1)
 	{
-		elektraCopyError (errorKey, configKey);
+		elektraCopyErrorAndWarnings (errorKey, configKey);
 		keyDel (configKey);
 		ksDel (config);
 		keyDel (activeKey);
@@ -158,7 +158,7 @@ bool elektraRecordResetSession (KDB * handle, Key * errorKey)
 
 	if (kdbGet (handle, session, sessionKey) == -1)
 	{
-		elektraCopyError (errorKey, sessionKey);
+		elektraCopyErrorAndWarnings (errorKey, sessionKey);
 		keyDel (sessionKey);
 		ksDel (session);
 		return false;
@@ -168,7 +168,7 @@ bool elektraRecordResetSession (KDB * handle, Key * errorKey)
 
 	if (kdbSet (handle, session, sessionKey) == -1)
 	{
-		elektraCopyError (errorKey, sessionKey);
+		elektraCopyErrorAndWarnings (errorKey, sessionKey);
 		keyDel (sessionKey);
 		ksDel (session);
 		return false;
@@ -423,7 +423,7 @@ bool elektraRecordRecord (KDB * handle, KDB * sessionStorageHandle, KeySet * new
 		// load data for current session diff
 		if (kdbGet (sessionStorageHandle, recordStorage, sessionRecordingKey) == -1)
 		{
-			elektraCopyError (errorKey, sessionRecordingKey);
+			elektraCopyErrorAndWarnings (errorKey, sessionRecordingKey);
 			successful = false;
 			ksDel (recordStorage);
 			goto cleanup;
@@ -441,7 +441,7 @@ bool elektraRecordRecord (KDB * handle, KDB * sessionStorageHandle, KeySet * new
 		// store data for session diff
 		if (kdbSet (sessionStorageHandle, recordStorage, sessionRecordingKey) == -1)
 		{
-			elektraCopyError (errorKey, sessionRecordingKey);
+			elektraCopyErrorAndWarnings (errorKey, sessionRecordingKey);
 			successful = false;
 			elektraDiffDel (sessionDiff);
 			ksDel (recordStorage);
@@ -501,7 +501,7 @@ bool elektraRecordUndo (KDB * handle, KDB * sessionStorageHandle, Key * parentKe
 	// Load data from session diff
 	if (kdbGet (sessionStorageHandle, recordStorage, sessionRecordingKey) == -1)
 	{
-		elektraCopyError (errorKey, sessionRecordingKey);
+		elektraCopyErrorAndWarnings (errorKey, sessionRecordingKey);
 		keyDel (sessionRecordingKey);
 		ksDel (recordStorage);
 		return false;
@@ -516,7 +516,7 @@ bool elektraRecordUndo (KDB * handle, KDB * sessionStorageHandle, Key * parentKe
 		KeySet * ks = ksNew (0, KS_END);
 		if (kdbGet (handle, ks, parentKey) == -1)
 		{
-			elektraCopyError (errorKey, parentKey);
+			elektraCopyErrorAndWarnings (errorKey, parentKey);
 			successful = false;
 			ksDel (ks);
 			goto cleanup;
@@ -529,7 +529,7 @@ bool elektraRecordUndo (KDB * handle, KDB * sessionStorageHandle, Key * parentKe
 
 		if (kdbSet (handle, ks, parentKey) == -1)
 		{
-			elektraCopyError (errorKey, parentKey);
+			elektraCopyErrorAndWarnings (errorKey, parentKey);
 			successful = false;
 			goto innercleanup;
 		}
@@ -537,7 +537,7 @@ bool elektraRecordUndo (KDB * handle, KDB * sessionStorageHandle, Key * parentKe
 		putDiffIntoSessionStorage (recordStorage, sessionDiff);
 		if (kdbSet (sessionStorageHandle, recordStorage, sessionRecordingKey) == -1)
 		{
-			elektraCopyError (errorKey, parentKey);
+			elektraCopyErrorAndWarnings (errorKey, parentKey);
 			successful = false;
 			goto innercleanup;
 		}
@@ -605,7 +605,7 @@ bool elektraRecordRemoveKeys (KDB * handle, KeySet * toRemove, bool recursive, K
 	// Load data from session diff
 	if (kdbGet (handle, recordStorage, sessionRecordingKey) == -1)
 	{
-		elektraCopyError (errorKey, sessionRecordingKey);
+		elektraCopyErrorAndWarnings (errorKey, sessionRecordingKey);
 		keyDel (sessionRecordingKey);
 		ksDel (recordStorage);
 		return false;
@@ -634,7 +634,7 @@ bool elektraRecordRemoveKeys (KDB * handle, KeySet * toRemove, bool recursive, K
 	// store data for session diff
 	if (kdbSet (handle, recordStorage, sessionRecordingKey) == -1)
 	{
-		elektraCopyError (errorKey, sessionRecordingKey);
+		elektraCopyErrorAndWarnings (errorKey, sessionRecordingKey);
 		successful = false;
 	}
 
@@ -665,7 +665,7 @@ bool elektraRecordGetDiff (KDB * handle, ElektraDiff ** diff, Key * errorKey)
 	// Load data from session diff
 	if (kdbGet (handle, recordStorage, sessionRecordingKey) == -1)
 	{
-		elektraCopyError (errorKey, sessionRecordingKey);
+		elektraCopyErrorAndWarnings (errorKey, sessionRecordingKey);
 		keyDel (sessionRecordingKey);
 		ksDel (recordStorage);
 		return false;
@@ -722,7 +722,7 @@ bool elektraRecordExportSession (KDB * handle, Plugin * plugin, Key * parentKey,
 	KeySet * sessionStorage = ksNew (0, KS_END);
 	if (kdbGet (handle, sessionStorage, sessionKey) == -1)
 	{
-		elektraCopyError (errorKey, sessionKey);
+		elektraCopyErrorAndWarnings (errorKey, sessionKey);
 		keyDel (sessionKey);
 		ksDel (sessionStorage);
 		return false;
@@ -765,7 +765,7 @@ bool elektraRecordExportSession (KDB * handle, Plugin * plugin, Key * parentKey,
 	bool successful = true;
 	if (result == ELEKTRA_PLUGIN_STATUS_ERROR)
 	{
-		elektraCopyError (errorKey, parentKey);
+		elektraCopyErrorAndWarnings (errorKey, parentKey);
 		successful = false;
 	}
 
