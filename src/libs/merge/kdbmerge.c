@@ -367,7 +367,7 @@ int elektraMergeGetConflicts (Key * informationKey)
  * Will also convert the previously generated /root key back into its original name.
  *
  * @param key the key to which something shall be appended
- * @param string the string to append
+ * @param string the string to prepend
  * @param informationKey errors will be set here
  * @return the key with the prepended name
  */
