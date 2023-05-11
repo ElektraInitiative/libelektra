@@ -302,12 +302,12 @@ ElektraDiff * elektraDiffCalculate (KeySet * newKeys, KeySet * oldKeys, Key * pa
  *
  * @param addedKeys the added keys
  * @param removedKeys the removed keys
- * @param modifiedKey the modified keys
+ * @param modifiedKeys the modified keys
  * @param modifiedNewKeys the modified keys with the new values
  * @param parentKey the parent key
  * @return ElektraDiff with the provided parameters
  */
-ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKey, KeySet * modifiedNewKeys, Key * parentKey)
+ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKeys, KeySet * modifiedNewKeys, Key * parentKey)
 {
 	ElektraDiff * ksd = elektraCalloc (sizeof (ElektraDiff));
 
@@ -322,8 +322,8 @@ ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet *
 	ksIncRef (removedKeys);
 	ksd->removedKeys = removedKeys;
 
-	ksIncRef (modifiedKey);
-	ksd->modifiedKeys = modifiedKey;
+	ksIncRef (modifiedKeys);
+	ksd->modifiedKeys = modifiedKeys;
 
 	if (modifiedNewKeys != NULL)
 	{
