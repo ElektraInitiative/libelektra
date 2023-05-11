@@ -2,7 +2,7 @@
 #include <kdberrors.h>
 #include <kdbprivate.h>
 
-static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKeys,
+static bool findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKeys,
 			     KeySet * modifiedKeysNewValues, const Key * parentKey);
 
 /**
@@ -106,13 +106,7 @@ static inline bool keyMetaDifferent (Key * oldKey, Key * newKey, KeySet * metaAd
 		ksClear (metaRemoved);
 		ksClear (metaModified);
 
-		findDifferences (newMeta, oldMeta, metaAdded, metaRemoved, metaModified, NULL, NULL);
-
-		if (ksGetSize (metaAdded) > 0 || ksGetSize (metaRemoved) > 0 || ksGetSize (metaModified) > 0)
-		{
-			// there was a change in the meta keys --> modified
-			return true;
-		}
+		return findDifferences (newMeta, oldMeta, metaAdded, metaRemoved, metaModified, NULL, NULL);
 	}
 
 	return false;
@@ -132,8 +126,9 @@ static inline bool keyMetaDifferent (Key * oldKey, Key * newKey, KeySet * metaAd
  * @param[out] modifiedKeysNewValues adds keys present in both @p new and @p old, but with changes in value or in the meta keys. contains
  * the NEW keys
  * @param[in] parentKey parent key - if this parameter is not @p NULL, only keys below or same are processed.
+ * @returns @p true if there are differences between the keysets @p new and @p old
  */
-static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKeys,
+static bool findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKeys,
 			     KeySet * modifiedKeysNewValues, const Key * parentKey)
 {
 	KeySet * metaAdded = ksNew (0, KS_END);
@@ -261,6 +256,15 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 	ksDel (metaAdded);
 	ksDel (metaRemoved);
 	ksDel (metaModified);
+
+	bool differences = false;
+
+	if (addedKeys && ksGetSize (addedKeys) > 0) differences = true;
+	if (removedKeys && ksGetSize (removedKeys) > 0) differences = true;
+	if (modifiedKeys && ksGetSize (modifiedKeys) > 0) differences = true;
+	if (modifiedKeysNewValues && ksGetSize (modifiedKeysNewValues) > 0) differences = true;
+
+	return differences;
 }
 
 /**
