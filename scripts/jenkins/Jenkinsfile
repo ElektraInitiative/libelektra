@@ -1040,8 +1040,7 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
       withDockerEnv(image, dockerOpts) {
         // we use a space in the directory to test if paths are
         // properly escaped
-        // NOTE: golang is not supporting spaces currently
-        def buildDir='buildDirectory'
+        def buildDir='build directory'
 
         if(tests) {
           artifacts.add("\"${buildDir}\"/Testing/*/*.xml")
