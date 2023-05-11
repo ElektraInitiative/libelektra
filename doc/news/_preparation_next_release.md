@@ -108,6 +108,10 @@ For more information see [Spec Plugin](../../src/plugins/spec/README.md).
 
 The following text lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
+### General
+
+- Updated target name of shared object files according to [#3486](https://issues.libelektra.org/3486)
+
 ### spec
 
 - Rewrite spec plugin, fix bugs and use correct error handling _(Tomislav Makar @tmakar)_
@@ -234,9 +238,9 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 
-### <<Library>>
+### loader
 
-- <<TODO>>
+- Adapt target rename with `-plugin-` in `dl.c` _(Tomislav Makar @tmakar)_
 - <<TODO>>
 - <<TODO>>
 

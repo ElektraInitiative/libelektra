@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre3
-.TH "ELEKTRA\-BOOTSTRAPPING" "7" "February 2023" ""
+.TH "ELEKTRA\-BOOTSTRAPPING" "7" "May 2023" ""
 .SH "NAME"
 \fBelektra\-bootstrapping\fR \- default backend
 .P
@@ -10,7 +10,7 @@ To support that experience, a so\-called \fBdefault backend\fR is responsible in
 .P
 The mounting configuration (the configuration how to mount the mount points) also needs to be stored somewhere\. The so\-called \fBinit backend\fR is responsible for fetching configuration from \fBsystem:/elektra\fR, where the mount points are stored\. Again \fBKDB_STORAGE\fR and \fBKDB_RESOLVER\fR is used, but now they write into the configuration file \fBKDB_DB_INIT\fR (\fBelektra\.ecf\fR by default)\.
 .P
-Thus for full and static build variants an exchange at run\-time is not possible\. Using shared libraries, however, \fBKDB_STORAGE\fR and \fBKDB_RESOLVER\fR are actually symbolic links (\fBlibelektra\-resolver\.so\fR and \fBlibelektra\-storage\.so\fR) to concrete plugins and thus can be changed without recompilation\.
+Thus for full and static build variants an exchange at run\-time is not possible\. Using shared libraries, however, \fBKDB_STORAGE\fR and \fBKDB_RESOLVER\fR are actually symbolic links (\fBlibelektra\-plugin\-resolver\.so\fR and \fBlibelektra\-plugin\-storage\.so\fR) to concrete plugins and thus can be changed without recompilation\.
 .P
 The \fBinit backend\fR is guaranteed to stay mounted at \fBsystem:/elektra\fR where the configuration for Elektra itself is stored\. After mounting all backends, Elektra checks if \fBsystem:/elektra\fR still resides at the default backend\. If not, the init backend will be mounted there\.
 .SH "SUMMARY"

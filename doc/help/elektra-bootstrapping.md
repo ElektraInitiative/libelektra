@@ -22,7 +22,7 @@ they write into the configuration file `KDB_DB_INIT` (`elektra.ecf` by default).
 
 Thus for full and static build variants an exchange at run-time is not possible.
 Using shared libraries, however, `KDB_STORAGE` and `KDB_RESOLVER` are actually
-symbolic links (`libelektra-resolver.so` and `libelektra-storage.so`) to concrete plugins
+symbolic links (`libelektra-plugin-resolver.so` and `libelektra-plugin-storage.so`) to concrete plugins
 and thus can be changed without recompilation.
 
 The **init backend** is guaranteed to stay mounted at
