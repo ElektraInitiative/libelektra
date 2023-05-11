@@ -1,7 +1,7 @@
-prefix=@CMAKE_BINARY_DIR@
+prefix="@CMAKE_BINARY_DIR@"
 libdir=${prefix}/lib
 srcinclude=${prefix}/src/include
-buildinclude=@CMAKE_SOURCE_DIR@/src/include
+buildinclude="@CMAKE_SOURCE_DIR@"/src/include
 
 Name: @PACKAGE_NAME@
 Description: @PACKAGE_DESCRIPTION@
