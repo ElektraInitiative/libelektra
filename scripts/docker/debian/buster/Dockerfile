@@ -90,6 +90,8 @@ RUN pip3 install wheel
 # see https://github.com/docker-library/golang/issues/225
 ENV XDG_CACHE_HOME=/tmp/.cache
 
+RUN rm -rf /tmp/.cache
+
 # use lua5.3 since dh-lua installs liblua5.3-dev which sets the
 # dependency on the generated package to lua5.3
 RUN update-alternatives --set lua-interpreter /usr/bin/lua5.3
