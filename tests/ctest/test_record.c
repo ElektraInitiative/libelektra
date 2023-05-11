@@ -81,6 +81,7 @@ static KDB * openPrefixedKdbInstance (KeySet * contract, Key * errorKey, const c
 	KDB * kdb = kdbOpen (contract, errorKey);
 	free (bootstrapPath);
 
+	// TODO: use new C mount library to modify mountpoints like we do in the C++ gtest framework
 	for (elektraCursor i = 0; i < ksGetSize (kdb->backends); i++)
 	{
 		Key * backendKey = ksAtCursor (kdb->backends, i);
@@ -107,32 +108,11 @@ static void closePrefixedKdbInstance (KDB * kdb, Key * errorKey, bool deleteFile
 	if (deleteFiles)
 	{
 		KeySet * tmp = ksNew (0, KS_END);
-		ElektraKdbPhase phase = ELEKTRA_KDB_GET_PHASE_RESOLVER;
-		ksAppendKey (kdb->global, keyNew ("system:/elektra/kdb/backend/phase", KEY_BINARY, KEY_SIZE, sizeof (ElektraKdbPhase),
-						  KEY_VALUE, &phase, KEY_END));
 		Key * pk = keyNew ("/", KEY_END);
 
-		for (elektraCursor i = 0; i < ksGetSize (kdb->backends); i++)
-		{
-			Key * backendKey = ksAtCursor (kdb->backends, i);
-
-			if (keyGetNamespace (backendKey) == KEY_NS_PROC)
-			{
-				// proc:/ backends only run in poststorage
-				continue;
-			}
-
-			keyCopy (pk, backendKey, KEY_CP_NAME);
-			BackendData * backendData = (BackendData *) keyValue (backendKey);
-
-			backendData->backend->kdbGet (backendData->backend, tmp, pk);
-
-			const char * path = keyString (pk);
-			if (path != NULL && strcmp ("", path) != 0)
-			{
-				elektraUnlink (path);
-			}
-		}
+		kdbGet (kdb, tmp, pk);
+		ksClear (tmp);
+		kdbSet (kdb, tmp, pk);
 
 		ksDel (tmp);
 		keyDel (pk);
