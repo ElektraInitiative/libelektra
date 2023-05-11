@@ -1,0 +1,72 @@
+Mountpoint: user:/tests/cli/find
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/find/a/l1/l2/l3/l4 with string "x"
+< kdb set $Mountpoint/a/l1/l2/l3/l4 x
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/find/a/l1/l2/l3 with string "x"
+< kdb set $Mountpoint/a/l1/l2/l3 x
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/find/a/l1/l2 with string "x"
+< kdb set $Mountpoint/a/l1/l2 x
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/find/a/l1 with string "x"
+< kdb set $Mountpoint/a/l1 x
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/find/b/l1/l2/l3/l4 with string "x"
+< kdb set $Mountpoint/b/l1/l2/l3/l4 x
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/find/b/l1/l2/l3 with string "x"
+< kdb set $Mountpoint/b/l1/l2/l3 x
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/find/b/l1/l2 with string "x"
+< kdb set $Mountpoint/b/l1/l2 x
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/find/b/l1 with string "x"
+< kdb set $Mountpoint/b/l1 x
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/find/c/l1/l2/l3/l4 with string "x"
+< kdb set $Mountpoint/c/l1/l2/l3/l4 x
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/find/c/l1/l2/l3 with string "x"
+< kdb set $Mountpoint/c/l1/l2/l3 x
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/find/c/l1/l2 with string "x"
+< kdb set $Mountpoint/c/l1/l2 x
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/find/c/l1 with string "x"
+< kdb set $Mountpoint/c/l1 x
+
+RET: 0
+STDOUT: user:/tests/cli/find/a/l1/l2/l3⏎user:/tests/cli/find/a/l1/l2/l3/l4⏎user:/tests/cli/find/b/l1/l2/l3⏎user:/tests/cli/find/b/l1/l2/l3/l4⏎user:/tests/cli/find/c/l1/l2/l3⏎user:/tests/cli/find/c/l1/l2/l3/l4
+< kdb find ".*/l2/l3.*"
+
+RET: 0
+STDOUT: user:/tests/cli/find/a/l1/l2/l3⏎user:/tests/cli/find/a/l1/l2/l3/l4
+< kdb find ".*/a/.*/l2/l3.*"
+
+RET: 0
+STDOUT: user:/tests/cli/find/a/l1/l2/l3⏎user:/tests/cli/find/a/l1/l2/l3/l4⏎user:/tests/cli/find/b/l1/l2/l3⏎user:/tests/cli/find/b/l1/l2/l3/l4⏎user:/tests/cli/find/c/l1/l2/l3⏎user:/tests/cli/find/c/l1/l2/l3/l4⏎⏎found 6 keys
+< kdb find -v ".*/l2/l3.*"
+
+RET: 0
+STDOUT: user:/tests/cli/find/a/l1/l2/l3⏎user:/tests/cli/find/a/l1/l2/l3/l4⏎⏎found 2 keys
+< kdb find -v ".*/a/.*/l2/l3.*"
+
+RET: 11
+STDERR: .*could not compile regex pattern:.*
+< kdb find ".*a[.*/l2/l3.*"
+
+RET: 0
+< kdb rm -r $Mountpoint/

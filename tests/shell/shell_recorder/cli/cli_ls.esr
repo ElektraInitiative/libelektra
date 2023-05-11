@@ -1,0 +1,115 @@
+Mountpoint: user:/tests/cli/ls
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/ls/a/l1/l2/l3/l4 with string "x"
+< kdb set $Mountpoint/a/l1/l2/l3/l4 x
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/ls/a/l1/l2/l3 with string "x"
+< kdb set $Mountpoint/a/l1/l2/l3 x
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/ls/a/l1/l2 with string "x"
+< kdb set $Mountpoint/a/l1/l2 x
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/ls/a/l1 with string "x"
+< kdb set $Mountpoint/a/l1 x
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/ls/b/l1/l2/l3/l4 with string "x"
+< kdb set $Mountpoint/b/l1/l2/l3/l4 x
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/ls/b/l1/l2/l3 with string "x"
+< kdb set $Mountpoint/b/l1/l2/l3 x
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/ls/b/l1/l2 with string "x"
+< kdb set $Mountpoint/b/l1/l2 x
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/ls/b/l1 with string "x"
+< kdb set $Mountpoint/b/l1 x
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/ls/c/l1/l2/l3/l4 with string "x"
+< kdb set $Mountpoint/c/l1/l2/l3/l4 x
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/ls/c/l1/l2/l3 with string "x"
+< kdb set $Mountpoint/c/l1/l2/l3 x
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/ls/c/l1/l2 with string "x"
+< kdb set $Mountpoint/c/l1/l2 x
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/ls/c/l1 with string "x"
+< kdb set $Mountpoint/c/l1 x
+
+RET: 0
+STDOUT: user:/tests/cli/ls/a/l1⏎user:/tests/cli/ls/a/l1/l2⏎user:/tests/cli/ls/a/l1/l2/l3⏎user:/tests/cli/ls/a/l1/l2/l3/l4
+< kdb ls -m 1 $Mountpoint/a
+
+RET: 0
+STDOUT: user:/tests/cli/ls/b/l1/l2⏎user:/tests/cli/ls/b/l1/l2/l3⏎user:/tests/cli/ls/b/l1/l2/l3/l4
+< kdb ls -m 2 $Mountpoint/b
+
+RET: 0
+STDOUT: user:/tests/cli/ls/c/l1/l2/l3⏎user:/tests/cli/ls/c/l1/l2/l3/l4
+< kdb ls -m 3 $Mountpoint/c
+
+RET: 0
+STDOUT: user:/tests/cli/ls/a/l1⏎user:/tests/cli/ls/a/l1/l2
+< kdb ls -m 1 -M 3 $Mountpoint/a
+
+RET: 0
+STDOUT: user:/tests/cli/ls/b/l1/l2⏎user:/tests/cli/ls/b/l1/l2/l3
+< kdb ls -m 2 -M 4 $Mountpoint/b
+
+RET: 0
+STDOUT: user:/tests/cli/ls/c/l1/l2/l3⏎user:/tests/cli/ls/c/l1/l2/l3/l4
+< kdb ls -m 3 -M 5 $Mountpoint/c
+
+RET: 0
+STDOUT: size of all keys in mount point: 12⏎size of requested keys: 4⏎user:/tests/cli/ls/a/l1⏎user:/tests/cli/ls/a/l1/l2⏎user:/tests/cli/ls/a/l1/l2/l3⏎user:/tests/cli/ls/a/l1/l2/l3/l4
+< kdb ls -v -m 1 $Mountpoint/a
+
+RET: 0
+STDOUT: size of all keys in mount point: 12⏎size of requested keys: 4⏎user:/tests/cli/ls/b/l1/l2⏎user:/tests/cli/ls/b/l1/l2/l3⏎user:/tests/cli/ls/b/l1/l2/l3/l4
+< kdb ls -v -m 2 $Mountpoint/b
+
+RET: 0
+STDOUT: size of all keys in mount point: 12⏎size of requested keys: 4⏎user:/tests/cli/ls/c/l1/l2/l3⏎user:/tests/cli/ls/c/l1/l2/l3/l4
+< kdb ls -v -m 3 $Mountpoint/c
+
+RET: 0
+STDOUT: size of all keys in mount point: 12⏎size of requested keys: 4⏎user:/tests/cli/ls/a/l1⏎user:/tests/cli/ls/a/l1/l2
+< kdb ls -v -m 1 -M 3 $Mountpoint/a
+
+RET: 0
+STDOUT: size of all keys in mount point: 12⏎size of requested keys: 4⏎user:/tests/cli/ls/b/l1/l2⏎user:/tests/cli/ls/b/l1/l2/l3
+< kdb ls -v -m 2 -M 4 $Mountpoint/b
+
+RET: 0
+STDOUT: size of all keys in mount point: 12size of requested keys: 4user:/tests/cli/ls/b/l1/l2user:/tests/cli/ls/b/l1/l2/l3
+< kdb ls -0 -v -m 2 -M 4 $Mountpoint/b
+
+RET: 2
+STDERR: .*the maximum depth has to be larger than the minimum depth
+< kdb ls -v -m 2 -M 2 $Mountpoint/a
+
+RET: 2
+STDERR: .*the maximum depth has to be larger than the minimum depth
+< kdb ls -v -m 3 -M 2 $Mountpoint/a
+
+RET: 2
+STDERR: .*the minimum depth has to be a positive number
+< kdb ls -m -2 $Mountpoint/a
+
+RET: 2
+STDERR: .*the maximum depth has to be a positive number
+< kdb ls -M -2 $Mountpoint/a
+
+< kdb rm -r $Mountpoint

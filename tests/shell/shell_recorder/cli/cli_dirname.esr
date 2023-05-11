@@ -1,0 +1,54 @@
+Mountpoint: user:/tests/cli/dirname
+
+RET: 0
+STDOUT: /a/b
+< kdb dirname user:/a/b/c
+
+RET: 0
+STDOUT: /a/b
+< kdb dirname proc:/a/b/
+
+RET: 0
+STDOUT: /hello
+< kdb dirname system:/hello/world
+
+RET: 0
+STDOUT: /a/b/cdef
+< kdb dirname spec:/a/b/cdef/
+
+RET: 2
+STDERR: .*'door:/a/b/c' is not valid key name.
+< kdb dirname door:/a/b/c
+
+RET: 0
+STDOUT: /a/b
+< kdb dirname /a/b/c
+
+RET: 0
+STDOUT: /olleh
+< kdb dirname dir:/olleh/dlrow
+
+RET: 0
+STDOUT: /olleh
+< kdb dirname dir:/olleh/dlrow
+
+RET: 0
+< kdb set user:/sw/elektra/kdb/#0/current/bookmarks/dirnametest user:/tests/cli/dirname
+
+RET: 0
+STDOUT: /tests/cli/dirname/olleh
+< kdb dirname +dirnametest/olleh/dlrow
+
+RET: 0
+STDOUT: /tests/cli/dirname
+< kdb dirname +dirnametest/a
+
+RET: 0
+STDOUT: /tests/cli
+< kdb dirname +dirnametest
+
+RET: 0
+< kdb rm user:/sw/elektra/kdb/#0/current/bookmarks/dirnametest
+
+RET: 0
+< kdb rm -r $Mountpoint

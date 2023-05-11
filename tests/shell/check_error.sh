@@ -53,7 +53,7 @@ if is_plugin_available error; then
 
 	CONTENT=$(cat "$TMPFILE")
 
-	grep "issued the error C03100" "$TMPFILE" > /dev/null
+	grep "ERROR \[C03100\]" "$TMPFILE" > /dev/null
 	succeed_if "Triggered error did not occur, got $CONTENT"
 
 	grep "from error plugin" "$TMPFILE" > /dev/null
@@ -69,7 +69,7 @@ if is_plugin_available error; then
 	[ $? -ne 0 ]
 	succeed_if "Was able to copy to error plugin"
 
-	grep "issued the error C03100" "$TMPFILE" > /dev/null
+	grep "ERROR \[C03100\]" "$TMPFILE" > /dev/null
 	succeed_if "Triggered error did not occur, got $CONTENT"
 
 	grep "from error plugin" "$TMPFILE" > /dev/null

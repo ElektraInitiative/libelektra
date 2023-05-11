@@ -1,0 +1,64 @@
+Mountpoint: user:/tests/set
+
+RET: 0
+< kdb meta set spec:/tests/set mountpoint /tmp/spec.ni
+
+RET: 0
+< kdb meta set spec:/tests/set/some/testKey1 type unsigned_short
+
+RET: 0
+< kdb spec-mount /tests/set
+
+STDOUT: unsigned_short
+RET: 0
+< kdb meta get spec:/tests/set/some/testKey1 type
+
+STDERR: ^.*Validation Semantic: The type 'unsigned_short' failed to match for 'user:/tests/set/some/testKey1'.*$
+RET: 5
+< kdb set $Mountpoint/some/testKey1 Hello
+
+STDERR: ^.*Did not find key 'user:/tests/set/some/testKey1'.*$
+RET: 11
+< kdb get $Mountpoint/some/testKey1
+
+STDERR: ^.*Validation Semantic: The type 'unsigned_short' failed to match for 'user:/tests/set/some/testKey1'.*$
+RET: 5
+< kdb set $Mountpoint/some/testKey1 -5
+
+STDERR: ^.*Did not find key 'user:/tests/set/some/testKey1'.*$
+RET: 11
+< kdb get $Mountpoint/some/testKey1
+
+RET: 0
+< kdb set -f $Mountpoint/some/testKey1 -5
+
+STDERR: ^.*Validation Semantic: The type 'unsigned_short' failed to match for 'user:/tests/set/some/testKey1' with string '-5'.*$
+RET: 5
+< kdb validate $Mountpoint/some
+
+RET: 0
+< kdb set -f $Mountpoint/some/testKey1 5
+
+STDOUT: 5
+RET: 0
+< kdb get $Mountpoint/some/testKey1
+
+RET: 0
+< kdb set $Mountpoint/some/testKey1 6
+
+STDOUT: 6
+RET: 0
+< kdb get $Mountpoint/some/testKey1
+
+RET: 0
+< kdb umount /tests/set
+
+RET: 0
+< kdb rm -rf $Mountpoint/
+
+RET: 0
+< kdb rm -rf spec:/tests/set
+
+RET: 0
+< kdb rm -rf system:/tests/set
+

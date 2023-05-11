@@ -1,0 +1,66 @@
+Mountpoint: user:/tests/cli/metarm
+
+RET: 11
+STDERR: Did not find key 'user:/tests/cli/metarm/testkey'
+< kdb meta rm $Mountpoint/testkey m1
+
+RET: 2
+STDERR: .*'testkey' is not valid key name.
+< kdb meta rm testkey m1
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/metarm/testkey with string "hello"
+< kdb set $Mountpoint/testkey hello
+
+RET: 0
+STDOUT:
+< kdb meta ls $Mountpoint/testkey
+
+RET: 0
+< kdb meta set $Mountpoint/testkey m1 v1
+
+RET: 0
+< kdb meta set $Mountpoint/testkey m2 v2
+
+RET: 0
+< kdb meta set $Mountpoint/testkey m3 v3
+
+RET: 0
+STDOUT: m1m2m3
+< kdb meta ls -0 $Mountpoint/testkey
+
+RET: 0
+STDOUT:
+< kdb meta rm $Mountpoint/testkey m2
+
+RET: 12
+STDERR: No meta key with name 'm5' present
+< kdb meta rm $Mountpoint/testkey m5
+
+RET: 0
+STDOUT: m1m3
+< kdb meta ls -0 $Mountpoint/testkey
+
+RET: 0
+STDOUT:
+< kdb meta rm $Mountpoint/testkey m3
+
+RET: 0
+STDOUT: m1
+< kdb meta ls -0 $Mountpoint/testkey
+
+RET: 0
+STDOUT:
+< kdb meta rm $Mountpoint/testkey m1
+
+RET: 0
+STDOUT:
+< kdb meta ls -0 $Mountpoint/testkey
+
+RET: 12
+STDERR: No meta key with name 'm1' present
+< kdb meta rm $Mountpoint/testkey m1
+
+< kdb rm -r $Mountpoint
+
+

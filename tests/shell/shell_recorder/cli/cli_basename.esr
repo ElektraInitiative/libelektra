@@ -1,0 +1,29 @@
+Mountpoint: user:/tests/cli/basename
+
+RET: 0
+STDOUT: c
+< kdb basename user:/a/b/c
+
+RET: 0
+STDOUT: hello
+< kdb basename proc:/a/b/hello
+
+RET: 0
+STDOUT: foo
+< kdb basename system:/foo
+
+RET: 0
+STDOUT: d
+< kdb basename spec:/a/b/c/c/c/d
+
+RET: 11
+STDERR: .*'door:/a/b/h' is not valid key name.
+< kdb basename door:/a/b/h
+
+RET: 0
+STDOUT: bar
+< kdb basename /a/b/c/bar
+
+RET: 0
+STDOUT: bing
+< kdb basename dir:/a/b/bing

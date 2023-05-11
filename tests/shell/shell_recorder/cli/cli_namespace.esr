@@ -1,0 +1,29 @@
+Mountpoint: user:/tests/cli/namespace
+
+RET: 0
+STDOUT: user:
+< kdb namespace user:/a/b/c
+
+RET: 0
+STDOUT: proc:
+< kdb namespace proc:/a/b/c
+
+RET: 0
+STDOUT: system:
+< kdb namespace system:/a/b/c
+
+RET: 0
+STDOUT: spec:
+< kdb namespace spec:/a/b/c
+
+RET: 11
+STDERR: .*'door:/a/b/c' is not valid key name.
+< kdb namespace door:/a/b/c
+
+RET: 0
+STDOUT:
+< kdb namespace /a/b/c
+
+RET: 0
+STDOUT: dir:
+< kdb namespace dir:/a/b/c

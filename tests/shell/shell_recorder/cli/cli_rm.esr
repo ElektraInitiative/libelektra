@@ -1,0 +1,52 @@
+Mountpoint: user:/tests/cli/rm
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/rm/foo with string "bar"
+< kdb set $Mountpoint/foo bar
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/rm/foo/two with string "bar2"
+< kdb set $Mountpoint/foo/two bar2
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/rm/foo/three with string "bar3"
+< kdb set $Mountpoint/foo/three bar3
+
+RET: 0
+STDOUT: user:/tests/cli/rm/foo⏎user:/tests/cli/rm/foo/three⏎user:/tests/cli/rm/foo/two
+< kdb ls $Mountpoint
+
+RET: 11
+STDERR: Did not find key 'user:/tests/cli/rm/foo/four'
+< kdb rm $Mountpoint/foo/four
+
+RET: 0
+STDOUT:
+< kdb rm -f $Mountpoint/foo/four
+
+RET: 0
+STDOUT: bar2
+< kdb get $Mountpoint/foo/two
+
+RET: 0
+STDOUT:
+< kdb rm $Mountpoint/foo/two
+
+RET: 11
+STDERR: Did not find key 'user:/tests/cli/rm/foo/two'
+< kdb get $Mountpoint/foo/two
+
+RET: 0
+STDOUT: user:/tests/cli/rm/foo⏎user:/tests/cli/rm/foo/three
+< kdb ls $Mountpoint/foo
+
+RET: 0
+STDOUT:
+< kdb rm -r $Mountpoint/
+
+RET: 0
+STDOUT:
+< kdb ls $Mountpoint/
+
+RET: 0
+< kdb rm -r $Mountpoint/

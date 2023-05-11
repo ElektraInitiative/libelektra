@@ -1,0 +1,34 @@
+Mountpoint: user:/tests/cli/metashow
+
+RET: 11
+STDERR: Did not find key 'user:/tests/cli/metashow/testkey'
+< kdb meta show $Mountpoint/testkey
+
+RET: 2
+STDERR: .*'testkey' is not valid key name.
+< kdb meta show testkey
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/metashow/testkey with string "hello"
+< kdb set $Mountpoint/testkey hello
+
+RET: 0
+STDOUT:
+< kdb meta show $Mountpoint/testkey
+
+RET: 0
+< kdb meta set $Mountpoint/testkey m1 v1
+
+RET: 0
+< kdb meta set $Mountpoint/testkey m2 v2
+
+RET: 0
+< kdb meta set $Mountpoint/testkey m3 v3
+
+RET: 0
+STDOUT: m1: v1⏎m2: v2⏎m3: v3
+< kdb meta show $Mountpoint/testkey
+
+RET: 0
+STDOUT: m1: v1m2: v2m3: v3
+< kdb meta show -0 $Mountpoint/testkey

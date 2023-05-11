@@ -1,0 +1,92 @@
+Mountpoint: user:/tests/cli/cp
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/cp/aaa with string "bar"
+< kdb set $Mountpoint/aaa bar
+
+RET: 0
+< kdb cp $Mountpoint/aaa $Mountpoint/bbb
+
+RET: 0
+STDOUT: bar
+< kdb get $Mountpoint/bbb
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/cp/src with string "bar"
+< kdb set $Mountpoint/src bar
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/cp/src/two with string "bar2"
+< kdb set $Mountpoint/src/two bar2
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/cp/src/three with string "bar3"
+< kdb set $Mountpoint/src/three bar3
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/cp/trg/two with string "foo2"
+< kdb set $Mountpoint/trg/two foo2
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/cp/trg/three with string "foo3"
+< kdb set $Mountpoint/trg/three foo3
+
+RET: 12
+STDERR: Destination key 'user:/tests/cli/cp/trg/two' already has value 'foo2', won't overwrite!
+< kdb cp $Mountpoint/src/two $Mountpoint/trg/two
+
+RET: 0
+STDOUT: foo2
+< kdb get $Mountpoint/trg/two
+
+RET: 0
+STDOUT: -> copying 'user:/tests/cli/cp/src/two'[bar2] to 'user:/tests/cli/cp/trg/two'⏎⏎copied 1 keys
+< kdb cp -vf $Mountpoint/src/two $Mountpoint/trg/two
+
+RET: 0
+STDOUT: bar2
+< kdb get $Mountpoint/trg/two
+
+RET: 11
+STDERR: Did not find key 'user:/tests/cli/cp/trg'
+< kdb get $Mountpoint/trg
+
+RET: 0
+STDOUT: bar2
+< kdb get $Mountpoint/trg/two
+
+RET: 0
+STDOUT: foo3
+< kdb get $Mountpoint/trg/three
+
+RET: 12
+STDERR: Destination key 'user:/tests/cli/cp/trg/three' already has value 'foo3', won't overwrite!
+< kdb cp -r $Mountpoint/src $Mountpoint/trg
+
+RET: 11
+STDERR: Did not find key 'user:/tests/cli/cp/trg'
+< kdb get $Mountpoint/trg
+
+RET: 0
+STDOUT: bar2
+< kdb get $Mountpoint/trg/two
+
+RET: 0
+STDOUT: foo3
+< kdb get $Mountpoint/trg/three
+
+RET: 0
+STDOUT: -> copying 'user:/tests/cli/cp/src'[bar] to 'user:/tests/cli/cp/trg'⏎-> copying 'user:/tests/cli/cp/src/three'[bar3] to 'user:/tests/cli/cp/trg/three'⏎-> copying 'user:/tests/cli/cp/src/two'[bar2] to 'user:/tests/cli/cp/trg/two'⏎⏎copied 3 keys
+< kdb cp -vrf $Mountpoint/src $Mountpoint/trg
+
+RET: 0
+STDOUT: bar
+< kdb get $Mountpoint/trg
+
+RET: 0
+STDOUT: bar2
+< kdb get $Mountpoint/trg/two
+
+RET: 0
+STDOUT: bar3
+< kdb get $Mountpoint/trg/three

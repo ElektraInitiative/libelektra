@@ -1,0 +1,57 @@
+Mountpoint: user:/tests/cascadingwrites
+
+RET: 2
+< kdb meta set /tests/cascadingwrites/meta something abc
+
+RET: 0
+< kdb meta set spec:/tests/cascadingwrites/meta something abc
+
+RET: 2
+< kdb meta set /tests/cascadingwrites/meta something xyz
+
+STDOUT: abc
+RET: 0
+< kdb meta get spec:/tests/cascadingwrites/meta something
+
+RET: 2
+< kdb editor /tests/cascadingwrites/set
+
+RET: 2
+< kdb set /tests/cascadingwrites/set lala
+
+RET: 0
+< kdb set $Mountpoint/set lala
+
+STDOUT: lala
+RET: 0
+< kdb get $Mountpoint/set
+
+RET: 2
+< kdb mv /tests/cascadingwrites/set $Mountpoint/mv
+
+RET: 2
+< kdb mv $Mountpoint/set /tests/cascadingwrites/mv
+
+RET: 0
+< kdb mv $Mountpoint/set $Mountpoint/mv
+
+STDOUT: lala
+RET: 0
+< kdb get $Mountpoint/mv
+
+RET: 2
+< kdb rm /tests/cascadingwrites/mv
+
+STDOUT: lala
+RET: 0
+< kdb get $Mountpoint/mv
+
+RET: 0
+< kdb rm $Mountpoint/mv
+
+RET: 0
+< kdb rm -rf $Mountpoint
+
+RET: 0
+< kdb rm -rf spec:/tests/cascadingwrites
+< kdb rm -rf system:/tests/cascadingwrites

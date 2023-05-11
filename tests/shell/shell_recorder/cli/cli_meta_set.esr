@@ -1,0 +1,50 @@
+Mountpoint: user:/tests/cli/metaset
+
+RET: 11
+STDERR: .*Key 'user:/tests/cli/metaset/testkey' does not exist.*
+< kdb meta get $Mountpoint/testkey m1
+
+RET: 2
+STDERR: .*'testkey' is not valid key name.
+< kdb meta get testkey m1
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/metaset/testkey with string "hello"
+< kdb set $Mountpoint/testkey hello
+
+RET: 0
+< kdb meta set -v $Mountpoint/testkey m1 v1
+
+RET: 0
+< kdb meta set $Mountpoint/testkey m2 v2
+
+RET: 0
+< kdb meta set $Mountpoint/testkey m3 v3
+
+RET: 0
+STDOUT: v2
+< kdb meta get $Mountpoint/testkey m2
+
+RET: 0
+STDOUT: v3
+< kdb meta get $Mountpoint/testkey m3
+
+RET: 0
+STDOUT: Creating key user:/tests/cli/metaset/testkey1
+< kdb meta set -v $Mountpoint/testkey1 m4 v4
+
+RET: 0
+< kdb set user:/sw/elektra/kdb/#0/current/bookmarks/metasettest user:/tests/cli/metaset
+
+RET: 0
+STDOUT:
+< kdb meta set +metasettest/testkey m5 v5
+
+RET: 0
+STDOUT: v5
+< kdb meta get +metasettest/testkey m5
+
+RET: 0
+< kdb rm user:/sw/elektra/kdb/#0/current/bookmarks/metasettest
+
+< kdb rm -r $Mountpoint
