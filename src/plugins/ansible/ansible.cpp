@@ -87,11 +87,6 @@ int elektraAnsibleGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	{
 		keys.append (getContract ());
 	}
-	else
-	{
-		// This is only an example, to show you how to call a method of the delegate
-		keys.append (delegator::get (handle)->getConfig (parent));
-	}
 
 	parent.release ();
 	keys.release ();
