@@ -78,7 +78,7 @@ int elektraAnsibleClose (Plugin * handle, Key * key)
 }
 
 /** @see elektraDocGet */
-int elektraAnsibleGet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraAnsibleGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	CppKeySet keys{ returned };
 	CppKey parent{ parentKey };
