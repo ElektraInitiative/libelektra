@@ -252,4 +252,6 @@ libelektraprivate_1.0 {
 	elektraTriggerWarnings;
 
 	elektraCopyError;
+	elektraCopyWarnings;
+	elektraCopyErrorAndWarnings;
 };

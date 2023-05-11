@@ -194,6 +194,8 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - Fix inconsistent return values in code, tests and man pages _(Hannes Laimer @hannes99)_
 - Remove `smount` alias _(Hannes Laimer @hannes99)_
 - Add `elektraCopyError` function to copy error from one key to another _(Maximilian Irlinger @atmaxinger)_
+- Add `elektraCopyWarnings` function to copy warnings from one key to another _(Maximilian Irlinger @atmaxinger)_
+- Add `elektraCopyErrorAndWarnings` function to copy error and warnings from one key to another _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 
 ### <<Library>>

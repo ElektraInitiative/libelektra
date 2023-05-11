@@ -9,6 +9,7 @@
 #include <kdberrors.h>
 #include <kdbprivate.h>
 
+#include <stdio.h>
 #include <string.h>
 
 #ifdef __cplusplus
@@ -259,4 +260,105 @@ void elektraCopyError (Key * target, Key * source)
 
 	ksDel (sourceError);
 	keyDel (errorRoot);
+}
+
+/**
+ * Copy the warnings from the source key to target key.
+ * Note that only 100 warnings can be had.
+ * If we exceed that, we'll override the existing warnings in the target key.
+ *
+ * @param target append warnings to this key
+ * @param source copy warnings from this key
+ */
+void elektraCopyWarnings (Key * target, Key * source)
+{
+	if (target == NULL || source == NULL)
+	{
+		return;
+	}
+
+	KeySet * targetMeta = keyMeta (target);
+	if (targetMeta == NULL)
+	{
+		return;
+	}
+
+	KeySet * sourceMeta = keyMeta (source);
+	if (sourceMeta == NULL)
+	{
+		return;
+	}
+
+	Key * warningsRoot = keyNew ("meta:/warnings", KEY_END);
+	KeySet * sourceWarnings = ksBelow (sourceMeta, warningsRoot);
+
+	if (ksGetSize (sourceWarnings) == 0)
+	{
+		return;
+	}
+
+	int i = 0;
+	Key * tempKey = keyNew ("/", KEY_END);
+
+	while (true)
+	{
+		// In addWarning we use 64, so 128 should be plenty enough
+		char kn[128] = "";
+		snprintf (kn, 127, "meta:/warnings/#%d/number", i);
+		Key * numberKey = ksLookupByName (sourceWarnings, kn, 0);
+		if (numberKey == NULL)
+		{
+			break;
+		}
+
+		snprintf (kn, 127, "meta:/warnings/#%d/description", i);
+		Key * descriptionKey = ksLookupByName (sourceWarnings, kn, 0);
+		snprintf (kn, 127, "meta:/warnings/#%d/module", i);
+		Key * moduleKey = ksLookupByName (sourceWarnings, kn, 0);
+		snprintf (kn, 127, "meta:/warnings/#%d/file", i);
+		Key * fileKey = ksLookupByName (sourceWarnings, kn, 0);
+		snprintf (kn, 127, "meta:/warnings/#%d/line", i);
+		Key * lineKey = ksLookupByName (sourceWarnings, kn, 0);
+		snprintf (kn, 127, "meta:/warnings/#%d/mountpoint", i);
+		Key * mountpointKey = ksLookupByName (sourceWarnings, kn, 0);
+		snprintf (kn, 127, "meta:/warnings/#%d/configfile", i);
+		Key * configfileKey = ksLookupByName (sourceWarnings, kn, 0);
+		snprintf (kn, 127, "meta:/warnings/#%d/reason", i);
+		Key * reasonKey = ksLookupByName (sourceWarnings, kn, 0);
+
+		// We need to use a temporary key here, because addWarnings takes the value for mountpoint and configfile from the passed
+		// key
+		ksClear (keyMeta (tempKey));
+		// Add the current number of warnings to the temp key
+		ksAppendKey (keyMeta (tempKey), ksLookupByName (keyMeta (target), "meta:/warnings", 0));
+		keySetName (tempKey, keyString (mountpointKey));
+		keySetString (tempKey, keyString (configfileKey));
+
+		va_list empty_va_list;
+		addWarning (tempKey, keyString (numberKey), keyString (descriptionKey), keyString (fileKey), keyString (lineKey),
+			    keyString (moduleKey), keyString (reasonKey), empty_va_list);
+
+		// Append all meta from the temp key to target
+		ksAppend (keyMeta (target), keyMeta (tempKey));
+
+		i++;
+	}
+
+	keyDel (tempKey);
+	keyDel (warningsRoot);
+	ksDel (sourceWarnings);
+}
+
+/**
+ * Copies the error and warnings from the source key to the target key.
+ * Note that only 100 warnings can be had.
+ * If we exceed that, we'll override the existing warnings in the target key
+ *
+ * @param target copy error and warnings to this key
+ * @param source copy error and warnings from this key
+ */
+void elektraCopyErrorAndWarnings (Key * target, Key * source)
+{
+	elektraCopyError (target, source);
+	elektraCopyWarnings (target, source);
 }
