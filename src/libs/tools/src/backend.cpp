@@ -416,7 +416,7 @@ void Backend::serialize (kdb::KeySet & ret)
 	ret.append (*Key (backendRootKey.getName () + "/definition/path", KEY_VALUE, configFile.c_str (), KEY_END));
 
 	// If the path to the config file is an absolute path, automatically set the absolute key
-	if (configFile.rfind ('/', 0) == 0)
+	if (configFile.at (0) == '/')
 	{
 		ret.append (*Key (backendRootKey.getName () + "/definition/path/absolute", KEY_VALUE, "true", KEY_END));
 	}
