@@ -44,8 +44,6 @@ static void processCommandLineArguments (int argc, char ** argv)
 
 ElektraDiff * createBaseDiff (size_t count, size_t * keyCount)
 {
-	Key * parentKey = keyNew ("user:/test", KEY_END);
-
 	KeySet * added = ksNew (count, KS_END);
 	KeySet * modifiedOld = ksNew (count, KS_END);
 	KeySet * modifiedNew = ksNew (count, KS_END);
@@ -80,16 +78,13 @@ ElektraDiff * createBaseDiff (size_t count, size_t * keyCount)
 
 	*keyCount = ksGetSize (added) + ksGetSize (removed) + ksGetSize (modifiedOld) + ksGetSize (modifiedNew);
 
-	ElektraDiff * diff = elektraDiffNew (added, removed, modifiedOld, modifiedNew, parentKey);
-	keyDel (parentKey);
+	ElektraDiff * diff = elektraDiffNew (added, removed, modifiedOld, modifiedNew, keyNew ("user:/test", KEY_END));
 
 	return diff;
 }
 
 ElektraDiff * createDiffToAppend (size_t count, size_t * keyCount)
 {
-	Key * parentKey = keyNew ("user:/test", KEY_END);
-
 	KeySet * added = ksNew (count, KS_END);
 	KeySet * modifiedOld = ksNew (count, KS_END);
 	KeySet * modifiedNew = ksNew (count, KS_END);
@@ -196,8 +191,7 @@ ElektraDiff * createDiffToAppend (size_t count, size_t * keyCount)
 
 	*keyCount = ksGetSize (added) + ksGetSize (removed) + ksGetSize (modifiedOld) + ksGetSize (modifiedNew);
 
-	ElektraDiff * diff = elektraDiffNew (added, removed, modifiedOld, modifiedNew, parentKey);
-	keyDel (parentKey);
+	ElektraDiff * diff = elektraDiffNew (added, removed, modifiedOld, modifiedNew, keyNew ("user:/test", KEY_END));
 
 	return diff;
 }

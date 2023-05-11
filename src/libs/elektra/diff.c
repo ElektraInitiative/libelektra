@@ -281,6 +281,7 @@ ElektraDiff * elektraDiffCalculate (KeySet * newKeys, KeySet * oldKeys, Key * pa
 	ElektraDiff * ksd = elektraCalloc (sizeof (ElektraDiff));
 
 	ksd->parentKey = keyDup (parentKey, KEY_CP_ALL);
+	keyIncRef (ksd->parentKey);
 	ksd->addedKeys = ksNew (0, KS_END);
 	ksIncRef (ksd->addedKeys);
 	ksd->removedKeys = ksNew (0, KS_END);
@@ -300,6 +301,9 @@ ElektraDiff * elektraDiffCalculate (KeySet * newKeys, KeySet * oldKeys, Key * pa
  * The returned ElektraDiff contains the same KeySets that are passed in, so be sure
  * to @p ksIncRef them if you plan to use them after deleting the ElektraDiff.
  *
+ * Same goes for the parent key, please use @p keyIncRef if you plan to use it after
+ * deleting the ElektraDiff
+ *
  * @param addedKeys the added keys
  * @param removedKeys the removed keys
  * @param modifiedKeys the modified keys
@@ -311,10 +315,8 @@ ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet *
 {
 	ElektraDiff * ksd = elektraCalloc (sizeof (ElektraDiff));
 
-	if (parentKey != NULL)
-	{
-		ksd->parentKey = keyDup (parentKey, KEY_CP_ALL);
-	}
+	keyIncRef (parentKey);
+	ksd->parentKey = parentKey;
 
 	ksIncRef (addedKeys);
 	ksd->addedKeys = addedKeys;
@@ -342,7 +344,7 @@ ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet *
 ElektraDiff * elektraDiffDup (const ElektraDiff * original)
 {
 	return elektraDiffNew (ksDup (original->addedKeys), ksDup (original->removedKeys), ksDup (original->modifiedKeys),
-			       ksDup (original->modifiedNewKeys), original->parentKey);
+			       ksDup (original->modifiedNewKeys), keyDup (original->parentKey, KEY_CP_ALL));
 }
 
 
@@ -362,6 +364,7 @@ void elektraDiffDel (ElektraDiff * ksd)
 		return;
 	}
 
+	keyDecRef (ksd->parentKey);
 	keyDel (ksd->parentKey);
 
 	ksDecRef (ksd->modifiedKeys);
@@ -420,6 +423,7 @@ ElektraDiff * elektraDiffCut (ElektraDiff * original, const Key * cutpoint)
 
 	ElektraDiff * new = elektraCalloc (sizeof (ElektraDiff));
 	new->parentKey = keyDup (cutpoint, KEY_CP_ALL);
+	if (new->parentKey) keyIncRef (new->parentKey);
 
 	new->addedKeys = ksCut (original->addedKeys, cutpoint);
 	new->removedKeys = ksCut (original->removedKeys, cutpoint);
@@ -471,10 +475,12 @@ void elektraDiffRemoveOther (ElektraDiff * ksd, const Key * parentKey)
 
 	if (ksd->parentKey != NULL)
 	{
+		keyDecRef (ksd->parentKey);
 		keyDel (ksd->parentKey);
 	}
 
 	ksd->parentKey = keyDup (parentKey, KEY_CP_ALL);
+	if (ksd->parentKey) keyIncRef (ksd->parentKey);
 
 	if (ksd->addedKeys) cutOtherKeys (&ksd->addedKeys, parentKey);
 	if (ksd->removedKeys) cutOtherKeys (&ksd->removedKeys, parentKey);

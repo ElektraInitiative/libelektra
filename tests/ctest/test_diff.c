@@ -5,8 +5,6 @@ ElektraDiff * demoDiff = NULL;
 
 static void initializeDemoDiff (void)
 {
-	Key * demoParent = keyNew ("system:/test", KEY_END);
-
 	KeySet * addedKeys = ksNew (1, keyNew ("system:/test/added/1", KEY_VALUE, "first added key", KEY_END), KS_END);
 
 	KeySet * removedKeys = ksNew (1, keyNew ("system:/test/removed/1", KEY_VALUE, "first removed key", KEY_END), KS_END);
@@ -18,9 +16,7 @@ static void initializeDemoDiff (void)
 			       "test", KEY_END),
 		       KS_END);
 
-	demoDiff = elektraDiffNew (addedKeys, removedKeys, modifiedKeys, NULL, demoParent);
-
-	keyDel (demoParent);
+	demoDiff = elektraDiffNew (addedKeys, removedKeys, modifiedKeys, NULL, keyNew ("system:/test", KEY_END));
 }
 
 static void test_elektraDiffNew_shouldIncreaseRefCount (void)
@@ -824,11 +820,10 @@ static void test_elektraDiffDup_shouldDuplicate (void)
 	printf ("Test %s\n", __func__);
 
 	// Arrange
-	Key * parentKey = keyNew ("system:/a", KEY_END);
 	ElektraDiff * diff = elektraDiffNew (ksNew (2, keyNew ("system:/a/added", KEY_END), KS_END),
 					     ksNew (2, keyNew ("system:/a/removed", KEY_END), KS_END),
 					     ksNew (2, keyNew ("system:/a/modified", KEY_END), KS_END),
-					     ksNew (2, keyNew ("system:/a/modifiedNew", KEY_END), KS_END), parentKey);
+					     ksNew (2, keyNew ("system:/a/modifiedNew", KEY_END), KS_END), keyNew ("system:/a", KEY_END));
 
 	// Act
 	ElektraDiff * duped = elektraDiffDup (diff);
@@ -855,7 +850,6 @@ static void test_elektraDiffDup_shouldDuplicate (void)
 
 	elektraDiffDel (diff);
 	elektraDiffDel (duped);
-	keyDel (parentKey);
 }
 
 static void test_elektraDiffUndo (void)
@@ -866,12 +860,11 @@ static void test_elektraDiffUndo (void)
 	KeySet * keyset = ksNew (1, keyNew ("user:/added", KEY_VALUE, "1234", KEY_END),
 				 keyNew ("user:/modified", KEY_VALUE, "modified value", KEY_END), KS_END);
 
-	Key * parentKey = keyNew ("/", KEY_END);
-
 	ElektraDiff * diff = elektraDiffNew (ksNew (1, keyNew ("user:/added", KEY_VALUE, "1234", KEY_END), KS_END),
 					     ksNew (1, keyNew ("user:/removed", KEY_VALUE, "removed key", KEY_END), KS_END),
 					     ksNew (1, keyNew ("user:/modified", KEY_VALUE, "old value", KEY_END), KS_END),
-					     ksNew (1, keyNew ("user:/modified", KEY_VALUE, "new value", KEY_END), KS_END), parentKey);
+					     ksNew (1, keyNew ("user:/modified", KEY_VALUE, "new value", KEY_END), KS_END),
+					     keyNew ("/", KEY_END));
 
 	// Act
 	elektraDiffUndo (diff, keyset);
@@ -883,7 +876,6 @@ static void test_elektraDiffUndo (void)
 	succeed_if_keyset_contains_key_with_string (keyset, "user:/modified", "old value");
 
 	ksDel (keyset);
-	keyDel (parentKey);
 	elektraDiffDel (diff);
 }
 
