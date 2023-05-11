@@ -79,7 +79,7 @@ cat $(kdb file spec:/sw/docker/dockerd/#0/current)
 # =
 
 # []
-#  meta:/mountpoint = $PWD/.config/dockerd/daemon.ni
+#  meta:/mountpoint = ~/.config/dockerd/daemon.ni
 ```
 
 ### Step 3: Do a specification mount
@@ -394,6 +394,35 @@ cat $(kdb file spec:/sw/docker/dockerd/#0/current)
 #  meta:/description = Default address pools for node specific local networks (list)
 #  meta:/array/min = 0
 ```
+
+## Adding full example specification
+
+The above tutorial has given a good overview of how to write a specification.
+You might want to add a full example specification for `dockerd`.
+To do so, follow the next steps.
+
+To make sure we don't run into errors we will clean up everything we have done by now.
+
+1. `sudo kdb rm -r spec:/sw/docker/dockerd/#0/current`
+2. `sudo kdb umount spec:/sw/docker/dockerd/#0/current`
+3. `rm -rf $PWD/.config/dockerd` (make sure that you are in the same PWD as when you run the `sudo kdb mount`)
+
+Now we are going to add an example of [dockerd-full-spec](../../examples/spec/dockerd.ini).
+
+Make sure you are in the root of the cloned `libelektra` repository:
+
+1. `sudo kdb mount "$PWD/.config/dockerd/dockerd-daemon.ni" spec:/sw/docker/dockerd/#0/current ni`
+2. `kdb meta-set spec:/sw/dockerd/dockerd/#0/current mountpoint ~/.config/dockerd/daemon.ni`
+3. `sudo kdb spec-mount /sw/docker/dockerd/#0/current`
+4. `sudo kdb import spec:/sw/docker/dockerd/#0/current ni < ./examples/spec/dockerd.ini`
+
+To verify that everything was created successfully, run:
+
+```sh
+cat $(kdb file spec:/sw/docker/dockerd/#0/current)
+```
+
+> NOTE: We want display the output because it is too long to display (~ 400-500 lines).
 
 ## Appendix (full specification)
 
