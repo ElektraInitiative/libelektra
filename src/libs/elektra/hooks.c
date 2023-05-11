@@ -410,23 +410,21 @@ int initHooks (KDB * kdb, const KeySet * config, KeySet * modules, const KeySet 
 
 	// For recording we try to load the hook always, regardless whether it is enabled in the configuration
 	// This is because recording can be enabled in an already active KDB instance
-	Key * recordErrorKey = errorKey;
-	bool needToFreeRecordErrorKey = false;
+	Key * recordPluginLoadErrorKey = errorKey;
 
 	if (!isRecordingEnabledByConfig (config))
 	{
 		// Recording isn't enabled, so we don't need to taint the warning messages if we don't find the plugin
-		recordErrorKey = keyDup (errorKey, KEY_CP_ALL);
-		needToFreeRecordErrorKey = true;
+		recordPluginLoadErrorKey = keyDup (errorKey, KEY_CP_ALL);
 	}
 
-	Plugin * recorderPlugin = loadPlugin ("recorder", kdb->global, modules, contract, recordErrorKey);
+	Plugin * recorderPlugin = loadPlugin ("recorder", kdb->global, modules, contract, recordPluginLoadErrorKey);
 	if (recorderPlugin != NULL)
 	{
 		initHooksRecord (kdb, recorderPlugin, errorKey);
 	}
 
-	if (needToFreeRecordErrorKey) keyDel (recordErrorKey);
+	if (recordPluginLoadErrorKey != errorKey) keyDel (recordPluginLoadErrorKey);
 
 	if (!existingError)
 	{
