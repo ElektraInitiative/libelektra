@@ -1,7 +1,7 @@
 #include <benchmarks.h>
-#include <kdbprivate.h>
-#include <kdbdiff.h>
 #include <getopt.h>
+#include <kdbdiff.h>
+#include <kdbprivate.h>
 
 int g_count = 50000;
 int g_iterations = 10;
@@ -202,7 +202,7 @@ ElektraDiff * createDiffToAppend (size_t count, size_t * keyCount)
 	return diff;
 }
 
-int main (int argc, char **argv)
+int main (int argc, char ** argv)
 {
 	processCommandLineArguments (argc, argv);
 
@@ -213,8 +213,11 @@ int main (int argc, char **argv)
 	ElektraDiff * diff2 = createDiffToAppend (g_count, &diff2keys);
 	Key * parentKey = keyNew ("user:/test", KEY_END);
 
-	printf ("Diff1 keys: %zu\n", diff1keys);
-	printf ("Diff2 keys: %zu\n", diff2keys);
+	if (g_verbose)
+	{
+		printf ("Diff1 keys: %zu\n", diff1keys);
+		printf ("Diff2 keys: %zu\n", diff2keys);
+	}
 
 	long sum = 0;
 
@@ -234,11 +237,14 @@ int main (int argc, char **argv)
 		elektraDiffDel (target);
 	}
 
-	double avgus = (double) sum / g_iterations;
-	double avgms = avgus / 1000;
+	if (g_verbose)
+	{
+		double avgus = (double) sum / g_iterations;
+		double avgms = avgus / 1000;
 
-	printf ("Average: %.2f us\n", avgus);
-	printf ("Average: %.2f ms\n", avgms);
+		printf ("Average: %.2f us\n", avgus);
+		printf ("Average: %.2f ms\n", avgms);
+	}
 
 	keyDel (parentKey);
 	elektraDiffDel (diff1);
