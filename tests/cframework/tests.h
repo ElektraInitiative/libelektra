@@ -267,8 +267,6 @@ int init (int argc, char ** argv);
 		KeySet * ks = pks;                                                                                                         \
 		const char * keyName = pkn;                                                                                                \
 		const char * expectedKeyValue = pv;                                                                                        \
-		ELEKTRA_DIAG_STORE                                                                                                         \
-		ELEKTRA_DIAG_OFF (-Waddress)                                                                                               \
 		if (!ks)                                                                                                                   \
 		{                                                                                                                          \
 			yield_error ("keyset is null pointer")                                                                             \
@@ -303,8 +301,6 @@ int init (int argc, char ** argv);
 				}                                                                                                          \
 			}                                                                                                                  \
 		}                                                                                                                          \
-                                                                                                                                           \
-		ELEKTRA_DIAG_RESTORE                                                                                                       \
 	}
 
 // only works with types convertible to int
