@@ -88,6 +88,15 @@ static void addWarning (Key * key, const char * code, const char * name, const c
 	elektraFree (reason);
 }
 
+static void addWarningF (Key * key, const char * code, const char * name, const char * file, const char * line, const char * module,
+			 const char * reasonFmt, ...)
+{
+	va_list va;
+	va_start (va, reasonFmt);
+	addWarning (key, code, name, file, line, module, reasonFmt, va);
+	va_end (va);
+}
+
 static void setError (Key * key, const char * code, const char * name, const char * file, const char * line, const char * module,
 		      const char * reasonFmt, va_list va)
 {
@@ -334,9 +343,8 @@ void elektraCopyWarnings (Key * target, Key * source)
 		keySetName (tempKey, keyString (mountpointKey));
 		keySetString (tempKey, keyString (configfileKey));
 
-		va_list empty_va_list;
-		addWarning (tempKey, keyString (numberKey), keyString (descriptionKey), keyString (fileKey), keyString (lineKey),
-			    keyString (moduleKey), keyString (reasonKey), empty_va_list);
+		addWarningF (tempKey, keyString (numberKey), keyString (descriptionKey), keyString (fileKey), keyString (lineKey),
+			     keyString (moduleKey), keyString (reasonKey));
 
 		// Append all meta from the temp key to target
 		ksAppend (keyMeta (target), keyMeta (tempKey));
