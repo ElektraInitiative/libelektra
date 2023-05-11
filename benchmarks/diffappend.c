@@ -221,7 +221,7 @@ int main (int argc, char ** argv)
 
 	long sum = 0;
 
-	for (size_t i = 0; i < g_iterations; i++)
+	for (int i = 0; i < g_iterations; i++)
 	{
 		ElektraDiff * target = elektraDiffDup (diff1);
 
