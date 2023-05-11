@@ -17,7 +17,7 @@ static void logKeyErrorAndClear (Key * key, char * file, int line)
 		return;
 	}
 
-	printf ("Catched error in %s:%d!\n", file, line);
+	printf ("Caught error in %s:%d!\n", file, line);
 
 	const Key * m = NULL;
 	if ((m = keyGetMeta (key, "meta:/error/number")) != NULL)
