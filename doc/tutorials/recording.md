@@ -25,15 +25,21 @@ For a more detailed description and options for each command, please take a look
 ## A Simple Recording Session
 
 ```sh
+# Seed some data first
+kdb set user:/test/name Franz
+kdb set user:/test/color Red
+
 # Enable session recording for all keys below user:/
 kdb record-start user:/
 # RET:0
 
 kdb set user:/test/name Hans
+kdb set user:/test/age 29
+kdb rm user:/test/color
 
 # View the current state of session recording
 kdb record-state
-#> Recording is active for user:/⏎⏎Added 1 key(s)⏎Modified 0 key(s)⏎Removed 0 key(s)⏎⏎Added key user:/test/name
+#> Recording is active for user:/⏎⏎Added 1 key(s)⏎Modified 1 key(s)⏎Removed 1 key(s)⏎⏎Added key user:/test/age⏎Modified key user:/test/name⏎Removed key user:/test/color
 
 # Stop session recording again
 kdb record-stop
@@ -77,6 +83,10 @@ kdb record-export / ansible -c playbook/name="Recording Tutorial"
         keys:
           - user:
               test:
+                age:
+                  - value: 29
+                color:
+                  - remove: true
                 name:
                   - value: Hans
 ```
