@@ -53,7 +53,7 @@ RUN apt-get update && apt-get -y install \
         ninja-build \
         npm \
         openjdk-17-jdk \
-        pkg-config \
+        pkgconf \
         python3-dev \
         python3-wheel \
         ruby \

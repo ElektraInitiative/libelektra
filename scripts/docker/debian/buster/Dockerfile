@@ -63,7 +63,7 @@ RUN apt-get update && apt-get -y install \
         ninja-build \
         patch \
         patchutils \
-        pkg-config \
+        pkgconf \
         python3-all \
         python3-pip \
         python3-all \

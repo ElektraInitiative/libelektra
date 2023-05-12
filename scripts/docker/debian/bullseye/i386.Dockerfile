@@ -12,7 +12,7 @@ RUN dpkg --add-architecture i386 \
         autotools-dev \
         automake \
         cmake \
-        pkg-config \
+        pkgconf \
         gcc-multilib \
         g++-multilib \
         file \
