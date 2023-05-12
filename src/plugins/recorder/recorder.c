@@ -157,7 +157,8 @@ int elektraRecorderLock (Plugin * handle, Key * parentKey)
 	res = ftruncate (fd, 0);
 	if (res == -1)
 	{
-		ELEKTRA_ADD_INTERNAL_WARNINGF (parentKey, "Couldn't truncate lockfile %s. Reason: %s", recorderData->lockFilePath, strerror (errno));
+		ELEKTRA_ADD_INTERNAL_WARNINGF (parentKey, "Couldn't truncate lockfile %s. Reason: %s", recorderData->lockFilePath,
+					       strerror (errno));
 	}
 
 	dprintf (fd, "%d", getpid ());
@@ -183,7 +184,8 @@ int elektraRecorderUnlock (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 		int res = ftruncate (recorderData->lockFileFd, 0);
 		if (res == -1)
 		{
-			ELEKTRA_ADD_INTERNAL_WARNINGF (parentKey, "Couldn't truncate lockfile %s. Reason: %s", recorderData->lockFilePath, strerror (errno));
+			ELEKTRA_ADD_INTERNAL_WARNINGF (parentKey, "Couldn't truncate lockfile %s. Reason: %s", recorderData->lockFilePath,
+						       strerror (errno));
 		}
 
 		// close also removes the lock obtained by flock for this process
