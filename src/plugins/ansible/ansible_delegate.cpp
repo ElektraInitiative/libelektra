@@ -94,28 +94,51 @@ void addKey (YAML::Node & parent, kdb::Key const & key, kdb::NameIterator & name
 
 		ckdb::KeySet * metaKeys = ckdb::keyMeta (*key);
 
-		// Set value of the node
-		YAML::Node valueNode;
-		valueNode["value"] = value;
-		parent.push_back (valueNode);
-
-		// Append meta keys
-		if (ckdb::ksGetSize (metaKeys) > 0)
+		if (ckdb::ksLookupByName (metaKeys, "meta:/elektra/deleted", 0) != nullptr)
 		{
-			YAML::Node metaNode;
-
-			for (ssize_t it = 0; it < ckdb::ksGetSize (metaKeys); ++it)
-			{
-				const kdb::Key curMeta = ckdb::ksAtCursor (metaKeys, it);
-				auto metaIterator = curMeta.begin ();
-				metaIterator++;
-				addKey (metaNode, curMeta, metaIterator);
-			}
-
-			YAML::Node mnode;
-			mnode["meta"] = metaNode;
-			parent.push_back (mnode);
+			// This key should be deleted.
+			YAML::Node removedNode;
+			removedNode["remove"] = true;
+			parent.push_back (removedNode);
 		}
+		else
+		{
+			// Set value of the node
+			YAML::Node valueNode;
+			valueNode["value"] = value;
+			parent.push_back (valueNode);
+
+			// Append meta keys
+			if (ckdb::ksGetSize (metaKeys) > 0)
+			{
+				YAML::Node metaNode;
+				bool hasMeta = false;
+
+				for (ssize_t it = 0; it < ckdb::ksGetSize (metaKeys); ++it)
+				{
+					const kdb::Key curMeta = ckdb::ksAtCursor (metaKeys, it);
+
+					if (curMeta.getName() == "meta:/elektra/deleted")
+					{
+						continue;
+					}
+
+					hasMeta = true;
+
+					auto metaIterator = curMeta.begin ();
+					metaIterator++;
+					addKey (metaNode, curMeta, metaIterator);
+				}
+
+				if (hasMeta)
+				{
+					YAML::Node mnode;
+					mnode["meta"] = metaNode;
+					parent.push_back (mnode);
+				}
+			}
+		}
+
 		return;
 	}
 
