@@ -32,7 +32,7 @@ else ()
 
 	add_custom_command (
 		OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad"
-		COMMAND ${CMAKE_COMMAND} ARGS -E env GO111MODULE=on PKG_CONFIG_PATH=${CMAKE_CURRENT_BINARY_DIR} ${GO_EXECUTABLE} build -o
+		COMMAND ${CMAKE_COMMAND} ARGS -E env GO111MODULE=on PKG_CONFIG_PATH="${CMAKE_CURRENT_BINARY_DIR}" ${GO_EXECUTABLE} build -o
 			"${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad"
 		COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad"
 			"${CMAKE_BINARY_DIR}/bin/elektrad"
