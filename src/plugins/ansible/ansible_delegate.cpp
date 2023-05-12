@@ -112,30 +112,17 @@ void addKey (YAML::Node & parent, kdb::Key const & key, kdb::NameIterator & name
 			if (ckdb::ksGetSize (metaKeys) > 0)
 			{
 				YAML::Node metaNode;
-				bool hasMeta = false;
-
 				for (ssize_t it = 0; it < ckdb::ksGetSize (metaKeys); ++it)
 				{
 					const kdb::Key curMeta = ckdb::ksAtCursor (metaKeys, it);
-
-					if (curMeta.getName() == "meta:/elektra/deleted")
-					{
-						continue;
-					}
-
-					hasMeta = true;
-
 					auto metaIterator = curMeta.begin ();
 					metaIterator++;
 					addKey (metaNode, curMeta, metaIterator);
 				}
 
-				if (hasMeta)
-				{
-					YAML::Node mnode;
-					mnode["meta"] = metaNode;
-					parent.push_back (mnode);
-				}
+				YAML::Node mnode;
+				mnode["meta"] = metaNode;
+				parent.push_back (mnode);
 			}
 		}
 
