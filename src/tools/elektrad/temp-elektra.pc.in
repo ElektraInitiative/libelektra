@@ -3,7 +3,7 @@ libdir="${prefix}/lib"
 srcinclude="${prefix}/src/include"
 buildinclude="@CMAKE_SOURCE_DIR@/src/include"
 
-Name: @PACKAGE_NAME@
+Name: elektra
 Description: @PACKAGE_DESCRIPTION@
 Version: @KDB_VERSION@
 Cflags: -I"${srcinclude}" -I"${buildinclude}"
