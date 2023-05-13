@@ -78,6 +78,8 @@ ENV XDG_CACHE_HOME=/tmp/.cache
 # Update cache for shared libraries
 RUN ldconfig
 
+RUN ln -sf pkgconf /usr/bin/pkg-config
+
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
 ARG GTEST_VER=release-1.12.1

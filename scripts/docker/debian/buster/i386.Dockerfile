@@ -22,6 +22,8 @@ RUN dpkg --add-architecture i386 \
 # Build dependency for libelektra-fuse
 RUN pip3 install wheel
 
+RUN ln -sf pkgconf /usr/bin/pkg-config
+
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
 ARG GTEST_VER=release-1.12.1

@@ -20,6 +20,8 @@ RUN dpkg --add-architecture i386 \
 	python3-wheel \
     && rm -rf /var/lib/apt/lists/*
 
+RUN ln -sf pkgconf /usr/bin/pkg-config
+
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
 ARG GTEST_VER=release-1.12.1
