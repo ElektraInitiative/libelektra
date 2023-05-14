@@ -15,33 +15,13 @@ The xfconf plugin is a storage plugin to mount the xfconf configuration settings
 This allows to operate on the XFCE configuration with libelektra.
 As usual, this allows the plugin to read and write to the XFCE configuration.
 
-You can refer to the [official XFCE documentation of xfconf](https://docs.xfce.org/xfce/xfconf/start) to learn more about it.
-
-## Xfconf Terminology
-
-### Property
-
-A property in xfconf is the same as a key in libelektra i.e. it has a name and can hold a value.
-In contrast to libelektra, the value can be more complex i.e. it can be an array.
-In this case, the value of the property is mapped as multiple keys in libelektra using the array structure.
-
-### Channel
-
-A channel is a type of namespace used in the xfconf library.
-Usually, it is used to separate the properties of different applications which is helpful if different applications rely on a property with the same name but require them to hold different values.
-For example Thunar uses a channel named `thunar`, Xfwm uses a channel named `xfwm4` and so on.
-Keep in mind that channels are only used to separate the properties such as namespaces.
-They are not a security feature i.e. every application has read/write access to every channel.
+For further understanding how xfconf is structured, please refer to the [xfconf binding](../../../src/bindings/xfconf/README.md#xfconf-terminology).
 
 The list of all channels is stored in the `system:/elektra/modules/xfconf/channels` which is an array of all channel names.
 Channels cannot be created manually with libelektra.
 Instead, when mounting a channel (see [Plugin Configuration](#plugin-configuration) how to specify a channel) and setting a key value below the mount, it will be automatically created.
 
-### Locks
-
-Xfconf uses so-called locks to prevent users or applications to set properties to a new value.
-They can be referred as a type of constant.
-As of now, locks cannot be set or unset in xfconf which makes locked properties read-only forever.
+You may also refer to the [official XFCE documentation of xfconf](https://docs.xfce.org/xfce/xfconf/start) to learn more about it.
 
 ## Dependencies
 
@@ -89,6 +69,12 @@ kdb set /test/xfwm/general/button_layout "$OLD_LAYOUT"
 # umount the channel
 kdb umount /test/xfwm
 ```
+
+## Locks
+
+Xfconf uses so-called locks to prevent users or applications to set properties to a new value.
+They can be referred as a type of constant.
+As of now, locks cannot be set or unset in xfconf which makes locked properties read-only forever.
 
 ## Limitations
 

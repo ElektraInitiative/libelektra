@@ -10,7 +10,21 @@
 These bindings provide an implementation of the xfconf header files such that libelektra can be used as a drop-in replacement for xfconf.
 In other words, it makes applications which rely on xfconf for their configuration use libelektra without the necessity for modifying their source code or even recompiling them.
 
-For further understanding how xfconf is structured, please refer to the [xfconf plugin](../../../src/plugins/xfconf/README.md#xfconf-terminology).
+## Xfconf Terminology
+
+### Property
+
+A property in xfconf is the same as a key in libelektra i.e. it has a name and can hold a value.
+In contrast to libelektra, the value can be more complex i.e. it can be an array.
+In this case, the value of the property is mapped as multiple keys in libelektra using the array structure.
+
+### Channel
+
+A channel is a type of namespace used in the xfconf library.
+Usually, it is used to separate the properties of different applications which is helpful if different applications rely on a property with the same name but require them to hold different values.
+For example Thunar uses a channel named `thunar`, Xfwm uses a channel named `xfwm4` and so on.
+Keep in mind that channels are only used to separate the properties such as namespaces.
+They are not a security feature i.e. every application has read/write access to every channel.
 
 ## Files
 
