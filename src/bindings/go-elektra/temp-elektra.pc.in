@@ -7,4 +7,4 @@ Name: @PACKAGE_NAME@
 Description: @PACKAGE_DESCRIPTION@
 Version: @KDB_VERSION@
 Cflags: -I"${srcinclude}" -I"${buildinclude}"
-Libs: -L"${libdir}" -lelektra-kdb -lelektra-core
+Libs: -L"${libdir}" -lelektra-core

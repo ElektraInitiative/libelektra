@@ -1,7 +1,7 @@
 package main
 
 import (
-	elektra "go.libelektra.org/kdb"
+	elektra "github.com/ElektraInitiative/libelektra/go-elektra/kdb"
 )
 
 type handle struct {

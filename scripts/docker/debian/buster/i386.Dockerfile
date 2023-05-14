@@ -12,7 +12,7 @@ RUN dpkg --add-architecture i386 \
         autotools-dev \
         automake \
         cmake \
-        pkg-config \
+        pkgconf \
         gcc-multilib \
         g++-multilib \
         file \
@@ -21,6 +21,8 @@ RUN dpkg --add-architecture i386 \
 
 # Build dependency for libelektra-fuse
 RUN pip3 install wheel
+
+RUN ln -sf pkgconf /usr/bin/pkg-config
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest

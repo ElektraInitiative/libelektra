@@ -284,6 +284,28 @@ This section keeps you up-to-date with the multi-language support provided by El
 - add merging based on elektraMerge _(Maximilian Irlinger @atmaxinger)_
 - Added support for `ksIncRef` for `KeySet` _(Michael Tucek @tucek)_
 - Enabled `ReferenceCleaner` _(Michael Tucek @tucek)_
+
+### go-elektra
+
+- Move `go-elektra` binding from repository into bindings folder of `libelektra` _(Tomislav Makar @tmakar)_
+- <<TODO>>
+- <<TODO>>
+
+### <<Binding>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Binding>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Binding>>
+
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
@@ -349,6 +371,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Adapt and remove outdated docs https://issues.libelektra.org/4882 _(Tomislav Makar @tmakar)_
 - Added missing dependencies in COMPILE.md for APT-based systems _(Michael Tucek @tucek)_
 - Add `default` namespace to [namespaces documentation](../tutorials/namespaces.md) _(Tomislav Makar @tmakar)_
+- Move `go-elektra` binding into bindings folder of `libelektra` _(Tomislav Makar @tmakar)_
+- <<TODO>>
 - <<TODO>>
 - Added Tomislav Makar to `AUTHORS.md` _(Tomislav Makar @tmakar)_
 - <<TODO>>

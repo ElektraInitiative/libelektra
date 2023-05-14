@@ -53,7 +53,7 @@ RUN apt-get update && apt-get -y install \
         ninja-build \
         npm \
         openjdk-17-jdk \
-        pkg-config \
+        pkgconf \
         python3-dev \
         python3-wheel \
         ruby \
@@ -71,8 +71,13 @@ RUN apt-get update && apt-get -y install \
 # Add Clang 15 to path
 ENV PATH="/usr/lib/llvm-15/bin:$PATH"
 
+# see https://github.com/docker-library/golang/issues/225
+ENV XDG_CACHE_HOME=/tmp/.cache
+
 # Update cache for shared libraries
 RUN ldconfig
+
+RUN ln -sf pkgconf /usr/bin/pkg-config
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest

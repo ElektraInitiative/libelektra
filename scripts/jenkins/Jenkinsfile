@@ -1040,7 +1040,7 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
       withDockerEnv(image, dockerOpts) {
         // we use a space in the directory to test if paths are
         // properly escaped
-        def buildDir='build directory'
+        def buildDir='build-directory'
 
         if(tests) {
           artifacts.add("\"${buildDir}\"/Testing/*/*.xml")
