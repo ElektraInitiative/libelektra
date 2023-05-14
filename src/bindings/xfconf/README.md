@@ -3,24 +3,24 @@
 - infos/licence = BSD
 - infos/status = experimental maintained
 - infos/provides =
-- infos/description = Elektra Bindings for xfconf
+- infos/description = Elektra Bindings for Xfconf
 
 ## Introduction
 
-These bindings provide an implementation of the xfconf header files such that libelektra can be used as a drop-in replacement for xfconf.
-In other words, it makes applications which rely on xfconf for their configuration use libelektra without the necessity for modifying their source code or even recompiling them.
+These bindings provide an implementation of the Xfconf header files such that libelektra can be used as a drop-in replacement for Xfconf.
+In other words, it makes applications which rely on Xfconf for their configuration use libelektra without the necessity for modifying their source code or even recompiling them.
 
 ## Xfconf Terminology
 
 ### Property
 
-A property in xfconf is the same as a key in libelektra i.e. it has a name and can hold a value.
+A property in Xfconf is the same as a key in libelektra i.e. it has a name and can hold a value.
 In contrast to libelektra, the value can be more complex i.e. it can be an array.
 In this case, the value of the property is mapped as multiple keys in libelektra using the array structure.
 
 ### Channel
 
-A channel is a type of namespace used in the xfconf library.
+A channel is a type of namespace used in the Xfconf library.
 Usually, it is used to separate the properties of different applications which is helpful if different applications rely on a property with the same name but require them to hold different values.
 For example Thunar uses a channel named `thunar`, Xfwm uses a channel named `xfwm4` and so on.
 Keep in mind that channels are only used to separate the properties such as namespaces.
@@ -28,7 +28,7 @@ They are not a security feature i.e. every application has read/write access to 
 
 ## Files
 
-- The header files of this implementation are provided by xfconf and are not included here.
+- The header files of this implementation are provided by Xfconf and are not included here.
 - The resulting library is called `libxfconfbinding.so`
 
 ## Classes
@@ -41,10 +41,10 @@ todo.
 
 ### Compile-Time
 
-The xfconf library from the XFCE project is the main dependency of this plugin.
+The Xfconf library from the XFCE project is the main dependency of this plugin.
 Usually, this library is called something such as `xfconf` (Arch, Fedora, `xfconf-devel` for compiling), `libxfconf-0` (Debian/Ubuntu, `libxfconf-0-dev` for compmiling) or `xfce4-conf` (FreeBSD) in the package manager.
-As xfconf itself depends on dbus and glib, these are dependencies too but should be installed with the package manager automatically.
-This binding requires the Xfce, xfconf versions `4.16` and above.
+As Xfconf itself depends on dbus and glib, these are dependencies too but should be installed with the package manager automatically.
+This binding requires the Xfce, Xfconf versions `4.16` and above.
 
 ### Runtime
 
@@ -53,14 +53,14 @@ However, as these bindings act as a drop-in replacement, the `xfconf` library mi
 
 ## Installation
 
-In order that these bindings can be used as a drop-in replacement for xfconf, the original library must be replaced.
+In order that these bindings can be used as a drop-in replacement for Xfconf, the original library must be replaced.
 Assuming that the library directory is `/usr/local/lib`, this can be achieved as follows:
 
 1. copy the `libxfconfbinding.so` to `/usr/local/lib/libxfconfbinding.so.0.0.1`
 2. symlink `/usr/local/lib/libxfconfbinding.so.0` to `/usr/local/lib/libxfconfbinding.so.0.0.1`
 3. symlink `/usr/local/lib/libxfconfbinding.so` to `/usr/local/lib/libxfconfbinding.so.0.0.1`
 4. symlink `/usr/local/lib/libxfconf-0.so.3.0.0` to `/usr/local/lib/libxfconfbinding.so.0.0.1`
-5. take the symlinks `/usr/local/lib/libxfconf-0.so.3` and `/usr/local/lib/libxfconf-.so` which point to `/usr/local/lib/libxfconf-0.so` from the upstream xfconf library and place them into you system
+5. take the symlinks `/usr/local/lib/libxfconf-0.so.3` and `/usr/local/lib/libxfconf-.so` which point to `/usr/local/lib/libxfconf-0.so` from the upstream Xfconf library and place them into you system
 
 This can be also achieved using the [system replace script](scripts/replace-system-xfconf.sh).
 These changes can be reverted with the [system restore script](scripts/restore-system-xfconf.sh).
