@@ -37,6 +37,7 @@ If no release critical problems are found during testing, continue.
 
 - https://build.libelektra.org/job/libelektra/job/master/ must pass
 - Run [audit-dependencies](/scripts/dev/audit-dependencies) to make sure no known vulnerabilities exist in project dependencies
+- If something was updated in `go-elektra` make sure to follow https://go.dev/doc/modules/publishing for publishing the new version
 
 ## When Source Code is considered ready
 

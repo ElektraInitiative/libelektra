@@ -104,6 +104,8 @@ For more information see [Spec Plugin](../../src/plugins/spec/README.md).
 
 ### <<HIGHLIGHT>>
 
+> NOTE: On information how to publish new versions of `go-elektra` to go packages see https://go.dev/doc/modules/publishing.
+
 ## Plugins
 
 The following text lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
