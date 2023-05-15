@@ -33,9 +33,17 @@ They are not a security feature i.e. every application has read/write access to 
 
 ## Classes
 
-Explain which [classes](/doc/help/elektra-glossary.md) the library contains.
-Add a link to the API documentation.
-todo.
+- [elektra-xfconf](elektra-xfconf.c) contains all global variables for the bindings and everything required for the initialization and shutdown of the Xfconf infrastructure.
+- [elektra-xfconf-binding](elektra-xfconf-binding.c) contains a notification systems which makes it possible for functions to bind to properties.
+- [elektra-xfconf-channel](elektra-xfconf-channel.c) contains everything for Xfconf channel functionality such as setting or getting properties.
+- [elektra-xfconf-errors](elektra-xfconf-errors.c) contains Xfconfs internal error handling and is therefore not implemented.
+- [elektra-xfconf-types](elektra-xfconf-types.c) contains Xfconf internal functions for type conversions. Similar to the error handling this is therefore not implemented. However, in order to work properly, every function defined in the Xfconf upstream headers require an implementation, otherwise symbols could not be found at runtime.
+
+The following links provide the API documentation for Xfconf:
+
+- https://developer.xfce.org/xfconf/xfconf-Xfconf-Library-Core.html
+- https://developer.xfce.org/xfconf/xfconf-Xfconf-Channel.html
+- https://developer.xfce.org/xfconf/xfconf-Xfconf-GObject-Binding.html
 
 ## Dependencies
 
