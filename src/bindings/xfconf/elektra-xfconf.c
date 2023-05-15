@@ -65,7 +65,8 @@ gchar ** xfconf_list_channels (void)
 	Key * parentKey = keyNew (XFCONF_ROOT, KEY_END);
 	KeySet * channelKeySet = ksNew (0, KS_END);
 
-	require_channel_read_lock () kdbGet (elektraKdb, channelKeySet, parentKey);
+	require_channel_read_lock ();
+	kdbGet (elektraKdb, channelKeySet, parentKey);
 	ssize_t keySetLength = ksGetSize (channelKeySet);
 	gchar ** channelNames = calloc (keySetLength + 1, sizeof (gchar *));
 	const Key * currentKey;
@@ -95,5 +96,6 @@ gchar ** xfconf_list_channels (void)
 			free (firstLevelName);
 		}
 	}
-	release_channel_lock () return channelNames;
+	release_channel_lock ();
+	return channelNames;
 }

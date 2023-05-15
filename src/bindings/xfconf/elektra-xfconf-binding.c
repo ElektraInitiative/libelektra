@@ -39,9 +39,11 @@ gulong xfconf_g_property_bind (XfconfChannel * channel, const gchar * xfconf_pro
 	binding->object = object;
 	binding->object_property = strdup (object_property);
 
-	require_binding_write_lock () binding->id = last_id++;
+	require_binding_write_lock ();
+	binding->id = last_id++;
 	property_bindings = g_list_append (property_bindings, binding);
-	release_binding_lock () if (xfconf_channel_has_property (channel, xfconf_property))
+	release_binding_lock ();
+	if (xfconf_channel_has_property (channel, xfconf_property))
 	{
 		GValue * gValue = calloc (1, sizeof (GValue));
 		xfconf_channel_get_formatted (channel, xfconf_property, gValue);
@@ -74,7 +76,8 @@ static gint find_by_id (gconstpointer a, gconstpointer b)
 void xfconf_g_property_unbind (gulong id)
 {
 	trace ();
-	require_binding_write_lock () GList * item = g_list_find_custom (property_bindings, &id, &find_by_id);
+	require_binding_write_lock ();
+	GList * item = g_list_find_custom (property_bindings, &id, &find_by_id);
 	if (item == NULL)
 	{
 		g_info ("no binding with such id: %ld", id);
@@ -91,7 +94,8 @@ void xfconf_g_property_unbind_by_property (XfconfChannel * channel, const gchar 
 					   const gchar * object_property)
 {
 	trace ();
-	require_binding_write_lock () GList * cur = property_bindings;
+	require_binding_write_lock ();
+	GList * cur = property_bindings;
 	GList * nextItem;
 	propertyBinding * current_binding;
 	while (cur != NULL)
@@ -113,7 +117,8 @@ void xfconf_g_property_unbind_by_property (XfconfChannel * channel, const gchar 
 void xfconf_g_property_unbind_all (gpointer channel_or_object)
 {
 	trace ();
-	require_binding_write_lock () GList * cur = property_bindings;
+	require_binding_write_lock ();
+	GList * cur = property_bindings;
 	GList * nextItem;
 	propertyBinding * current_binding;
 	while (cur != NULL)
@@ -135,7 +140,8 @@ void notify_property_changed (XfconfChannel * channel, const gchar * property_na
 	trace ();
 	GValue * gValue = calloc (1, sizeof (GValue));
 	xfconf_channel_get_formatted (channel, property_name, gValue);
-	require_binding_read_lock () GList * cur = property_bindings;
+	require_binding_read_lock ();
+	GList * cur = property_bindings;
 	propertyBinding * binding;
 	while (cur != NULL)
 	{

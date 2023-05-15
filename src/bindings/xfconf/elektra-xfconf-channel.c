@@ -497,8 +497,10 @@ gboolean xfconf_channel_get_formatted (XfconfChannel * channel, const gchar * pr
 {
 	trace ();
 	KeySet * keySet = keySet_from_channel (channel->channel_name, 1, 0);
-	require_channel_read_lock () gboolean result = ks_get_formatted (keySet, channel, property, g_value);
-	release_channel_lock () return result;
+	require_channel_read_lock ();
+	gboolean result = ks_get_formatted (keySet, channel, property, g_value);
+	release_channel_lock ();
+	return result;
 }
 
 /**
@@ -518,7 +520,8 @@ gboolean xfconf_channel_get_formatted (XfconfChannel * channel, const gchar * pr
 static int appendKeyToChannel (const XfconfChannel * channel, Key * key)
 {
 	trace ();
-	require_channel_write_lock () KeySet * keySet = keySet_from_channel (channel->channel_name, 1, 1);
+	require_channel_write_lock ();
+	KeySet * keySet = keySet_from_channel (channel->channel_name, 1, 1);
 	g_debug ("the keyset contains %ld keysx before appending", ksGetSize (keySet));
 	ksAppendKey (keySet, key);
 	const char * parentKeyName = channelNameToKeyName (channel->channel_name);
@@ -526,7 +529,8 @@ static int appendKeyToChannel (const XfconfChannel * channel, Key * key)
 	keySet = keySet_from_channel (channel->channel_name, 1, 1);
 	int resultCode = kdbSet (elektraKdb, keySet, parentKey);
 	g_debug ("the keyset contains %ld keysx after appending", ksGetSize (keySet));
-	release_channel_lock () g_debug ("storing key set for parent key %s returned %d", parentKeyName, resultCode);
+	release_channel_lock ();
+	g_debug ("storing key set for parent key %s returned %d", parentKeyName, resultCode);
 	return resultCode;
 }
 
@@ -612,13 +616,14 @@ gboolean xfconf_channel_has_property (XfconfChannel * channel, const gchar * pro
 	KeySet * keySet = keySet_from_channel (channel->channel_name, 1, 0);
 	char * propertyName = malloc ((strlen (XFCONF_ROOT) + strlen (channel->channel_name) + strlen (property) + 2) * sizeof (char));
 	sprintf (propertyName, "%s/%s%s", XFCONF_ROOT, channel->channel_name, property);
-	require_channel_read_lock ()
-		g_debug ("request key %s on channel: %s which has %zd keys", property, channel->channel_name, ksGetSize (keySet));
+	require_channel_read_lock ();
+	g_debug ("request key %s on channel: %s which has %zd keys", property, channel->channel_name, ksGetSize (keySet));
 	const Key * key = ksLookupByName (keySet, propertyName, KDB_O_NONE);
 	g_debug ("channel %s has key %s: %d", channel->channel_name, propertyName, key != NULL);
 	g_debug ("RESULT: %s exists%s", property, key ? "" : " NOT");
 	gboolean exists = key != NULL;
-	release_channel_lock () return exists;
+	release_channel_lock ();
+	return exists;
 }
 
 gboolean xfconf_channel_is_property_locked (XfconfChannel * channel, const gchar * property)
@@ -686,7 +691,8 @@ GHashTable * xfconf_channel_get_properties (XfconfChannel * channel, const gchar
 	KeySet * ks = keySet_from_channel (channel->channel_name, 1, 0);
 	const Key * key;
 	unsigned long propertyBaseLength = property_base == NULL ? 0 : strlen (property_base);
-	require_channel_read_lock () for (elektraCursor i = 0; i < ksGetSize (ks); i++)
+	require_channel_read_lock ();
+	for (elektraCursor i = 0; i < ksGetSize (ks); i++)
 	{
 		key = ksAtCursor (ks, i);
 		const gchar * channelStart = findChannelStart (keyName (key));
@@ -706,7 +712,8 @@ GHashTable * xfconf_channel_get_properties (XfconfChannel * channel, const gchar
 			g_debug ("key %s does NOT start with property base %s", keyNameWithoutPrefix, property_base);
 		}
 	}
-	release_channel_lock () return properties;
+	release_channel_lock ();
+	return properties;
 }
 
 /* basic types */
@@ -1029,8 +1036,10 @@ GPtrArray * xfconf_channel_get_arrayv (XfconfChannel * channel, const gchar * pr
 {
 	trace ();
 	KeySet * ks = keySet_from_channel (channel->channel_name, 1, 0);
-	require_channel_read_lock () GPtrArray * resultPtr = ks_get_arrayv (ks, channel, property);
-	release_channel_lock () return resultPtr;
+	require_channel_read_lock ();
+	GPtrArray * resultPtr = ks_get_arrayv (ks, channel, property);
+	release_channel_lock ();
+	return resultPtr;
 }
 
 gboolean xfconf_channel_set_array (XfconfChannel * channel, const gchar * property, GType first_value_type, ...)
