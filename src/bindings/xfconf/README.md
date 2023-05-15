@@ -80,13 +80,13 @@ However, there are more convenient ways to achieve that as described [below](#us
 It is currently possible to use this binding instead of Xfconf in order to start and use Xfce.
 
 **Caution:** Although it is in general possible to use this binding as a replacement it is not recommended at all.
-Currently, it shows an unpredictable behavior for an unknown reason.
+Although, Xfconf related properties should work as desired, configuration settings outside (such as Gtks) may result into an inconsistent state.
 A few of the undesired effects are:
 
-- Inconsistent layout of the taskbar every session restart
 - Missing symbols in menus despite being configured to appear
-- Weird animations during the session startup
-  One guess is, this is the result of race-conditions since Xfce consists of multiple components which concurrently read and write configuration.
+- Unable to change the desktop background
+- Inconsistent Gtk theme
+- Unable to detect changes made to properties which live outside Xfconf
 
 Use with caution and on non-production systems such as virtual machines only.
 
