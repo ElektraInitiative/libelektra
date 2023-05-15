@@ -29,7 +29,7 @@ They are not a security feature i.e. every application has read/write access to 
 ## Files
 
 - The header files of this implementation are provided by Xfconf and are not included here.
-- The resulting library is called `libxfconfbinding.so`
+- The resulting library is called `libxfconf-elektra.so`
 
 ## Classes
 
@@ -62,22 +62,6 @@ However, as these bindings act as a drop-in replacement, the `xfconf` library mi
 ## Installation
 
 In order that these bindings can be used as a drop-in replacement for Xfconf, the original library must be replaced.
-Assuming that the library directory is `/usr/local/lib`, this can be achieved as follows:
-
-1. copy the `libxfconfbinding.so` to `/usr/local/lib/libxfconfbinding.so.0.0.1`
-2. symlink `/usr/local/lib/libxfconfbinding.so.0` to `/usr/local/lib/libxfconfbinding.so.0.0.1`
-3. symlink `/usr/local/lib/libxfconfbinding.so` to `/usr/local/lib/libxfconfbinding.so.0.0.1`
-4. symlink `/usr/local/lib/libxfconf-0.so.3.0.0` to `/usr/local/lib/libxfconfbinding.so.0.0.1`
-5. take the symlinks `/usr/local/lib/libxfconf-0.so.3` and `/usr/local/lib/libxfconf-.so` which point to `/usr/local/lib/libxfconf-0.so` from the upstream Xfconf library and place them into you system
-
-This can be also achieved using the [system replace script](scripts/replace-system-xfconf.sh).
-These changes can be reverted with the [system restore script](scripts/restore-system-xfconf.sh).
-Note, that both scripts must be run directly within the build root.
-However, there are more convenient ways to achieve that as described [below](#using-the-binding-as-a-replacement-in-xfce).
-
-## Using the binding as a replacement in Xfce
-
-It is currently possible to use this binding instead of Xfconf in order to start and use Xfce.
 
 **Caution:** Although it is in general possible to use this binding as a replacement it is not recommended at all.
 Although, Xfconf related properties should work as desired, configuration settings outside (such as Gtks) may result into an inconsistent state.
@@ -90,26 +74,16 @@ A few of the undesired effects are:
 
 Use with caution and on non-production systems such as virtual machines only.
 
-The following instructions only have an effect on the current user which allows a quick revert through a different user.
+The installation can be achieved using `kdb xfconf-system-lib-replace` or `kdb xfconf-user-lib-replace`.
+The first one will replace the Xfconf library of the system and requires therefore root privileges and will only work on systems where elektra is properly installed.
+However, the benefit of the first option is that it can be simply undone with `kdb xfconf-system-lib-restore`.
 
-Build elektra as instructed in the [COMPILE](../../../doc/COMPILE.md#developer-options) and do not forget to include the `xfconfbinding`.
-
-After building, the library has to be overridden with the [user replace script](scripts/replace-user-xfconf.sh).
-Again, the working directory must be the build root.
-Then the Xfce configuration must be initialized using:
-
-1. `source $HOME/.xprofile`
-2. running the [population script](scripts/populate-xfconf.sh)
-
-When done, the graphical session can be started and will now use elektra for the Xfce configuration.
-
-To restore the usage of the systems Xfconf, it is enough to remove the `LD_*` exports from `$HOME/.xprofile`
+To restore the changes of the `kdb xfconf-user-lib-replace` command, manual interaction is required in form of removing `LD_*` exports from `$HOME/.xprofile`
 
 ## Debugging
 
 For debugging purposes, it might be useful to output and log all debug messages from glib.
 This can be done by appending the `G_MESSAGES_DEBUG=all` environment variable to all the above-mentioned places.
-However, this is already done by the [user replace script](scripts/replace-user-xfconf.sh).
 All components responsible for starting the Xfce session will log their output wherever the display-manager stores the log files.
 All applications started from the command line will put their debug log to the stderr.
 
