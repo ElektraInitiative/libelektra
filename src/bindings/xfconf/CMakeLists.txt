@@ -7,6 +7,11 @@ endif ()
 
 add_binding (xfconf)
 
+set (
+	XFCONF_BINDING_LIBRARY
+	xfconf-elektra
+	CACHE INTERNAL "XFCONF_BINDING_LIBRARY")
+
 add_headers (ELEKTRA_HEADERS)
 
 include_directories (${GLIB_INCLUDE_DIRS})
@@ -16,9 +21,11 @@ file (GLOB XFCONF_BINDING_HEADERS *.h)
 file (GLOB XFCONF_BINDING_SOURCES *.c)
 
 set (SOURCES ${XFCONF_BINDING_HEADERS} ${XFCONF_BINDING_SOURCES} ${ELEKTRA_HEADERS})
-add_library (xfconfbinding SHARED ${SOURCES})
-target_compile_options (xfconfbinding PUBLIC "-Wno-unused-function" "-Wno-unused-parameter")
-target_link_libraries (xfconfbinding PUBLIC elektra-core elektra-kdb)
+add_library (${XFCONF_BINDING_LIBRARY} SHARED ${SOURCES})
+target_compile_options (${XFCONF_BINDING_LIBRARY} PUBLIC "-Wno-unused-function" "-Wno-unused-parameter")
+target_link_libraries (${XFCONF_BINDING_LIBRARY} PUBLIC elektra-core elektra-kdb)
+
+install (TARGETS ${XFCONF_BINDING_LIBRARY} LIBRARY DESTINATION lib${LIB_SUFFIX})
 
 if (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
 	if (NOT FORCE_IN_SOURCE_BUILD)
