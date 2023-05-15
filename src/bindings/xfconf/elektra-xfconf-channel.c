@@ -28,7 +28,7 @@ typedef struct XfconfChannelClass
 {
 	GObjectClass parent;
 
-	void (*property_changed) (XfconfChannel * channel, const gchar * property, const GValue * value);
+	void (ELEKTRA_UNUSED * property_changed) (XfconfChannel * channel, const gchar * property, const GValue * value);
 } XfconfChannelClass;
 
 enum
@@ -39,7 +39,7 @@ enum
 
 enum
 {
-	PROP0 = 0,
+	PROP0 ELEKTRA_UNUSED = 0,
 	PROP_CHANNEL_NAME,
 };
 
@@ -50,10 +50,15 @@ static void xfconf_channel_get_g_property (GObject * object, guint property_id, 
 static void xfconf_channel_dispose (GObject * obj);
 static void xfconf_channel_finalize (GObject * obj);
 
-static void xfconf_channel_property_changed (XfconfCache * cache, const gchar * channel_name, const gchar * property, const GValue * value,
-					     gpointer user_data);
+static ELEKTRA_UNUSED void xfconf_channel_property_changed (XfconfCache * cache ELEKTRA_UNUSED, const gchar * channel_name ELEKTRA_UNUSED,
+							    const gchar * property ELEKTRA_UNUSED, const GValue * value ELEKTRA_UNUSED,
+							    gpointer user_data ELEKTRA_UNUSED)
+{
+	trace ();
+	unimplemented ();
+}
 
-static guint signals[N_SIGS] = {
+static ELEKTRA_UNUSED guint signals[N_SIGS] = {
 	0,
 };
 
@@ -61,7 +66,7 @@ G_DEFINE_TYPE (XfconfChannel, xfconf_channel, G_TYPE_OBJECT)
 
 
 static char * propertyWithChannelPrefix (const XfconfChannel * channel, const gchar * property);
-static void xfconf_channel_class_init (XfconfChannelClass * klass)
+static ELEKTRA_UNUSED void xfconf_channel_class_init (XfconfChannelClass * klass)
 {
 	trace ();
 	GObjectClass * object_class = (GObjectClass *) klass;
@@ -82,7 +87,7 @@ static void xfconf_channel_class_init (XfconfChannelClass * klass)
 								      G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB));
 }
 
-static void xfconf_channel_init (XfconfChannel * instance)
+static ELEKTRA_UNUSED void xfconf_channel_init (XfconfChannel * instance ELEKTRA_UNUSED)
 {
 	trace ();
 }
@@ -142,7 +147,7 @@ static void xfconf_channel_get_g_property (GObject * object, guint property_id, 
 	}
 }
 
-static void xfconf_channel_dispose (GObject * obj)
+static void xfconf_channel_dispose (GObject * obj ELEKTRA_UNUSED)
 {
 	trace ();
 	g_debug ("xfconf_channel_dispose");
@@ -246,7 +251,8 @@ XfconfChannel * xfconf_channel_new (const gchar * channel_name)
 	return channel;
 }
 
-XfconfChannel * xfconf_channel_new_with_property_base (const gchar * channel_name, const gchar * property_base)
+ELEKTRA_UNUSED XfconfChannel * xfconf_channel_new_with_property_base (const gchar * channel_name ELEKTRA_UNUSED,
+								      const gchar * property_base ELEKTRA_UNUSED)
 {
 	unimplemented ();
 	return NULL;
@@ -626,13 +632,14 @@ gboolean xfconf_channel_has_property (XfconfChannel * channel, const gchar * pro
 	return exists;
 }
 
-gboolean xfconf_channel_is_property_locked (XfconfChannel * channel, const gchar * property)
+gboolean xfconf_channel_is_property_locked (XfconfChannel * channel ELEKTRA_UNUSED, const gchar * property ELEKTRA_UNUSED)
 {
 	unimplemented ();
 	return FALSE;
 }
 
-void xfconf_channel_reset_property (XfconfChannel * channel, const gchar * property_base, gboolean recursive)
+ELEKTRA_UNUSED void xfconf_channel_reset_property (XfconfChannel * channel ELEKTRA_UNUSED, const gchar * property_base ELEKTRA_UNUSED,
+						   gboolean recursive ELEKTRA_UNUSED)
 {
 	unimplemented ();
 }
@@ -718,7 +725,7 @@ GHashTable * xfconf_channel_get_properties (XfconfChannel * channel, const gchar
 
 /* basic types */
 
-gchar * xfconf_channel_get_string (XfconfChannel * channel, const gchar * property, const gchar * default_value)
+ELEKTRA_UNUSED gchar * xfconf_channel_get_string (XfconfChannel * channel, const gchar * property, const gchar * default_value)
 {
 	trace ();
 	g_debug ("REQUEST: get %s with default value %s", property, default_value);
@@ -743,7 +750,7 @@ gboolean xfconf_channel_set_string (XfconfChannel * channel, const gchar * prope
 	return xfconf_channel_set_formatted (channel, property, value, G_TYPE_STRING);
 }
 
-gint32 xfconf_channel_get_int (XfconfChannel * channel, const gchar * property, gint32 default_value)
+ELEKTRA_UNUSED gint32 xfconf_channel_get_int (XfconfChannel * channel, const gchar * property, gint32 default_value)
 {
 	trace ();
 	XFCONF_GET_TYPED (G_TYPE_INT, g_value_get_int, xfconf_channel_set_int)
@@ -765,13 +772,13 @@ static gboolean xfconf_channel_set_int64 (XfconfChannel * channel, const gchar *
 	return xfconf_channel_set_formatted (channel, property, stringValue, G_TYPE_INT64);
 }
 
-static gint64 xfconf_channel_get_int64 (XfconfChannel * channel, const gchar * property, gint64 default_value)
+ELEKTRA_UNUSED static gint64 xfconf_channel_get_int64 (XfconfChannel * channel, const gchar * property, gint64 default_value)
 {
 	trace ();
 	XFCONF_GET_TYPED (G_TYPE_INT64, g_value_get_int64, xfconf_channel_set_int64)
 }
 
-guint32 xfconf_channel_get_uint (XfconfChannel * channel, const gchar * property, guint32 default_value)
+ELEKTRA_UNUSED guint32 xfconf_channel_get_uint (XfconfChannel * channel, const gchar * property, guint32 default_value)
 {
 	trace ();
 	XFCONF_GET_TYPED (G_TYPE_UINT, g_value_get_uint, xfconf_channel_set_uint)
@@ -784,7 +791,7 @@ gboolean xfconf_channel_set_uint (XfconfChannel * channel, const gchar * propert
 	return xfconf_channel_set_formatted (channel, property, stringValue, G_TYPE_UINT);
 }
 
-guint64 xfconf_channel_get_uint64 (XfconfChannel * channel, const gchar * property, guint64 default_value)
+ELEKTRA_UNUSED guint64 xfconf_channel_get_uint64 (XfconfChannel * channel, const gchar * property, guint64 default_value)
 {
 	trace ();
 	XFCONF_GET_TYPED (G_TYPE_UINT64, g_value_get_uint64, xfconf_channel_set_uint64)
@@ -805,7 +812,7 @@ static gboolean xfconf_channel_set_long (XfconfChannel * channel, const gchar * 
 	return xfconf_channel_set_formatted (channel, property, stringValue, G_TYPE_LONG);
 }
 
-static glong xfconf_channel_get_long (XfconfChannel * channel, const gchar * property, glong default_value)
+static ELEKTRA_UNUSED glong xfconf_channel_get_long (XfconfChannel * channel, const gchar * property, glong default_value)
 {
 	trace ();
 	XFCONF_GET_TYPED (G_TYPE_LONG, g_value_get_long, xfconf_channel_set_long)
@@ -819,7 +826,7 @@ static gboolean xfconf_channel_set_ulong (XfconfChannel * channel, const gchar *
 	return xfconf_channel_set_formatted (channel, property, stringValue, G_TYPE_ULONG);
 }
 
-static gulong xfconf_channel_get_ulong (XfconfChannel * channel, const gchar * property, gulong default_value)
+static ELEKTRA_UNUSED gulong xfconf_channel_get_ulong (XfconfChannel * channel, const gchar * property, gulong default_value)
 {
 	trace ();
 	XFCONF_GET_TYPED (G_TYPE_ULONG, g_value_get_ulong, xfconf_channel_set_ulong)
@@ -833,13 +840,13 @@ static gboolean xfconf_channel_set_float (XfconfChannel * channel, const gchar *
 	return xfconf_channel_set_formatted (channel, property, stringValue, G_TYPE_FLOAT);
 }
 
-static gfloat xfconf_channel_get_float (XfconfChannel * channel, const gchar * property, gfloat default_value)
+static ELEKTRA_UNUSED gfloat xfconf_channel_get_float (XfconfChannel * channel, const gchar * property, gfloat default_value)
 {
 	trace ();
 	XFCONF_GET_TYPED (G_TYPE_FLOAT, g_value_get_float, xfconf_channel_set_float)
 }
 
-gdouble xfconf_channel_get_double (XfconfChannel * channel, const gchar * property, gdouble default_value)
+gdouble ELEKTRA_UNUSED xfconf_channel_get_double (XfconfChannel * channel, const gchar * property, gdouble default_value)
 {
 	trace ();
 	XFCONF_GET_TYPED (G_TYPE_DOUBLE, g_value_get_double, xfconf_channel_set_double)
@@ -853,7 +860,7 @@ gboolean xfconf_channel_set_double (XfconfChannel * channel, const gchar * prope
 	return xfconf_channel_set_formatted (channel, property, stringValue, G_TYPE_DOUBLE);
 }
 
-gboolean xfconf_channel_get_bool (XfconfChannel * channel, const gchar * property, gboolean default_value)
+gboolean ELEKTRA_UNUSED xfconf_channel_get_bool (XfconfChannel * channel, const gchar * property, gboolean default_value)
 {
 	trace ();
 	if (!xfconf_channel_has_property (channel, property))
@@ -881,7 +888,7 @@ gboolean xfconf_channel_set_bool (XfconfChannel * channel, const gchar * propert
 
 /* this is just convenience API for the array stuff, where
  * all the values are G_TYPE_STRING */
-gchar ** xfconf_channel_get_string_list (XfconfChannel * channel, const gchar * property)
+ELEKTRA_UNUSED gchar ** xfconf_channel_get_string_list (XfconfChannel * channel, const gchar * property)
 {
 	trace ();
 	GPtrArray * array = xfconf_channel_get_arrayv (channel, property);
@@ -900,7 +907,7 @@ gchar ** xfconf_channel_get_string_list (XfconfChannel * channel, const gchar * 
 	}
 	return stringArray;
 }
-gboolean xfconf_channel_set_string_list (XfconfChannel * channel, const gchar * property, const gchar * const * values)
+ELEKTRA_UNUSED gboolean xfconf_channel_set_string_list (XfconfChannel * channel, const gchar * property, const gchar * const * values)
 {
 	trace ();
 	const gchar * currentElement;
@@ -969,12 +976,14 @@ gboolean xfconf_channel_set_property (XfconfChannel * channel, const gchar * pro
  * (and mixed) types, even some not supported by the basic
  * type API */
 
-gboolean xfconf_channel_get_array (XfconfChannel * channel, const gchar * property, GType first_value_type, ...)
+ELEKTRA_UNUSED gboolean xfconf_channel_get_array (XfconfChannel * channel ELEKTRA_UNUSED, const gchar * property ELEKTRA_UNUSED,
+						  GType first_value_type ELEKTRA_UNUSED, ...)
 {
 	unimplemented ();
 	return FALSE;
 }
-gboolean xfconf_channel_get_array_valist (XfconfChannel * channel, const gchar * property, GType first_value_type, va_list var_args)
+ELEKTRA_UNUSED gboolean xfconf_channel_get_array_valist (XfconfChannel * channel ELEKTRA_UNUSED, const gchar * property ELEKTRA_UNUSED,
+							 GType first_value_type ELEKTRA_UNUSED, va_list var_args ELEKTRA_UNUSED)
 {
 	unimplemented ();
 	return FALSE;
@@ -1042,12 +1051,14 @@ GPtrArray * xfconf_channel_get_arrayv (XfconfChannel * channel, const gchar * pr
 	return resultPtr;
 }
 
-gboolean xfconf_channel_set_array (XfconfChannel * channel, const gchar * property, GType first_value_type, ...)
+ELEKTRA_UNUSED gboolean xfconf_channel_set_array (XfconfChannel * channel ELEKTRA_UNUSED, const gchar * property ELEKTRA_UNUSED,
+						  GType first_value_type ELEKTRA_UNUSED, ...)
 {
 	unimplemented ();
 	return FALSE;
 }
-gboolean xfconf_channel_set_array_valist (XfconfChannel * channel, const gchar * property, GType first_value_type, va_list var_args)
+ELEKTRA_UNUSED gboolean xfconf_channel_set_array_valist (XfconfChannel * channel ELEKTRA_UNUSED, const gchar * property ELEKTRA_UNUSED,
+							 GType first_value_type ELEKTRA_UNUSED, va_list var_args ELEKTRA_UNUSED)
 {
 	unimplemented ();
 	return FALSE;
@@ -1081,49 +1092,56 @@ gboolean xfconf_channel_set_arrayv (XfconfChannel * channel, const gchar * prope
 
 /* struct types */
 
-gboolean xfconf_channel_get_named_struct (XfconfChannel * channel, const gchar * property, const gchar * struct_name, gpointer value_struct)
+ELEKTRA_UNUSED gboolean xfconf_channel_get_named_struct (XfconfChannel * channel ELEKTRA_UNUSED, const gchar * property ELEKTRA_UNUSED,
+							 const gchar * struct_name ELEKTRA_UNUSED, gpointer value_struct ELEKTRA_UNUSED)
 {
 	unimplemented ();
 	return FALSE;
 }
-gboolean xfconf_channel_set_named_struct (XfconfChannel * channel, const gchar * property, const gchar * struct_name, gpointer value_struct)
-{
-	unimplemented ();
-	return FALSE;
-}
-
-gboolean xfconf_channel_get_struct (XfconfChannel * channel, const gchar * property, gpointer value_struct, GType first_member_type, ...)
-{
-	unimplemented ();
-	return FALSE;
-}
-gboolean xfconf_channel_get_struct_valist (XfconfChannel * channel, const gchar * property, gpointer value_struct, GType first_member_type,
-					   va_list var_args)
-{
-	unimplemented ();
-	return FALSE;
-}
-gboolean xfconf_channel_get_structv (XfconfChannel * channel, const gchar * property, gpointer value_struct, guint n_members,
-				     GType * member_types)
+ELEKTRA_UNUSED gboolean xfconf_channel_set_named_struct (XfconfChannel * channel ELEKTRA_UNUSED, const gchar * property ELEKTRA_UNUSED,
+							 const gchar * struct_name ELEKTRA_UNUSED, gpointer value_struct ELEKTRA_UNUSED)
 {
 	unimplemented ();
 	return FALSE;
 }
 
-gboolean xfconf_channel_set_struct (XfconfChannel * channel, const gchar * property, const gpointer value_struct, GType first_member_type,
-				    ...)
+ELEKTRA_UNUSED gboolean xfconf_channel_get_struct (XfconfChannel * channel ELEKTRA_UNUSED, const gchar * property ELEKTRA_UNUSED,
+						   gpointer value_struct ELEKTRA_UNUSED, GType first_member_type ELEKTRA_UNUSED, ...)
 {
 	unimplemented ();
 	return FALSE;
 }
-gboolean xfconf_channel_set_struct_valist (XfconfChannel * channel, const gchar * property, const gpointer value_struct,
-					   GType first_member_type, va_list var_args)
+ELEKTRA_UNUSED gboolean xfconf_channel_get_struct_valist (XfconfChannel * channel ELEKTRA_UNUSED, const gchar * property ELEKTRA_UNUSED,
+							  gpointer value_struct ELEKTRA_UNUSED, GType first_member_type ELEKTRA_UNUSED,
+							  va_list var_args ELEKTRA_UNUSED)
 {
 	unimplemented ();
 	return FALSE;
 }
-gboolean xfconf_channel_set_structv (XfconfChannel * channel, const gchar * property, const gpointer value_struct, guint n_members,
-				     GType * member_types)
+ELEKTRA_UNUSED gboolean xfconf_channel_get_structv (XfconfChannel * channel ELEKTRA_UNUSED, const gchar * property ELEKTRA_UNUSED,
+						    gpointer value_struct ELEKTRA_UNUSED, guint n_members ELEKTRA_UNUSED,
+						    GType * member_types ELEKTRA_UNUSED)
+{
+	unimplemented ();
+	return FALSE;
+}
+
+ELEKTRA_UNUSED gboolean xfconf_channel_set_struct (XfconfChannel * channel ELEKTRA_UNUSED, const gchar * property ELEKTRA_UNUSED,
+						   const gpointer value_struct ELEKTRA_UNUSED, GType first_member_type ELEKTRA_UNUSED, ...)
+{
+	unimplemented ();
+	return FALSE;
+}
+ELEKTRA_UNUSED gboolean xfconf_channel_set_struct_valist (XfconfChannel * channel ELEKTRA_UNUSED, const gchar * property ELEKTRA_UNUSED,
+							  const gpointer value_struct ELEKTRA_UNUSED,
+							  GType first_member_type ELEKTRA_UNUSED, va_list var_args ELEKTRA_UNUSED)
+{
+	unimplemented ();
+	return FALSE;
+}
+ELEKTRA_UNUSED gboolean xfconf_channel_set_structv (XfconfChannel * channel ELEKTRA_UNUSED, const gchar * property ELEKTRA_UNUSED,
+						    const gpointer value_struct ELEKTRA_UNUSED, guint n_members ELEKTRA_UNUSED,
+						    GType * member_types ELEKTRA_UNUSED)
 {
 	unimplemented ();
 	return FALSE;

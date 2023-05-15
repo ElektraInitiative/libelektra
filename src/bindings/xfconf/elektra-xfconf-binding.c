@@ -27,8 +27,8 @@ static void notify_binding (const propertyBinding * binding, const GValue * gVal
 	g_object_set_property (G_OBJECT (binding->object), binding->object_property, gValue);
 }
 
-gulong xfconf_g_property_bind (XfconfChannel * channel, const gchar * xfconf_property, GType xfconf_property_type, gpointer object,
-			       const gchar * object_property)
+gulong xfconf_g_property_bind (XfconfChannel * channel, const gchar * xfconf_property, GType xfconf_property_type ELEKTRA_UNUSED,
+			       gpointer object, const gchar * object_property)
 {
 	trace ();
 	g_debug ("try to bind property %sto %s", xfconf_property, object_property);
@@ -52,15 +52,15 @@ gulong xfconf_g_property_bind (XfconfChannel * channel, const gchar * xfconf_pro
 	return binding->id;
 }
 
-gulong xfconf_g_property_bind_gdkcolor (XfconfChannel * channel, const gchar * xfconf_property, gpointer object,
-					const gchar * object_property)
+ELEKTRA_UNUSED gulong xfconf_g_property_bind_gdkcolor (XfconfChannel * channel, const gchar * xfconf_property, gpointer object,
+						       const gchar * object_property)
 {
 	trace ();
 	return xfconf_g_property_bind (channel, xfconf_property, G_TYPE_STRING, object, object_property);
 }
 
-gulong xfconf_g_property_bind_gdkrgba (XfconfChannel * channel, const gchar * xfconf_property, gpointer object,
-				       const gchar * object_property)
+ELEKTRA_UNUSED gulong xfconf_g_property_bind_gdkrgba (XfconfChannel * channel, const gchar * xfconf_property, gpointer object,
+						      const gchar * object_property)
 {
 	trace ();
 	return xfconf_g_property_bind (channel, xfconf_property, G_TYPE_STRING, object, object_property);
@@ -73,7 +73,7 @@ static gint find_by_id (gconstpointer a, gconstpointer b)
 	return id == binding->id;
 }
 
-void xfconf_g_property_unbind (gulong id)
+ELEKTRA_UNUSED void xfconf_g_property_unbind (gulong id)
 {
 	trace ();
 	require_binding_write_lock ();
@@ -90,8 +90,8 @@ void xfconf_g_property_unbind (gulong id)
 	release_binding_lock ()
 }
 
-void xfconf_g_property_unbind_by_property (XfconfChannel * channel, const gchar * xfconf_property, gpointer object,
-					   const gchar * object_property)
+ELEKTRA_UNUSED void xfconf_g_property_unbind_by_property (XfconfChannel * channel, const gchar * xfconf_property, gpointer object,
+							  const gchar * object_property)
 {
 	trace ();
 	require_binding_write_lock ();
@@ -114,7 +114,7 @@ void xfconf_g_property_unbind_by_property (XfconfChannel * channel, const gchar 
 	release_binding_lock ()
 }
 
-void xfconf_g_property_unbind_all (gpointer channel_or_object)
+ELEKTRA_UNUSED void xfconf_g_property_unbind_all (gpointer channel_or_object)
 {
 	trace ();
 	require_binding_write_lock ();

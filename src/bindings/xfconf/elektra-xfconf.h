@@ -1,6 +1,7 @@
 #ifndef ELEKTRA_XFCONF_H
 #define ELEKTRA_XFCONF_H
 
+#include <elektra.h>
 #include <kdb.h>
 #include <xfconf/xfconf.h>
 

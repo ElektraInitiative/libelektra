@@ -49,12 +49,13 @@ void xfconf_shutdown (void)
 	// g_list_free (channel_list);
 }
 
-void xfconf_named_struct_register (const gchar * struct_name, guint n_members, const GType * member_types)
+void xfconf_named_struct_register (const gchar * struct_name ELEKTRA_UNUSED, guint n_members ELEKTRA_UNUSED,
+				   const GType * member_types ELEKTRA_UNUSED)
 {
 	unimplemented ();
 }
 
-void xfconf_array_free (GPtrArray * arr)
+void xfconf_array_free (GPtrArray * arr ELEKTRA_UNUSED)
 {
 	unimplemented ();
 }

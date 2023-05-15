@@ -22,7 +22,7 @@ file (GLOB XFCONF_BINDING_SOURCES *.c)
 
 set (SOURCES ${XFCONF_BINDING_HEADERS} ${XFCONF_BINDING_SOURCES} ${ELEKTRA_HEADERS})
 add_library (${XFCONF_BINDING_LIBRARY} SHARED ${SOURCES})
-target_compile_options (${XFCONF_BINDING_LIBRARY} PUBLIC "-Wno-unused-function" "-Wno-unused-parameter")
+target_compile_options (${XFCONF_BINDING_LIBRARY} PUBLIC)
 target_link_libraries (${XFCONF_BINDING_LIBRARY} PUBLIC elektra-core elektra-kdb)
 
 install (TARGETS ${XFCONF_BINDING_LIBRARY} LIBRARY DESTINATION lib${LIB_SUFFIX})
