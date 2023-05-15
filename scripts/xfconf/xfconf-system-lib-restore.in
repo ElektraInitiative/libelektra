@@ -1,0 +1,7 @@
+#!/bin/sh
+#
+# @author Richard Stöckl <richard.stoeckl@aon.at>
+# @brief Moves the backup of the systems library back to the original path.
+# @date 15.05.2023
+
+mv "@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/libxfconf-0.so.3.0.0" "@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/libxfconf-0.so.3.0.0.bak"

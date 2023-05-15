@@ -1,4 +1,8 @@
 #!/bin/sh
+#
+# @author Richard Stöckl <richard.stoeckl@aon.at>
+# @brief Populates the Xfconf database with the default Xfce channels and properties.
+# @date 15.05.2023
 
 XFCONF_QUERY_COMMAND="xfconf-query"
 
