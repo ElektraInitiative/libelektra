@@ -1,6 +1,6 @@
 # Session Recording Technical Documentation
 
-After every `kdbSet` action, the changes are calculated using Elektra's powerful changetracking API.
+After every `kdbSet`, changes are calculated using Elektra's powerful changetracking API.
 The result of the calculation is an `ElektraDiff` instance we'll call _part diff_ throughout this document.
 The session recording plugin merges those _part diffs_ together and creates and persists an overall _session diff_.
 
@@ -23,8 +23,7 @@ The session diff is persisted in the respective namespace under `<namespace>:/el
 I.e. all keys in the diff of the `system` namespace are under `system:/elektra/record/session`.
 
 The recording plugin needs its own KDB instance to store the session diff within Elektra.
-For concurrency and performance reasons, the storage should be a separately mounted file under each namespace.
-This means we provide hard coded default mountpoints for the
+We provide hard-coded default mountpoints for the
 
 - `dir:/elektra/record/session`,
 - `system:/elektra/record/session`,
@@ -57,8 +56,8 @@ The following list describes some important keys:
 Keys in a diff are divided into different categories:
 
 - Added: the key is new and did not exist before
-- Modified: the key existed before but its value (or metadata) has been modified
-- Removed: the key has been deleted
+- Modified: the key existed before and still exists but its value or metadata has been modified
+- Removed: the key has been removed
 
 Keys that stayed the same and therefore are not represented in a diff are called _unchanged_ keys in the following paragraphs.
 The diagram below visualizes the state transitions when merging diffs.

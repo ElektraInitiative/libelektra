@@ -7,7 +7,7 @@
 ## DESCRIPTION
 
 This command exports the recorded changes into the specified output format.
-Keys are exported to `stdout` in whichever format is specified.<br>
+Keys are exported to `stdout` in whichever format is specified.
 
 ## USAGE
 
