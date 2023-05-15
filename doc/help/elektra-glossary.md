@@ -111,6 +111,20 @@
 - **intermediate name/value/metadata**:
   Any state inbetween the two.
 
+## Session Recording Concepts
+
+- **recording session**:
+  A recording session is a period of time during which changes to the Key Database (KDB) are tracked and accumulated.
+  It begins when recording starts and ends when recording stops.
+  Throughout the recording session, all changes made to the KDB are recorded, including additions, modifications, and deletions of keys and their associated values.
+  The recording session provides a complete audit trail of all changes made to the KDB during the specified period of time.
+
+- **part diff**:
+  The changes made during a single `kdbGet` - `kdbSet` roundtrip.
+
+- **session diff**:
+  The changes made during the entire recording session.
+
 ## Details
 
 - Null Value:
