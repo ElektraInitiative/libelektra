@@ -199,14 +199,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 ### Core
 
 - The `syslog` logging code now calls `openlog` before every `syslog` to avoid the use of a global variable. _(@kodebach)_
-- <<TODO>>
 - Fix memleak in kdb.c, #4925 _(@hannes99)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### loader
 
@@ -344,8 +337,6 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Add shell test to verify correct behavior for https://github.com/ElektraInitiative/libelektra/issues/4061 _(Tomislav Makar @tmakar)_
 
 ## Build
-
-### CMake
 
 ### Docker
 
