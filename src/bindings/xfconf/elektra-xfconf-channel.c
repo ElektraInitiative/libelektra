@@ -351,7 +351,7 @@ static KeySet * keySet_from_channel (const gchar * channel_name, uint reference,
  * The desired type is taken from the `g_value`.
  * @param g_value the value to parse the string to - not null
  * @param new_value the string of the new value - not null
- * @return 0 on success and 1 otherwise
+ * @retval 0 on success and 1 otherwise
  */
 static int g_value_convert_string (GValue * g_value, const char * new_value)
 {
