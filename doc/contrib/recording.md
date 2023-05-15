@@ -1,5 +1,10 @@
 # Session Recording Technical Documentation
 
+A recording session is a period of time during which changes to the Key Database (KDB) are tracked and accumulated.
+It begins when recording starts and ends when recording stops.
+Throughout the recording session, all changes made to the KDB are recorded, including additions, modifications, and deletions of keys and their associated values.
+The recording session provides a complete audit trail of all changes made to the KDB during the specified period of time.
+
 After every `kdbSet`, changes are calculated using Elektra's powerful changetracking API.
 The result of the calculation is an `ElektraDiff` instance we'll call _part diff_ throughout this document.
 The session recording plugin merges those _part diffs_ together and creates and persists an overall _session diff_.
@@ -11,9 +16,19 @@ Conceptually, this is depicted in the following image:
 Importantly, the _session diff_ is shared across processes.
 The _session diff_ persistently records all changes made to the whole KDB from any process between the start and end of the session.
 Because of the cross-process nature of a _session diff_, it is also susceptible to "simultaneous write" conflicts.
-We tried to limit the impact of these conflicts through locking.
+
+We prevent inconsistent data by using locks.
+As long as recording is enabled, there is a global lock on write operations in Elektra.
+If a conflict occurs, it looks to the applications the same as if there was a conflict writing configuration data.
+The high-level Elektra bindings already resolve such conflicts transparently.
 
 All persistable namespaces are monitored for changes.
+
+An important concept for modified keys is the distinction between _old_ and _new_ keys.
+Old keys refer to the keys how they were (values, metadata) _before_ the modifications.
+New keys, on the other hand, refer to how the keys are _after_ the modifications.
+This concept does not apply to _added_ or _removed_ keys.
+You can think of added keys of only having new keys, and removed keys only having old keys.
 
 We currently have no way of recording changes done outside of Elektra, i.e. when the configuration files got edited manually.
 
@@ -23,7 +38,7 @@ The session diff is persisted in the respective namespace under `<namespace>:/el
 I.e. all keys in the diff of the `system` namespace are under `system:/elektra/record/session`.
 
 The recording plugin needs its own KDB instance to store the session diff within Elektra.
-We provide hard-coded default mountpoints for the
+We provide hard coded default mountpoints for the
 
 - `dir:/elektra/record/session`,
 - `system:/elektra/record/session`,
@@ -31,7 +46,8 @@ We provide hard-coded default mountpoints for the
 - `user:/elektra/record/session`
   keys.
 
-These mountpoints store the keys in the `dump` format in a file called `record-session.cfg` in the respective standard directories for their namespace.
+These mountpoints store the keys in the same storage format as the default mountpoints like `system:/` and `user:/`.
+The session storage file called `record-session.cfg` is located in the respective standard directories for their namespace.
 
 The following list describes some important keys:
 
