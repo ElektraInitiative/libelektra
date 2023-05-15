@@ -11,4 +11,4 @@ if [ ! -f "$HOME/.xprofile" ]; then
 fi
 
 echo "export G_MESSAGES_DEBUG=all" >> "$HOME/.xprofile"
-echo "export LD_PRELOAD=\"@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/libxfconf-elektra.so\"" >> "$HOME/.xprofile"
+echo 'export LD_PRELOAD="@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/libxfconf-elektra.so"' >> "$HOME/.xprofile"
