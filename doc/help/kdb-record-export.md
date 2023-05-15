@@ -12,7 +12,7 @@ Keys are exported to `stdout` in whichever format is specified.
 ## USAGE
 
 Where `source` is the path of the key(s) you want to export.
-Additionally, the user can specify a format to use by passing it as the option argument `format`.<br>
+Additionally, the user can specify a format to use by passing it as the option argument `format`.
 The `format` attribute relies on Elektra’s plugin system to export the keys in the desired format.
 The parameter `format` must be the name of a valid storage plugin.
 

@@ -8,11 +8,8 @@
 .br
 .SH "DESCRIPTION"
 This command exports the recorded changes into the specified output format\. Keys are exported to \fBstdout\fR in whichever format is specified\.
-.br
 .SH "USAGE"
-Where \fBsource\fR is the path of the key(s) you want to export\. Additionally, the user can specify a format to use by passing it as the option argument \fBformat\fR\.
-.br
-The \fBformat\fR attribute relies on Elektra’s plugin system to export the keys in the desired format\. The parameter \fBformat\fR must be the name of a valid storage plugin\.
+Where \fBsource\fR is the path of the key(s) you want to export\. Additionally, the user can specify a format to use by passing it as the option argument \fBformat\fR\. The \fBformat\fR attribute relies on Elektra’s plugin system to export the keys in the desired format\. The parameter \fBformat\fR must be the name of a valid storage plugin\.
 .P
 Both \fBsource\fR and \fBformat\fR are optional parameters\. By default, \fBsource\fR is \fB/\fR and \fBformat\fR is \fBansible\fR\. If you only specify a single argument, we will whether it is a key or the format\.
 .SH "OPTIONS"
