@@ -3,7 +3,7 @@ package main
 import (
 	"errors"
 
-	elektra "go.libelektra.org/kdb"
+	elektra "goelektra.libelektra.org/kdb"
 )
 
 func set(handle elektra.KDB, ks elektra.KeySet, key elektra.Key) error {

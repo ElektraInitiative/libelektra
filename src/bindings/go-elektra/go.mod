@@ -1,3 +1,3 @@
-module go.libelektra.org
+module goelektra.libelektra.org
 
 go 1.20

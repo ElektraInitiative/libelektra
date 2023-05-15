@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	. "go.libelektra.org/test"
+	. "goelektra.libelektra.org/test"
 )
 
 func setupTestData(b *testing.B, count int) *CKeySet {
