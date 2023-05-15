@@ -117,7 +117,7 @@ All applications started from the command line will put their debug log to the s
 
 Note that this binding only handles configuration directly handled within Xfconf.
 It is not able to configure settings which live outside Xfconf such as Gtk themes.
-However, since settings such as the Gtk theme part of the Xfce desktop itself, this binding is not able to configure Xfce fully.
+However, since settings such as the Gtk theme are part of the Xfce desktop itself, this binding is not able to configure all aspects of Xfce.
 
 ## Further Links
 
