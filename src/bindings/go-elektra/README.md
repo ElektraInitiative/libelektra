@@ -80,7 +80,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ElektraInitiative/libelektra/go-elektra/kdb"
+	"go.libelektra.org/kdb"
 )
 
 func main() {
