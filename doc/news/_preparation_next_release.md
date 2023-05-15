@@ -230,7 +230,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 - The `syslog` logging code now calls `openlog` before every `syslog` to avoid the use of a global variable. _(@kodebach)_
 - <<TODO>>
-- <<TODO>>
+- Fix memleak in kdb.c, #4925 _(@hannes99)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
