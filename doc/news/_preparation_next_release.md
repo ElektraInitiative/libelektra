@@ -102,9 +102,13 @@ Known limitations:
 
 For more information see [Spec Plugin](../../src/plugins/spec/README.md).
 
-### <<HIGHLIGHT>>
+### Go into repo
 
-> NOTE: On information how to publish new versions of `go-elektra` to go packages see https://go.dev/doc/modules/publishing.
+The go binding is now inside of `libelektra` repository.
+It is now also included into our build pipeline.
+For more information on how to use it see [go readme](../../src/bindings/go-elektra/README.md).
+
+> NOTE: On information how to publish new versions of `go-elektra` to go packages see [go-publishing](https://go.dev/doc/modules/publishing).
 
 ## Plugins
 
@@ -208,6 +212,11 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 - Adapt target rename with `-plugin-` in `dl.c` _(Tomislav Makar @tmakar)_
 
+### go
+
+- Golang is now included to build `go binding` _(Tomislav Makar @tmakar)_
+- From now on we use tags which are prefixed with `v` so go package versioning works _(Tomislav Makar @tmakar)_
+
 ### kdb
 
 - Add new changetracking API _(Maximilian Irlinger @atmaxinger)_
@@ -279,7 +288,6 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Adapt and remove outdated docs https://issues.libelektra.org/4882 _(Tomislav Makar @tmakar)_
 - Added missing dependencies in COMPILE.md for APT-based systems _(Michael Tucek @tucek)_
 - Add `default` namespace to [namespaces documentation](../tutorials/namespaces.md) _(Tomislav Makar @tmakar)_
-- Move `go-elektra` binding into bindings folder of `libelektra` _(Tomislav Makar @tmakar)_
 - Added Tomislav Makar to `AUTHORS.md` _(Tomislav Makar @tmakar)_
 - Added Florian Lindner to `AUTHORS.md` _(Florian Lindner @flo91)_
 - .github rework _(Markus Raab)_
@@ -335,14 +343,6 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - Add shell test to verify correct behavior for https://github.com/ElektraInitiative/libelektra/issues/4061 _(Tomislav Makar @tmakar)_
 
-### C
-
-### Shell Recorder
-
-### C++
-
-## Packaging
-
 ## Build
 
 ### CMake
@@ -352,8 +352,6 @@ This section keeps you up-to-date with the multi-language support provided by El
 - CentOS 8 Stream: manually install `config-manager` DNF plugin. _(Maximilian Irlinger @atmaxinger)_
 
 ## Infrastructure
-
-### Jenkins
 
 ### Cirrus
 
@@ -374,7 +372,15 @@ The website is generated from the repository, so all information about plugins, 
 
 We are currently working on following topics:
 
-- Session recording and better Ansible integration _(Maximilian Irlinger @atmaxinger)_
+- Rewriting tools in C _(@hannes99)_
+- Elektrify KDE and GNOME _(Mihael Pranjić @mpranj)_
+- Elektrify XFCE _(Richard Stöckl @Eiskasten)_
+- Mounting SQL databases _(Florian Lindner @flo91)_
+- Recording Configuration _(Maximilian Irlinger)_
+- Ansible-Elektra _(Maximilian Irlinger)_
+- Configure Olimex Base Images _(Maximilian Irlinger)_
+- Improving Build Server Infrastructure _(Lukas Hartl)_
+- Improve Java Development Experience _(Michael Tucek)_
 
 ## Statistics
 
