@@ -15,7 +15,7 @@ The xfconf plugin is a storage plugin to mount the xfconf configuration settings
 This allows to operate on the XFCE configuration with libelektra.
 As usual, this allows the plugin to read and write to the XFCE configuration.
 
-For further understanding how xfconf is structured, please refer to the [xfconf binding](../../../src/bindings/xfconf/README.md#xfconf-terminology).
+For further understanding how xfconf is structured, please refer to the Xfconf binding.
 
 The list of all channels is stored in the `system:/elektra/modules/xfconf/channels` which is an array of all channel names.
 Channels cannot be created manually with libelektra.
