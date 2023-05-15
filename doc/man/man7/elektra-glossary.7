@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre3
-.TH "ELEKTRA\-GLOSSARY" "7" "March 2023" ""
+.TH "ELEKTRA\-GLOSSARY" "7" "May 2023" ""
 .SH "NAME"
 \fBelektra\-glossary\fR \- glossary of Elektra
 .IP "\(bu" 4
@@ -84,6 +84,16 @@ How it is at runtime, i\.e\. what is returned by \fBkdbGet\fR and passed to \fBk
 .TP
 \fBintermediate name/value/metadata\fR
 Any state inbetween the two\.
+.SH "Session Recording Concepts"
+.TP
+\fBrecording session\fR
+A recording session is a period of time during which changes to the Key Database (KDB) are tracked and accumulated\. It begins when recording starts and ends when recording stops\. Throughout the recording session, all changes made to the KDB are recorded, including additions, modifications, and deletions of keys and their associated values\. The recording session provides a complete audit trail of all changes made to the KDB during the specified period of time\.
+.TP
+\fBpart diff\fR
+The changes made during a single \fBkdbGet\fR \- \fBkdbSet\fR roundtrip\.
+.TP
+\fBsession diff\fR
+The changes made during the entire recording session\.
 .SH "Details"
 .TP
 Null Value
