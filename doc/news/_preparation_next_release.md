@@ -52,10 +52,10 @@ docker run -it elektra/elektra
 
 We've created a new KeySet diffing and changetracking API for both internal and external use.
 Several plugins already had their own implementations to detect changes made to the key database.
-Unfortunately, every implementation did something different and results varied.
-With this new release every plugin now uses the same shared implementation!
+Every implementation did something different and results varied.
+With this new release every plugin now uses the same shared implementation, with identical results!
 
-To try the amazing new API yourself, take a look at [the tutorial](../tutorials/changetracking.md)!
+To try the amazing new API yourself, take a look at [the tutorial](../tutorials/changetracking.md).
 
 Elektra's internal code now also uses this new API to detect which backends to execute.
 This can lead to better performance in I/O bound cases, where previously certain keys would have been detected as changed when they weren't.
@@ -390,7 +390,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Small fixes in decisions. _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

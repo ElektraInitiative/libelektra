@@ -3,6 +3,7 @@
 ## Problem
 
 Some names, such as `kdbOpen`, `keyNew` are so generic that other libraries might also use them.
+Furthermore, it is inconsistent that some functions have prefixes (e.g. `elektraKsFilter`) and others don't have (e.g. `ksNew`).
 
 ## Constraints
 
@@ -16,6 +17,7 @@ Some names, such as `kdbOpen`, `keyNew` are so generic that other libraries migh
 
 - leave it as is
 - use macros to have short names for actually longer external identifiers
+- use `e_` or `el_` as shorter prefix
 
 ## Decision
 

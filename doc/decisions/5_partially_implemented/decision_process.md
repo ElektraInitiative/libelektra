@@ -68,6 +68,7 @@ The main purpose of decisions is
 ## Assumptions
 
 - People want to be informed about or even participate in what Elektra looks like in the future.
+- People actually use Elektra and propose only what they need for their use cases.
 - Decision authors have some scientific background and want decisions based on science, and not only on opinions.
 - If assumptions, including this ones written here, are broken, decisions will be redone.
 - Decision authors and reviewers want Elektra to improve, so they also want to accept (acceptable) decisions.
