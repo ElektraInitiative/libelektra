@@ -288,7 +288,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 ### go-elektra
 
 - Move `go-elektra` binding from repository into bindings folder of `libelektra` _(Tomislav Makar @tmakar)_
-- <<TODO>>
+- Change module for `go-elektra` _(Tomislav Makar @tmakar)_
 - <<TODO>>
 
 ### <<Binding>>

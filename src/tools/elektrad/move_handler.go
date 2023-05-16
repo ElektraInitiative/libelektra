@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	elektra "github.com/ElektraInitiative/libelektra/go-elektra/kdb"
+	elektra "go.libelektra.org/kdb"
 )
 
 // postMoveHandler moves all keys below the `source` key to the target key.

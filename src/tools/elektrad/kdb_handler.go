@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	elektra "github.com/ElektraInitiative/libelektra/go-elektra/kdb"
+	elektra "go.libelektra.org/kdb"
 )
 
 type keyConfigurationSet struct {

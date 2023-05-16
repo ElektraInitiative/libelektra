@@ -1,3 +1,3 @@
-module github.com/ElektraInitiative/libelektra/go-elektra
+module go.libelektra.org
 
 go 1.20
