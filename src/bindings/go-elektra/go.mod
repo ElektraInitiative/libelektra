@@ -1,3 +1,3 @@
-module go.libelektra.org
+module go.libelektra.org/src/bindings/go-elektra
 
 go 1.20
