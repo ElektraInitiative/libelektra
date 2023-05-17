@@ -62,7 +62,8 @@ go test ./kdb -bench="^(BenchmarkKeySetSliceRangeIterator)\$"
 
 First `go get` the package like you are used to with Go. If you want to use your newest changes you have made to `go-elektra` (changes are not yet on master) it works the same due to the local module reference we are using in `go.mod`.
 
-`go get go.libelektra.org/src/bindings/go-elektra/kdb`
+`go get go.libelektra.org/src/bindings/go-elektra@<LIBELEKTRA_TAG_VERSION>` or
+`go get go.libelektra.org/src/bindings/go-elektra@<COMMIT_HASH>`
 
 Here is an example how you can use Elektra in your Go application.
 Before you start create a key via the `kdb` command-line tool:
