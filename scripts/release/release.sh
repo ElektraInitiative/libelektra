@@ -13,10 +13,10 @@ BUILD_DIR="$SRC_DIR/build"
 PREVIOUS_RELEASE_LOGS="$BASE_DIR/prev-release-logs"
 
 get_current_git_version_tag() {
-	git tag -l 'v?[0-9].[0-9].[0-9]*' --sort=version:refname | tail -n1
+	git tag -l 'v?[0-9].[0-9].[0-9]*' --sort=version:refname | tail -n1 | sed 's/v//'
 }
 get_previous_git_version_tag() {
-	git tag -l 'v?[0-9].[0-9].[0-9]*' --sort=version:refname | tail -n2 | head -n1
+	git tag -l 'v?[0-9].[0-9].[0-9]*' --sort=version:refname | tail -n2 | head -n1 | sed 's/v//'
 }
 
 cd "$SRC_DIR"
@@ -84,7 +84,7 @@ run_updates() {
 
 git_tag() {
 	cd "$SRC_DIR"
-	PREVIOUS_RELEASE_TAG=$(get_current_git_version_tag) | sed 's/v//'
+	PREVIOUS_RELEASE_TAG=$(get_current_git_version_tag | sed 's/v//')
 	if [ "$PREVIOUS_RELEASE_TAG" != "$VERSION" ]; then
 		git tag "v$VERSION" -m "Release v$VERSION" # needed by `make source-package` and `git-release-stats
 	else

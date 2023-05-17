@@ -19,7 +19,7 @@ RELEASE_NOTE_FILENAME="$CURRENT_DATE"_"$KDB_VERSION".md
 RELEASE_NOTE_PATH="$NEWS_DIR/$RELEASE_NOTE_FILENAME"
 
 # get previous release version from git tags
-PREVIOUS_RELEASE=$(git tag -l 'v?[0-9].[0-9].[0-9]*' --sort=version:refname | tail -n2 | head -n1) | sed 's/v//'
+PREVIOUS_RELEASE=$(git tag -l 'v?[0-9].[0-9].[0-9]*' --sort=version:refname | tail -n2 | head -n1 | sed 's/v//')
 PREVIOUS_RELEASE_MAJOR_MINOR_VERSION=$(echo "$PREVIOUS_RELEASE" | grep -Po '^\d+.\d+')
 
 generate_git_release_stats_minimal() {
