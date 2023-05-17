@@ -276,6 +276,14 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ## Scripts
 
+### Jenkins
+
+- Use only v prefix for tags not in real version _(Tomislav Makar @tmakar)_
+
+### Release
+
+- Exclude v prefix from `populate-release-notes.sh` script _(Tomislav Makar @tmakar)_
+
 ## Documentation
 
 - Adapt and remove outdated docs https://issues.libelektra.org/4882 _(Tomislav Makar @tmakar)_
