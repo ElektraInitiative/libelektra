@@ -10,6 +10,8 @@ This folder contains Go bindings for the low-level API for Elektra as found in `
 
 Go-Elektra leverages [cgo](https://golang.org/cmd/cgo/) to call the C functions of the Elektra library.
 
+> NOTE: On information how to publish new versions of `go-elektra` to go packages see https://go.dev/doc/modules/publishing.
+
 ## Prerequisites
 
 - Go (version >1.13) and

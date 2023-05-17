@@ -102,7 +102,13 @@ Known limitations:
 
 For more information see [Spec Plugin](../../src/plugins/spec/README.md).
 
-### <<HIGHLIGHT>>
+### Go into repo
+
+The go binding is now inside of `libelektra` repository.
+It is now also included into our build pipeline.
+For more information on how to use it see [go readme](../../src/bindings/go-elektra/README.md).
+
+> NOTE: On information how to publish new versions of `go-elektra` to go packages see [go-publishing](https://go.dev/doc/modules/publishing).
 
 ## Plugins
 
@@ -116,25 +122,10 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 
 - Rewrite spec plugin, fix bugs and use correct error handling _(Tomislav Makar @tmakar)_
 - Remove info metakey from spec plugin _(Tomislav Makar @tmakar)_
-- <<TODO>>
-
-### <<Plugin>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### counter
 
 - Move `static` variables into functions to avoid global variables _(@kodebach)_
-- <<TODO>>
-- <<TODO>>
-
-### <<Plugin>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### logchange
 
@@ -144,26 +135,18 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 ### yajl
 
 - The `itKs` global variable workaround, which was used to replace the now removed internal `KeySet` cursor, was replaced with a custom context struct. _(@kodebach)_
-- <<TODO>>
-- <<TODO>>
 
 ### toml
 
 - The `flex` lexer and `bison` parser are now fully reentrant and therefore thread-safe. _(@kodebach)_
-- <<TODO>>
-- <<TODO>>
 
 ### multifile
 
 - Remove multifile plugin as it is unmaintained and conflicts with the new backend architecture _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
 
 ### c
 
 - Add Florian Lindner as maintainer _(Florian Lindner @flo91)_
-- <<TODO>>
-- <<TODO>>
 - Use separate symbols for `set` and `commit` functions to satisfy `kdb plugin-check` _(@kodebach)_
 - Use new `elektraPluginGetPhase()` instead of counting executions _(@kodebach)_
 
@@ -175,14 +158,11 @@ TODO: remove above note, when COW support is added.
 
 - The magic data structures are now fully compile-time constants.
   The magic number to detect endianness is generated in CMake instead of at runtime. _(@kodebach)_
-- <<TODO>>
-- <<TODO>>
 
 ### syslog
 
 - Convert to hook plugin _(Maximilian Irlinger @atmaxinger)_
 - Utilize new changetracking API _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
 
 ### lineendings
 
@@ -216,39 +196,19 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Compatibility
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
 ### Core
 
 - The `syslog` logging code now calls `openlog` before every `syslog` to avoid the use of a global variable. _(@kodebach)_
-- <<TODO>>
 - Fix memleak in kdb.c, #4925 _(@hannes99)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### loader
 
 - Adapt target rename with `-plugin-` in `dl.c` _(Tomislav Makar @tmakar)_
-- <<TODO>>
-- <<TODO>>
 
-### <<Library>>
+### go
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Golang is now included to build `go binding` _(Tomislav Makar @tmakar)_
+- From now on we use tags which are prefixed with `v` so go package versioning works _(Tomislav Makar @tmakar)_
 
 ### kdb
 
@@ -256,19 +216,6 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - Fix unwanted removal of subkeys when using mv _(Hannes Laimer @hannes99)_
 - Fix inconsistent return values in code, tests and man pages _(Hannes Laimer @hannes99)_
 - Remove `smount` alias _(Hannes Laimer @hannes99)_
-- <<TODO>>
-
-### <<Library>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Library>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Bindings
 
@@ -321,70 +268,26 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - Implemented new request to add multiple metakeys for one key _(Tomislav Makar @tmakar)_
 - Adding bulk creation request for configuration keys _(Tomislav Makar @tmakar)_
-- <<TODO>>
-- <<TODO>>
 
 ### webd
 
 - Implemented new request to add multiple metakeys for one key _(Tomislav Makar @tmakar)_
 - Adding bulk creation request for configuration keys _(Tomislav Makar @tmakar)_
-- <<TODO>>
-- <<TODO>>
-
-### <<Tool>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Tool>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Scripts
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Documentation
 
 - Adapt and remove outdated docs https://issues.libelektra.org/4882 _(Tomislav Makar @tmakar)_
 - Added missing dependencies in COMPILE.md for APT-based systems _(Michael Tucek @tucek)_
 - Add `default` namespace to [namespaces documentation](../tutorials/namespaces.md) _(Tomislav Makar @tmakar)_
-- Move `go-elektra` binding into bindings folder of `libelektra` _(Tomislav Makar @tmakar)_
-- <<TODO>>
-- <<TODO>>
 - Added Tomislav Makar to `AUTHORS.md` _(Tomislav Makar @tmakar)_
-- <<TODO>>
-- <<TODO>>
 - Added Florian Lindner to `AUTHORS.md` _(Florian Lindner @flo91)_
-- <<TODO>>
 - .github rework _(Markus Raab)_
 - Added `hook` to `placements` contract in [CONTRACT.ini](../CONTRACT.ini) _(Tomislav Makar @tmakar)_
 - Added `hook` information to [hooks.md](../dev/hooks.md)
 - Added Hannes Laimer to `AUTHORS.md` _(Hannes Laimer @hannes99)_
 - Add README to tools/kdb _(Hannes Laimer @hannes99)_
-- <<TODO>>
 - Fixed shell-recorder test in [`install-webui.md`](../tutorials/install-webui.md) _(Tomislav Makar @tmakar)_
 - Add new shell-recorder test in [`install-webui.md`](../tutorials/install-webui.md) for newly implemented request for adding multiple metakeys for one key _(Tomislav Makar @tmakar)_
 - <<TODO>>
@@ -397,20 +300,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - Update AUTHORS.md info _(@kodebach)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 - Add Stefan Hanreich to AUTHORS.md _(Stefan Hanreich @lawli3t)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Use Cases
 
@@ -419,16 +309,6 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Add specification use case for [simple-specification](../usecases/specification/simple-specification.md) _(Tomislav Makar @tmakar)_
 - Add specification use case for [enum-specification](../usecases/specification/enum-specification.md) _(Tomislav Makar @tmakar)_
 - Add complete specification for `dockerd` configuration file (`daemon.json`) _(Tomislav Makar @tmakar)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Decisions
 
@@ -436,197 +316,44 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Decided future [library split](../decisions/4_decided/library_split.md) _(@kodebach)_
 - Decided [decision process](https://www.libelektra.org/decisions/decision-process) _(Markus Raab)_
 - Draft for [man pages](../decisions/0_drafts/man_pages.md) _(Markus Raab)_
-- <<TODO>>
 - Add decision for [change tracking](../decisions/3_in_review/change_tracking.md) _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
 - Create [decision](../decisions/0_drafts/operation_sequences.md) for allowed and prohibited operation seqences _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
 - Add decisions about [location of headers](../decisions/4_decided/header_file_structure.md) and [use of `#include`](../decisions/4_decided/header_include.md) in the repo _(@kodebach)_
-- <<TODO>>
-- <<TODO>>
 - Add decision about [metadata semantics](../decisions/0_drafts/metakey_semantics.md) _(@kodebach)_
-- <<TODO>>
-- <<TODO>>
 - Many small fixes to adapt to documentation guidelines and new decision process. _(Markus Raab)_
-- <<TODO>>
 - Add decision for [read-only keynames](../decisions/0_drafts/readonly_keynames.md) _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
 - Revive [keyname decision](../decisions/4_decided/keyname.md) _(@kodebach)_
-- <<TODO>>
-- <<TODO>>
 - Add decision for [copy-on-write](../decisions/6_implemented/copy_on_write.md) and provide implementation suggestions. _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
 - Added explanation on why we wanted to migrate from Maven to [Gradle](../decisions/6_implemented/gradle.md) for Java-related build facilities. _(Michael Tucek @tucek)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Tutorials
 
-- <<TODO>>
 - Add basic tutorial about changetracking _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Man Pages
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Tests
 
 - Add shell test to verify correct behavior for https://github.com/ElektraInitiative/libelektra/issues/4061 _(Tomislav Makar @tmakar)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### C
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### Shell Recorder
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### C++
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-## Packaging
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Build
 
-### CMake
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
 ### Docker
 
-- <<TODO>>
-- <<TODO>>
 - CentOS 8 Stream: manually install `config-manager` DNF plugin. _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Infrastructure
-
-### Jenkins
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Cirrus
 
 - Rename deprecated `d-bus` to `dbus` in `macOS.yml` and `.cirrus.yml` [Issue-#4900](https://github.com/ElektraInitiative/libelektra/issues/4900) _(Tomislav Makar @tmakar)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 - Push FreeBSD 12.3 to 12.4 since 12.3 is end of life. _(Richard Stöckl @eiskasten)_
-- <<TODO>>
 
 ### GitHub Actions
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Website
 
 The website is generated from the repository, so all information about plugins, bindings and tools are always up-to-date. Furthermore, we changed:
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Miscellaneous
 
@@ -636,10 +363,15 @@ The website is generated from the repository, so all information about plugins, 
 
 We are currently working on following topics:
 
-- <<TODO>>
-- Session recording and better Ansible integration _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
+- Rewriting tools in C _(@hannes99)_
+- Elektrify KDE and GNOME _(Mihael Pranjić @mpranj)_
+- Elektrify XFCE _(Richard Stöckl @Eiskasten)_
+- Mounting SQL databases _(Florian Lindner @flo91)_
+- Recording Configuration _(Maximilian Irlinger)_
+- Ansible-Elektra _(Maximilian Irlinger)_
+- Configure Olimex Base Images _(Maximilian Irlinger)_
+- Improving Build Server Infrastructure _(Lukas Hartl)_
+- Improve Java Development Experience _(Michael Tucek)_
 
 ## Statistics
 

@@ -17,15 +17,15 @@ cd tmpbuilddir
 git clone https://github.com/ElektraInitiative/libelektra.git
 cd libelektra
 
-git tag -f $VERSION
+git tag -f "v$VERSION"
 
 git checkout -b debian origin/debian
-git merge --no-ff -m "merge $VERSION" master
+git merge --no-ff -m "merge v$VERSION" master
 
 dch -l ".$BUILD_NUMBER" "auto build"
 
 git commit -am "auto build $VERSION"
 
-git archive --format=tar HEAD | gzip > ../elektra_$VERSION.orig.tar.gz
+git archive --format=tar HEAD | gzip > ../elektra_v$VERSION.orig.tar.gz
 
 dpkg-buildpackage
