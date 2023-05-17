@@ -862,7 +862,7 @@ def buildRelease(stageName, image, packageRevision='1',
 
             script {
               RELEASE_VERSION = sh(
-                script: 'sh libelektra/scripts/release/get-installed-version.sh',
+                script: 'sh libelektra/scripts/release/get-installed-version.sh | sed 's/v//'',
                 returnStdout: true
               ).trim()
             }
