@@ -156,7 +156,7 @@ def initVariables() {
     } else {
       script {
         PREVIOUS_RELEASE_VERSION = sh(
-          script: "git tag -l 'v?[0-9].[0-9].[0-9]*' --sort=version:refname | tail -n1",
+          script: "git tag -l 'v?[0-9].[0-9].[0-9]*' --sort=version:refname | tail -n1 | sed 's/v//'",
           returnStdout: true
         ).trim()
       }
