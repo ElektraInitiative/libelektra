@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	elektra "go.libelektra.org/kdb"
+	elektra "go.libelektra.org/src/bindings/go-elektra/kdb"
 )
 
 func testGet(t *testing.T, path string) *httptest.ResponseRecorder {

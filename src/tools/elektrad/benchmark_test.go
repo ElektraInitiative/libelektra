@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"testing"
 
-	elektra "go.libelektra.org/kdb"
+	elektra "go.libelektra.org/src/bindings/go-elektra/kdb"
 )
 
 type prepareFunc func(t testing.TB, handle elektra.KDB, ks elektra.KeySet, parentKey elektra.Key, runs int)

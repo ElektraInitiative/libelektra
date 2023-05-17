@@ -6,8 +6,8 @@ import (
 	"math/rand"
 	"testing"
 
-	elektra "go.libelektra.org/kdb"
-	. "go.libelektra.org/test"
+	elektra "go.libelektra.org/src/bindings/go-elektra/kdb"
+	. "go.libelektra.org/src/bindings/go-elektra/test"
 )
 
 func TestName(t *testing.T) {
