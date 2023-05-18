@@ -237,6 +237,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Move `go-elektra` binding from repository into bindings folder of `libelektra` _(Tomislav Makar @tmakar)_
 - Change module for `go-elektra` _(Tomislav Makar @tmakar)_
 - Rename `go-elektra` module _(Tomislav Makar @tmakar)_
+- Adapt README for `go-elektra` and change module name to match `github.com` _(Tomislav Makar @tmakar)_
 
 ### <<Binding>>
 

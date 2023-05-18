@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	elektra "go.libelektra.org/src/bindings/go-elektra/kdb"
+	elektra "github.com/ElektraInitiative/libelektra/src/bindings/go-elektra/kdb"
 )
 
 type keyValueBody struct {
