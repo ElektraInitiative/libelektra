@@ -306,7 +306,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Remove wikipedia from release todos in [RELEASE.md](../todo/RELEASE.md) _(Tomislav Makar @tmakar)_
 - <<TODO>>
 - Update AUTHORS.md info _(@kodebach)_
 - Add Stefan Hanreich to AUTHORS.md _(Stefan Hanreich @lawli3t)_
