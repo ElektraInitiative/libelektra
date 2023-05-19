@@ -29,9 +29,6 @@ If no release critical problems are found during testing, continue.
   - Go to https://build.libelektra.org
   - Select "Manage Jenkins" -> "Configure System"
   - Scroll down until "Global Properties" and change the variable VERSION
-- Increment version in Wikipedia pages:
-  - https://de.wikipedia.org/wiki/Elektra_(Software)
-  - https://en.wikipedia.org/wiki/Draft:Elektra_(Software)
 
 ### Check
 
