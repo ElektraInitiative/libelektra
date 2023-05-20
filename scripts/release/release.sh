@@ -13,10 +13,10 @@ BUILD_DIR="$SRC_DIR/build"
 PREVIOUS_RELEASE_LOGS="$BASE_DIR/prev-release-logs"
 
 get_current_git_version_tag() {
-	git tag -l 'v?[0-9].[0-9].[0-9]*' --sort=version:refname | tail -n1 | sed 's/v//'
+	git tag -l --sort=version:refname | sed 's/v//' | grep -e '[0-9].[0-9].[0-9]*' | tail -n1
 }
 get_previous_git_version_tag() {
-	git tag -l 'v?[0-9].[0-9].[0-9]*' --sort=version:refname | tail -n2 | head -n1 | sed 's/v//'
+	git tag -l --sort=version:refname | sed 's/v//' | grep -e '[0-9].[0-9].[0-9]*' | tail -n2 | head -n1
 }
 
 cd "$SRC_DIR"
@@ -189,7 +189,7 @@ create_source_package() {
 	gpg --sign elektra-"$VERSION".tar.gz
 
 	# Unpack + compile (with all available plugins) + test those sources:
-	tar xvzf elektra-"$VERSION".tar.gz
+	tar xvzf elektra-$VERSION.tar.gz
 	mkdir "$BUILD_DIR"/builder
 	cd "$BUILD_DIR"/builder
 	cmake -DPLUGINS="ALL" \

@@ -284,6 +284,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 ### Release
 
 - Exclude v prefix from `populate-release-notes.sh` script _(Tomislav Makar @tmakar)_
+- Handle tag prefix `v` correctly in `release.sh` _(Tomislav Makar @tmakar)_
 
 ## Documentation
 
