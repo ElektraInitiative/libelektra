@@ -189,7 +189,7 @@ create_source_package() {
 	gpg --sign elektra-"$VERSION".tar.gz
 
 	# Unpack + compile (with all available plugins) + test those sources:
-	tar xvzf elektra-"$VERSION".tar.gz
+	tar xvzf elektra-$VERSION.tar.gz
 	mkdir "$BUILD_DIR"/builder
 	cd "$BUILD_DIR"/builder
 	cmake -DPLUGINS="ALL" \
