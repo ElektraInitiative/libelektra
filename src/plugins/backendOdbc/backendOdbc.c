@@ -6,6 +6,7 @@
 #include <kdberrors.h>
 #include <kdblogger.h>
 #include <kdbprivate.h>
+#include <kdbassert.h>
 
 /* FIXME: Remove, only for testing during dev */
 #include <stdio.h>
@@ -20,8 +21,11 @@ struct dataSourceConfig
 	const char * valColName;
 };
 
+#define KEYNAME_BUFFER_SIZE 63
+#define KEYSTRING_BUFFER_SIZE 5
 
-void logError (SQLSMALLINT handleType, SQLHANDLE handle, char * functionName, bool isInfo)
+
+void logError (SQLSMALLINT handleType, SQLHANDLE handle, char * functionName, bool isInfo, Key * parentKey)
 {
 	/* Get number of available records */
 	SQLINTEGER numRecs = 0;
@@ -37,7 +41,7 @@ void logError (SQLSMALLINT handleType, SQLHANDLE handle, char * functionName, bo
 		SQLSMALLINT errMsgLen;
 
 
-		SQLRETURN ret = SQLGetDiagRec (handleType, handle, i, sqlState, &nativeError, errMsg, SQL_MAX_MESSAGE_LENGTH, &errMsgLen);
+		SQLRETURN ret = SQLGetDiagRec (handleType, handle, i, sqlState, &nativeError, errMsg, SQL_MAX_MESSAGE_LENGTH + 1, &errMsgLen);
 		if (ret == SQL_NO_DATA)
 		{
 			break;
@@ -63,6 +67,7 @@ void logError (SQLSMALLINT handleType, SQLHANDLE handle, char * functionName, bo
 			longErrMsg = NULL;
 		}
 
+		/* TODO: Extract error and add it to key */
 		fprintf (stderr, "An ODBC %s occurred", isInfo ? "warning" : "error");
 		(functionName && *functionName) ? fprintf (stderr, " in the following function: %s\n", functionName) : fprintf (stderr, ":\n");
 		fprintf (stderr, "Number of error or warning: %d of %d\n", i, numRecs);
@@ -70,7 +75,6 @@ void logError (SQLSMALLINT handleType, SQLHANDLE handle, char * functionName, bo
 		fprintf (stderr, "Native error code: %d\n", nativeError);
 		fprintf (stderr, "Error message: %s\n\n", longErrMsg ? longErrMsg : errMsg);
 		elektraFree (longErrMsg);
-
 	}
 }
 
@@ -83,14 +87,13 @@ SQLHENV allocateEnvHandle (Key * parentKey)
 
 	if (!SQL_SUCCEEDED (ret))
 	{
-		/* TODO: Extract error and add it to key */
 		fprintf (stderr, "Error AllocHandle\n");
 		ELEKTRA_LOG_NOTICE ("SQLAllocHandle() failed!\nCould not allocate handle for ODBC environment!");
 		return NULL;
 	}
 	else if (ret == SQL_SUCCESS_WITH_INFO)
 	{
-		logError (SQL_HANDLE_ENV, sqlEnv, "allocateEnvHandle", true);
+		logError (SQL_HANDLE_ENV, sqlEnv, "allocateEnvHandle", true, parentKey);
 	}
 
 
@@ -105,16 +108,15 @@ bool setOdbcVersion (SQLHENV sqlEnv, unsigned long version, Key * parentKey)
 
 	if (!SQL_SUCCEEDED (ret))
 	{
-		/* TODO: Extract error and add it to key */
 		fprintf (stderr, "Error SetEnvAttr\n");
 		ELEKTRA_LOG_NOTICE ("SQLSetEnvAttr() failed!\nCould not set ODBC-version attribute for ODBC environment!");
-		logError (SQL_HANDLE_ENV, sqlEnv, "setOdbcVersion", false);
+		logError (SQL_HANDLE_ENV, sqlEnv, "setOdbcVersion", false, parentKey);
 		SQLFreeHandle (SQL_HANDLE_ENV, sqlEnv);
 		return false;
 	}
 	else if (ret == SQL_SUCCESS_WITH_INFO)
 	{
-		logError (SQL_HANDLE_ENV, sqlEnv, "setOdbcVersion", true);
+		logError (SQL_HANDLE_ENV, sqlEnv, "setOdbcVersion", true, parentKey);
 	}
 
 	return true;
@@ -128,17 +130,16 @@ SQLHDBC allocateConnectionHandle (SQLHENV sqlEnv, Key * parentKey)
 
 	if (!SQL_SUCCEEDED (ret))
 	{
-		/* TODO: Extract error and add it to key */
 		fprintf (stderr, "Error AllocHDB %d\n", ret);
 		ELEKTRA_LOG_NOTICE ("SQLAllocHandle () failed!\nCould not allocate handle for ODBC connection! (SQLAllocHandle failed)");
-		logError (SQL_HANDLE_ENV, sqlEnv, "allocateConnectionHandle", false);
+		logError (SQL_HANDLE_ENV, sqlEnv, "allocateConnectionHandle", false, parentKey);
 		SQLFreeHandle (SQL_HANDLE_ENV, sqlEnv);
 		return NULL;
 	}
 	else if (ret == SQL_SUCCESS_WITH_INFO)
 	{
-		logError (SQL_HANDLE_ENV, sqlEnv, "allocateConnectionHandle (environment)", true);
-		logError (SQL_HANDLE_DBC, sqlConnection, "allocateConnectionHandle (connection)", true);
+		logError (SQL_HANDLE_ENV, sqlEnv, "allocateConnectionHandle (environment)", true, parentKey);
+		logError (SQL_HANDLE_DBC, sqlConnection, "allocateConnectionHandle (connection)", true, parentKey);
 
 	}
 
@@ -152,17 +153,16 @@ bool setLoginTimeout (SQLHDBC sqlConnection, unsigned long timeout, Key * parent
 
 	if (!SQL_SUCCEEDED (ret))
 	{
-		/* TODO: Extract error and add it to key */
 		fprintf (stderr, "Error AllocHDB %d\n", ret);
 		ELEKTRA_LOG_NOTICE ("SQLSetConnectAttr() failed!\nCould not set timeout attribute for ODBC connection!");
-		logError (SQL_HANDLE_DBC, sqlConnection, "setLoginTimeout", false);
+		logError (SQL_HANDLE_DBC, sqlConnection, "setLoginTimeout", false, parentKey);
 		SQLFreeHandle (SQL_HANDLE_DBC, sqlConnection);
 
 		return false;
 	}
 	else if (ret == SQL_SUCCESS_WITH_INFO)
 	{
-		logError (SQL_HANDLE_DBC, sqlConnection, "setLoginTimeout", true);
+		logError (SQL_HANDLE_DBC, sqlConnection, "setLoginTimeout", true, parentKey);
 	}
 
 
@@ -177,16 +177,15 @@ bool connectToDataSource (SQLHDBC sqlConnection, struct dataSourceConfig dsConfi
 
 	if (!SQL_SUCCEEDED (ret))
 	{
-		/* TODO: Extract error and add it to key */
 		fprintf (stderr, "Error SqlConnect %d\n", ret);
 		ELEKTRA_LOG_NOTICE ("SQLConnect() failed!\nCould not connect to the ODBC data source %s as user %s! Maybe the data source name, username or password is wrong!", dsConfig.dataSourceName, dsConfig.userName);
-		logError (SQL_HANDLE_DBC, sqlConnection, "connectToDataSource", false);
+		logError (SQL_HANDLE_DBC, sqlConnection, "connectToDataSource", false, parentKey);
 		SQLFreeHandle (SQL_HANDLE_DBC, sqlConnection);
 		return false;
 	}
 	else if (ret == SQL_SUCCESS_WITH_INFO)
 	{
-		logError (SQL_HANDLE_DBC, sqlConnection, "connectToDataSource", true);
+		logError (SQL_HANDLE_DBC, sqlConnection, "connectToDataSource", true, parentKey);
 	}
 
 
@@ -205,10 +204,9 @@ SQLHSTMT bindSelectParameters (SQLHDBC sqlConnection, struct dataSourceConfig ds
 
 	if (!SQL_SUCCEEDED (ret))
 	{
-		/* TODO: Extract error and add it to key */
 		fprintf (stderr, "Error AllocStatement %d\n", ret);
 		ELEKTRA_LOG_NOTICE ("SQLAllocHandle() failed!\nCould not allocate a handle for an SQL statement!");
-		logError (SQL_HANDLE_DBC, sqlConnection, "bindSelectParameters",false);
+		logError (SQL_HANDLE_DBC, sqlConnection, "bindSelectParameters", false, parentKey);
 
 
 		if (sqlStmt)
@@ -222,15 +220,15 @@ SQLHSTMT bindSelectParameters (SQLHDBC sqlConnection, struct dataSourceConfig ds
 	}
 	else if (ret == SQL_SUCCESS_WITH_INFO)
 	{
-		logError (SQL_HANDLE_DBC, sqlConnection, "bindSelectParameters (connection)",true);
-		logError (SQL_HANDLE_STMT, sqlStmt, "bindSelectParameters (statement)",true);
+		logError (SQL_HANDLE_DBC, sqlConnection, "bindSelectParameters (connection)", true, parentKey);
+		logError (SQL_HANDLE_STMT, sqlStmt, "bindSelectParameters (statement)", true, parentKey);
 	}
 
 
 
 	/* Build select statement (+2 for ',' and \0) */
-	//unsigned long queryLength = strlen ("SELECT ") + strlen (dsConfig.keyColName) + strlen (dsConfig.valColName) + strlen (" FROM ") + strlen (dsConfig.tableName) + 20;
-	/*char * queryString = (char *) malloc (sizeof (char) * queryLength);
+	unsigned long queryLength = strlen ("SELECT ") + strlen (dsConfig.keyColName) + strlen (dsConfig.valColName) + strlen (" FROM ") + strlen (dsConfig.tableName) + 20;
+	char * queryString = (char *) elektraMalloc(sizeof (char) * queryLength);
 	if (!queryString)
 	{
 		fprintf (stderr, "Could not allocate memory for the query-string for the SQL select-statement!\n");
@@ -241,15 +239,19 @@ SQLHSTMT bindSelectParameters (SQLHDBC sqlConnection, struct dataSourceConfig ds
 		return NULL;
 	}
 
+	/* TODO: Validate table and column-names */
 	strcpy (queryString, "SELECT ");
 	strcat (queryString, dsConfig.keyColName);
 	strcat (queryString, ",");
 	strcat (queryString, dsConfig.valColName);
 	strcat (queryString, " FROM ");
-	strcat (queryString, dsConfig.tableName);*/
+	strcat (queryString, dsConfig.tableName);
 
 	/* Prepare the statement that retrieves key-names and string-values */
-	ret = SQLPrepare (sqlStmt, (SQLCHAR *) "SELECT keyName, keyValue from elektraKeys", SQL_NTS);
+	ret = SQLPrepare (sqlStmt, (SQLCHAR *) queryString, SQL_NTS);
+
+	/* Not a deferred buffer, according to: https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/deferred-buffers */
+	free (queryString);
 
 
 
@@ -257,11 +259,10 @@ SQLHSTMT bindSelectParameters (SQLHDBC sqlConnection, struct dataSourceConfig ds
 	{
 		if (ret == SQL_SUCCESS_WITH_INFO)
 		{
-			logError (SQL_HANDLE_STMT, sqlStmt, "bindSelectParameters", true);
+			logError (SQL_HANDLE_STMT, sqlStmt, "bindSelectParameters", true, parentKey);
 		}
 
-		/* FIXME: Check if free is allowed here! */
-		//free (queryString);
+
 		return sqlStmt;
 
 	}
@@ -269,7 +270,7 @@ SQLHSTMT bindSelectParameters (SQLHDBC sqlConnection, struct dataSourceConfig ds
 	{
 		fprintf (stderr, "Error BindParameter %d\n", ret);
 		ELEKTRA_LOG_NOTICE ("SQLAllocHandle() failed!\nCould not allocate a handle for an SQL statement!");
-		logError (SQL_HANDLE_STMT, sqlStmt, "bindSelectParameters", false);
+		logError (SQL_HANDLE_STMT, sqlStmt, "bindSelectParameters", false, parentKey);
 
 		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 		SQLDisconnect (sqlConnection);
@@ -289,17 +290,16 @@ bool bindOutputColumns (SQLHSTMT sqlStmt, SQLCHAR * bufferKeyName, SQLLEN buffer
 
 	if (!SQL_SUCCEEDED (ret))
 	{
-		/* TODO: Extract error and add it to key */
 		fprintf (stderr, "Error SqlBindCol1 (char) %d\n", ret);
 		ELEKTRA_LOG_NOTICE ("SQLBindCol() failed!\nCould not bind the first column to the keyName!");
-		logError (SQL_HANDLE_STMT, sqlStmt, "bindOutputColumns", false);
+		logError (SQL_HANDLE_STMT, sqlStmt, "bindOutputColumns", false, parentKey);
 
 		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 		return false;
 	}
 	else if (ret == SQL_SUCCESS_WITH_INFO)
 	{
-		logError (SQL_HANDLE_STMT, sqlStmt, "bindOutputColumns", true);
+		logError (SQL_HANDLE_STMT, sqlStmt, "bindOutputColumns", true, parentKey);
 	}
 
 
@@ -309,18 +309,17 @@ bool bindOutputColumns (SQLHSTMT sqlStmt, SQLCHAR * bufferKeyName, SQLLEN buffer
 
 	if (!SQL_SUCCEEDED (ret))
 	{
-		/* TODO: Extract error and add it to key */
 		fprintf (stderr, "Error SqlBindCol2 (int) %d\n", ret);
 
 		ELEKTRA_LOG_NOTICE ("SQLBindCol() failed!\nCould not bind the second column to the keyString (value of the key)!");
-		logError (SQL_HANDLE_STMT, sqlStmt, "bindOutputColumns", false);
+		logError (SQL_HANDLE_STMT, sqlStmt, "bindOutputColumns", false, parentKey);
 
 		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 		return false;
 	}
 	else if (ret == SQL_SUCCESS_WITH_INFO)
 	{
-		logError (SQL_HANDLE_STMT, sqlStmt, "bindOutputColumns", true);
+		logError (SQL_HANDLE_STMT, sqlStmt, "bindOutputColumns", true, parentKey);
 	}
 
 
@@ -334,17 +333,16 @@ bool executeSelect (SQLHSTMT sqlStmt, Key * parentKey)
 
 	if (!SQL_SUCCEEDED (ret))
 	{
-		/* TODO: Extract error and add it to key */
 		fprintf (stderr, "Error Select %d\n", ret);
 		ELEKTRA_LOG_NOTICE ("SQLExecDirect() failed!\nCould not execute the query!");
-		logError (SQL_HANDLE_STMT, sqlStmt, "executeSelect", false);
+		logError (SQL_HANDLE_STMT, sqlStmt, "executeSelect", false, parentKey);
 
 		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 		return false;
 	}
 	else if (ret == SQL_SUCCESS_WITH_INFO)
 	{
-		logError (SQL_HANDLE_STMT, sqlStmt, "executeSelect", true);
+		logError (SQL_HANDLE_STMT, sqlStmt, "executeSelect", true, parentKey);
 	}
 
 
@@ -352,17 +350,75 @@ bool executeSelect (SQLHSTMT sqlStmt, Key * parentKey)
 }
 
 
-KeySet * fetchResults (SQLHSTMT sqlStmt, SQLCHAR * bufferKeyName, SQLCHAR * bufferKeyString, Key * parentKey)
+
+bool getLongData (SQLHSTMT sqlStmt, SQLUSMALLINT colNumber, SQLSMALLINT targetType, char ** targetValue, SQLLEN bufferSize, Key * parentKey)
+{
+
+	SQLLEN getDataLenOrInd;
+	SQLRETURN getDataRet;
+
+	unsigned int iteration = 0;
+
+	do
+	{
+		if (iteration > 0)
+		{
+			if (elektraRealloc ((void**) targetValue, bufferSize * (iteration + 1)) == -1)
+			{
+				fprintf (stderr, "Error SQLGetData: Could not reallocate buffer to provide more space (out of memory?)\n");
+				SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
+				return false;
+			}
+		}
+
+
+		getDataRet = SQLGetData (sqlStmt, colNumber, targetType, (*targetValue) + (iteration * (bufferSize-1)), bufferSize, &getDataLenOrInd);
+
+		if (SQL_SUCCEEDED (getDataRet))
+		{
+			if (getDataRet == SQL_SUCCESS_WITH_INFO)
+			{
+				logError (SQL_HANDLE_STMT, sqlStmt, "getLongData", true, parentKey);
+			}
+			else
+			{
+				/* The last call returns SQL_SUCCESS, no more iterations necessary
+				 * see: https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/getting-long-data */
+				return true;
+			}
+		}
+		else
+		{
+			fprintf (stderr, "Error SQLGetData, getDataRet not succeeded\n");
+			logError (SQL_HANDLE_STMT, sqlStmt, "getLongData", false, parentKey);
+			SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
+			return false;
+		}
+
+		iteration++;
+
+	} while (getDataRet != SQL_NO_DATA);
+
+
+	return true;
+}
+
+
+
+KeySet * fetchResults (SQLHSTMT sqlStmt, SQLCHAR * bufferKeyName, SQLCHAR * bufferKeyString, SQLLEN * nameLenInd, SQLLEN * stringLenInd, Key * parentKey)
 {
 	SQLRETURN ret;
 	KeySet * ksResult = NULL;
 
 	for (unsigned int i = 1; (ret = SQLFetch (sqlStmt)) != SQL_NO_DATA; i++)
 	{
+		 ELEKTRA_ASSERT (bufferKeyName && *bufferKeyName && *nameLenInd != SQL_NULL_DATA, "The ODBC-backend retrieved an empty- or null-string for the key-name. This is not allowed! Please check you data source.");
+
+
 		if (!SQL_SUCCEEDED (ret))
 		{
 			fprintf (stderr, "Error SQLFetch %d\n", ret);
-			logError (SQL_HANDLE_STMT, sqlStmt, "fetchResults", false);
+			logError (SQL_HANDLE_STMT, sqlStmt, "fetchResults", false, parentKey);
 
 			if (ksResult)
 			{
@@ -376,12 +432,75 @@ KeySet * fetchResults (SQLHSTMT sqlStmt, SQLCHAR * bufferKeyName, SQLCHAR * buff
 		else
 		{
 			/* FIXME: remove printf */
-			printf ("Processing record number %d\n", i);
+			//printf ("\nProcessing record number %d\n", i);
+			//printf ("NameLenInd: %ld, StrLenInd: %ld\n", *nameLenInd, *stringLenInd);
 
+			char * longKeyName = NULL;
+			char * longKeyString = NULL;
 
 			if (ret == SQL_SUCCESS_WITH_INFO)
 			{
-				logError (SQL_HANDLE_STMT, sqlStmt, "fetchResults", true);
+				/* Check if string was truncated (buffer too small) */
+				SQLCHAR sqlState[SQL_SQLSTATE_SIZE + 1];
+				SQLGetDiagField (SQL_HANDLE_STMT, sqlStmt, 1, SQL_DIAG_SQLSTATE, sqlState, SQL_SQLSTATE_SIZE + 1, 0);
+
+
+				/* SQLSTATE 01004 = Data truncated */
+				if (elektraStrCmp ((const char *) sqlState, "01004") == 0)
+				{
+					/* The buffer size constants include the byte for the \0, while the LenInd-variables don't! */
+
+					/* Check key-name column */
+					bool retGetLongData = true;
+					if (*nameLenInd == SQL_NO_TOTAL)
+					{
+						/* No information about the total length is available --> The new buffer maybe must be resized multiple times */
+						longKeyName = (char *) elektraMalloc (sizeof (char) * (KEYNAME_BUFFER_SIZE * 2));
+						retGetLongData = getLongData (sqlStmt, 1, SQL_C_CHAR, &longKeyName, KEYNAME_BUFFER_SIZE * 2, parentKey);
+					}
+					else if (KEYNAME_BUFFER_SIZE <= *nameLenInd)
+					{
+						longKeyName = (char *) elektraMalloc (sizeof (char) * (*nameLenInd + 1));
+						retGetLongData = getLongData (sqlStmt, 1, SQL_C_CHAR, &longKeyName, (*nameLenInd + 1), parentKey);
+					}
+
+					/* Check key-string column */
+					if (retGetLongData && *stringLenInd == SQL_NO_TOTAL)
+					{
+						longKeyString = (char *) elektraMalloc (sizeof (char) * (KEYSTRING_BUFFER_SIZE * 2));
+						retGetLongData = getLongData (sqlStmt, 2, SQL_C_CHAR, &longKeyString, KEYSTRING_BUFFER_SIZE * 2, parentKey);
+					}
+					else if (KEYSTRING_BUFFER_SIZE <= *stringLenInd)
+					{
+						longKeyString = (char *) elektraMalloc (sizeof (char) * ((*stringLenInd) + 1));
+						retGetLongData = getLongData (sqlStmt, 2, SQL_C_CHAR, &longKeyString, ((*stringLenInd) + 1), parentKey);
+					}
+
+					if (!retGetLongData)
+					{
+						if (longKeyName)
+						{
+							elektraFree (longKeyName);
+						}
+
+						if (longKeyString)
+						{
+							elektraFree (longKeyString);
+						}
+
+						/* Statement handle was already freed by getLongData() function */
+						if (ksResult)
+						{
+							ksDel (ksResult);
+						}
+						return NULL;
+					}
+
+				}
+				else
+				{
+					logError (SQL_HANDLE_STMT, sqlStmt, "fetchResults", true, parentKey);
+				}
 			}
 
 			if (!ksResult)
@@ -390,8 +509,31 @@ KeySet * fetchResults (SQLHSTMT sqlStmt, SQLCHAR * bufferKeyName, SQLCHAR * buff
 			}
 
 			Key * curKey = keyDup (parentKey, KEY_CP_NAME);
-			keyAddName (curKey, (char *) bufferKeyName);
-			keySetString (curKey, (char *) bufferKeyString);
+
+
+			if (longKeyName)
+			{
+				keyAddName (curKey, longKeyName);
+				elektraFree (longKeyName);}
+			else
+			{
+				keyAddName (curKey, (char *) bufferKeyName);
+			}
+
+
+			if (longKeyString)
+			{
+				keySetString (curKey, longKeyString);
+				elektraFree (longKeyString);
+			}
+			else if (bufferKeyString && *stringLenInd != SQL_NULL_DATA)
+			{
+				keySetString (curKey, (char *) bufferKeyString);
+			}
+			else
+			{
+				keySetString (curKey, "");
+			}
 			ksAppendKey (ksResult, curKey);
 		}
 	}
@@ -450,11 +592,12 @@ KeySet * getKeysFromDataSource (struct dataSourceConfig dsConfig, Key * parentKe
 		return NULL;
 	}
 
-	SQLCHAR bufferKeyName[99], bufferKeyString[99];
+	SQLCHAR bufferKeyName[KEYNAME_BUFFER_SIZE];
+	SQLCHAR	bufferKeyString[KEYSTRING_BUFFER_SIZE];
 	SQLLEN nameLenInd, strLenInd;
 
 	/* 5. Bind output columns to variables */
-	if (!bindOutputColumns (sqlStmt, bufferKeyName, 99, bufferKeyString, 99, &nameLenInd, &strLenInd, parentKey))
+	if (!bindOutputColumns (sqlStmt, bufferKeyName, KEYNAME_BUFFER_SIZE, bufferKeyString, KEYSTRING_BUFFER_SIZE, &nameLenInd, &strLenInd, parentKey))
 	{
 		SQLDisconnect (sqlConnection);
 		SQLFreeHandle (SQL_HANDLE_DBC, sqlConnection);
@@ -470,7 +613,7 @@ KeySet * getKeysFromDataSource (struct dataSourceConfig dsConfig, Key * parentKe
 	}
 
 	/* 7. Fetch results */
-	KeySet * ksResult = fetchResults (sqlStmt, bufferKeyName, bufferKeyString, parentKey);
+	KeySet * ksResult = fetchResults (sqlStmt, bufferKeyName, bufferKeyString, &nameLenInd, &strLenInd, parentKey);
 
 	/* If errors occurred, the statement handle was already freed by the fetchResults()-function. */
 	if (ksResult)
@@ -521,10 +664,10 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ksReturned, Key * p
 	case ELEKTRA_KDB_GET_PHASE_STORAGE:
 	{
 		struct dataSourceConfig dsConfig;
-		dsConfig.dataSourceName = "Selektra";
-		dsConfig.tableName = "elektraKeys";
-		dsConfig.keyColName = "keyName";
-		dsConfig.valColName = "keyValue";
+		dsConfig.dataSourceName = "Pelektra";
+		dsConfig.tableName = "elektra";
+		dsConfig.keyColName = "key";
+		dsConfig.valColName = "val";
 		dsConfig.userName = "flo";
 		dsConfig.password = "elektra";
 
