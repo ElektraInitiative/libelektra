@@ -2,11 +2,8 @@
 
 set +ex
 
-if ["${KDB_VERSION}" = v*]; then
-	git archive --prefix=elektra-"${KDB_VERSION}"/ --format=tar "v${KDB_VERSION}" | gzip --no-name > "${CMAKE_BINARY_DIR}"/elektra-"${KDB_VERSION}".tar.gz
-else
-	git archive --prefix=elektra-"${KDB_VERSION}"/ --format=tar "${KDB_VERSION}" | gzip --no-name > "${CMAKE_BINARY_DIR}"/elektra-"${KDB_VERSION}".tar.gz
-fi
+CURRENT_TAG=$(git tag --sort=version:refname --list | grep -e '[0-9].[0-9].[0-9]*' | tail -n1)
+git archive --prefix=elektra-"${KDB_VERSION}"/ --format=tar $CURRENT_TAG | gzip --no-name > "${CMAKE_BINARY_DIR}"/elektra-"${KDB_VERSION}".tar.gz
 
 hashsum() {
 	printf "name: "
