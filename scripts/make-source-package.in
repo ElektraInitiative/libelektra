@@ -2,7 +2,11 @@
 
 set +ex
 
-git archive --prefix=elektra-"${KDB_VERSION}"/ --format=tar "${KDB_VERSION}" | gzip --no-name > "${CMAKE_BINARY_DIR}"/elektra-"${KDB_VERSION}".tar.gz
+if ["${KDB_VERSION}" = v*]; then
+	git archive --prefix=elektra-"${KDB_VERSION}"/ --format=tar "v${KDB_VERSION}" | gzip --no-name > "${CMAKE_BINARY_DIR}"/elektra-"${KDB_VERSION}".tar.gz
+else
+	git archive --prefix=elektra-"${KDB_VERSION}"/ --format=tar "${KDB_VERSION}" | gzip --no-name > "${CMAKE_BINARY_DIR}"/elektra-"${KDB_VERSION}".tar.gz
+fi
 
 hashsum() {
 	printf "name: "
