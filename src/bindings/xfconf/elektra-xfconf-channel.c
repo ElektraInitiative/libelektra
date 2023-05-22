@@ -389,7 +389,7 @@ static int g_value_convert_string (GValue * g_value, const char * new_value)
 		g_value_set_double (g_value, strtod (new_value, NULL));
 		break;
 	case G_TYPE_BOOLEAN:
-		if (strcmp (new_value, "TRUE") == 0 || strcmp (new_value, "true") == 0 || strcmp (new_value, "True") == 0)
+		if (elektraStrCaseCmp (new_value, "true") == 0)
 		{
 			g_value_set_boolean (g_value, TRUE);
 		}
