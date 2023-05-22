@@ -43,6 +43,7 @@ set (
 	lua-elektra
 	ruby-elektra
 	python3-elektra
+	xfconf-elektra
 	elektra-bin
 	elektra-bin-extra
 	elektra-doc
@@ -189,6 +190,11 @@ if (UNIX)
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-XERCES_DEPENDS "libelektra${SO_VERSION}")
 	check_component_dependencies (xerces libelektra${SO_VERSION}-xerces PLUGIN)
 
+	set (CPACK_COMPONENT_XFCONF-ELEKTRA_DISPLAY_NAME "xfconf-elektra")
+	set (CPACK_COMPONENT_XFCONF-ELEKTRA_DESCRIPTION "This package contains the Xfconf bindings.")
+	set (CPACK_COMPONENT_XFCONF-ELEKTRA_DEPENDS "libelektra${SO_VERSION}")
+	check_component_dependencies (xfconf xfconf-elektra BINDING)
+
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-YAJL_DISPLAY_NAME "libelektra${SO_VERSION}-yajl")
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-YAJL_DESCRIPTION "This package contains the 'yajl' plugin.")
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-YAJL_DEPENDS "libelektra${SO_VERSION}")
@@ -319,6 +325,7 @@ if (UNIX)
 		"io-glib-elektra"
 		"io-uv-elektra"
 		"lua-elektra"
+		"xfconf-elektra"
 		"elektra-bin"
 		"elektra-qt-gui"
 		"libelektra${SO_VERSION}-crypto"
