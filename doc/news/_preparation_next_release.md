@@ -286,6 +286,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Exclude v prefix from `populate-release-notes.sh` script _(Tomislav Makar @tmakar)_
 - Handle tag prefix `v` correctly in `release.sh` _(Tomislav Makar @tmakar)_
 - Check for `v` prefix in `make-source-package` script and `Jenkinsfile.release` _(Tomislav Makar @tmakar)_
+- Use correct tags for `git-release-stats` script _(Tomislav Makar @tmakar)_
 
 ## Documentation
 
