@@ -26,18 +26,3 @@ target_compile_options (${XFCONF_BINDING_LIBRARY} PUBLIC)
 target_link_libraries (${XFCONF_BINDING_LIBRARY} PUBLIC elektra-core elektra-kdb)
 
 install (TARGETS ${XFCONF_BINDING_LIBRARY} LIBRARY DESTINATION lib${LIB_SUFFIX} COMPONENT xfconf-elektra)
-
-if (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
-	if (NOT FORCE_IN_SOURCE_BUILD)
-		message (
-			FATAL_ERROR
-				"In-source builds are not permitted.\n"
-				"Make a separate folder for building:\n"
-				"    mkdir build && cd build && cmake ..\n"
-				"Before that, remove the files already created:\n"
-				"    rm -rf CMakeCache.txt CMakeFiles\n"
-				"If you really know what you are doing\n"
-				"(will overwrite original files!) use:\n"
-				"    cmake -DFORCE_IN_SOURCE_BUILD=ON\n")
-	endif (NOT FORCE_IN_SOURCE_BUILD)
-endif (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
