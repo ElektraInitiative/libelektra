@@ -76,8 +76,8 @@ gchar ** xfconf_list_channels (void)
 	const char * currentChannelNameEnd;
 	for (elektraCursor i = 0, nameIndex = 0; i < keySetLength; i++)
 	{
-		//		This looks at the first level of the keyname (minus the namespace and root where all xfconf keys live) as this
-		//is the actual channel name in xfconf.
+		//		This looks at the first level of the keyname (minus the namespace and root where all xfconf keys live) as
+		//this is the actual channel name in xfconf.
 		currentKey = ksAtCursor (channelKeySet, i);
 		currentKeyName = keyName (currentKey);
 		currentChannelNameWithSuffix = &currentKeyName[strlen (XFCONF_NAMESPACE) + strlen (XFCONF_ROOT) + 1];
