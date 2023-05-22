@@ -347,6 +347,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 ## Tests
 
 - Add shell test to verify correct behavior for https://github.com/ElektraInitiative/libelektra/issues/4061 _(Tomislav Makar @tmakar)_
+- Add link to `linkchecker.whitelist` _(Tomislav Makar @tmakar)_
 
 ## Build
 
