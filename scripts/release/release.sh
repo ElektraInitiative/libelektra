@@ -123,7 +123,7 @@ export_git_log() {
 	PREV=$(git tag --sort=version:refname --list | grep -e '[0-9].[0-9].[0-9]*' | tail -n2 | head -n1)
 	CURRENT=$(git tag --sort=version:refname --list | grep -e '[0-9].[0-9].[0-9]*' | tail -n1)
 	# generate git statistics
-	"$SCRIPTS_DIR"/git-release-stats "$PREVIOUS_RELEASE" "$CURRENT_RELEASE" > "$GIT_LOG_DIR/statistics"
+	"$SCRIPTS_DIR"/git-release-stats "$PREV" "$CURRENT" > "$GIT_LOG_DIR/statistics"
 }
 
 run_checks() {
