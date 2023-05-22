@@ -327,7 +327,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- Added `scripts/dev/check-includes.sh` which checks our [new rules](/doc/decisions/4_decided/header_include.md) for `#include`s _(@kodebach)_
+- Added `scripts/dev/check-includes.sh` which checks our [new rules](/doc/decisions/5_partially_implemented/header_include.md) for `#include`s _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -405,7 +405,6 @@ This section keeps you up-to-date with the multi-language support provided by El
 ### Decisions
 
 - Decide and implement [decision process](../decisions/5_partially_implemented/decision_process.md) _(Markus Raab)_
-- Decided future [library split](../decisions/4_decided/library_split.md) _(@kodebach)_
 - Decided [decision process](https://www.libelektra.org/decisions/decision-process) _(Markus Raab)_
 - Draft for [man pages](../decisions/0_drafts/man_pages.md) _(Markus Raab)_
 - <<TODO>>
@@ -413,7 +412,6 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Create [decision](../decisions/0_drafts/operation_sequences.md) for allowed and prohibited operation seqences _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
-- Add decisions about [location of headers](../decisions/4_decided/header_file_structure.md) and [use of `#include`](../decisions/4_decided/header_include.md) in the repo _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - Add decision about [metadata semantics](../decisions/0_drafts/metakey_semantics.md) _(@kodebach)_
