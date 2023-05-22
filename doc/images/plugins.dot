@@ -132,10 +132,6 @@ strict digraph G {
 	modules [shape=Mdiamond];
 	storage [shape=Mdiamond];
 	mozprefs -> storage;
-	resolver [shape=Mdiamond];
-	multifile -> resolver;
-	storage [shape=Mdiamond];
-	multifile -> storage;
 	check [shape=Mdiamond];
 	network -> check;
 	storage [shape=Mdiamond];
