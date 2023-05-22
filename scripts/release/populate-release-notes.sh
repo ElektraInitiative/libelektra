@@ -23,7 +23,9 @@ PREVIOUS_RELEASE=$(git tag -l --sort=version:refname | sed 's/v//' | grep -e '[0
 PREVIOUS_RELEASE_MAJOR_MINOR_VERSION=$(echo "$PREVIOUS_RELEASE" | grep -Po '^\d+.\d+')
 
 generate_git_release_stats_minimal() {
-	STATS=$("$SCRIPTS_DIR"/git-release-stats "$PREVIOUS_RELEASE" "$KDB_VERSION")
+	PREV=$(git tag --sort=version:refname --list | grep -e '[0-9].[0-9].[0-9]*' | tail -n2 | head -n1)
+	CURRENT=$(git tag --sort=version:refname --list | grep -e '[0-9].[0-9].[0-9]*' | tail -n1)
+	STATS=$("$SCRIPTS_DIR"/git-release-stats "$PREV" "$CURRENT")
 	# extract necessary fields from stats
 	NUM_AUTHORS=$(echo "$STATS" | grep -o Author | wc -l)
 	FILES_CHANGED=$(echo "$STATS" | grep -Po "\d+ files changed" | grep -Po "\d+")

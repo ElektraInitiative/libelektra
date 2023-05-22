@@ -120,6 +120,8 @@ export_git_log() {
 	# get latest two version tags
 	PREVIOUS_RELEASE=$(get_previous_git_version_tag)
 	CURRENT_RELEASE=$(get_current_git_version_tag)
+	PREV=$(git tag --sort=version:refname --list | grep -e '[0-9].[0-9].[0-9]*' | tail -n2 | head -n1)
+	CURRENT=$(git tag --sort=version:refname --list | grep -e '[0-9].[0-9].[0-9]*' | tail -n1)
 	# generate git statistics
 	"$SCRIPTS_DIR"/git-release-stats "$PREVIOUS_RELEASE" "$CURRENT_RELEASE" > "$GIT_LOG_DIR/statistics"
 }
