@@ -1939,14 +1939,18 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		ELEKTRA_SET_INTERNAL_ERROR (parentKey,
 					    "Couldn't divide keys into mountpoints before poststorage. Please report this bug at "
 					    "https://issues.libelektra.org.");
+		keyDel (defaultCutpoint);
 		ksDel (dataKs);
+		ksDel (defaults);
 		goto error;
 	}
 
 	// Step 16: run poststorage phase for non-spec:/
 	if (!runGetPhase (backends, parentKey, ELETKRA_KDB_GET_PHASE_POST_STORAGE_NONSPEC))
 	{
+		keyDel (defaultCutpoint);
 		ksDel (dataKs);
+		ksDel (defaults);
 		goto error;
 	}
 

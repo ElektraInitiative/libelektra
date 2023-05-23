@@ -16,7 +16,7 @@ This command allows a user to import an existing configuration into the key data
 The configuration that the user wants to import is read from `stdin`.
 The user should specify the format that the current configuration or keys are in, otherwise the default format will be used.
 The default format is `storage` but can be changed by editing the value of the `/sw/elektra/kdb/#0/current/format` key.
-The `storage` plugin can be configured at compile-time or changed by the link `libelektra-storage.so`.
+The `storage` plugin can be configured at compile-time or changed by the link `libelektra-plugin-storage.so`.
 
 ## CONFLICTS
 

@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre3
-.TH "KDB\-IMPORT" "1" "August 2021" ""
+.TH "KDB\-IMPORT" "1" "May 2023" ""
 .SH "NAME"
 \fBkdb\-import\fR \- Import an existing configuration into the key database
 .SH "SYNOPSIS"
@@ -10,7 +10,7 @@ Where \fBdestination\fR is the destination where the user wants the keys to be i
 .SH "DESCRIPTION"
 If the \fBformat\fR argument is not passed, then the default format will be used as determined by the value of the \fBsw/kdb/current/format\fR key\. By default, that key is set to the \fBstorage\fR format\. The \fBformat\fR attribute relies on Elektra’s plugin system to properly import the configuration\. The user can view all plugins available for use by running the kdb\-plugin\-list(1) command\. To learn about any plugin, the user can simply use the kdb\-plugin\-info(1) command\.
 .P
-This command allows a user to import an existing configuration into the key database\. The configuration that the user wants to import is read from \fBstdin\fR\. The user should specify the format that the current configuration or keys are in, otherwise the default format will be used\. The default format is \fBstorage\fR but can be changed by editing the value of the \fB/sw/elektra/kdb/#0/current/format\fR key\. The \fBstorage\fR plugin can be configured at compile\-time or changed by the link \fBlibelektra\-storage\.so\fR\.
+This command allows a user to import an existing configuration into the key database\. The configuration that the user wants to import is read from \fBstdin\fR\. The user should specify the format that the current configuration or keys are in, otherwise the default format will be used\. The default format is \fBstorage\fR but can be changed by editing the value of the \fB/sw/elektra/kdb/#0/current/format\fR key\. The \fBstorage\fR plugin can be configured at compile\-time or changed by the link \fBlibelektra\-plugin\-storage\.so\fR\.
 .SH "CONFLICTS"
 Conflicts can occur when importing a configuration to a part of the database where keys already exist\. Conflicts when importing can be resolved using a strategy with the \fB\-s\fR argument\.
 .P

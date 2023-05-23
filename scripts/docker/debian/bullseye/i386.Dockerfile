@@ -12,13 +12,15 @@ RUN dpkg --add-architecture i386 \
         autotools-dev \
         automake \
         cmake \
-        pkg-config \
+        pkgconf \
         gcc-multilib \
         g++-multilib \
         file \
 	python3-pip \
 	python3-wheel \
     && rm -rf /var/lib/apt/lists/*
+
+RUN ln -sf pkgconf /usr/bin/pkg-config
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest

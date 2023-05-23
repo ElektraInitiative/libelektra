@@ -103,8 +103,6 @@ strict digraph G {
 	mmapstorage -> mmapstorage;
 	modules	[shape=Mdiamond];
 	mozprefs -> storage;
-	multifile -> storage;
-	multifile -> resolver;
 	network -> check;
 	ni -> storage;
 	ini	[shape=Mdiamond];

@@ -220,7 +220,7 @@ static Key * specCollision (KeySet * specKeys)
  * In case the key is missing and has no meta key default the method returns -1 and it fails by
  * adding an error (or warning in the case of `kdbGet`).
  *
- * @param parentKey the parent key (primarily used to handle in case of error, warning, information)
+ * @param parentKey the parent key (primarily used to handle in case of error, warning)
  * @param specKey the specification key containing the meta data to be copied
  * @param specKeys the specification keys in this {@link ks}
  * @param ks the KeySet to search for the key
@@ -362,17 +362,8 @@ static int copyMetaData (Key * parentKey, Key * specKey, KeySet * specKeys, KeyS
 		if (hasDefault (specKey))
 		{
 			addDefaultKey (ks, specKey, false);
-			return 0;
 		}
-		else
-		{
-			char * msg = elektraFormat ("Key for specification %s does not exist", keyName (specKey));
-			char * formattedInfoMessage = elektraFormat ("%s/%s", INFO_KEY, "description");
-			keySetMeta (parentKey, formattedInfoMessage, msg);
-			elektraFree (msg);
-			elektraFree (formattedInfoMessage);
-			return 0;
-		}
+		return 0;
 	}
 
 	return 0;

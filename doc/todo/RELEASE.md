@@ -29,14 +29,12 @@ If no release critical problems are found during testing, continue.
   - Go to https://build.libelektra.org
   - Select "Manage Jenkins" -> "Configure System"
   - Scroll down until "Global Properties" and change the variable VERSION
-- Increment version in Wikipedia pages:
-  - https://de.wikipedia.org/wiki/Elektra_(Software)
-  - https://en.wikipedia.org/wiki/Draft:Elektra_(Software)
 
 ### Check
 
 - https://build.libelektra.org/job/libelektra/job/master/ must pass
 - Run [audit-dependencies](/scripts/dev/audit-dependencies) to make sure no known vulnerabilities exist in project dependencies
+- If something was updated in `go-elektra` make sure to follow [go-publishing](https://go.dev/doc/modules/publishing) for publishing the new version
 
 ## When Source Code is considered ready
 

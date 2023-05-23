@@ -56,28 +56,6 @@ ELEKTRA_UNUSED static void printAllKeysAndCorrespondingMetaKeys (KeySet * ks)
 }
 
 /**
- * Output an info if it exists.
- *
- * @param parentKey the parent key to extract the info from
- * @return 0 - if no output was available
- */
-static int output_info (Key * parentKey)
-{
-	if (!parentKey)
-	{
-		return 0;
-	}
-
-	char * metaName = elektraFormat ("%s/%s", INFO_KEY, "description");
-	const Key * infoDescription = keyGetMeta (parentKey, metaName);
-	elektraFree (metaName);
-
-	printf ("info with description on key %s: %s\n", keyName (parentKey), keyString (infoDescription));
-
-	return 1;
-}
-
-/**
  * This test should verify that there is an error when a key is required by the specification
  * but is not present in the configuration.
  *
@@ -195,37 +173,6 @@ static void test_hook_copy_only_to_keys_specified_in_specification_should_succee
 		}
 
 		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded")
-
-		ksDel (ks);
-	}
-	TEST_END
-}
-
-/**
- * This test should verify that if a key was defined in the specification, has no default meta key and is not in the
- * configuration (no other namespace), then it should show an info.
- *
- * Sample:
- * 	spec:/sw/org/a => meta:/somemetakey = hello
- *
- * No key created. Info shown.
- *
- * @param isKdbGet boolean value indicating if it is a kdb get call
- */
-static void test_hook_copy_with_missing_key_and_no_default_should_info (bool isKdbGet)
-{
-	printf ("test %s, isKdbGet=%d\n", __func__, isKdbGet);
-
-	TEST_BEGIN
-	{
-		KeySet * ks = ksNew (0, KS_END);
-
-		ksAppendKey (ks, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "somemetakey", "hello", KEY_END));
-
-		int result = elektraSpecCopy (NULL, ks, parentKey, isKdbGet);
-
-		succeed_if (output_info (parentKey), "no infos available");
-		TEST_CHECK (result == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
 
 		ksDel (ks);
 	}
@@ -1060,7 +1007,6 @@ int main (void)
 	test_hook_copy_with_require_meta_key_and_missing_key_should_error (false);
 	test_hook_copy_with_default_meta_key_and_missing_key_should_create_key_with_default (false);
 	test_hook_copy_only_to_keys_specified_in_specification_should_succeeded (false);
-	test_hook_copy_with_missing_key_and_no_default_should_info (false);
 	test_hook_copy_with_parent_key_containing_namespace_should_succeed (false);
 
 	test_hook_copy_with_wildcard_specification_only_one_underline_should_succeed (false);

@@ -13,17 +13,19 @@ DOC_DIR=$(dirname "$SCRIPTS_DIR")/doc
 NEWS_DIR="$DOC_DIR"/news
 RELEASE_NOTE_PREPARATION_PATH="$NEWS_DIR/_preparation_next_release.md"
 
-KDB_VERSION_PATCH=$(echo "$KDB_VERSION" | grep -Po '\d+$')
+# KDB_VERSION_PATCH=$(echo "$KDB_VERSION" | grep -Po '\d+$')
 CURRENT_DATE=$(date +'%Y-%m-%d')
 RELEASE_NOTE_FILENAME="$CURRENT_DATE"_"$KDB_VERSION".md
 RELEASE_NOTE_PATH="$NEWS_DIR/$RELEASE_NOTE_FILENAME"
 
 # get previous release version from git tags
-PREVIOUS_RELEASE=$(git tag -l '[0-9].[0-9].[0-9]*' --sort=version:refname | tail -n2 | head -n1)
-PREVIOUS_RELEASE_MAJOR_MINOR_VERSION=$(echo "$PREVIOUS_RELEASE" | grep -Po '^\d+.\d+')
+PREVIOUS_RELEASE=$(git tag -l --sort=version:refname | sed 's/v//' | grep -e '[0-9].[0-9].[0-9]*' | tail -n2 | head -n1)
+# PREVIOUS_RELEASE_MAJOR_MINOR_VERSION=$(echo "$PREVIOUS_RELEASE" | grep -Po '^\d+.\d+')
 
 generate_git_release_stats_minimal() {
-	STATS=$("$SCRIPTS_DIR"/git-release-stats "$PREVIOUS_RELEASE" "$KDB_VERSION")
+	PREV=$(git tag --sort=version:refname --list | grep -e '[0-9].[0-9].[0-9]*' | tail -n2 | head -n1)
+	CURRENT=$(git tag --sort=version:refname --list | grep -e '[0-9].[0-9].[0-9]*' | tail -n1)
+	STATS=$("$SCRIPTS_DIR"/git-release-stats "$PREV" "$CURRENT")
 	# extract necessary fields from stats
 	NUM_AUTHORS=$(echo "$STATS" | grep -o Author | wc -l)
 	FILES_CHANGED=$(echo "$STATS" | grep -Po "\d+ files changed" | grep -Po "\d+")
@@ -33,7 +35,7 @@ generate_git_release_stats_minimal() {
 	echo "$NUM_AUTHORS $FILES_CHANGED $INSERTIONS $DELETIONS $COMMITS"
 	# replace statistics placeholder with actual statistics
 	STAT_RESULT="About $NUM_AUTHORS authors changed $FILES_CHANGED files with $INSERTIONS insertions(+) and $DELETIONS deletions(-) in $COMMITS commits."
-	sed -i "s;<<\`scripts/git-release-stats $PREVIOUS_RELEASE_MAJOR_MINOR_VERSION.VER-1 $KDB_VERSION\`>>;$STAT_RESULT;" "$RELEASE_NOTE_PATH"
+	sed -i "s;<<\`scripts/git-release-stats $PREVIOUS_RELEASE.VER-1 $CURRENT\`>>;$STAT_RESULT;" "$RELEASE_NOTE_PATH"
 }
 
 generate_hashsums() {
@@ -55,7 +57,7 @@ update_alpine_release_image() {
 mv "$RELEASE_NOTE_PREPARATION_PATH" "$RELEASE_NOTE_PATH"
 cp "$DOC_DIR"/todo/NEWS.md "$RELEASE_NOTE_PREPARATION_PATH"
 # replace <<VERSION>> placeholder with actual version
-sed -i "s/<<VERSION>>/$KDB_VERSION_PATCH/g" "$RELEASE_NOTE_PATH"
+sed -i "s/<<VERSION>>/$KDB_VERSION/g" "$RELEASE_NOTE_PATH"
 
 generate_hashsums
 generate_git_release_stats_minimal

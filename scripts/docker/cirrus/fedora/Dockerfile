@@ -48,6 +48,7 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         yajl-devel \
         yaml-cpp-devel \
         zlib-devel \
+    	golang \
     && dnf clean all -y
 
 # Google Test

@@ -3,6 +3,8 @@
 .TH "README" "" "May 2023" ""
 .SH "Introduction"
 A server that provides an HTTP API \fIhttp://docs\.elektrad\.apiary\.io\fR to access Elektra remotely, built using Go \fIhttps://golang\.org\fR\.
+.P
+\fBElektrad\fR uses the go\-elektra \fI\.\./\.\./bindings/go\-elektra/README\.md\fR binding to access the \fBlibelektra\fR core functionalities which are written in C\.
 .SH "Lifetime of KDB handles"
 Instantiating a KDB Handle for every request is expensive, espescially for big KDB databases, and prevents handling of conflicts\. To mitigate this issue sessions with an associated handle are created\. One hour after the last request these sessions are destroyed and the KDB handle is closed\.
 .SH "Source structure"
@@ -18,7 +20,7 @@ Instantiating a KDB Handle for every request is expensive, espescially for big K
 .SH "Compiling"
 You can compile \fBelektrad\fR manually or via CMake\.
 .P
-If go\-elektra \fIhttps://github\.com/ElektraInitiative/go\-elektra\fR fails to compile checkout the README\.md \fIhttps://github\.com/ElektraInitiative/go\-elektra/blob/master/README\.md\fR for troubleshooting\.
+If \fBgo\-elektra\fR fails to compile checkout the README\.md \fI\.\./\.\./bindings/go\-elektra/README\.md\fR for troubleshooting\.
 .SS "Manually"
 .IP "\(bu" 4
 make sure you have go (>1\.13) installed\.

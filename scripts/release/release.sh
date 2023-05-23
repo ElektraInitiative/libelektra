@@ -13,10 +13,10 @@ BUILD_DIR="$SRC_DIR/build"
 PREVIOUS_RELEASE_LOGS="$BASE_DIR/prev-release-logs"
 
 get_current_git_version_tag() {
-	git tag -l '[0-9].[0-9].[0-9]*' --sort=version:refname | tail -n1
+	git tag -l --sort=version:refname | sed 's/v//' | grep -e '[0-9].[0-9].[0-9]*' | tail -n1
 }
 get_previous_git_version_tag() {
-	git tag -l '[0-9].[0-9].[0-9]*' --sort=version:refname | tail -n2 | head -n1
+	git tag -l --sort=version:refname | sed 's/v//' | grep -e '[0-9].[0-9].[0-9]*' | tail -n2 | head -n1
 }
 
 cd "$SRC_DIR"
@@ -84,9 +84,9 @@ run_updates() {
 
 git_tag() {
 	cd "$SRC_DIR"
-	PREVIOUS_RELEASE_TAG=$(get_current_git_version_tag)
+	PREVIOUS_RELEASE_TAG=$(get_current_git_version_tag | sed 's/v//')
 	if [ "$PREVIOUS_RELEASE_TAG" != "$VERSION" ]; then
-		git tag "$VERSION" -m "Release $VERSION" # needed by `make source-package` and `git-release-stats
+		git tag "v$VERSION" -m "Release v$VERSION" # needed by `make source-package` and `git-release-stats
 	else
 		echo "VERSION equals latest git version tag. Git tag will not be created."
 	fi
@@ -120,8 +120,10 @@ export_git_log() {
 	# get latest two version tags
 	PREVIOUS_RELEASE=$(get_previous_git_version_tag)
 	CURRENT_RELEASE=$(get_current_git_version_tag)
+	PREV=$(git tag --sort=version:refname --list | grep -e '[0-9].[0-9].[0-9]*' | tail -n2 | head -n1)
+	CURRENT=$(git tag --sort=version:refname --list | grep -e '[0-9].[0-9].[0-9]*' | tail -n1)
 	# generate git statistics
-	"$SCRIPTS_DIR"/git-release-stats "$PREVIOUS_RELEASE" "$CURRENT_RELEASE" > "$GIT_LOG_DIR/statistics"
+	"$SCRIPTS_DIR"/git-release-stats "$PREV" "$CURRENT" > "$GIT_LOG_DIR/statistics"
 }
 
 run_checks() {
@@ -189,7 +191,7 @@ create_source_package() {
 	gpg --sign elektra-"$VERSION".tar.gz
 
 	# Unpack + compile (with all available plugins) + test those sources:
-	tar xvzf elektra-"$VERSION".tar.gz
+	tar xvzf elektra-$VERSION.tar.gz
 	mkdir "$BUILD_DIR"/builder
 	cd "$BUILD_DIR"/builder
 	cmake -DPLUGINS="ALL" \

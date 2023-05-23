@@ -61,6 +61,8 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         zeromq-devel \
         zlib-devel \
         python3-pip \
+    	golang \
+    	pkgconf \
     && dnf debuginfo-install -y \
         bison \
         flex \
@@ -73,6 +75,11 @@ RUN dnf upgrade --refresh -y && dnf install -y \
 
 # Build dependency for libelektra-fuse
 RUN pip3 install wheel
+
+RUN ln -sf pkgconf /usr/bin/pkg-config
+
+# see https://github.com/docker-library/golang/issues/225
+ENV XDG_CACHE_HOME=/tmp/.cache
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest

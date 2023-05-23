@@ -2,7 +2,7 @@
 
 ## Problem
 
-A big problem with having `elektraMalloc` et al.¹ is, that:
+A problem with having `elektraMalloc` et al.¹ is, that:
 
 - it makes it impossible to call libc functions that allocate data with malloc (e.g. strndup) or
 - others that expect a pointer that can be passed to realloc.

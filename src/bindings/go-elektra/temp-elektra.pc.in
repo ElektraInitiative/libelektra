@@ -1,0 +1,10 @@
+prefix="@CMAKE_BINARY_DIR@"
+libdir="${prefix}/lib"
+srcinclude="@CMAKE_SOURCE_DIR@/src/include"
+buildinclude="${prefix}/src/include"
+
+Name: @PACKAGE_NAME@
+Description: @PACKAGE_DESCRIPTION@
+Version: @KDB_VERSION@
+Cflags: -I"${srcinclude}" -I"${buildinclude}"
+Libs: -L"${libdir}" -lelektra-core

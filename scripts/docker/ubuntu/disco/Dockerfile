@@ -24,10 +24,14 @@ RUN apt-get update && apt-get -y install \
         ruby-dev \
         valgrind \
         python3-pip \
+    	golang \
     && rm -rf /var/lib/apt/lists/*
 
 # Build dependency for libelektra-fuse
 RUN pip3 install wheel
+
+# see https://github.com/docker-library/golang/issues/225
+ENV XDG_CACHE_HOME=/tmp/.cache
 
 # Google Test
 ENV GTEST_ROOT=/usr/src/googletest

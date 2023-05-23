@@ -5,5 +5,7 @@ go 1.13
 require (
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
-	go.libelektra.org v0.0.0-20220529165759-8d7288960e91
+	github.com/ElektraInitiative/libelektra/src/bindings/go-elektra v0.0.0-00010101000000-000000000000
 )
+
+replace github.com/ElektraInitiative/libelektra/src/bindings/go-elektra => ../../bindings/go-elektra

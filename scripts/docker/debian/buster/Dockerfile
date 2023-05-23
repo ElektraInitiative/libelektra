@@ -63,7 +63,7 @@ RUN apt-get update && apt-get -y install \
         ninja-build \
         patch \
         patchutils \
-        pkg-config \
+        pkgconf \
         python3-all \
         python3-pip \
         python3-all \
@@ -85,6 +85,13 @@ RUN apt-get update && apt-get -y install \
 
 # Build dependency for libelektra-fuse
 RUN pip3 install wheel
+
+RUN ln -sf pkgconf /usr/bin/pkg-config
+
+# see https://github.com/docker-library/golang/issues/225
+ENV XDG_CACHE_HOME=/tmp/.cache
+
+RUN rm -rf /tmp/.cache
 
 # use lua5.3 since dh-lua installs liblua5.3-dev which sets the
 # dependency on the generated package to lua5.3
