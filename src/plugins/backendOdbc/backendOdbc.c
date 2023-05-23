@@ -11,6 +11,11 @@
 /* FIXME: Remove, only for testing during dev */
 #include <stdio.h>
 
+#define KEYNAME_BUFFER_SIZE 63
+#define METAKEYNAME_BUFFER_SIZE 31
+#define KEYSTRING_BUFFER_SIZE 5
+#define METASTRING_BUFFER_SIZE KEYSTRING_BUFFER_SIZE
+
 struct dataSourceConfig
 {
 	const char * dataSourceName;
@@ -19,10 +24,26 @@ struct dataSourceConfig
 	const char * tableName;
 	const char * keyColName;
 	const char * valColName;
+	const char * metaTableName;
+	const char * metaTableKeyColName;
+	const char * metaTableMetaKeyColName;
+	const char * metaTableMetaValColName;
 };
 
-#define KEYNAME_BUFFER_SIZE 63
-#define KEYSTRING_BUFFER_SIZE 5
+struct columnData
+{
+	SQLCHAR bufferKeyName[KEYNAME_BUFFER_SIZE];
+	SQLLEN nameLenInd;
+
+	SQLCHAR	bufferKeyStr[KEYSTRING_BUFFER_SIZE];
+	SQLLEN strLenInd;
+
+	SQLCHAR	bufferMetaKeyName[METAKEYNAME_BUFFER_SIZE];
+	SQLLEN metaNameLenInd;
+
+	SQLCHAR bufferMetaKeyStr[METASTRING_BUFFER_SIZE];
+	SQLLEN metaStrLenInd;
+};
 
 
 void logError (SQLSMALLINT handleType, SQLHANDLE handle, char * functionName, bool isInfo, Key * parentKey)
@@ -193,6 +214,79 @@ bool connectToDataSource (SQLHDBC sqlConnection, struct dataSourceConfig dsConfi
 	return true;
 }
 
+/** Make sure to free the returned string
+ * TODO: add quotations around identifiers in the query string, check input for valid identifier strings
+ * @retval "" (empty string) invalid input detected
+ * @retval NULL memory allocation failed
+ * @returns the query string for the select query the get keynames, key-values (strings) and metadata from an SQL data source
+ */
+char * getSelectQueryString (struct dataSourceConfig dsConfig)
+{
+		/* A sample query string that shows the structure of the SELECT query that this function generates:
+		 * SELECT elektra.key, elektra.val, elektrameta.metakey, elektrameta.metaval FROM {oj elektra LEFT OUTER JOIN elektrameta ON elektra.key=elektrameta.key}
+		 */
+
+		/* Verify that all necessary strings are provided */
+		if (!dsConfig.tableName || !(*dsConfig.tableName) || !dsConfig.keyColName || !(*dsConfig.keyColName) || !dsConfig.valColName || !(*dsConfig.valColName) || !dsConfig.metaTableName || !(*dsConfig.metaTableName)
+			|| !dsConfig.metaTableKeyColName || !(*dsConfig.metaTableKeyColName) || !dsConfig.metaTableMetaKeyColName || !(*dsConfig.metaTableMetaKeyColName) || !dsConfig.metaTableMetaValColName || !(*dsConfig.metaTableMetaValColName))
+		{
+			return "";
+		}
+
+
+		/* 1. Calculate strlen of all column names */
+		size_t sumLen = strlen (dsConfig.keyColName) * 2 + strlen (dsConfig.valColName) + strlen (dsConfig.metaTableMetaKeyColName) + strlen (dsConfig.metaTableMetaValColName) + strlen (dsConfig.metaTableKeyColName);
+
+		/* 2. Add table names (for SELECT and outer join parts of the query string, add 6 bytes for the cases where the column name follows the table name ('.' as separator */
+		sumLen += strlen (dsConfig.tableName) * 4 + strlen (dsConfig.metaTableName) * 4 + 6;
+
+		/* 3. Add strlen for static parts of the query + 1 byte for \0 */
+		sumLen += strlen ("SELECT , , ,  FROM {oj  LEFT OUTER JOIN  ON =}") + 1;
+
+		char * queryString = malloc (sizeof (char) * sumLen);
+
+		if (!queryString)
+		{
+			return NULL;
+		}
+
+
+		/* Build the string */
+		strcpy (queryString, "SELECT ");
+		strcat (queryString, dsConfig.tableName);
+		strcat (queryString, ".");
+		strcat (queryString, dsConfig.keyColName);
+		strcat (queryString, ", ");
+		strcat (queryString, dsConfig.tableName);
+		strcat (queryString, ".");
+		strcat (queryString, dsConfig.valColName);
+
+		strcat (queryString, ", ");
+		strcat (queryString, dsConfig.metaTableName);
+		strcat (queryString, ".");
+		strcat (queryString, dsConfig.metaTableMetaKeyColName);
+		strcat (queryString, ", ");
+		strcat (queryString, dsConfig.metaTableName);
+		strcat (queryString, ".");
+		strcat (queryString, dsConfig.metaTableMetaValColName);
+
+		strcat (queryString, " FROM {oj ");
+		strcat (queryString, dsConfig.tableName);
+		strcat (queryString, " LEFT OUTER JOIN ");
+		strcat (queryString, dsConfig.metaTableName);
+		strcat (queryString, " ON ");
+		strcat (queryString, dsConfig.tableName);
+		strcat (queryString, ".");
+		strcat (queryString, dsConfig.keyColName);
+		strcat (queryString, "=");
+		strcat (queryString, dsConfig.metaTableName);
+		strcat (queryString, ".");
+		strcat (queryString, dsConfig.metaTableKeyColName);
+		strcat (queryString, "}");
+
+		return queryString;
+}
+
 
 SQLHSTMT bindSelectParameters (SQLHDBC sqlConnection, struct dataSourceConfig dsConfig, Key * parentKey)
 {
@@ -225,13 +319,17 @@ SQLHSTMT bindSelectParameters (SQLHDBC sqlConnection, struct dataSourceConfig ds
 	}
 
 
-
-	/* Build select statement (+2 for ',' and \0) */
-	unsigned long queryLength = strlen ("SELECT ") + strlen (dsConfig.keyColName) + strlen (dsConfig.valColName) + strlen (" FROM ") + strlen (dsConfig.tableName) + 20;
-	char * queryString = (char *) elektraMalloc(sizeof (char) * queryLength);
-	if (!queryString)
+	char * queryString = getSelectQueryString (dsConfig);
+	if (!queryString || !(*queryString))
 	{
-		fprintf (stderr, "Could not allocate memory for the query-string for the SQL select-statement!\n");
+		if (!queryString)
+		{
+			fprintf (stderr, "Could not allocate memory for the query-string for the SQL select-statement!\n");
+		}
+		else
+		{
+			fprintf (stderr, "The input configuration for the data source contained missing or invalid values.\nPlease check your ODBC and data source configuration!\n");
+		}
 
 		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 		SQLDisconnect (sqlConnection);
@@ -239,20 +337,11 @@ SQLHSTMT bindSelectParameters (SQLHDBC sqlConnection, struct dataSourceConfig ds
 		return NULL;
 	}
 
-	/* TODO: Validate table and column-names */
-	strcpy (queryString, "SELECT ");
-	strcat (queryString, dsConfig.keyColName);
-	strcat (queryString, ",");
-	strcat (queryString, dsConfig.valColName);
-	strcat (queryString, " FROM ");
-	strcat (queryString, dsConfig.tableName);
-
 	/* Prepare the statement that retrieves key-names and string-values */
 	ret = SQLPrepare (sqlStmt, (SQLCHAR *) queryString, SQL_NTS);
 
 	/* Not a deferred buffer, according to: https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/deferred-buffers */
 	free (queryString);
-
 
 
 	if (SQL_SUCCEEDED (ret))
@@ -281,47 +370,72 @@ SQLHSTMT bindSelectParameters (SQLHDBC sqlConnection, struct dataSourceConfig ds
 }
 
 
-bool bindOutputColumns (SQLHSTMT sqlStmt, SQLCHAR * bufferKeyName, SQLLEN bufferKeyNameSize, SQLCHAR * bufferKeyString, SQLLEN bufferKeyStringSize, SQLLEN * nameLenInd, SQLLEN * stringLenInd, Key * parentKey)
+bool bindOutputColumns (SQLHSTMT sqlStmt, struct columnData * buffers, Key * parentKey)
 {
 	/* TODO: Support for binary keys */
-	/* FIXME: Make buffers big enough to store the names and strings (dynamic allocation?) */
-	SQLRETURN ret = SQLBindCol (sqlStmt, 1, SQL_C_CHAR, bufferKeyName, bufferKeyNameSize, nameLenInd);
 
 
+	/* Bind column 1 (key-name) */
+	SQLRETURN ret = SQLBindCol (sqlStmt, 1, SQL_C_CHAR, buffers->bufferKeyName, KEYNAME_BUFFER_SIZE, &(buffers->nameLenInd));
 	if (!SQL_SUCCEEDED (ret))
 	{
-		fprintf (stderr, "Error SqlBindCol1 (char) %d\n", ret);
+		fprintf (stderr, "Error SqlBindCol1 (keyname) %d\n", ret);
 		ELEKTRA_LOG_NOTICE ("SQLBindCol() failed!\nCould not bind the first column to the keyName!");
-		logError (SQL_HANDLE_STMT, sqlStmt, "bindOutputColumns", false, parentKey);
-
+		logError (SQL_HANDLE_STMT, sqlStmt, "bindOutputColumns (1)", false, parentKey);
 		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 		return false;
 	}
 	else if (ret == SQL_SUCCESS_WITH_INFO)
 	{
-		logError (SQL_HANDLE_STMT, sqlStmt, "bindOutputColumns", true, parentKey);
+		logError (SQL_HANDLE_STMT, sqlStmt, "bindOutputColumns (1)", true, parentKey);
 	}
 
 
-
-	ret = SQLBindCol (sqlStmt, 2, SQL_C_CHAR, bufferKeyString, bufferKeyStringSize, stringLenInd);
-
-
+	/* Bind column 2 (key-value) */
+	ret = SQLBindCol (sqlStmt, 2, SQL_C_CHAR, buffers->bufferKeyStr, KEYSTRING_BUFFER_SIZE, &(buffers->strLenInd));
 	if (!SQL_SUCCEEDED (ret))
 	{
-		fprintf (stderr, "Error SqlBindCol2 (int) %d\n", ret);
-
+		fprintf (stderr, "Error SqlBindCol2 (keystring) %d\n", ret);
 		ELEKTRA_LOG_NOTICE ("SQLBindCol() failed!\nCould not bind the second column to the keyString (value of the key)!");
-		logError (SQL_HANDLE_STMT, sqlStmt, "bindOutputColumns", false, parentKey);
-
+		logError (SQL_HANDLE_STMT, sqlStmt, "bindOutputColumns (2)", false, parentKey);
 		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 		return false;
 	}
 	else if (ret == SQL_SUCCESS_WITH_INFO)
 	{
-		logError (SQL_HANDLE_STMT, sqlStmt, "bindOutputColumns", true, parentKey);
+		logError (SQL_HANDLE_STMT, sqlStmt, "bindOutputColumns (2)", true, parentKey);
 	}
 
+	/* Bind column 3 (metakey-name) */
+	ret = SQLBindCol (sqlStmt, 3, SQL_C_CHAR, buffers->bufferMetaKeyName, METAKEYNAME_BUFFER_SIZE, &(buffers->metaNameLenInd));
+	if (!SQL_SUCCEEDED (ret))
+	{
+		fprintf (stderr, "Error SqlBindCol3 (metaname) %d\n", ret);
+		ELEKTRA_LOG_NOTICE ("SQLBindCol() failed!\nCould not bind the second column to the keyString (value of the key)!");
+		logError (SQL_HANDLE_STMT, sqlStmt, "bindOutputColumns (3)", false, parentKey);
+		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
+		return false;
+	}
+	else if (ret == SQL_SUCCESS_WITH_INFO)
+	{
+		logError (SQL_HANDLE_STMT, sqlStmt, "bindOutputColumns (3)", true, parentKey);
+	}
+
+
+	/* Bind column 4 (metakey-value) */
+	ret = SQLBindCol (sqlStmt, 4, SQL_C_CHAR, buffers->bufferMetaKeyStr, METASTRING_BUFFER_SIZE, &(buffers->metaStrLenInd));
+	if (!SQL_SUCCEEDED (ret))
+	{
+		fprintf (stderr, "Error SqlBindCol4 (metastring) %d\n", ret);
+		ELEKTRA_LOG_NOTICE ("SQLBindCol() failed!\nCould not bind the second column to the keyString (value of the key)!");
+		logError (SQL_HANDLE_STMT, sqlStmt, "bindOutputColumns (4)", false, parentKey);
+		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
+		return false;
+	}
+	else if (ret == SQL_SUCCESS_WITH_INFO)
+	{
+		logError (SQL_HANDLE_STMT, sqlStmt, "bindOutputColumns (4)", true, parentKey);
+	}
 
 	return true;
 }
@@ -405,20 +519,29 @@ bool getLongData (SQLHSTMT sqlStmt, SQLUSMALLINT colNumber, SQLSMALLINT targetTy
 
 
 
-KeySet * fetchResults (SQLHSTMT sqlStmt, SQLCHAR * bufferKeyName, SQLCHAR * bufferKeyString, SQLLEN * nameLenInd, SQLLEN * stringLenInd, Key * parentKey)
+KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key * parentKey)
 {
 	SQLRETURN ret;
 	KeySet * ksResult = NULL;
 
+
+	/* Needed for detecting if the current row contains a new key or just a further metakey for a previous key (outer join) */
+	char * prevKeyName = NULL;
+	Key * curKey = NULL;
+	Key * prevKey;
+
 	for (unsigned int i = 1; (ret = SQLFetch (sqlStmt)) != SQL_NO_DATA; i++)
 	{
-		 ELEKTRA_ASSERT (bufferKeyName && *bufferKeyName && *nameLenInd != SQL_NULL_DATA, "The ODBC-backend retrieved an empty- or null-string for the key-name. This is not allowed! Please check you data source.");
+		 ELEKTRA_ASSERT (buffers->bufferKeyName && buffers->nameLenInd != SQL_NULL_DATA, "The ODBC-backend retrieved an empty- or null-string for the key-name. This is not allowed! Please check you data source.");
 
 
 		if (!SQL_SUCCEEDED (ret))
 		{
 			fprintf (stderr, "Error SQLFetch %d\n", ret);
 			logError (SQL_HANDLE_STMT, sqlStmt, "fetchResults", false, parentKey);
+
+
+			elektraFree (prevKeyName);
 
 			if (ksResult)
 			{
@@ -432,11 +555,15 @@ KeySet * fetchResults (SQLHSTMT sqlStmt, SQLCHAR * bufferKeyName, SQLCHAR * buff
 		else
 		{
 			/* FIXME: remove printf */
-			//printf ("\nProcessing record number %d\n", i);
+			printf ("Processing record number %d\n", i);
 			//printf ("NameLenInd: %ld, StrLenInd: %ld\n", *nameLenInd, *stringLenInd);
 
 			char * longKeyName = NULL;
 			char * longKeyString = NULL;
+			char * longMetaKeyName = NULL;
+			char * longMetaKeyString = NULL;
+			bool isFurtherMetaKey = false;
+
 
 			if (ret == SQL_SUCCESS_WITH_INFO)
 			{
@@ -452,47 +579,94 @@ KeySet * fetchResults (SQLHSTMT sqlStmt, SQLCHAR * bufferKeyName, SQLCHAR * buff
 
 					/* Check key-name column */
 					bool retGetLongData = true;
-					if (*nameLenInd == SQL_NO_TOTAL)
+					if (buffers->nameLenInd == SQL_NO_TOTAL)
 					{
 						/* No information about the total length is available --> The new buffer maybe must be resized multiple times */
 						longKeyName = (char *) elektraMalloc (sizeof (char) * (KEYNAME_BUFFER_SIZE * 2));
 						retGetLongData = getLongData (sqlStmt, 1, SQL_C_CHAR, &longKeyName, KEYNAME_BUFFER_SIZE * 2, parentKey);
 					}
-					else if (KEYNAME_BUFFER_SIZE <= *nameLenInd)
+					else if (KEYNAME_BUFFER_SIZE <= buffers->nameLenInd)
 					{
-						longKeyName = (char *) elektraMalloc (sizeof (char) * (*nameLenInd + 1));
-						retGetLongData = getLongData (sqlStmt, 1, SQL_C_CHAR, &longKeyName, (*nameLenInd + 1), parentKey);
+						longKeyName = (char *) elektraMalloc (sizeof (char) * (buffers->nameLenInd + 1));
+						retGetLongData = getLongData (sqlStmt, 1, SQL_C_CHAR, &longKeyName, (buffers->nameLenInd + 1), parentKey);
+					}
+
+					/* Check if the keyname changed since the last iteration */
+					if (longKeyName && prevKeyName && elektraStrCmp (longKeyName, prevKeyName) == 0)
+					{
+						elektraFree (longKeyName);
+						longKeyName = NULL;
+						isFurtherMetaKey = true;
+					}
+					else if (longKeyName)
+					{
+						elektraFree (prevKeyName);
+						prevKeyName = longKeyName;
 					}
 
 					/* Check key-string column */
-					if (retGetLongData && *stringLenInd == SQL_NO_TOTAL)
+					if (!isFurtherMetaKey && retGetLongData && buffers->strLenInd == SQL_NO_TOTAL)
 					{
 						longKeyString = (char *) elektraMalloc (sizeof (char) * (KEYSTRING_BUFFER_SIZE * 2));
 						retGetLongData = getLongData (sqlStmt, 2, SQL_C_CHAR, &longKeyString, KEYSTRING_BUFFER_SIZE * 2, parentKey);
 					}
-					else if (KEYSTRING_BUFFER_SIZE <= *stringLenInd)
+					else if (!isFurtherMetaKey && KEYSTRING_BUFFER_SIZE <= buffers->strLenInd)
 					{
-						longKeyString = (char *) elektraMalloc (sizeof (char) * ((*stringLenInd) + 1));
-						retGetLongData = getLongData (sqlStmt, 2, SQL_C_CHAR, &longKeyString, ((*stringLenInd) + 1), parentKey);
+						longKeyString = (char *) elektraMalloc (sizeof (char) * (buffers->strLenInd + 1));
+						retGetLongData = getLongData (sqlStmt, 2, SQL_C_CHAR, &longKeyString, (buffers->strLenInd + 1), parentKey);
 					}
+
+					/* Check metakey-name column */
+					if (retGetLongData && buffers->metaNameLenInd == SQL_NO_TOTAL)
+					{
+						longMetaKeyName = (char *) elektraMalloc (sizeof (char) * (METAKEYNAME_BUFFER_SIZE * 2));
+						retGetLongData = getLongData (sqlStmt, 3, SQL_C_CHAR, &longMetaKeyName, METAKEYNAME_BUFFER_SIZE * 2, parentKey);
+					}
+					else if (METAKEYNAME_BUFFER_SIZE <= buffers->metaNameLenInd)
+					{
+						longMetaKeyName = (char *) elektraMalloc (sizeof (char) * (buffers->metaNameLenInd + 1));
+						retGetLongData = getLongData (sqlStmt, 3, SQL_C_CHAR, &longMetaKeyName, (buffers->metaNameLenInd + 1), parentKey);
+					}
+
+
+					/* Check metakey-string column */
+					if (retGetLongData && buffers->metaStrLenInd == SQL_NO_TOTAL)
+					{
+						longMetaKeyString = (char *) elektraMalloc (sizeof (char) * (METASTRING_BUFFER_SIZE * 2));
+						retGetLongData = getLongData (sqlStmt, 4, SQL_C_CHAR, &longMetaKeyString, METASTRING_BUFFER_SIZE * 2, parentKey);
+					}
+					else if (METASTRING_BUFFER_SIZE <= buffers->metaStrLenInd)
+					{
+						longMetaKeyString = (char *) elektraMalloc (sizeof (char) * (buffers->metaStrLenInd + 1));
+						retGetLongData = getLongData (sqlStmt, 4, SQL_C_CHAR, &longMetaKeyString, (buffers->metaStrLenInd + 1), parentKey);
+					}
+
 
 					if (!retGetLongData)
 					{
-						if (longKeyName)
-						{
-							elektraFree (longKeyName);
-						}
+						//if (longKeyName)
+						//{
+						//	ELEKTRA_ASSERT (prevKeyName == longKeyName, "The prevKeyName doesn't point to the current longKeyName, this looks like a programming errors!\nPlease report this issue at https://issues.libelektra.org");
+						//	elektraFree (longKeyName);
+						//}
+						//else
+						//{
 
-						if (longKeyString)
-						{
-							elektraFree (longKeyString);
-						}
+						/* The variable longKeyName should not be freed here, it either points to the same memory as prevKeyName or is NULL */
+						elektraFree (prevKeyName);
+						//}
+						elektraFree (longKeyString);
+						elektraFree (longMetaKeyName);
+						elektraFree (longMetaKeyString);
 
 						/* Statement handle was already freed by getLongData() function */
 						if (ksResult)
 						{
 							ksDel (ksResult);
 						}
+
+						SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
+
 						return NULL;
 					}
 
@@ -503,40 +677,128 @@ KeySet * fetchResults (SQLHSTMT sqlStmt, SQLCHAR * bufferKeyName, SQLCHAR * buff
 				}
 			}
 
+
+			if (!isFurtherMetaKey && !longKeyName)
+			{
+				/* Check short keyname */
+				if (prevKeyName && elektraStrCmp (prevKeyName, (const char *) buffers->bufferKeyName) == 0)
+				{
+					isFurtherMetaKey = true;
+				}
+				else
+				{
+					elektraFree (prevKeyName);
+					prevKeyName = elektraStrDup ((const char *) buffers->bufferKeyName);
+				}
+			}
+
+
 			if (!ksResult)
 			{
 				ksResult = ksNew (0, KS_END);
 			}
 
-			Key * curKey = keyDup (parentKey, KEY_CP_NAME);
 
-
-			if (longKeyName)
+			if (!isFurtherMetaKey)
 			{
-				keyAddName (curKey, longKeyName);
-				elektraFree (longKeyName);}
+				/* Create new key */
+				prevKey = curKey;
+				curKey = keyDup (parentKey, KEY_CP_NAME);
+
+				if (longKeyName)
+				{
+					keyAddName (curKey, longKeyName);
+					/* No freeing of longKeyName here, because the same string is referenced by prevKeyName! */
+				}
+				else
+				{
+					keyAddName (curKey, (char *) buffers->bufferKeyName);
+				}
+
+
+				if (longKeyString)
+				{
+					keySetString (curKey, longKeyString);
+					elektraFree (longKeyString);
+				}
+				else if (buffers->bufferKeyStr[0] && buffers->strLenInd != SQL_NULL_DATA)
+				{
+					keySetString (curKey, (char *) buffers->bufferKeyStr);
+				}
+				else
+				{
+					keySetString (curKey, "");
+				}
+			}
 			else
 			{
-				keyAddName (curKey, (char *) bufferKeyName);
+				ELEKTRA_ASSERT (curKey, "The flag the indicates that a further metakey is present was set, but the current key was NULL. This is likely a programming error.\nPlease report this issues at https://issues.libelektra.org");
 			}
 
 
-			if (longKeyString)
+			const char * metaKeyName = NULL;
+
+			if (longMetaKeyName)
 			{
-				keySetString (curKey, longKeyString);
-				elektraFree (longKeyString);
+				metaKeyName = longMetaKeyName;
 			}
-			else if (bufferKeyString && *stringLenInd != SQL_NULL_DATA)
+			else if (buffers->bufferMetaKeyName[0] && buffers->metaNameLenInd != SQL_NULL_DATA)
 			{
-				keySetString (curKey, (char *) bufferKeyString);
+				metaKeyName = (const char *) buffers->bufferMetaKeyName;
 			}
 			else
 			{
-				keySetString (curKey, "");
+				//printf ("longMetaKeyString: %s, buffer: %s", longMetaKeyString ? longMetaKeyString : "", buffers->bufferMetaKeyStr);
+				ELEKTRA_ASSERT (!longMetaKeyString && !(buffers->bufferMetaKeyStr[0]), "No metakey-name was found, but a metakey-string, maybe the datasource contains invalid data, please check your datasource!");
 			}
-			ksAppendKey (ksResult, curKey);
+
+
+			if (metaKeyName)
+			{
+				if (longMetaKeyString || buffers->bufferMetaKeyStr[0])
+				{
+					if (longMetaKeyString)
+					{
+						keySetMeta(curKey, metaKeyName, longMetaKeyString);
+						elektraFree (longMetaKeyString);
+					}
+					else
+					{
+						keySetMeta(curKey, metaKeyName, (const char *) buffers->bufferMetaKeyStr);
+					}
+				}
+				else
+				{
+					keySetMeta(curKey, metaKeyName, "");
+				}
+			}
+
+			elektraFree (longMetaKeyName);
+
+
+
+			if (prevKey && curKey != prevKey)
+			{
+				/* Previous key (incl. all metakeys) is finished --> add it to keyset */
+				ksAppendKey (ksResult, prevKey);
+			}
+
+
+			buffers->bufferKeyName[0] = 0;
+			buffers->bufferKeyStr[0] = 0;
+			buffers->bufferMetaKeyName[0] = 0;
+			buffers->bufferMetaKeyStr[0] = 0;
 		}
 	}
+
+	elektraFree (prevKeyName);
+
+	if (curKey && curKey != prevKey)
+	{
+		/* Add last key */
+		ksAppendKey (ksResult, curKey);
+	}
+
 
 	return ksResult;
 }
@@ -592,12 +854,18 @@ KeySet * getKeysFromDataSource (struct dataSourceConfig dsConfig, Key * parentKe
 		return NULL;
 	}
 
-	SQLCHAR bufferKeyName[KEYNAME_BUFFER_SIZE];
-	SQLCHAR	bufferKeyString[KEYSTRING_BUFFER_SIZE];
-	SQLLEN nameLenInd, strLenInd;
+	struct columnData outputBuffers;
+	outputBuffers.bufferKeyName[0] = 0;
+	outputBuffers.bufferKeyStr[0] = 0;
+	outputBuffers.bufferMetaKeyName[0] = 0;
+	outputBuffers.bufferMetaKeyStr[0] = 0;
+	outputBuffers.nameLenInd = 0;
+	outputBuffers.strLenInd = 0;
+	outputBuffers.metaNameLenInd = 0;
+	outputBuffers.metaStrLenInd = 0;
 
 	/* 5. Bind output columns to variables */
-	if (!bindOutputColumns (sqlStmt, bufferKeyName, KEYNAME_BUFFER_SIZE, bufferKeyString, KEYSTRING_BUFFER_SIZE, &nameLenInd, &strLenInd, parentKey))
+	if (!bindOutputColumns (sqlStmt, &outputBuffers, parentKey))
 	{
 		SQLDisconnect (sqlConnection);
 		SQLFreeHandle (SQL_HANDLE_DBC, sqlConnection);
@@ -613,7 +881,7 @@ KeySet * getKeysFromDataSource (struct dataSourceConfig dsConfig, Key * parentKe
 	}
 
 	/* 7. Fetch results */
-	KeySet * ksResult = fetchResults (sqlStmt, bufferKeyName, bufferKeyString, &nameLenInd, &strLenInd, parentKey);
+	KeySet * ksResult = fetchResults (sqlStmt, &outputBuffers, parentKey);
 
 	/* If errors occurred, the statement handle was already freed by the fetchResults()-function. */
 	if (ksResult)
@@ -670,6 +938,10 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ksReturned, Key * p
 		dsConfig.valColName = "val";
 		dsConfig.userName = "flo";
 		dsConfig.password = "elektra";
+		dsConfig.metaTableName = "elektrameta";
+		dsConfig.metaTableKeyColName = "key";
+		dsConfig.metaTableMetaKeyColName = "metakey";
+		dsConfig.metaTableMetaValColName = "metaval";
 
 		KeySet * ksOdbcData = getKeysFromDataSource (dsConfig, parentKey);
 		ksAppend (ksReturned, ksOdbcData);
