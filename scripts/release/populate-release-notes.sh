@@ -35,7 +35,7 @@ generate_git_release_stats_minimal() {
 	echo "$NUM_AUTHORS $FILES_CHANGED $INSERTIONS $DELETIONS $COMMITS"
 	# replace statistics placeholder with actual statistics
 	STAT_RESULT="About $NUM_AUTHORS authors changed $FILES_CHANGED files with $INSERTIONS insertions(+) and $DELETIONS deletions(-) in $COMMITS commits."
-	sed -i "s;<<\`scripts/git-release-stats $PREVIOUS_RELEASE_MAJOR_MINOR_VERSION.VER-1 $KDB_VERSION\`>>;$STAT_RESULT;" "$RELEASE_NOTE_PATH"
+	sed -i "s;<<\`scripts/git-release-stats $PREVIOUS_RELEASE.VER-1 $KDB_VERSION\`>>;$STAT_RESULT;" "$RELEASE_NOTE_PATH"
 }
 
 generate_hashsums() {
@@ -57,7 +57,7 @@ update_alpine_release_image() {
 mv "$RELEASE_NOTE_PREPARATION_PATH" "$RELEASE_NOTE_PATH"
 cp "$DOC_DIR"/todo/NEWS.md "$RELEASE_NOTE_PREPARATION_PATH"
 # replace <<VERSION>> placeholder with actual version
-sed -i "s/<<VERSION>>/$KDB_VERSION_PATCH/g" "$RELEASE_NOTE_PATH"
+sed -i "s/<<VERSION>>/$KDB_VERSION/g" "$RELEASE_NOTE_PATH"
 
 generate_hashsums
 generate_git_release_stats_minimal
