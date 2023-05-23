@@ -1,4 +1,4 @@
-# 0.9.<<VERSION>> Release
+# <<VERSION>>.<<VERSION>>.<<VERSION>> Release
 
 This release did not happen yet.
 
@@ -25,14 +25,14 @@ After the horizontal line the release notes for the next version starts.
 
 <<`scripts/generate-news-entry`>>
 
-We are proud to release Elektra 0.9.<<VERSION>>.
+We are proud to release Elektra <<VERSION>>.<<VERSION>>.<<VERSION>>.
 
 ## What is Elektra?
 
 Elektra serves as a universal and secure framework to access configuration settings in a global, hierarchical key database.
 For more information, visit [https://libelektra.org](https://libelektra.org).
 
-You can also read the news [on our website](https://www.libelektra.org/news/0.9.<<VERSION>>-release).
+You can also read the news [on our website](https://www.libelektra.org/news/<<VERSION>>.<<VERSION>>.<<VERSION>>-release).
 
 You can try out the latest Elektra release using our docker image [elektra/elektra](https://hub.docker.com/r/elektra/elektra).
 This is the quickest way to get started with Elektra without compiling and other obstacles, simply run:
@@ -478,7 +478,7 @@ We are currently working on following topics:
 
 We closed [<<NUMISSUES>> issues](https://github.com/ElektraInitiative/libelektra/milestone/<<MILESTONE>>?closed=1) for this release.
 
-<<`scripts/git-release-stats 0.9.VER-1 0.9.<<VERSION>>`>>
+<<`scripts/git-release-stats <<VERSION>>.<<VERSION>>.VER-1 <<VERSION>>.<<VERSION>>.<<VERSION>>`>>
 
 Thanks to all authors for making this release possible!
 
@@ -494,24 +494,24 @@ Contact us via our [issue tracker](https://issues.libelektra.org).
 
 You can download the release from
 
-- [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.<<VERSION>>.tar.gz) or
-- [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz?raw=true)
+- [here](https://www.libelektra.org/ftp/elektra/releases/elektra-<<VERSION>>.<<VERSION>>.<<VERSION>>.tar.gz) or
+- [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-<<VERSION>>.<<VERSION>>.<<VERSION>>.tar.gz?raw=true)
 
-The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz.hashsum?raw=true)
+The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-<<VERSION>>.<<VERSION>>.<<VERSION>>.tar.gz.hashsum?raw=true)
 
-<<`scripts/generate-hashsums elektra-0.9.<<VERSION>>.tar.gz`>>
+<<`scripts/generate-hashsums elektra-<<VERSION>>.<<VERSION>>.<<VERSION>>.tar.gz`>>
 
 The release tarball is also available signed using GnuPG from
 
-- [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg) or
-- [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg?raw=true)
+- [here](https://www.libelektra.org/ftp/elektra/releases/elektra-<<VERSION>>.<<VERSION>>.<<VERSION>>.tar.gz.gpg) or
+- [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-<<VERSION>>.<<VERSION>>.<<VERSION>>.tar.gz.gpg?raw=true)
 
 The following GPG Key was used to sign this release: 12CC44541E1B8AD9B66AFAD55262E7353324914A
 
 Already built API documentation can be found
 
-- [here](https://doc.libelektra.org/api/0.9.<<VERSION>>/html/) or
-- [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.9.<<VERSION>>).
+- [here](https://doc.libelektra.org/api/<<VERSION>>.<<VERSION>>.<<VERSION>>/html/) or
+- [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/<<VERSION>>.<<VERSION>>.<<VERSION>>).
 
 ## Stay tuned!
 
@@ -519,7 +519,7 @@ Subscribe to the [RSS feed](https://www.libelektra.org/news/feed.rss) to always 
 
 If you also want to participate, or for any questions and comments, please contact us via our issue tracker [on GitHub](http://issues.libelektra.org).
 
-[Permalink to this NEWS entry](https://www.libelektra.org/news/0.9.<<VERSION>>-release)
+[Permalink to this NEWS entry](https://www.libelektra.org/news/<<VERSION>>.<<VERSION>>.<<VERSION>>-release)
 
 For more information, see [https://libelektra.org](https://libelektra.org).
 
