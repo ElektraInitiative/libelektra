@@ -13,14 +13,14 @@ DOC_DIR=$(dirname "$SCRIPTS_DIR")/doc
 NEWS_DIR="$DOC_DIR"/news
 RELEASE_NOTE_PREPARATION_PATH="$NEWS_DIR/_preparation_next_release.md"
 
-KDB_VERSION_PATCH=$(echo "$KDB_VERSION" | grep -Po '\d+$')
+# KDB_VERSION_PATCH=$(echo "$KDB_VERSION" | grep -Po '\d+$')
 CURRENT_DATE=$(date +'%Y-%m-%d')
 RELEASE_NOTE_FILENAME="$CURRENT_DATE"_"$KDB_VERSION".md
 RELEASE_NOTE_PATH="$NEWS_DIR/$RELEASE_NOTE_FILENAME"
 
 # get previous release version from git tags
 PREVIOUS_RELEASE=$(git tag -l --sort=version:refname | sed 's/v//' | grep -e '[0-9].[0-9].[0-9]*' | tail -n2 | head -n1)
-PREVIOUS_RELEASE_MAJOR_MINOR_VERSION=$(echo "$PREVIOUS_RELEASE" | grep -Po '^\d+.\d+')
+# PREVIOUS_RELEASE_MAJOR_MINOR_VERSION=$(echo "$PREVIOUS_RELEASE" | grep -Po '^\d+.\d+')
 
 generate_git_release_stats_minimal() {
 	PREV=$(git tag --sort=version:refname --list | grep -e '[0-9].[0-9].[0-9]*' | tail -n2 | head -n1)
@@ -35,7 +35,7 @@ generate_git_release_stats_minimal() {
 	echo "$NUM_AUTHORS $FILES_CHANGED $INSERTIONS $DELETIONS $COMMITS"
 	# replace statistics placeholder with actual statistics
 	STAT_RESULT="About $NUM_AUTHORS authors changed $FILES_CHANGED files with $INSERTIONS insertions(+) and $DELETIONS deletions(-) in $COMMITS commits."
-	sed -i "s;<<\`scripts/git-release-stats $PREVIOUS_RELEASE.VER-1 $KDB_VERSION\`>>;$STAT_RESULT;" "$RELEASE_NOTE_PATH"
+	sed -i "s;<<\`scripts/git-release-stats $PREVIOUS_RELEASE.VER-1 $CURRENT\`>>;$STAT_RESULT;" "$RELEASE_NOTE_PATH"
 }
 
 generate_hashsums() {
