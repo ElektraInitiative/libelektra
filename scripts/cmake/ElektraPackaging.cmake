@@ -61,6 +61,7 @@ set (
 	elektra-bin-extra
 	java-elektra
 	ruby-elektra
+	xfconf-elektra
 	libelektra${SO_VERSION}-fuse
 	${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
 
