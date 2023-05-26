@@ -2,9 +2,9 @@
 - infos/author = Richard Stöckl <e11908080@student.tuwien.ac.at>
 - infos/licence = BSD
 - infos/needs =
-- infos/provides = storage/xfconf
+- infos/provides = storage/xml
 - infos/recommends =
-- infos/placements = postgetstorage presetstorage
+- infos/placements = getstorage setstorage
 - infos/status = maintained libc configurable experimental unfinished concept limited memleak
 - infos/metadata =
 - infos/description = storage plugin for xfconf
@@ -71,7 +71,7 @@ The required `channel` configuration option is used to tell xfconf which channel
 # Backup-and-Restore: user:/tests/xfconf
 
 # mount the xfwm channel
-kdb mount /dev/null /test/xfwm xfconf "channel=xfwm4"
+kdb mount -R noresolver none /test/xfwm xfconf "channel=xfwm4"
 
 # store old button layout
 set "OLD_LAYOUT=$(kdb get /test/xfwm/general/button_layout)"
@@ -92,7 +92,6 @@ kdb umount /test/xfwm
 
 ## Limitations
 
-- usage of a dummy file such as `/dev/null`
 - xfconf locks can only be read but not set as this is not possible in xfconf
 - comments and sorting are not implemented due the lack of both in xfconf
 - due to memory leaks in xfconf upstream, valgrind reports errors when running the tests
