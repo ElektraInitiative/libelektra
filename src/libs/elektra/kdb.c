@@ -1759,7 +1759,7 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, uint16_t phase)
  * 	will not be changed on error or if no update is required
  *
  * @retval 2 if only `proc:/` backends were executed. This means no data was loaded from storage.
- * There might be warnings attached to the parentKey! Depending on your use case, you might need to treat them as erorrs!
+ * There might be warnings attached to the parentKey! Depending on your use case, you might need to treat them as errors!
  * @retval 1 if the Keys were retrieved successfully. There might be warnings attached to the parentKey! Depending on your use case, you
  * might need to treat them as errors!
  * @retval 0 if there was no update at all - no changes are made to the KeySet then. There might be warnings attached to the parentKey!
