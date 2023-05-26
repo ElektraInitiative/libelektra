@@ -88,9 +88,9 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### Xfconf
 
-- <<TODO>>
+- Make Xfconf storage plugin compatible with new backend and noresolver. _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
 
