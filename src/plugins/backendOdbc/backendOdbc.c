@@ -13,22 +13,24 @@
 
 #define KEYNAME_BUFFER_SIZE 63
 #define METAKEYNAME_BUFFER_SIZE 31
-#define KEYSTRING_BUFFER_SIZE 5
+#define KEYSTRING_BUFFER_SIZE 255
 #define METASTRING_BUFFER_SIZE KEYSTRING_BUFFER_SIZE
+
 
 struct dataSourceConfig
 {
-	const char * dataSourceName;
-	const char * userName;
-	const char * password;
-	const char * tableName;
-	const char * keyColName;
-	const char * valColName;
-	const char * metaTableName;
-	const char * metaTableKeyColName;
-	const char * metaTableMetaKeyColName;
-	const char * metaTableMetaValColName;
+	char * dataSourceName;
+	char * userName;
+	char * password;
+	char * tableName;
+	char * keyColName;
+	char * valColName;
+	char * metaTableName;
+	char * metaTableKeyColName;
+	char * metaTableMetaKeyColName;
+	char * metaTableMetaValColName;
 };
+
 
 struct columnData
 {
@@ -44,6 +46,164 @@ struct columnData
 	SQLCHAR bufferMetaKeyStr[METASTRING_BUFFER_SIZE];
 	SQLLEN metaStrLenInd;
 };
+
+
+/* make sure to free the returned string */
+char * getStringFromBaseName (KeySet * searchKs, Key * lookupKey, const char *baseName, bool addBaseName)
+{
+	if (addBaseName)
+	{
+		keyAddBaseName (lookupKey, baseName);
+	}
+	else
+	{
+		keySetBaseName (lookupKey, baseName);
+	}
+
+	char * resultString = NULL;
+	Key * resultKey = ksLookup (searchKs, lookupKey, KDB_O_NONE);
+
+	if (keyGetValueSize (resultKey) > 0)
+	{
+		resultString = elektraMalloc (keyGetValueSize (resultKey));
+
+		if (resultString)
+		{
+			if (keyGetString (resultKey, resultString, keyGetValueSize (resultKey)) < 1)
+			{
+				elektraFree (resultString);
+				resultString = NULL;
+			}
+		}
+
+
+	}
+
+	return resultString;
+}
+
+
+struct dataSourceConfig * fillDsStructFromKeys (Key * parentKey)
+{
+	KeySet * ksResults = ksNew (0, KS_END);
+	if (!ksResults)
+	{
+		return NULL;
+	}
+
+	KDB * kdb = kdbOpen (NULL, parentKey);
+	if (!kdb)
+	{
+		ksDel (ksResults);
+		return NULL;
+	}
+
+	if (kdbGet (kdb,ksResults, parentKey) == -1)
+	{
+		ksDel (ksResults);
+		kdbClose (kdb, parentKey);
+		return NULL;
+	}
+
+	/* Only the call to kdbGet() was needed, we can close the handle now */
+	kdbClose (kdb, parentKey);
+
+	struct dataSourceConfig * dsConfig = elektraCalloc (sizeof(struct dataSourceConfig));
+	if (!dsConfig)
+	{
+		ksDel (ksResults);
+		return NULL;
+	}
+
+	Key * lookupKey = keyDup (parentKey, KEY_CP_NAME);
+	if (!lookupKey)
+	{
+		elektraFree (dsConfig);
+		ksDel (ksResults);
+		return NULL;
+	}
+
+
+
+	/* Get configuration data for the ODBC data source */
+
+	bool valueMissing = false;
+
+	dsConfig->dataSourceName = getStringFromBaseName (ksResults, lookupKey, "dataSourceName", true);
+	if(!dsConfig->dataSourceName)
+	{
+		valueMissing = true;
+	}
+
+	if (!valueMissing)
+	{
+		/* Username and password are optional (NULL = no username/password) */
+		dsConfig->userName = getStringFromBaseName (ksResults, lookupKey, "userName", false);
+		dsConfig->password = getStringFromBaseName (ksResults, lookupKey, "password", false);
+		keySetBaseName (lookupKey, "table");
+
+		dsConfig->tableName = getStringFromBaseName (ksResults, lookupKey, "name", true);
+		if (!dsConfig->tableName)
+		{
+			valueMissing = true;
+		}
+	}
+
+	if (!valueMissing)
+	{
+		dsConfig->keyColName = getStringFromBaseName (ksResults, lookupKey, "keyColName", false);
+		dsConfig->valColName = getStringFromBaseName (ksResults, lookupKey, "valColName", false);
+
+		if (!(dsConfig->keyColName) || !(dsConfig->valColName) ||  (keySetBaseName (lookupKey, NULL) <= 0))
+		{
+			valueMissing = true;
+		}
+	}
+
+
+	if (!valueMissing)
+	{
+		keySetBaseName (lookupKey, "metaTable");
+		dsConfig->metaTableName = getStringFromBaseName (ksResults, lookupKey, "name", true);
+
+		if (dsConfig->metaTableName)
+		{
+			dsConfig->metaTableKeyColName = getStringFromBaseName (ksResults, lookupKey, "keyColName", false);
+			dsConfig->metaTableMetaKeyColName = getStringFromBaseName (ksResults, lookupKey, "metaKeyColName", false);
+			dsConfig->metaTableMetaValColName = getStringFromBaseName (ksResults, lookupKey, "metaKeyValColName", false);
+
+			if (!(dsConfig->metaTableKeyColName) || !(dsConfig->metaTableMetaKeyColName) || !(dsConfig->metaTableMetaValColName))
+			{
+				valueMissing = true;
+			}
+		}
+	}
+
+	keyDel (lookupKey);
+	ksDel (ksResults);
+
+	if (valueMissing)
+	{
+		/* Free als strings in the struct (NULL is ignored by free()) */
+		elektraFree (dsConfig->dataSourceName);
+		elektraFree (dsConfig->userName);
+		elektraFree (dsConfig->password);
+		elektraFree (dsConfig->tableName);
+		elektraFree (dsConfig->keyColName);
+		elektraFree (dsConfig->valColName);
+		elektraFree (dsConfig->metaTableName);
+		elektraFree (dsConfig->metaTableKeyColName);
+		elektraFree (dsConfig->metaTableMetaKeyColName);
+		elektraFree (dsConfig->metaTableMetaValColName);
+
+		/* Free struct */
+		elektraFree (dsConfig);
+		dsConfig = NULL;
+	}
+
+
+	return dsConfig;
+}
 
 
 void logError (SQLSMALLINT handleType, SQLHANDLE handle, char * functionName, bool isInfo, Key * parentKey)
@@ -214,16 +374,18 @@ bool connectToDataSource (SQLHDBC sqlConnection, struct dataSourceConfig dsConfi
 	return true;
 }
 
+
 /** Make sure to free the returned string
+ * @param quoteString The characters that should be added before and after identifiers, pass NULL if your identifiers in @dsconfig are already quoted or if you don't want to use quoted identifier
  * TODO: add quotations around identifiers in the query string, check input for valid identifier strings
  * @retval "" (empty string) invalid input detected
  * @retval NULL memory allocation failed
  * @returns the query string for the select query the get keynames, key-values (strings) and metadata from an SQL data source
  */
-char * getSelectQueryString (struct dataSourceConfig dsConfig)
+char * getSelectQueryString (struct dataSourceConfig dsConfig, char * quoteString)
 {
 		/* A sample query string that shows the structure of the SELECT query that this function generates:
-		 * SELECT elektra.key, elektra.val, elektrameta.metakey, elektrameta.metaval FROM {oj elektra LEFT OUTER JOIN elektrameta ON elektra.key=elektrameta.key}
+		 * SELECT "elektra"."key", "elektra"."val", "elektrameta"."metakey", "elektrameta"."metaval" FROM {oj "elektra" LEFT OUTER JOIN "elektrameta" ON "elektra"."key"="elektrameta"."key"}
 		 */
 
 		/* Verify that all necessary strings are provided */
@@ -241,54 +403,93 @@ char * getSelectQueryString (struct dataSourceConfig dsConfig)
 		sumLen += strlen (dsConfig.tableName) * 4 + strlen (dsConfig.metaTableName) * 4 + 6;
 
 		/* 3. Add strlen for static parts of the query + 1 byte for \0 */
-		sumLen += strlen ("SELECT , , ,  FROM {oj  LEFT OUTER JOIN  ON =}") + 1;
+		sumLen += strlen ("SELECT , , ,  FROM {oj  LEFT OUTER JOIN  ON =}");
 
-		char * queryString = malloc (sizeof (char) * sumLen);
+		/* 4. Add bytes for quoting identifiers (table- and column-names) */
+		if (quoteString)
+		{
+			sumLen += (14 * 2 * strlen (quoteString));
+		}
+		else
+		{
+			/* Don't use quotes for identifiers */
+			quoteString = "";
+		}
+
+
+		char * queryString = elektraMalloc (sizeof (char) * sumLen);
 
 		if (!queryString)
 		{
 			return NULL;
 		}
 
-
 		/* Build the string */
-		strcpy (queryString, "SELECT ");
-		strcat (queryString, dsConfig.tableName);
-		strcat (queryString, ".");
-		strcat (queryString, dsConfig.keyColName);
-		strcat (queryString, ", ");
-		strcat (queryString, dsConfig.tableName);
-		strcat (queryString, ".");
-		strcat (queryString, dsConfig.valColName);
+		char * strEnd = stpcpy (queryString, "SELECT ");
+		strEnd = stpcpy (strEnd, quoteString);
+		strEnd = stpcpy (strEnd, dsConfig.tableName);
+		strEnd = stpcpy (strEnd, quoteString);
+		strEnd = stpcpy (strEnd, ".");
+		strEnd = stpcpy (strEnd, quoteString);
+		strEnd = stpcpy (strEnd, dsConfig.keyColName);
+		strEnd = stpcpy (strEnd, quoteString);
+		strEnd = stpcpy (strEnd, ", ");
+		strEnd = stpcpy (strEnd, quoteString);
+		strEnd = stpcpy (strEnd, dsConfig.tableName);
+		strEnd = stpcpy (strEnd, quoteString);
+		strEnd = stpcpy (strEnd, ".");
+		strEnd = stpcpy (strEnd, quoteString);
+		strEnd = stpcpy (strEnd, dsConfig.valColName);
+		strEnd = stpcpy (strEnd, quoteString);
 
-		strcat (queryString, ", ");
-		strcat (queryString, dsConfig.metaTableName);
-		strcat (queryString, ".");
-		strcat (queryString, dsConfig.metaTableMetaKeyColName);
-		strcat (queryString, ", ");
-		strcat (queryString, dsConfig.metaTableName);
-		strcat (queryString, ".");
-		strcat (queryString, dsConfig.metaTableMetaValColName);
+		strEnd = stpcpy (strEnd, ", ");
+		strEnd = stpcpy (strEnd, quoteString);
+		strEnd = stpcpy (strEnd, dsConfig.metaTableName);
+		strEnd = stpcpy (strEnd, quoteString);
+		strEnd = stpcpy (strEnd, ".");
+		strEnd = stpcpy (strEnd, quoteString);
+		strEnd = stpcpy (strEnd, dsConfig.metaTableMetaKeyColName);
+		strEnd = stpcpy (strEnd, quoteString);
+		strEnd = stpcpy (strEnd, ", ");
+		strEnd = stpcpy (strEnd, quoteString);
+		strEnd = stpcpy (strEnd, dsConfig.metaTableName);
+		strEnd = stpcpy (strEnd, quoteString);
+		strEnd = stpcpy (strEnd, ".");
+		strEnd = stpcpy (strEnd, quoteString);
+		strEnd = stpcpy (strEnd, dsConfig.metaTableMetaValColName);
+		strEnd = stpcpy (strEnd, quoteString);
 
-		strcat (queryString, " FROM {oj ");
-		strcat (queryString, dsConfig.tableName);
-		strcat (queryString, " LEFT OUTER JOIN ");
-		strcat (queryString, dsConfig.metaTableName);
-		strcat (queryString, " ON ");
-		strcat (queryString, dsConfig.tableName);
-		strcat (queryString, ".");
-		strcat (queryString, dsConfig.keyColName);
-		strcat (queryString, "=");
-		strcat (queryString, dsConfig.metaTableName);
-		strcat (queryString, ".");
-		strcat (queryString, dsConfig.metaTableKeyColName);
-		strcat (queryString, "}");
+		strEnd = stpcpy (strEnd, " FROM {oj ");
+		strEnd = stpcpy (strEnd, quoteString);
+		strEnd = stpcpy (strEnd, dsConfig.tableName);
+		strEnd = stpcpy (strEnd, quoteString);
+		strEnd = stpcpy (strEnd, " LEFT OUTER JOIN ");
+		strEnd = stpcpy (strEnd, quoteString);
+		strEnd = stpcpy (strEnd, dsConfig.metaTableName);
+		strEnd = stpcpy (strEnd, quoteString);
+		strEnd = stpcpy (strEnd, " ON ");
+		strEnd = stpcpy (strEnd, quoteString);
+		strEnd = stpcpy (strEnd, dsConfig.tableName);
+		strEnd = stpcpy (strEnd, quoteString);
+		strEnd = stpcpy (strEnd, ".");
+		strEnd = stpcpy (strEnd, quoteString);
+		strEnd = stpcpy (strEnd, dsConfig.keyColName);
+		strEnd = stpcpy (strEnd, quoteString);
+		strEnd = stpcpy (strEnd, "=");
+		strEnd = stpcpy (strEnd, quoteString);
+		strEnd = stpcpy (strEnd, dsConfig.metaTableName);
+		strEnd = stpcpy (strEnd, quoteString);
+		strEnd = stpcpy (strEnd, ".");
+		strEnd = stpcpy (strEnd, quoteString);
+		strEnd = stpcpy (strEnd, dsConfig.metaTableKeyColName);
+		strEnd = stpcpy (strEnd, quoteString);
+		strEnd = stpcpy (strEnd, "}");
 
 		return queryString;
 }
 
 
-SQLHSTMT bindSelectParameters (SQLHDBC sqlConnection, struct dataSourceConfig dsConfig, Key * parentKey)
+SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfig dsConfig, Key * parentKey)
 {
 
 	/* Handle for a statement */
@@ -300,7 +501,7 @@ SQLHSTMT bindSelectParameters (SQLHDBC sqlConnection, struct dataSourceConfig ds
 	{
 		fprintf (stderr, "Error AllocStatement %d\n", ret);
 		ELEKTRA_LOG_NOTICE ("SQLAllocHandle() failed!\nCould not allocate a handle for an SQL statement!");
-		logError (SQL_HANDLE_DBC, sqlConnection, "bindSelectParameters", false, parentKey);
+		logError (SQL_HANDLE_DBC, sqlConnection, "prepareSelectStmt", false, parentKey);
 
 
 		if (sqlStmt)
@@ -314,12 +515,67 @@ SQLHSTMT bindSelectParameters (SQLHDBC sqlConnection, struct dataSourceConfig ds
 	}
 	else if (ret == SQL_SUCCESS_WITH_INFO)
 	{
-		logError (SQL_HANDLE_DBC, sqlConnection, "bindSelectParameters (connection)", true, parentKey);
-		logError (SQL_HANDLE_STMT, sqlStmt, "bindSelectParameters (statement)", true, parentKey);
+		logError (SQL_HANDLE_DBC, sqlConnection, "prepareSelectStmt (connection)", true, parentKey);
+		logError (SQL_HANDLE_STMT, sqlStmt, "prepareSelectStmt (statement)", true, parentKey);
 	}
 
 
-	char * queryString = getSelectQueryString (dsConfig);
+	/* Get driver specific identifier quote character
+	 * (see: https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/quoted-identifiers) for more information */
+
+	char identifierQuoteChar[2];
+	SQLSMALLINT quoteCharLen = 0;
+	ret = SQLGetInfo (sqlConnection, SQL_IDENTIFIER_QUOTE_CHAR, identifierQuoteChar, 2, &quoteCharLen);
+
+	if (!SQL_SUCCEEDED (ret))
+	{
+		/* treat error as info and try to use the standard value " for quoting identifiers */
+		ELEKTRA_LOG_NOTICE ("Could not get an identifier quote char from the driver, using \" as defined by the SQL-92 standard");
+		printf ("first getinfo not succeeded");
+		identifierQuoteChar[0] = '"';
+		identifierQuoteChar[1] = '\0';
+	}
+
+	if (!SQL_SUCCEEDED (ret) || ret == SQL_SUCCESS_WITH_INFO)
+	{
+		logError (SQL_HANDLE_DBC, sqlConnection, "prepareSelectStmt (identifierQuoteChar)", true, parentKey);
+	}
+
+
+	char * queryString;
+	if (quoteCharLen > 1)
+	{
+		printf ("quoteCharLen was > 1!");
+		ELEKTRA_LOG_WARNING ("Got a string for the info SQL_IDENTIFIER_QUOTE_CHAR with more than one character, this is unusual.");
+		char * identifierQuoteStr = elektraMalloc ((quoteCharLen + 1) * sizeof (char));
+		ret = SQLGetInfo (sqlConnection, SQL_IDENTIFIER_QUOTE_CHAR, identifierQuoteStr, 1, &quoteCharLen);
+
+		if (!SQL_SUCCEEDED (ret))
+		{
+			/* treat error as info and try to use the standard value " for quoting identifiers */
+			ELEKTRA_LOG_NOTICE ("Could not get an identifier quote string from the driver, despite the driver state that the string for the info SQL_IDENTIFIER_QUOTE_CHAR has more than one character!");
+			logError (SQL_HANDLE_DBC, sqlConnection, "prepareSelectStmt (identifierQuoteString)", false, parentKey);
+
+			elektraFree (identifierQuoteStr);
+			SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
+			SQLDisconnect (sqlConnection);
+			SQLFreeHandle (SQL_HANDLE_DBC, sqlConnection);
+
+			return NULL;
+		}
+		else if (ret == SQL_SUCCESS_WITH_INFO)
+		{
+			logError (SQL_HANDLE_DBC, sqlConnection, "prepareSelectStmt (identifierQuoteString)", true, parentKey);
+		}
+
+		queryString = getSelectQueryString (dsConfig, identifierQuoteStr);
+		elektraFree (identifierQuoteStr);
+	}
+	else
+	{
+		queryString = getSelectQueryString (dsConfig, identifierQuoteChar);
+	}
+
 	if (!queryString || !(*queryString))
 	{
 		if (!queryString)
@@ -348,7 +604,7 @@ SQLHSTMT bindSelectParameters (SQLHDBC sqlConnection, struct dataSourceConfig ds
 	{
 		if (ret == SQL_SUCCESS_WITH_INFO)
 		{
-			logError (SQL_HANDLE_STMT, sqlStmt, "bindSelectParameters", true, parentKey);
+			logError (SQL_HANDLE_STMT, sqlStmt, "prepareSelectStmt", true, parentKey);
 		}
 
 
@@ -359,7 +615,7 @@ SQLHSTMT bindSelectParameters (SQLHDBC sqlConnection, struct dataSourceConfig ds
 	{
 		fprintf (stderr, "Error BindParameter %d\n", ret);
 		ELEKTRA_LOG_NOTICE ("SQLAllocHandle() failed!\nCould not allocate a handle for an SQL statement!");
-		logError (SQL_HANDLE_STMT, sqlStmt, "bindSelectParameters", false, parentKey);
+		logError (SQL_HANDLE_STMT, sqlStmt, "prepareSelectStmt", false, parentKey);
 
 		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 		SQLDisconnect (sqlConnection);
@@ -464,7 +720,6 @@ bool executeSelect (SQLHSTMT sqlStmt, Key * parentKey)
 }
 
 
-
 bool getLongData (SQLHSTMT sqlStmt, SQLUSMALLINT colNumber, SQLSMALLINT targetType, char ** targetValue, SQLLEN bufferSize, Key * parentKey)
 {
 
@@ -516,7 +771,6 @@ bool getLongData (SQLHSTMT sqlStmt, SQLUSMALLINT colNumber, SQLSMALLINT targetTy
 
 	return true;
 }
-
 
 
 KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key * parentKey)
@@ -846,7 +1100,7 @@ KeySet * getKeysFromDataSource (struct dataSourceConfig dsConfig, Key * parentKe
 	}
 
 	/* 4. Bind input parameters to variables */
-	SQLHSTMT sqlStmt = bindSelectParameters (sqlConnection, dsConfig, parentKey);
+	SQLHSTMT sqlStmt = prepareSelectStmt (sqlConnection, dsConfig, parentKey);
 
 	if (!sqlStmt)
 	{
