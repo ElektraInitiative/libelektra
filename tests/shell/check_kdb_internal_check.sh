@@ -45,7 +45,7 @@ for PLUGIN in $ACTUAL_PLUGINS; do
 
 	truncate -s0 "$FILE"
 	# shellcheck disable=SC2086
-	"$KDB" plugin-check $ARGS "$PLUGIN" > "$FILE" 2>&1
+	"$KDB" plugin-check $ARGS -p "$PLUGIN" > "$FILE" 2>&1
 	succeed_if "check of plugin $PLUGIN with args '$ARGS' failed"
 
 	if [ -s "$FILE" ]; then

@@ -254,6 +254,13 @@ typedef struct command
 	int (*exec) (KeySet * options, Key * errorKey);
 } command;
 
+typedef struct cppCommand
+{
+	const char * name;
+	void (*addSpec) (KeySet * spec);
+	int (*exec) (int argc, char ** argv);
+} cppCommand;
+
 enum LOG_LEVEL
 {
 	CLI_LOG_NONE = 0,
