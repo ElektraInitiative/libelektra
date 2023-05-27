@@ -12,6 +12,7 @@ Read this first to get the basic concepts of Elektra.
 - [Cascading](cascading.md)
 - [Arrays](arrays.md)
 - [Mount Configuration Files](mount.md)
+- [External KDB commands](external-commands.md)
 
 ## Developers
 
