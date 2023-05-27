@@ -7,7 +7,7 @@
  *
  */
 
-#include "backendprivateOdbc.h"
+#include "backendprivate_odbc.h"
 #include <stdlib.h>
 #include <string.h>
 

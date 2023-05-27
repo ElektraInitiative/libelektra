@@ -61,6 +61,13 @@ Otherwise, you can visit the [the API documentation](https://doc.libelektra.org/
 
 ## Plugins
 
+
+### Backends
+
+Backends provide access to different data sources (e.g. files, databases, network resources)
+
+- [backend_odbc](backend_odbc/) provides access to ODBC data sources for storing configuration data (keys, values, metadata)
+
 ### Resolver
 
 Before configuration is actually written, the file name needs to be

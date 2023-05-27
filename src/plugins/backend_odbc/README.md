@@ -5,7 +5,7 @@
 - infos/needs = 
 - infos/recommends =
 - infos/placements = backend
-- infos/status = unfinished notest experimental concept nodoc
+- infos/status = unfinished experimental concept nodoc
 - infos/description = Plugin implementing full backend functionality for ODBC data sources
 
 ## Introduction

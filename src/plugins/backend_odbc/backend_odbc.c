@@ -1,7 +1,7 @@
 
 
 #include "../backend/backend.h"
-#include "backendprivateOdbc.h"
+#include "./backendprivate_odbc.h"
 
 #include <kdberrors.h>
 #include <kdblogger.h>
@@ -10,254 +10,6 @@
 
 /* FIXME: Remove, only for testing during dev */
 #include <stdio.h>
-
-#define KEYNAME_BUFFER_SIZE 63
-#define METAKEYNAME_BUFFER_SIZE 31
-#define KEYSTRING_BUFFER_SIZE 255
-#define METASTRING_BUFFER_SIZE KEYSTRING_BUFFER_SIZE
-
-
-struct dataSourceConfig
-{
-	char * dataSourceName;
-	char * userName;
-	char * password;
-	char * tableName;
-	char * keyColName;
-	char * valColName;
-	char * metaTableName;
-	char * metaTableKeyColName;
-	char * metaTableMetaKeyColName;
-	char * metaTableMetaValColName;
-};
-
-
-struct columnData
-{
-	SQLCHAR bufferKeyName[KEYNAME_BUFFER_SIZE];
-	SQLLEN nameLenInd;
-
-	SQLCHAR	bufferKeyStr[KEYSTRING_BUFFER_SIZE];
-	SQLLEN strLenInd;
-
-	SQLCHAR	bufferMetaKeyName[METAKEYNAME_BUFFER_SIZE];
-	SQLLEN metaNameLenInd;
-
-	SQLCHAR bufferMetaKeyStr[METASTRING_BUFFER_SIZE];
-	SQLLEN metaStrLenInd;
-};
-
-
-/* make sure to free the returned string */
-char * getStringFromBaseName (KeySet * searchKs, Key * lookupKey, const char *baseName, bool addBaseName)
-{
-	if (addBaseName)
-	{
-		keyAddBaseName (lookupKey, baseName);
-	}
-	else
-	{
-		keySetBaseName (lookupKey, baseName);
-	}
-
-	char * resultString = NULL;
-	Key * resultKey = ksLookup (searchKs, lookupKey, KDB_O_NONE);
-
-	if (keyGetValueSize (resultKey) > 0)
-	{
-		resultString = elektraMalloc (keyGetValueSize (resultKey));
-
-		if (resultString)
-		{
-			if (keyGetString (resultKey, resultString, keyGetValueSize (resultKey)) < 1)
-			{
-				elektraFree (resultString);
-				resultString = NULL;
-			}
-		}
-
-
-	}
-
-	return resultString;
-}
-
-
-struct dataSourceConfig * fillDsStructFromKeys (Key * parentKey)
-{
-	KeySet * ksResults = ksNew (0, KS_END);
-	if (!ksResults)
-	{
-		return NULL;
-	}
-
-	KDB * kdb = kdbOpen (NULL, parentKey);
-	if (!kdb)
-	{
-		ksDel (ksResults);
-		return NULL;
-	}
-
-	if (kdbGet (kdb,ksResults, parentKey) == -1)
-	{
-		ksDel (ksResults);
-		kdbClose (kdb, parentKey);
-		return NULL;
-	}
-
-	/* Only the call to kdbGet() was needed, we can close the handle now */
-	kdbClose (kdb, parentKey);
-
-	struct dataSourceConfig * dsConfig = elektraCalloc (sizeof(struct dataSourceConfig));
-	if (!dsConfig)
-	{
-		ksDel (ksResults);
-		return NULL;
-	}
-
-	Key * lookupKey = keyDup (parentKey, KEY_CP_NAME);
-	if (!lookupKey)
-	{
-		elektraFree (dsConfig);
-		ksDel (ksResults);
-		return NULL;
-	}
-
-
-
-	/* Get configuration data for the ODBC data source */
-
-	bool valueMissing = false;
-
-	dsConfig->dataSourceName = getStringFromBaseName (ksResults, lookupKey, "dataSourceName", true);
-	if(!dsConfig->dataSourceName)
-	{
-		valueMissing = true;
-	}
-
-	if (!valueMissing)
-	{
-		/* Username and password are optional (NULL = no username/password) */
-		dsConfig->userName = getStringFromBaseName (ksResults, lookupKey, "userName", false);
-		dsConfig->password = getStringFromBaseName (ksResults, lookupKey, "password", false);
-		keySetBaseName (lookupKey, "table");
-
-		dsConfig->tableName = getStringFromBaseName (ksResults, lookupKey, "name", true);
-		if (!dsConfig->tableName)
-		{
-			valueMissing = true;
-		}
-	}
-
-	if (!valueMissing)
-	{
-		dsConfig->keyColName = getStringFromBaseName (ksResults, lookupKey, "keyColName", false);
-		dsConfig->valColName = getStringFromBaseName (ksResults, lookupKey, "valColName", false);
-
-		if (!(dsConfig->keyColName) || !(dsConfig->valColName) ||  (keySetBaseName (lookupKey, NULL) <= 0))
-		{
-			valueMissing = true;
-		}
-	}
-
-
-	if (!valueMissing)
-	{
-		keySetBaseName (lookupKey, "metaTable");
-		dsConfig->metaTableName = getStringFromBaseName (ksResults, lookupKey, "name", true);
-
-		if (dsConfig->metaTableName)
-		{
-			dsConfig->metaTableKeyColName = getStringFromBaseName (ksResults, lookupKey, "keyColName", false);
-			dsConfig->metaTableMetaKeyColName = getStringFromBaseName (ksResults, lookupKey, "metaKeyColName", false);
-			dsConfig->metaTableMetaValColName = getStringFromBaseName (ksResults, lookupKey, "metaKeyValColName", false);
-
-			if (!(dsConfig->metaTableKeyColName) || !(dsConfig->metaTableMetaKeyColName) || !(dsConfig->metaTableMetaValColName))
-			{
-				valueMissing = true;
-			}
-		}
-	}
-
-	keyDel (lookupKey);
-	ksDel (ksResults);
-
-	if (valueMissing)
-	{
-		/* Free als strings in the struct (NULL is ignored by free()) */
-		elektraFree (dsConfig->dataSourceName);
-		elektraFree (dsConfig->userName);
-		elektraFree (dsConfig->password);
-		elektraFree (dsConfig->tableName);
-		elektraFree (dsConfig->keyColName);
-		elektraFree (dsConfig->valColName);
-		elektraFree (dsConfig->metaTableName);
-		elektraFree (dsConfig->metaTableKeyColName);
-		elektraFree (dsConfig->metaTableMetaKeyColName);
-		elektraFree (dsConfig->metaTableMetaValColName);
-
-		/* Free struct */
-		elektraFree (dsConfig);
-		dsConfig = NULL;
-	}
-
-
-	return dsConfig;
-}
-
-
-void logError (SQLSMALLINT handleType, SQLHANDLE handle, char * functionName, bool isInfo, Key * parentKey)
-{
-	/* Get number of available records */
-	SQLINTEGER numRecs = 0;
-	SQLGetDiagField (handleType, handle, 0, SQL_DIAG_NUMBER, &numRecs, 0, 0);
-
-
-	/* Get the status records */
-	for (SQLINTEGER i = 1; i <= numRecs; i++)
-	{
-		SQLCHAR sqlState[SQL_SQLSTATE_SIZE + 1];
-		SQLCHAR errMsg[SQL_MAX_MESSAGE_LENGTH + 1];
-		SQLINTEGER nativeError;
-		SQLSMALLINT errMsgLen;
-
-
-		SQLRETURN ret = SQLGetDiagRec (handleType, handle, i, sqlState, &nativeError, errMsg, SQL_MAX_MESSAGE_LENGTH + 1, &errMsgLen);
-		if (ret == SQL_NO_DATA)
-		{
-			break;
-		}
-
-		/* The official documentation from Microsoft states that "There is no maximum length of the diagnostic message text".
-		 * Therefore, we check the actual length despite using the SQL_MAX_MESSAGE_LENGTH constant.
-		 * see: https://learn.microsoft.com/en-us/sql/odbc/reference/syntax/sqlgetdiagrec-function (Arguments->BufferLength)
-		 */
-		SQLCHAR * longErrMsg;
-
-		if (ret == SQL_SUCCESS_WITH_INFO && errMsgLen > SQL_MAX_MESSAGE_LENGTH)
-		{
-			longErrMsg = (SQLCHAR *) elektraMalloc (sizeof (SQLCHAR) * (errMsgLen + 1));
-
-			if (longErrMsg)
-			{
-				SQLGetDiagRec (handleType, handle, i, sqlState, &nativeError, longErrMsg, errMsgLen, 0);
-			}
-		}
-		else
-		{
-			longErrMsg = NULL;
-		}
-
-		/* TODO: Extract error and add it to key */
-		fprintf (stderr, "An ODBC %s occurred", isInfo ? "warning" : "error");
-		(functionName && *functionName) ? fprintf (stderr, " in the following function: %s\n", functionName) : fprintf (stderr, ":\n");
-		fprintf (stderr, "Number of error or warning: %d of %d\n", i, numRecs);
-		fprintf (stderr, "Status Code: %s\n", sqlState);
-		fprintf (stderr, "Native error code: %d\n", nativeError);
-		fprintf (stderr, "Error message: %s\n\n", longErrMsg ? longErrMsg : errMsg);
-		elektraFree (longErrMsg);
-	}
-}
 
 
 SQLHENV allocateEnvHandle (Key * parentKey)
@@ -545,7 +297,7 @@ SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfig dsCon
 	char * queryString;
 	if (quoteCharLen > 1)
 	{
-		printf ("quoteCharLen was > 1!");
+		//printf ("quoteCharLen was > 1!");
 		ELEKTRA_LOG_WARNING ("Got a string for the info SQL_IDENTIFIER_QUOTE_CHAR with more than one character, this is unusual.");
 		char * identifierQuoteStr = elektraMalloc ((quoteCharLen + 1) * sizeof (char));
 		ret = SQLGetInfo (sqlConnection, SQL_IDENTIFIER_QUOTE_CHAR, identifierQuoteStr, 1, &quoteCharLen);
@@ -809,7 +561,7 @@ KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key * pare
 		else
 		{
 			/* FIXME: remove printf */
-			printf ("Processing record number %d\n", i);
+			//printf ("Processing record number %d\n", i);
 			//printf ("NameLenInd: %ld, StrLenInd: %ld\n", *nameLenInd, *stringLenInd);
 
 			char * longKeyName = NULL;
@@ -900,7 +652,7 @@ KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key * pare
 					{
 						//if (longKeyName)
 						//{
-						//	ELEKTRA_ASSERT (prevKeyName == longKeyName, "The prevKeyName doesn't point to the current longKeyName, this looks like a programming errors!\nPlease report this issue at https://issues.libelektra.org");
+						//	ELEKTRA_ASSERT (prevKeyName == longKeyName, "The prevKeyName doesn't point to the current longKeyName. This looks like a programming error!\nPlease report the issue at https://issues.libelektra.org");
 						//	elektraFree (longKeyName);
 						//}
 						//else
@@ -1163,29 +915,29 @@ int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin ELEKTRA_UNUSED, KeySet * def
 
 int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ksReturned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/backendOdbc"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/backend_odbc"))
 	{
 		KeySet * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/backendOdbc", KEY_VALUE, "backendOdbc plugin waits for your orders", KEY_END),
-			keyNew ("system:/elektra/modules/backendOdbc/exports", KEY_END),
-			keyNew ("system:/elektra/modules/backendOdbc/exports/init", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (init), KEY_END),
-			keyNew ("system:/elektra/modules/backendOdbc/exports/get", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (get), KEY_END),
+			30, keyNew ("system:/elektra/modules/backend_odbc", KEY_VALUE, "backend_odbc plugin waits for your orders", KEY_END),
+			keyNew ("system:/elektra/modules/backend_odbc/exports", KEY_END),
+			keyNew ("system:/elektra/modules/backend_odbc/exports/init", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (init), KEY_END),
+			keyNew ("system:/elektra/modules/backend_odbc/exports/get", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (get), KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/backendOdbc/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/backend_odbc/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (ksReturned, contract);
 		ksDel (contract);
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
+	/* Gets filled in the resolver phase and is used in later phases (esp. storage-phase) */
+	static struct dataSourceConfig dsConfig;
+
 	ElektraKdbPhase phase = elektraPluginGetPhase (plugin);
 	switch (phase)
 	{
 	case ELEKTRA_KDB_GET_PHASE_RESOLVER:
-		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-	case ELEKTRA_KDB_GET_PHASE_STORAGE:
 	{
-		struct dataSourceConfig dsConfig;
 		dsConfig.dataSourceName = "Pelektra";
 		dsConfig.tableName = "elektra";
 		dsConfig.keyColName = "key";
@@ -1196,14 +948,32 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ksReturned, Key * p
 		dsConfig.metaTableKeyColName = "key";
 		dsConfig.metaTableMetaKeyColName = "metakey";
 		dsConfig.metaTableMetaValColName = "metaval";
-
-		KeySet * ksOdbcData = getKeysFromDataSource (dsConfig, parentKey);
-		ksAppend (ksReturned, ksOdbcData);
-
-
-		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+		ssize_t ret = keySetString (parentKey, dsConfigToString (dsConfig));
+		ELEKTRA_ASSERT (ret != 0, "keySetString returned 0. This looks like a programming error!\\nPlease report the issue at https://issues.libelektra.org");
+		if (ret == 1 || ret == -1)
+		{
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+		else
+		{
+			return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+		}
 	}
-	default:
+	case ELEKTRA_KDB_GET_PHASE_CACHECHECK:
+		/* TODO: implement cache */
+		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	case ELEKTRA_KDB_GET_PHASE_PRE_STORAGE:
+		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	case ELEKTRA_KDB_GET_PHASE_STORAGE:
+		if (ksAppend (ksReturned, getKeysFromDataSource (dsConfig, parentKey)) == -1)
+		{
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+		else
+		{
+			return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+		}
+		default:
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	}
 }
@@ -1212,7 +982,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ksReturned, Key * p
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
-	return elektraPluginExport ("backend",
+	return elektraPluginExport ("backend_odbc",
 		ELEKTRA_PLUGIN_INIT, &ELEKTRA_PLUGIN_FUNCTION (init),
 		ELEKTRA_PLUGIN_GET, &ELEKTRA_PLUGIN_FUNCTION (get),
 	ELEKTRA_PLUGIN_END);
