@@ -59,7 +59,7 @@ KDB_DEFAULT_STORAGE="@KDB_DEFAULT_STORAGE@"
 KDB_DEFAULT_RESOLVER="@KDB_DEFAULT_RESOLVER@"
 
 if [ -z "${KDB}" ]; then
-	KDB="@KDB_COMMAND@"
+	export KDB="@KDB_COMMAND@"
 fi
 
 KDB_GETENV=$("$KDB" elektrify-getenv getenv KDB 2> /dev/null)

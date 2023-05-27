@@ -5,8 +5,7 @@
 `kdb complete [path]`
 
 Where `path` is the path for which the user would like to receive completion suggestion.
-If `path` is not specified, it will show every possible completion. It's synonymous
-to calling `kdb complete ""`.
+Calling `kdb complete ""` will show every possible completion.
 
 ## DESCRIPTION
 
@@ -69,7 +68,7 @@ kdb complete user:/ --max-depth=1
 # STDOUT-REGEX: .+
 
 # list all possible namespaces or mount points, only the current level
-kdb complete --max-depth=1
+kdb complete "" --max-depth=1
 # STDOUT-REGEX: .+
 
 # list suggestions for /tests/complete/examples/kdb-complete, only the current level

@@ -195,10 +195,10 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ## Tools
 
-### <<Tool>>
+### KDB
 
-- <<TODO>>
-- <<TODO>>
+- add basic C framework, helper functions and new `get` implementation _(@hannes99)_
+- add spec for C++ commands _(@hannes99)_
 - <<TODO>>
 
 ### <<Tool>>
