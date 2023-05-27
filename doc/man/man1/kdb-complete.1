@@ -1,12 +1,12 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre3
-.TH "KDB\-COMPLETE" "1" "November 2021" ""
+.TH "KDB\-COMPLETE" "1" "May 2023" ""
 .SH "NAME"
 \fBkdb\-complete\fR \- Show suggestions how to complete a given path
 .SH "SYNOPSIS"
 \fBkdb complete [path]\fR
 .P
-Where \fBpath\fR is the path for which the user would like to receive completion suggestion\. If \fBpath\fR is not specified, it will show every possible completion\. It's synonymous to calling \fBkdb complete ""\fR\.
+Where \fBpath\fR is the path for which the user would like to receive completion suggestion\. Calling \fBkdb complete ""\fR will show every possible completion\.
 .SH "DESCRIPTION"
 Show suggestions how the current name could be completed\. Suggestions will include existing key names, path segments of existing key names, namespaces and mount points\. Additionally, the output will indicate whether the given path is a node or a leaf in the hierarchy of keys, nodes end with '/' as opposed to leaves\. It will also work for cascading keys, and will additionally display a cascading key's namespace in the output to indicate from which namespace this suggestion originates from\.
 .SH "OPTIONS"
@@ -63,7 +63,7 @@ kdb complete user:/ \-\-max\-depth=1
 # STDOUT\-REGEX: \.+
 
 # list all possible namespaces or mount points, only the current level
-kdb complete \-\-max\-depth=1
+kdb complete "" \-\-max\-depth=1
 # STDOUT\-REGEX: \.+
 
 # list suggestions for /tests/complete/examples/kdb\-complete, only the current level

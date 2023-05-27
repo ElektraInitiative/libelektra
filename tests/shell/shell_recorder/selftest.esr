@@ -17,10 +17,10 @@ STDOUT-REGEX: .*value2.
 STDOUT: user:/tests/keyuser:/tests/key2
 < kdb find -0 user:/tests
 
-STDERR: The command .*kdb.* not-a-command is not known
+STDERR: .*Unknown sub-command:.*
 < kdb not-a-command 1>/dev/null
 
-STDERR: .+not-a-command.+
+STDERR: .*Unknown sub-command:.*
 < kdb not-a-command 1>/dev/null
 
 STDOUT: Create a new key user:/tests/\/evil\\\/tripleEscaped\\/doubleEscaped/key/.withADot/..andADoubleDot with string "txt"

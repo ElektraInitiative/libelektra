@@ -59,7 +59,7 @@ succeed_if "Merging did not fail"
 [ "x$("$KDB" ls "$MERGED_ROOT"/key 2> /dev/null)" = "x" ]
 exit_if_fail "should be no result"
 
-"$KDB" merge --strategy ours "$OURS_ROOT" "$THEIRS_ROOT" "$BASE_ROOT" "$MERGED_ROOT"
+"$KDB" merge --strategy our "$OURS_ROOT" "$THEIRS_ROOT" "$BASE_ROOT" "$MERGED_ROOT"
 exit_if_fail "could not merge"
 
 [ "x$("$KDB" ls "$MERGED_ROOT"/key 2> /dev/null)" = "x$MERGED_ROOT/key" ]
@@ -94,13 +94,12 @@ exit_if_fail "could not set"
 exit_if_fail "could not set meta"
 
 "$KDB" merge "$OURS_ROOT" "$THEIRS_ROOT" "$BASE_ROOT" "$MERGED_ROOT" 2> /dev/null
-[ $? != 0 ]
-succeed_if "Merging did not failed"
+exit_if_fail "could not merge"
 
-[ "x$("$KDB" ls "$MERGED_ROOT"/key 2> /dev/null)" = "x" ]
-exit_if_fail "should be no result"
+[ "x$("$KDB" get "$MERGED_ROOT"/key 2> /dev/null)" = "xinit" ]
+exit_if_fail "merge result does not match init"
 
-"$KDB" merge --strategy ours "$OURS_ROOT" "$THEIRS_ROOT" "$BASE_ROOT" "$MERGED_ROOT"
+"$KDB" merge -f --strategy our "$OURS_ROOT" "$THEIRS_ROOT" "$BASE_ROOT" "$MERGED_ROOT"
 exit_if_fail "could not merge"
 
 [ "x$("$KDB" ls "$MERGED_ROOT"/key 2> /dev/null)" = "x$MERGED_ROOT/key" ]

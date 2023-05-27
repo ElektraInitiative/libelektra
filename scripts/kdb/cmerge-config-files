@@ -26,7 +26,7 @@ cat "$3" | kdb import $basepath "$format"
 # uncomment lines to debug
 # valgrind --leak-check=full --show-leak-kinds=all kdb cmerge $ourpath $theirpath $basepath $resultpath
 # valgrind --leak-check=full kdb cmerge $ourpath $theirpath $basepath $resultpath
-kdb cmerge $ourpath $theirpath $basepath $resultpath
+kdb merge $ourpath $theirpath $basepath $resultpath
 kdb export $resultpath "$format" > $resultfile
 kdb rm -rf $ourpath
 kdb rm -rf $theirpath

@@ -6,7 +6,42 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include <basename.h>
+#include <cache.h>
+#include <complete.h>
+#include <convert.h>
+#include <cp.h>
+#include <dirname.h>
+#include <editor.h>
+#include <export.h>
+#include <file.h>
+#include <find.h>
+#include <gen.h>
 #include <get.h>
+#include <import.h>
+#include <list-tools.h>
+#include <ls.h>
+#include <merge.h>
+#include <meta-get.h>
+#include <meta-ls.h>
+#include <meta-rm.h>
+#include <meta-set.h>
+#include <meta-show.h>
+#include <mount.h>
+#include <mv.h>
+#include <namespace.h>
+#include <plugin-check.h>
+#include <plugin-info.h>
+#include <plugin-list.h>
+#include <remount.h>
+#include <rm.h>
+#include <set.h>
+#include <sget.h>
+#include <shell.h>
+#include <spec-mount.h>
+#include <test.h>
+#include <umount.h>
+#include <validate.h>
 
 #include <command.h>
 #include <kdb.h>
@@ -23,6 +58,47 @@ extern char ** environ;
 
 command subcommands[] = {
 	{ "get", addGetSpec, execGet },
+};
+
+cppCommand cppSubcommands[] = {
+	{ "basename", addBasenameSpec, execCppBasename },
+	{ "cp", addCpSpec, execCppCp },
+	{ "dirname", addDirnameSpec, execCppDirname },
+	{ "find", addFindSpec, execCppFind },
+	{ "ls", addLsSpec, execCppLs },
+	{ "merge", addMergeSpec, execCppMerge },
+	{ "meta-get", addMetaGetSpec, execCppMetaGet },
+	{ "meta-ls", addMetaLsSpec, execCppMetaLs },
+	{ "meta-rm", addMetaRmSpec, execCppMetaRm },
+	{ "meta-set", addMetaSetSpec, execCppMetaSet },
+	{ "meta-show", addMetaShowSpec, execCppMetaShow },
+	{ "mv", addMvSpec, execCppMv },
+	{ "namespace", addNamespaceSpec, execCppNamespace },
+	{ "rm", addRmSpec, execCppRm },
+	{ "set", addSetSpec, execCppSet },
+	{ "sget", addSgetSpec, execCppSget },
+	{ "cache", addCacheSpec, execCppCache },
+	{ "complete", addCompleteSpec, execCppComplete },
+	{ "convert", addConvertSpec, execCppConvert },
+	{ "editor", addEditorSpec, execCppEditor },
+	{ "file", addFileSpec, execCppFile },
+	{ "gen", addGenSpec, execCppGen },
+	{ "list-tools", addListToolsSpec, execCppListTools },
+	{ "plugin-check", addPluginCheckSpec, execCppPluginCheck },
+	{ "plugin-info", addPluginInfoSpec, execCppPluginInfo },
+	{ "plugin-list", addPluginListSpec, execCppPluginList },
+	{ "remount", addRemountSpec, execCppRemount },
+	{ "shell", addShellSpec, execCppShell },
+	{ "spec-mount", addSpecMountSpec, execCppSpecMount },
+	{ "test", addTestSpec, execCppTest },
+	{ "umount", addUmountSpec, execCppUmount },
+	{ "validate", addValidateSpec, execCppValidate },
+};
+
+cppCommand cppSubcommandsNoExec[] = {
+	{ "export", addExportSpec, NULL },
+	{ "import", addImportSpec, NULL },
+	{ "mount", addMountSpec, NULL },
 };
 
 void printError (Key * errorKey)
@@ -100,7 +176,6 @@ void printVersion (void)
 	kdbClose (kdb, NULL);
 }
 
-
 int main (int argc, char ** argv)
 {
 	if (argc == 2 && (elektraStrCmp (argv[1], "--version") == 0 || elektraStrCmp (argv[1], "-V") == 0))
@@ -108,6 +183,21 @@ int main (int argc, char ** argv)
 		printVersion ();
 		return 0;
 	}
+	if (argc == 1)
+	{
+		printf ("kdb is a program to manage Elektra's key database. For more information use --help.\n\n");
+		return 0;
+	}
+
+	// commands where the cpp spec is not representable with libelektra opts, optional indexed args
+	for (unsigned long i = 0; i < sizeof (cppSubcommandsNoExec) / sizeof (cppCommand); ++i)
+	{
+		if (cppSubcommandsNoExec[i].exec == NULL && elektraStrCmp (cppSubcommandsNoExec[i].name, argv[1]) == 0)
+		{
+			return cpp_main (argc, argv);
+		}
+	}
+
 
 	Key * parentKey = keyNew (CLI_SPEC_KEY, KEY_END);
 	KeySet * options = ksNew (1,
@@ -115,9 +205,16 @@ int main (int argc, char ** argv)
 					  "kdb is a program to manage Elektra's key database.", KEY_END),
 				  KS_END);
 
+	// C spec
 	for (unsigned long i = 0; i < sizeof (subcommands) / sizeof (subcommands[0]); ++i)
 	{
 		subcommands[i].addSpec (options);
+	}
+
+	// C++ spec
+	for (unsigned long i = 0; i < sizeof (cppSubcommands) / sizeof (cppSubcommands[0]); ++i)
+	{
+		cppSubcommands[i].addSpec (options);
 	}
 
 	int result = elektraGetOpts (options, argc, (const char **) argv, (const char **) environ, parentKey);
@@ -135,10 +232,10 @@ int main (int argc, char ** argv)
 		const char * errorMessage = GET_ERR (parentKey);
 		if (elektraStrNCmp (errorMessage, "Unknown sub-command:", 20) == 0)
 		{
-			goto cpp;
+			result = cpp_main (argc, argv);
 		}
-		if (elektraStrNCmp (errorMessage, "Unknown short option:", 21) == 0 ||
-		    elektraStrNCmp (errorMessage, "Unknown long option:", 20) == 0)
+		else if (elektraStrNCmp (errorMessage, "Unknown short option:", 21) == 0 ||
+			 elektraStrNCmp (errorMessage, "Unknown long option:", 20) == 0)
 		{
 			result = 1;
 		}
@@ -146,20 +243,17 @@ int main (int argc, char ** argv)
 		{
 			result = 5;
 		}
-		fprintf (stderr, "ERROR: %s\n", errorMessage);
-
-		goto cleanup;
+		if (result != 0 && (argc != 2 || elektraStrCmp (argv[1], "mount") != 0))
+		{
+			fprintf (stderr, "ERROR: %s\n", errorMessage);
+			goto cleanup;
+		}
 	}
 
 	const char * subcommand = keyString (ksLookupByName (options, CLI_BASE_KEY, 0));
-	if (elektraStrCmp (subcommand, "") == 0)
-	{
-		printf ("kdb is a program to manage Elektra's key database. For more information use --help.\n\n");
-		result = EXIT_SUCCESS;
-		goto cleanup;
-	}
 
-	for (unsigned long i = 0; i < sizeof (subcommands) / sizeof (subcommands[0]); ++i)
+	// C
+	for (unsigned long i = 0; i < sizeof (subcommands) / sizeof (command); ++i)
 	{
 		if (elektraStrCmp (subcommand, subcommands[i].name) == 0)
 		{
@@ -171,8 +265,16 @@ int main (int argc, char ** argv)
 			goto cleanup;
 		}
 	}
-cpp:
-	result = cpp_main (argc, argv);
+
+	// C++
+	for (unsigned long i = 0; i < sizeof (cppSubcommands) / sizeof (cppCommand); ++i)
+	{
+		if (elektraStrCmp (subcommand, cppSubcommands[i].name) == 0)
+		{
+			result = cppSubcommands[i].exec (argc, argv);
+			goto cleanup;
+		}
+	}
 
 cleanup:
 	keyDel (parentKey);

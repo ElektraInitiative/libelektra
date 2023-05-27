@@ -200,6 +200,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - add basic C framework, helper functions and new `get` implementation _(@hannes99)_
 - <<TODO>>
+- add spec for C++ commands _(@hannes99)_
 - <<TODO>>
 
 ### <<Tool>>
