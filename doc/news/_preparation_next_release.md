@@ -202,6 +202,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - add spec for C++ commands _(@hannes99)_
 - <<TODO>>
+- add support for external commands, with and without spec _(@hannes99)_
 
 ### <<Tool>>
 
