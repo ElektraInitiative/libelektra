@@ -51,6 +51,7 @@
 #include <validate.h>
 
 #include <command.h>
+#include <external.h>
 #include <kdb.h>
 #include <kdbhelper.h>
 #include <kdbopts.h>
@@ -219,16 +220,26 @@ int main (int argc, char ** argv)
 					  "kdb is a program to manage Elektra's key database.", KEY_END),
 				  KS_END);
 
+	// external programs with spec in spec:/sw/elektra/kdb/#0/current/<cmd>
+	KeySet * externalBinaries = ksNew (10, KS_END);
+	loadExternalSpec (options, externalBinaries, parentKey);
+
 	// C spec
-	for (unsigned long i = 0; i < sizeof (subcommands) / sizeof (subcommands[0]); ++i)
+	for (unsigned long i = 0; i < sizeof (subcommands) / sizeof (command); ++i)
 	{
 		subcommands[i].addSpec (options);
 	}
 
 	// C++ spec
-	for (unsigned long i = 0; i < sizeof (cppSubcommands) / sizeof (cppSubcommands[0]); ++i)
+	for (unsigned long i = 0; i < sizeof (cppSubcommands) / sizeof (cppCommand); ++i)
 	{
 		cppSubcommands[i].addSpec (options);
+	}
+
+	// no exec C++
+	for (unsigned long i = 0; i < sizeof (cppSubcommandsNoExec) / sizeof (cppCommand); ++i)
+	{
+		cppSubcommandsNoExec[i].addSpec (options);
 	}
 
 	int result = elektraGetOpts (options, argc, (const char **) argv, (const char **) environ, parentKey);
@@ -239,6 +250,7 @@ int main (int argc, char ** argv)
 		printWarnings (parentKey);
 		keyDel (parentKey);
 		ksDel (options);
+		ksDel (externalBinaries);
 		return 0;
 	}
 	if (result == -1)
@@ -246,7 +258,14 @@ int main (int argc, char ** argv)
 		const char * errorMessage = GET_ERR (parentKey);
 		if (elektraStrNCmp (errorMessage, "Unknown sub-command:", 20) == 0)
 		{
-			result = cpp_main (argc, argv);
+			if (tryLoadExternal (argv[1], externalBinaries) == 0)
+			{
+				result = 0;
+			}
+			else
+			{
+				result = 4;
+			}
 		}
 		else if (elektraStrNCmp (errorMessage, "Unknown short option:", 21) == 0 ||
 			 elektraStrNCmp (errorMessage, "Unknown long option:", 20) == 0)
@@ -265,6 +284,17 @@ int main (int argc, char ** argv)
 	}
 
 	const char * subcommand = keyString (ksLookupByName (options, CLI_BASE_KEY, 0));
+
+	// external
+	const char * externalBin = getExternalBin (externalBinaries, argv[1]);
+	if (externalBin != NULL)
+	{
+		Key * errorKey = keyNew (CLI_SPEC_KEY, KEY_END);
+		result = runExternal (externalBin, argv, errorKey);
+		printError (errorKey);
+		keyDel (errorKey);
+		goto cleanup;
+	}
 
 	// C
 	for (unsigned long i = 0; i < sizeof (subcommands) / sizeof (command); ++i)
@@ -293,5 +323,6 @@ int main (int argc, char ** argv)
 cleanup:
 	keyDel (parentKey);
 	ksDel (options);
+	ksDel (externalBinaries);
 	return result;
 }

@@ -310,6 +310,10 @@ This section keeps you up-to-date with the multi-language support provided by El
   - _NOTE_: The `path` argument for `kdb complete` is now required, so instead of `kdb complete` `kdb complete ""` has to be used. The
     reason for this is described in issue #4952.
 - <<TODO>>
+- add support for external commands, with and without spec _(@hannes99)_
+  - It is still possible to execute external binaries that are placed in a specific director, same as it worked in the old implementation.
+  - It is now possible to provide a specification to external commands to `kdb`, so `kdb` checks/parses arguments and then calls the
+    external program with them. [Add external command](../tutorials/external-commands.md)
 
 ### kdb
 
