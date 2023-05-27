@@ -20,11 +20,9 @@ The `storage` plugin can be configured at compile-time or changed by the link `l
 ## OPTIONS
 
 - `-H`, `--help`:
-  Show the man page.
+  Show usage of command.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile <profile>`:
-  Use a different kdb profile.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
 - `-E`, `--without-elektra`:

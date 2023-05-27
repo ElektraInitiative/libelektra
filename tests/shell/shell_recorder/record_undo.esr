@@ -26,7 +26,7 @@ STDOUT: swimming
 #
 
 RET: 0
-< kdb record-undo user:/testundo/hobby
+< kdb record-undo -P user:/testundo/hobby
 
 STDERR: Did not find key 'user:/testundo/hobby'
 < kdb get user:/testundo/hobby
@@ -55,3 +55,4 @@ STDOUT: 28
 
 < kdb record-stop
 < kdb record-reset
+< kdb rm -rf user:/testundo

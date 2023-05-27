@@ -1,13 +1,13 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre3
-.TH "KDB\-RECORD\-START" "1" "May 2023" ""
+.TH "KDB\-RECORD\-START" "1" "June 2023" ""
 .SH "NAME"
 \fBkdb\-record\-start\fR \- Start session recording
 .SH "SYNOPSIS"
-\fBkdb record\-start [<parent_key>]\fR
+\fBkdb record\-start\fR
 .br
 .SH "DESCRIPTION"
-This command starts session recording\. If there is already a previous session, this only changes the parent key\. If you want to make sure you start at a clean state, use \fBkdb record\-reset\fR first\. By default, all changes to the KDB are recorded\. The optional parameter \fBparent_key\fR can be used to restrict recording to a specific subtree of the KDB\.
+This command starts session recording\. If there is already a previous session, this only changes the parent key\. If you want to make sure you start at a clean state, use \fBkdb record\-reset\fR first\. By default, all changes to the KDB are recorded\.
 .P
 Note: when you activate session recording, concurrency of Elektra will be somewhat limited\. As long as it is active, a global lock will be created to ensure no two processes will write data simultaneously\. The errors reported to applications in such cases are similar to when multiple processes write to the same configuration file\. Applications should already handle this case gracefully, and just retry writing their configuration\. Therefore, activating recording may reduce performance slightly, but (assuming well\-written applications) it should not cause application errors\.
 .SH "OPTIONS"
@@ -18,8 +18,8 @@ Show the man page\.
 \fB\-V\fR, \fB\-\-version\fR
 Print version info\.
 .TP
-\fB\-p\fR, \fB\-\-profile <profile>\fR
-Use a different kdb profile\.
+\fB\-P\fR, \fB\-\-parent <key>\fR
+Restrict recording to a specific subtree of the KDB\.
 .TP
 \fB\-C\fR, \fB\-\-color <when>\fR
 Print never/auto(default)/always colored output\.

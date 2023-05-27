@@ -39,15 +39,13 @@ This command will return the following values as an exit status:
 ## OPTIONS
 
 - `-H`, `--help`:
-  Show the man page.
+  Show usage of command.
 - `-V`, `--version`:
   Print version info.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
 - `-F`, `--input-file <plugin>=<file>`:
   Load the file `<file>` with plugin `<plugin>` instead of accessing the KDB.
-- `-p`, `--profile <profile>`:
-  Use a different kdb profile.
 - `-v`, `--verbose`:
   Explain what is happening.
   Gives a complete trace of all tried keys.

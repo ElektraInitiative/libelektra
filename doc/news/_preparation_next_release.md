@@ -304,6 +304,11 @@ This section keeps you up-to-date with the multi-language support provided by El
     this is generated my `opts`.
   - `--profile` is not yet supported in the new `C` version (#4965), other that everything that worked in `C++` still works
 - <<TODO>>
+- add spec for C++ commands _(@hannes99)_
+  - Add specification for commands written in `C++`, this enables `opts` to generate the usage message and makes sure all commands(
+    regardless of their implementation) have the same help message format and generally behave the same.
+  - _NOTE_: The `path` argument for `kdb complete` is now required, so instead of `kdb complete` `kdb complete ""` has to be used. The
+    reason for this is described in issue #4952.
 - <<TODO>>
 
 ### kdb

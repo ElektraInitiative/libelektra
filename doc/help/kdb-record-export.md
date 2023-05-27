@@ -2,7 +2,7 @@
 
 ## SYNOPSIS
 
-`kdb record-export [<source>] [<format>]`<br>
+`kdb record-export <source>`<br>
 
 ## DESCRIPTION
 
@@ -16,20 +16,16 @@ Additionally, the user can specify a format to use by passing it as the option a
 The `format` attribute relies on Elektra’s plugin system to export the keys in the desired format.
 The parameter `format` must be the name of a valid storage plugin.
 
-Both `source` and `format` are optional parameters.
-By default, `source` is `/` and `format` is `ansible`.
-If you only specify a single argument, we will whether it is a key or the format.
-
 ## OPTIONS
 
 - `-H`, `--help`:
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile <profile>`:
-  Use a different kdb profile.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
+- `-F`, `--format`:
+  The format to use.
 - `-E`, `--without-elektra`:
   Omit the `system:/elektra` directory.
 - `-S`, `--include-recording-session`:

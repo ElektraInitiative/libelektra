@@ -16,7 +16,7 @@ This command writes into the `/etc` directory and as such it requires root permi
 ## OPTIONS
 
 - `-H`, `--help`:
-  Show the man page.
+  Show usage of command.
 
 ## SEE ALSO
 

@@ -48,7 +48,7 @@ RET: 0
 #
 
 RET: 0
-< kdb record-start user:/test/sub
+< kdb record-start -P user:/test/sub
 
 < kdb set user:/test/bla blub
 < kdb set user:/test/sub/shouldberecorded 123
@@ -59,3 +59,4 @@ STDOUT: Recording is active for user:/test/sub⏎⏎Added 1 key(s)⏎Modified 0 
 
 < kdb record-reset
 < kdb record-stop
+< kdb rm -rf user:/test

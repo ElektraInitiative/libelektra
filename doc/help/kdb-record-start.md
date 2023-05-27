@@ -2,7 +2,7 @@
 
 ## SYNOPSIS
 
-`kdb record-start [<parent_key>]`<br>
+`kdb record-start`<br>
 
 ## DESCRIPTION
 
@@ -10,7 +10,6 @@ This command starts session recording.
 If there is already a previous session, this only changes the parent key.
 If you want to make sure you start at a clean state, use `kdb record-reset` first.
 By default, all changes to the KDB are recorded.
-The optional parameter `parent_key` can be used to restrict recording to a specific subtree of the KDB.
 
 Note: when you activate session recording, concurrency of Elektra will be somewhat limited.
 As long as it is active, a global lock will be created to ensure no two processes will write data simultaneously.
@@ -24,8 +23,8 @@ Therefore, activating recording may reduce performance slightly, but (assuming w
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile <profile>`:
-  Use a different kdb profile.
+- `-P`, `--parent <key>`:
+  Restrict recording to a specific subtree of the KDB.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
 - `-v`, `--verbose`:

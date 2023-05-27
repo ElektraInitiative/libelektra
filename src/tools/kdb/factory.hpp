@@ -54,10 +54,8 @@
 #include <recordexport.hpp>
 #include <recordreset.hpp>
 #include <recordrm.hpp>
-#include <recordstart.hpp>
 #include <recordstate.hpp>
 #include <recordstop.hpp>
-#include <recordundo.hpp>
 #include <remount.hpp>
 #include <rm.hpp>
 #include <set.hpp>
@@ -135,10 +133,8 @@ public:
 		m_factory.insert (std::make_pair ("record-reset", std::make_shared<Cnstancer<RecordResetCommand>> ()));
 		m_factory.insert (std::make_pair ("record-export", std::make_shared<Cnstancer<RecordExportCommand>> ()));
 		m_factory.insert (std::make_pair ("record-rm", std::make_shared<Cnstancer<RecordRemoveKeyCommand>> ()));
-		m_factory.insert (std::make_pair ("record-start", std::make_shared<Cnstancer<RecordStartCommand>> ()));
 		m_factory.insert (std::make_pair ("record-state", std::make_shared<Cnstancer<RecordStateCommand>> ()));
 		m_factory.insert (std::make_pair ("record-stop", std::make_shared<Cnstancer<RecordStopCommand>> ()));
-		m_factory.insert (std::make_pair ("record-undo", std::make_shared<Cnstancer<RecordUndoCommand>> ()));
 	}
 
 	std::vector<std::string> getPrettyCommands () const

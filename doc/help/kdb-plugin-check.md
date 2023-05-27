@@ -16,11 +16,9 @@ Special values are returned upon exit to represent the outcome of a check.
 ## OPTIONS
 
 - `-H`, `--help`:
-  Show the man page.
+  Show usage of command.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile <profile>`:
-  Use a different kdb profile.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
 - `-f`, `--force`:
