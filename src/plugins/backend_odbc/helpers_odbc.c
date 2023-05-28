@@ -1,6 +1,6 @@
 #include "backendprivate_odbc.h"
-#include <stdio.h>
 #include <kdbassert.h>
+#include <stdio.h>
 
 unsigned char getNumDigits (int i)
 {
@@ -36,8 +36,9 @@ char ** extractOdbcErrors (char * fn, SQLHANDLE odbcHandle, SQLSMALLINT type)
 		}
 
 		SQLINTEGER recNum = 1;
-		for (msgCount = 0; SQL_SUCCEEDED (ret = SQLGetDiagRec (type, odbcHandle, recNum++, state,&nativeErrCode,
-								       text, i ? maxLenText + 1 : 0, &lenText)); msgCount++)
+		for (msgCount = 0; SQL_SUCCEEDED (ret = SQLGetDiagRec (type, odbcHandle, recNum++, state, &nativeErrCode, text,
+								       (i ? maxLenText + 1 : 0), &lenText));
+		     msgCount++)
 		{
 			if (i)
 			{
@@ -53,7 +54,7 @@ char ** extractOdbcErrors (char * fn, SQLHANDLE odbcHandle, SQLSMALLINT type)
 
 		if (i)
 		{
-			elektraFree(text);
+			elektraFree (text);
 			return resultArray;
 		}
 	}
@@ -78,7 +79,8 @@ void logError (SQLSMALLINT handleType, SQLHANDLE handle, char * functionName, bo
 		SQLSMALLINT errMsgLen;
 
 
-		SQLRETURN ret = SQLGetDiagRec (handleType, handle, i, sqlState, &nativeError, errMsg, SQL_MAX_MESSAGE_LENGTH + 1, &errMsgLen);
+		SQLRETURN ret =
+			SQLGetDiagRec (handleType, handle, i, sqlState, &nativeError, errMsg, SQL_MAX_MESSAGE_LENGTH + 1, &errMsgLen);
 		if (ret == SQL_NO_DATA)
 		{
 			break;
@@ -106,7 +108,8 @@ void logError (SQLSMALLINT handleType, SQLHANDLE handle, char * functionName, bo
 
 		/* TODO: Extract error and add it to key */
 		fprintf (stderr, "An ODBC %s occurred", isInfo ? "warning" : "error");
-		(functionName && *functionName) ? fprintf (stderr, " in the following function: %s\n", functionName) : fprintf (stderr, ":\n");
+		(functionName && *functionName) ? fprintf (stderr, " in the following function: %s\n", functionName) :
+						  fprintf (stderr, ":\n");
 		fprintf (stderr, "Number of error or warning: %d of %d\n", i, numRecs);
 		fprintf (stderr, "Status Code: %s\n", sqlState);
 		fprintf (stderr, "Native error code: %d\n", nativeError);
@@ -137,7 +140,7 @@ char ** getAvailableDataSources (void)
 		{
 			result = elektraMalloc (dsnCount * sizeof (char *));
 			/* add one byte for \0 */
-			dsn = elektraMalloc((maxLenDsn + 1) * sizeof (SQLCHAR));
+			dsn = elektraMalloc ((maxLenDsn + 1) * sizeof (SQLCHAR));
 		}
 
 		dsnCount = 0;
@@ -148,7 +151,7 @@ char ** getAvailableDataSources (void)
 			if (i)
 			{
 				/* FIXME: Check if cast from 'unsigned char' to 'char' is safe here */
-				result[dsnCount] =  (char *) dsn;
+				result[dsnCount] = (char *) dsn;
 			}
 			else
 			{
@@ -164,7 +167,7 @@ char ** getAvailableDataSources (void)
 
 
 /* make sure to free the returned string */
-char * getStringFromBaseName (KeySet * searchKs, Key * lookupKey, const char *baseName, bool addBaseName)
+char * getStringFromBaseName (KeySet * searchKs, Key * lookupKey, const char * baseName, bool addBaseName)
 {
 	if (addBaseName)
 	{
@@ -190,8 +193,6 @@ char * getStringFromBaseName (KeySet * searchKs, Key * lookupKey, const char *ba
 				resultString = NULL;
 			}
 		}
-
-
 	}
 
 	return resultString;
@@ -216,7 +217,8 @@ static char * lookupStringFromKs (KeySet * ks, const char * keyName)
 	}
 
 	ssize_t ret = keyGetString (resultKey, resultString, keyGetValueSize (resultKey));
-	ELEKTRA_ASSERT (ret != 0, "keyGetString() returned 0! This should not have happened! Please report the bug at https://issues.libelektra.org");
+	ELEKTRA_ASSERT (ret != 0,
+			"keyGetString() returned 0! This should not have happened! Please report the bug at https://issues.libelektra.org");
 
 	if (ret == -1)
 	{
@@ -236,7 +238,7 @@ struct dataSourceConfig * fillDsStructFromDefintionKs (KeySet * ksDefinition)
 		return NULL;
 	}
 
-	struct dataSourceConfig * dsConfig = elektraCalloc (sizeof(struct dataSourceConfig));
+	struct dataSourceConfig * dsConfig = elektraCalloc (sizeof (struct dataSourceConfig));
 	if (!dsConfig)
 	{
 		return NULL;
@@ -248,7 +250,7 @@ struct dataSourceConfig * fillDsStructFromDefintionKs (KeySet * ksDefinition)
 
 	dsConfig->dataSourceName = lookupStringFromKs (ksDefinition, "system:/dataSourceName");
 
-	if(!(dsConfig->dataSourceName))
+	if (!(dsConfig->dataSourceName))
 	{
 		valueMissing = true;
 	}
@@ -287,7 +289,8 @@ struct dataSourceConfig * fillDsStructFromDefintionKs (KeySet * ksDefinition)
 			dsConfig->metaTableMetaKeyColName = lookupStringFromKs (ksDefinition, "system:/metaTable/metaKeyColName");
 			dsConfig->metaTableMetaValColName = lookupStringFromKs (ksDefinition, "system:/metaTable/metaValColName");
 
-			if (!(dsConfig->metaTableKeyColName) || !(dsConfig->metaTableMetaKeyColName) || !(dsConfig->metaTableMetaValColName))
+			if (!(dsConfig->metaTableKeyColName) || !(dsConfig->metaTableMetaKeyColName) ||
+			    !(dsConfig->metaTableMetaValColName))
 			{
 				valueMissing = true;
 			}
@@ -326,15 +329,15 @@ char * dsConfigToString (struct dataSourceConfig * dsConfig)
 	}
 
 	size_t dsConfigStrLen = (dsConfig->dataSourceName ? strlen (dsConfig->dataSourceName) : 0)
-	       	//+ (dsConfig.userName ? strlen (dsConfig.userName) : 0)
-	       	//+ (dsConfig.password ? strlen (dsConfig.password) : 0)
-	       	+ (dsConfig->tableName ? strlen (dsConfig->tableName) : 0)
-	       	+ (dsConfig->keyColName ? strlen (dsConfig->keyColName) : 0)
-	       	+ (dsConfig->valColName ? strlen (dsConfig->valColName) : 0)
-	       	+ (dsConfig->metaTableName ? strlen (dsConfig->metaTableName) : 0)
-	       	+ (dsConfig->metaTableKeyColName ? strlen (dsConfig->metaTableKeyColName) : 0)
-	       	+ (dsConfig->metaTableMetaKeyColName ? strlen (dsConfig->metaTableMetaKeyColName) : 0)
-	       	+ (dsConfig->metaTableMetaValColName ? strlen (dsConfig->metaTableMetaValColName) : 0);
+				//+ (dsConfig.userName ? strlen (dsConfig.userName) : 0)
+				//+ (dsConfig.password ? strlen (dsConfig.password) : 0)
+				+ (dsConfig->tableName ? strlen (dsConfig->tableName) : 0) +
+				(dsConfig->keyColName ? strlen (dsConfig->keyColName) : 0) +
+				(dsConfig->valColName ? strlen (dsConfig->valColName) : 0) +
+				(dsConfig->metaTableName ? strlen (dsConfig->metaTableName) : 0) +
+				(dsConfig->metaTableKeyColName ? strlen (dsConfig->metaTableKeyColName) : 0) +
+				(dsConfig->metaTableMetaKeyColName ? strlen (dsConfig->metaTableMetaKeyColName) : 0) +
+				(dsConfig->metaTableMetaValColName ? strlen (dsConfig->metaTableMetaValColName) : 0);
 
 	if (dsConfigStrLen == 0)
 	{
@@ -351,15 +354,13 @@ char * dsConfigToString (struct dataSourceConfig * dsConfig)
 	char * curPart = retStr;
 
 	curPart = (dsConfig->dataSourceName ? stpcpy (curPart, dsConfig->dataSourceName) : curPart);
-	//curPart = (dsConfig.userName ? stpcpy (curPart, dsConfig.userName) : curPart);
-	//curPart = (dsConfig.password ? stpcpy (curPart, dsConfig.password) : curPart);
 	curPart = (dsConfig->tableName ? stpcpy (curPart, dsConfig->tableName) : curPart);
 	curPart = (dsConfig->keyColName ? stpcpy (curPart, dsConfig->keyColName) : curPart);
 	curPart = (dsConfig->valColName ? stpcpy (curPart, dsConfig->valColName) : curPart);
 	curPart = (dsConfig->metaTableName ? stpcpy (curPart, dsConfig->metaTableName) : curPart);
 	curPart = (dsConfig->metaTableKeyColName ? stpcpy (curPart, dsConfig->metaTableKeyColName) : curPart);
 	curPart = (dsConfig->metaTableMetaKeyColName ? stpcpy (curPart, dsConfig->metaTableMetaKeyColName) : curPart);
-	curPart = (dsConfig->metaTableMetaValColName ? stpcpy (curPart, dsConfig->metaTableMetaValColName) : curPart);
+	(dsConfig->metaTableMetaValColName ? stpcpy (curPart, dsConfig->metaTableMetaValColName) : curPart);
 
 	return retStr;
 }

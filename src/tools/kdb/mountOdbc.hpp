@@ -1,10 +1,10 @@
 /**
-* @file
-*
-* @brief
-*
-* @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
-*/
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
 #ifndef MOUNTODBC_HPP
 #define MOUNTODBC_HPP
 
@@ -20,7 +20,7 @@ class MountOdbcCommand : public Command
 
 public:
 	MountOdbcCommand ();
-	~MountOdbcCommand();
+	~MountOdbcCommand ();
 
 	virtual std::string getShortOptions () override
 	{

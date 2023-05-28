@@ -61,7 +61,6 @@ Otherwise, you can visit the [the API documentation](https://doc.libelektra.org/
 
 ## Plugins
 
-
 ### Backends
 
 Backends provide access to different data sources (e.g. files, databases, network resources)

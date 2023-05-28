@@ -42,16 +42,15 @@ struct columnData
 	SQLCHAR bufferKeyName[KEYNAME_BUFFER_SIZE];
 	SQLLEN nameLenInd;
 
-	SQLCHAR	bufferKeyStr[KEYSTRING_BUFFER_SIZE];
+	SQLCHAR bufferKeyStr[KEYSTRING_BUFFER_SIZE];
 	SQLLEN strLenInd;
 
-	SQLCHAR	bufferMetaKeyName[METAKEYNAME_BUFFER_SIZE];
+	SQLCHAR bufferMetaKeyName[METAKEYNAME_BUFFER_SIZE];
 	SQLLEN metaNameLenInd;
 
 	SQLCHAR bufferMetaKeyStr[METASTRING_BUFFER_SIZE];
 	SQLLEN metaStrLenInd;
 };
-
 
 
 /* Helper functions */
@@ -66,7 +65,7 @@ void logError (SQLSMALLINT handleType, SQLHANDLE handle, char * functionName, bo
 char ** getAvailableDataSources (void);
 
 /* make sure to free the returned string */
-char * getStringFromBaseName (KeySet * searchKs, Key * lookupKey, const char *baseName, bool addBaseName);
+char * getStringFromBaseName (KeySet * searchKs, Key * lookupKey, const char * baseName, bool addBaseName);
 
 /* Fill the datasource config based on keys in the KDB */
 struct dataSourceConfig * fillDsStructFromDefintionKs (KeySet * ksDefinition);

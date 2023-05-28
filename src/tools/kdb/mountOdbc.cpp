@@ -1,10 +1,10 @@
 /**
-* @file
-*
-* @brief
-*
-* @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
-*/
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
 
 
 #include "./mountOdbc.hpp"
@@ -15,7 +15,7 @@ MountOdbcCommand::MountOdbcCommand () : kdb (root)
 {
 }
 
-int MountOdbcCommand::execute (Cmdline const &cl)
+int MountOdbcCommand::execute (Cmdline const & cl)
 {
 	std::cout << "This is the new odbc mounting command!" << std::endl;
 	std::cout << "For now, a hardcoded mountpoint at user:/odbc is created." << std::endl;

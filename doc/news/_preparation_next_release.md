@@ -89,7 +89,6 @@ If you use the plugin with another ODBC implemetation as unixODBC, you are very 
 
 TODO: Extend and finish summary _(Florian Lindner @flo91)_
 
-
 ### <<HIGHLIGHT>>
 
 ## Plugins
