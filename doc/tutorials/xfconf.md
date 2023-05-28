@@ -115,6 +115,32 @@ If you did the setup using the system libraries, it is sufficient to run it:
 kdb xfconf-system-lib-restore
 ```
 
-If you have chosen the user only way, you will need to edit your `~/.xprofile` file and remove the statements where the `LD_*` variables contain anything related to Xfconf.
+If you have chosen the user only way, you will need to edit your `~/.xprofile` file and remove the statements where the `LD_*` variables
+contain anything related to Xfconf.
 
 ## Data-Types Used in Xfconf
+
+Xfconf uses the glib2 type system.
+This system is not fully compatible with Elektra.
+However, all values are stored in Elektra in their string representation when used as a drop-in replacement.
+In addition, the name of the glib2 type is stored in Elektra as a meta key.
+This makes Xfconf's type system completely independent of Elektra, at the cost of memory and computational resources.
+
+The following table shows a comparison between the different type systems.
+
+| Xfconf   | Elektra                    | Note                                                                                         |
+| :------- | -------------------------- | -------------------------------------------------------------------------------------------- |
+| `string` | `char*`                    |                                                                                              |
+| `uchar`  | `kdb_octet_t`              | Not implemented in the Xfconf binding.                                                       |
+| `char`   | `kdb_char_t`               | Not implemented in the Xfconf binding.                                                       |
+| `uint16` | `kdb_unsigned_short_t`     | Not implemented in the Xfconf binding.                                                       |
+| `int16`  | `kdb_short_t`              | Not implemented in the Xfconf binding.                                                       |
+| `uint`   | `kdb_unsigned_long_t`      |                                                                                              |
+| `int`    | `kdb_long_t`               |                                                                                              |
+| `uint64` | `kdb_unsigned_long_long_t` |                                                                                              |
+| `int64`  | `kdb_long_long_t`          |                                                                                              |
+| `float`  | `kdb_float_t`              |                                                                                              |
+| `double` | `kdb_double_t`             |                                                                                              |
+| `bool`   | `kdb_boolean_t`            |                                                                                              |
+| `array`  |                            | No direct type in Elektra. The key name structure determines whether it is an array or not.  |
+| `empty`  |                            | Does not exist in Elektra. Paths in Elektra which are no leaf nodes will be equally handled. |
