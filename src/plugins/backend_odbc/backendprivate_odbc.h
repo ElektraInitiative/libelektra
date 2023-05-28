@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Header for template plugin
+ * @brief Header for backend_odbc plugin
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
@@ -16,39 +16,6 @@
 #include <sql.h>
 #include <sqlext.h>
 #include <sqltypes.h>
-
-
-typedef struct _PluginList
-{
-	Plugin * plugin;
-	struct _PluginList * next;
-} PluginList;
-
-typedef struct
-{
-	char * dataSourceName;
-
-	struct
-	{
-		Plugin * resolver;
-		PluginList * prestorage;
-		Plugin * storage;
-		PluginList * poststorage;
-	} getPositions;
-	struct
-	{
-		Plugin * resolver;
-		PluginList * prestorage;
-		Plugin * storage;
-		PluginList * poststorage;
-		PluginList * precommit;
-		Plugin * commit;
-		PluginList * postcommit;
-		PluginList * prerollback;
-		Plugin * rollback;
-		PluginList * postrollback;
-	} setPositions;
-} BackendHandle;
 
 
 struct dataSourceConfig
@@ -101,7 +68,11 @@ char ** getAvailableDataSources (void);
 /* make sure to free the returned string */
 char * getStringFromBaseName (KeySet * searchKs, Key * lookupKey, const char *baseName, bool addBaseName);
 
+/* Fill the datasource config based on keys in the KDB */
+struct dataSourceConfig * fillDsStructFromDefintionKs (KeySet * ksDefinition);
+
 /* Get the sum of the number of characters from all strings in the dataSourceConfig struct */
-char * dsConfigToString (struct dataSourceConfig dsConfig);
+char * dsConfigToString (struct dataSourceConfig * dsConfig);
+
 
 #endif // ELEKTRA_BACKENDPRIVATE_ODBC_H

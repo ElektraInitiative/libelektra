@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Header for template plugin
+ * @brief Header for backend plugin
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *

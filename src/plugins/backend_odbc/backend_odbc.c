@@ -11,12 +11,67 @@
 /* FIXME: Remove, only for testing during dev */
 #include <stdio.h>
 
+int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * plugin, Key * errorKey)
+{
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
 
-SQLHENV allocateEnvHandle (Key * parentKey)
+
+int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * ksDefinition, Key * parentKey)
+{
+	struct dataSourceConfig * dsConfig = fillDsStructFromDefintionKs (ksDefinition);
+
+	/* TODO: remove pre-defined test data */
+	if (!dsConfig)
+	{
+		ELEKTRA_SET_INTERNAL_ERRORF (parentKey,
+					    "Could not get all necessary data from the mountpoint definition at %s\n", keyName (parentKey));
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	elektraPluginSetData (plugin, dsConfig);
+
+
+	// init as read-only
+	/* TODO: Implement set function and then change to STATUS_SUCCESS */
+	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+}
+
+
+int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * plugin, KeySet * ks, Key * parentKey)
+{
+	/* TODO: Implement set function */
+	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+}
+
+
+int ELEKTRA_PLUGIN_FUNCTION (commit) (Plugin * plugin, KeySet * ks, Key * parentKey)
+{
+	/* TODO: Implement commit for set-operations */
+	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+}
+
+
+int ELEKTRA_PLUGIN_FUNCTION (error) (Plugin * plugin, KeySet * ks, Key * parentKey)
+{
+
+	return ELEKTRA_PLUGIN_STATUS_ERROR;
+}
+
+
+int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * plugin, Key * errorKey)
+{
+	struct dataSourceConfig * dsConfig = elektraPluginGetData (plugin);
+	elektraFree (dsConfig);
+	elektraPluginSetData (plugin, NULL);
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+
+
+static SQLHENV allocateEnvHandle (Key * parentKey)
 {
 	SQLHENV sqlEnv = NULL;
 	SQLRETURN ret = SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &sqlEnv);
-
 
 	if (!SQL_SUCCEEDED (ret))
 	{
@@ -29,13 +84,12 @@ SQLHENV allocateEnvHandle (Key * parentKey)
 		logError (SQL_HANDLE_ENV, sqlEnv, "allocateEnvHandle", true, parentKey);
 	}
 
-
 	return sqlEnv;
 
 }
 
 
-bool setOdbcVersion (SQLHENV sqlEnv, unsigned long version, Key * parentKey)
+static bool setOdbcVersion (SQLHENV sqlEnv, unsigned long version, Key * parentKey)
 {
 	SQLRETURN ret = SQLSetEnvAttr (sqlEnv, SQL_ATTR_ODBC_VERSION, (SQLPOINTER) version, 0);
 
@@ -56,15 +110,15 @@ bool setOdbcVersion (SQLHENV sqlEnv, unsigned long version, Key * parentKey)
 }
 
 
-SQLHDBC allocateConnectionHandle (SQLHENV sqlEnv, Key * parentKey)
+static SQLHDBC allocateConnectionHandle (SQLHENV sqlEnv, Key * parentKey)
 {
 	SQLHDBC sqlConnection = NULL;
 	SQLRETURN ret = SQLAllocHandle (SQL_HANDLE_DBC, sqlEnv, &sqlConnection);
 
 	if (!SQL_SUCCEEDED (ret))
 	{
-		fprintf (stderr, "Error AllocHDB %d\n", ret);
-		ELEKTRA_LOG_NOTICE ("SQLAllocHandle () failed!\nCould not allocate handle for ODBC connection! (SQLAllocHandle failed)");
+		fprintf (stderr, "Error AllocDBC %d\n", ret);
+		ELEKTRA_LOG_NOTICE ("SQLAllocHandle () failed!\nCould not allocate handle for ODBC connection!");
 		logError (SQL_HANDLE_ENV, sqlEnv, "allocateConnectionHandle", false, parentKey);
 		SQLFreeHandle (SQL_HANDLE_ENV, sqlEnv);
 		return NULL;
@@ -80,7 +134,7 @@ SQLHDBC allocateConnectionHandle (SQLHENV sqlEnv, Key * parentKey)
 }
 
 
-bool setLoginTimeout (SQLHDBC sqlConnection, unsigned long timeout, Key * parentKey)
+static bool setLoginTimeout (SQLHDBC sqlConnection, unsigned long timeout, Key * parentKey)
 {
 	SQLRETURN ret = SQLSetConnectAttr (sqlConnection, SQL_LOGIN_TIMEOUT, (SQLPOINTER) timeout, 0);
 
@@ -98,15 +152,78 @@ bool setLoginTimeout (SQLHDBC sqlConnection, unsigned long timeout, Key * parent
 		logError (SQL_HANDLE_DBC, sqlConnection, "setLoginTimeout", true, parentKey);
 	}
 
-
 	return true;
-
 }
 
 
-bool connectToDataSource (SQLHDBC sqlConnection, struct dataSourceConfig dsConfig, Key * parentKey)
+static bool setAutocommit (SQLHDBC sqlConnection, bool enableAutoCommit, Key * parentKey)
 {
-	SQLRETURN ret = SQLConnect (sqlConnection, (SQLCHAR *) dsConfig.dataSourceName, SQL_NTS, (SQLCHAR *) dsConfig.userName, SQL_NTS, (SQLCHAR *) dsConfig.password, SQL_NTS);
+	SQLRETURN ret;
+	if (enableAutoCommit)
+	{
+		ret = SQLSetConnectAttr (sqlConnection, SQL_ATTR_AUTOCOMMIT, (SQLPOINTER) SQL_AUTOCOMMIT_ON, 0);
+	}
+	else
+	{
+		/* set manual transaction mode (disable autocommit) */
+		ret = SQLSetConnectAttr (sqlConnection, SQL_ATTR_AUTOCOMMIT, (SQLPOINTER) SQL_AUTOCOMMIT_OFF, 0);
+	}
+
+	if (!SQL_SUCCEEDED (ret))
+	{
+		fprintf (stderr, "Error setAutocommit %d\n", ret);
+		ELEKTRA_LOG_NOTICE ("SQLSetConnectAttr () failed!\nCould not set the autocommit mode for an ODBC connection!");
+		logError (SQL_HANDLE_DBC, sqlConnection, "setAutocommit", false, parentKey);
+		SQLFreeHandle (SQL_HANDLE_DBC, sqlConnection);
+		return false;
+	}
+	else if (ret == SQL_SUCCESS_WITH_INFO)
+	{
+		logError (SQL_HANDLE_DBC, sqlConnection, "setAutocommit", true, parentKey);
+	}
+
+	return true;
+}
+
+
+static bool endTransaction (SQLHDBC sqlConnection, bool commit, Key * parentKey)
+{
+	SQLRETURN ret;
+	if (commit)
+	{
+		ret = SQLEndTran (SQL_HANDLE_DBC, sqlConnection, SQL_COMMIT);
+
+	}
+	else
+	{
+		ret = SQLEndTran (SQL_HANDLE_DBC, sqlConnection, SQL_ROLLBACK);
+	}
+
+	if (!SQL_SUCCEEDED (ret))
+	{
+		fprintf (stderr, "Error endTransaction %d\n", ret);
+		ELEKTRA_LOG_NOTICE ("SQLEndTran () failed!\nCould not %s the transaction!", (commit ? "commit" : "rollback"));
+		logError (SQL_HANDLE_DBC, sqlConnection, "endTransaction", false, parentKey);
+		SQLFreeHandle (SQL_HANDLE_DBC, sqlConnection);
+		return false;
+	}
+	else if (ret == SQL_SUCCESS_WITH_INFO)
+	{
+		logError (SQL_HANDLE_DBC, sqlConnection, "endTransaction", true, parentKey);
+	}
+
+	return true;
+}
+
+
+static bool connectToDataSource (SQLHDBC sqlConnection, struct dataSourceConfig * dsConfig, Key * parentKey)
+{
+	if (!dsConfig || !(dsConfig->dataSourceName))
+	{
+		return NULL;
+	}
+
+	SQLRETURN ret = SQLConnect (sqlConnection, (SQLCHAR *) dsConfig->dataSourceName, SQL_NTS,(SQLCHAR *)(dsConfig->userName ? dsConfig->userName : ""), SQL_NTS, (SQLCHAR *)(dsConfig->password ? dsConfig->password : ""), SQL_NTS);
 
 	if (!SQL_SUCCEEDED (ret))
 	{
@@ -121,7 +238,6 @@ bool connectToDataSource (SQLHDBC sqlConnection, struct dataSourceConfig dsConfi
 		logError (SQL_HANDLE_DBC, sqlConnection, "connectToDataSource", true, parentKey);
 	}
 
-
 	ELEKTRA_LOG_DEBUG ("Connected to the ODBC data source '%s' as user '%s'.", dsConfig.dataSourceName, dsConfig.userName);
 	return true;
 }
@@ -134,116 +250,117 @@ bool connectToDataSource (SQLHDBC sqlConnection, struct dataSourceConfig dsConfi
  * @retval NULL memory allocation failed
  * @returns the query string for the select query the get keynames, key-values (strings) and metadata from an SQL data source
  */
-char * getSelectQueryString (struct dataSourceConfig dsConfig, char * quoteString)
+static char * getSelectQueryString (struct dataSourceConfig * dsConfig, char * quoteString)
 {
-		/* A sample query string that shows the structure of the SELECT query that this function generates:
-		 * SELECT "elektra"."key", "elektra"."val", "elektrameta"."metakey", "elektrameta"."metaval" FROM {oj "elektra" LEFT OUTER JOIN "elektrameta" ON "elektra"."key"="elektrameta"."key"}
-		 */
+	/* A sample query string that shows the structure of the SELECT query that this function generates:
+	 * SELECT "elektra"."key", "elektra"."val", "elektrameta"."metakey", "elektrameta"."metaval" FROM {oj "elektra" LEFT OUTER JOIN "elektrameta" ON "elektra"."key"="elektrameta"."key"}
+	 */
 
-		/* Verify that all necessary strings are provided */
-		if (!dsConfig.tableName || !(*dsConfig.tableName) || !dsConfig.keyColName || !(*dsConfig.keyColName) || !dsConfig.valColName || !(*dsConfig.valColName) || !dsConfig.metaTableName || !(*dsConfig.metaTableName)
-			|| !dsConfig.metaTableKeyColName || !(*dsConfig.metaTableKeyColName) || !dsConfig.metaTableMetaKeyColName || !(*dsConfig.metaTableMetaKeyColName) || !dsConfig.metaTableMetaValColName || !(*dsConfig.metaTableMetaValColName))
-		{
-			return "";
-		}
-
-
-		/* 1. Calculate strlen of all column names */
-		size_t sumLen = strlen (dsConfig.keyColName) * 2 + strlen (dsConfig.valColName) + strlen (dsConfig.metaTableMetaKeyColName) + strlen (dsConfig.metaTableMetaValColName) + strlen (dsConfig.metaTableKeyColName);
-
-		/* 2. Add table names (for SELECT and outer join parts of the query string, add 6 bytes for the cases where the column name follows the table name ('.' as separator */
-		sumLen += strlen (dsConfig.tableName) * 4 + strlen (dsConfig.metaTableName) * 4 + 6;
-
-		/* 3. Add strlen for static parts of the query + 1 byte for \0 */
-		sumLen += strlen ("SELECT , , ,  FROM {oj  LEFT OUTER JOIN  ON =}");
-
-		/* 4. Add bytes for quoting identifiers (table- and column-names) */
-		if (quoteString)
-		{
-			sumLen += (14 * 2 * strlen (quoteString));
-		}
-		else
-		{
-			/* Don't use quotes for identifiers */
-			quoteString = "";
-		}
+	/* Verify that all necessary strings are provided */
+	if (!dsConfig || !(dsConfig->tableName) || !(*(dsConfig->tableName)) || !(dsConfig->keyColName) || !(*(dsConfig->keyColName))
+		|| !(dsConfig->valColName) || !(*(dsConfig->valColName)) || !(dsConfig->metaTableName) || !(*(dsConfig->metaTableName))
+		|| !(dsConfig->metaTableKeyColName) || !(*(dsConfig->metaTableKeyColName)) || !(dsConfig->metaTableMetaKeyColName)
+		|| !(*(dsConfig->metaTableMetaKeyColName)) || !(dsConfig->metaTableMetaValColName) || !(*(dsConfig->metaTableMetaValColName)))
+	{
+		return "";
+	}
 
 
-		char * queryString = elektraMalloc (sizeof (char) * sumLen);
+	/* 1. Calculate strlen of all column names */
+	size_t sumLen = strlen (dsConfig->keyColName) * 2 + strlen (dsConfig->valColName) + strlen (dsConfig->metaTableMetaKeyColName) + strlen (dsConfig->metaTableMetaValColName) + strlen (dsConfig->metaTableKeyColName);
 
-		if (!queryString)
-		{
-			return NULL;
-		}
+	/* 2. Add table names (for SELECT and outer join parts of the query string, add 6 bytes for the cases where the column name follows the table name ('.' as separator */
+	sumLen += strlen (dsConfig->tableName) * 4 + strlen (dsConfig->metaTableName) * 4 + 6;
 
-		/* Build the string */
-		char * strEnd = stpcpy (queryString, "SELECT ");
-		strEnd = stpcpy (strEnd, quoteString);
-		strEnd = stpcpy (strEnd, dsConfig.tableName);
-		strEnd = stpcpy (strEnd, quoteString);
-		strEnd = stpcpy (strEnd, ".");
-		strEnd = stpcpy (strEnd, quoteString);
-		strEnd = stpcpy (strEnd, dsConfig.keyColName);
-		strEnd = stpcpy (strEnd, quoteString);
-		strEnd = stpcpy (strEnd, ", ");
-		strEnd = stpcpy (strEnd, quoteString);
-		strEnd = stpcpy (strEnd, dsConfig.tableName);
-		strEnd = stpcpy (strEnd, quoteString);
-		strEnd = stpcpy (strEnd, ".");
-		strEnd = stpcpy (strEnd, quoteString);
-		strEnd = stpcpy (strEnd, dsConfig.valColName);
-		strEnd = stpcpy (strEnd, quoteString);
+	/* 3. Add strlen for static parts of the query + 1 byte for \0 */
+	sumLen += strlen ("SELECT , , ,  FROM {oj  LEFT OUTER JOIN  ON =}");
 
-		strEnd = stpcpy (strEnd, ", ");
-		strEnd = stpcpy (strEnd, quoteString);
-		strEnd = stpcpy (strEnd, dsConfig.metaTableName);
-		strEnd = stpcpy (strEnd, quoteString);
-		strEnd = stpcpy (strEnd, ".");
-		strEnd = stpcpy (strEnd, quoteString);
-		strEnd = stpcpy (strEnd, dsConfig.metaTableMetaKeyColName);
-		strEnd = stpcpy (strEnd, quoteString);
-		strEnd = stpcpy (strEnd, ", ");
-		strEnd = stpcpy (strEnd, quoteString);
-		strEnd = stpcpy (strEnd, dsConfig.metaTableName);
-		strEnd = stpcpy (strEnd, quoteString);
-		strEnd = stpcpy (strEnd, ".");
-		strEnd = stpcpy (strEnd, quoteString);
-		strEnd = stpcpy (strEnd, dsConfig.metaTableMetaValColName);
-		strEnd = stpcpy (strEnd, quoteString);
+	/* 4. Add bytes for quoting identifiers (table- and column-names) */
+	if (quoteString)
+	{
+		sumLen += (14 * 2 * strlen (quoteString));
+	}
+	else
+	{
+		/* Don't use quotes for identifiers */
+		quoteString = "";
+	}
 
-		strEnd = stpcpy (strEnd, " FROM {oj ");
-		strEnd = stpcpy (strEnd, quoteString);
-		strEnd = stpcpy (strEnd, dsConfig.tableName);
-		strEnd = stpcpy (strEnd, quoteString);
-		strEnd = stpcpy (strEnd, " LEFT OUTER JOIN ");
-		strEnd = stpcpy (strEnd, quoteString);
-		strEnd = stpcpy (strEnd, dsConfig.metaTableName);
-		strEnd = stpcpy (strEnd, quoteString);
-		strEnd = stpcpy (strEnd, " ON ");
-		strEnd = stpcpy (strEnd, quoteString);
-		strEnd = stpcpy (strEnd, dsConfig.tableName);
-		strEnd = stpcpy (strEnd, quoteString);
-		strEnd = stpcpy (strEnd, ".");
-		strEnd = stpcpy (strEnd, quoteString);
-		strEnd = stpcpy (strEnd, dsConfig.keyColName);
-		strEnd = stpcpy (strEnd, quoteString);
-		strEnd = stpcpy (strEnd, "=");
-		strEnd = stpcpy (strEnd, quoteString);
-		strEnd = stpcpy (strEnd, dsConfig.metaTableName);
-		strEnd = stpcpy (strEnd, quoteString);
-		strEnd = stpcpy (strEnd, ".");
-		strEnd = stpcpy (strEnd, quoteString);
-		strEnd = stpcpy (strEnd, dsConfig.metaTableKeyColName);
-		strEnd = stpcpy (strEnd, quoteString);
-		strEnd = stpcpy (strEnd, "}");
 
-		return queryString;
+	char * queryString = elektraMalloc (sizeof (char) * sumLen);
+
+	if (!queryString)
+	{
+		return NULL;
+	}
+
+	/* Build the string */
+	char * strEnd = stpcpy (queryString, "SELECT ");
+	strEnd = stpcpy (strEnd, quoteString);
+	strEnd = stpcpy (strEnd, dsConfig->tableName);
+	strEnd = stpcpy (strEnd, quoteString);
+	strEnd = stpcpy (strEnd, ".");
+	strEnd = stpcpy (strEnd, quoteString);
+	strEnd = stpcpy (strEnd, dsConfig->keyColName);
+	strEnd = stpcpy (strEnd, quoteString);
+	strEnd = stpcpy (strEnd, ", ");
+	strEnd = stpcpy (strEnd, quoteString);
+	strEnd = stpcpy (strEnd, dsConfig->tableName);
+	strEnd = stpcpy (strEnd, quoteString);
+	strEnd = stpcpy (strEnd, ".");
+	strEnd = stpcpy (strEnd, quoteString);
+	strEnd = stpcpy (strEnd, dsConfig->valColName);
+	strEnd = stpcpy (strEnd, quoteString);
+
+	strEnd = stpcpy (strEnd, ", ");
+	strEnd = stpcpy (strEnd, quoteString);
+	strEnd = stpcpy (strEnd, dsConfig->metaTableName);
+	strEnd = stpcpy (strEnd, quoteString);
+	strEnd = stpcpy (strEnd, ".");
+	strEnd = stpcpy (strEnd, quoteString);
+	strEnd = stpcpy (strEnd, dsConfig->metaTableMetaKeyColName);
+	strEnd = stpcpy (strEnd, quoteString);
+	strEnd = stpcpy (strEnd, ", ");
+	strEnd = stpcpy (strEnd, quoteString);
+	strEnd = stpcpy (strEnd, dsConfig->metaTableName);
+	strEnd = stpcpy (strEnd, quoteString);
+	strEnd = stpcpy (strEnd, ".");
+	strEnd = stpcpy (strEnd, quoteString);
+	strEnd = stpcpy (strEnd, dsConfig->metaTableMetaValColName);
+	strEnd = stpcpy (strEnd, quoteString);
+
+	strEnd = stpcpy (strEnd, " FROM {oj ");
+	strEnd = stpcpy (strEnd, quoteString);
+	strEnd = stpcpy (strEnd, dsConfig->tableName);
+	strEnd = stpcpy (strEnd, quoteString);
+	strEnd = stpcpy (strEnd, " LEFT OUTER JOIN ");
+	strEnd = stpcpy (strEnd, quoteString);
+	strEnd = stpcpy (strEnd, dsConfig->metaTableName);
+	strEnd = stpcpy (strEnd, quoteString);
+	strEnd = stpcpy (strEnd, " ON ");
+	strEnd = stpcpy (strEnd, quoteString);
+	strEnd = stpcpy (strEnd, dsConfig->tableName);
+	strEnd = stpcpy (strEnd, quoteString);
+	strEnd = stpcpy (strEnd, ".");
+	strEnd = stpcpy (strEnd, quoteString);
+	strEnd = stpcpy (strEnd, dsConfig->keyColName);
+	strEnd = stpcpy (strEnd, quoteString);
+	strEnd = stpcpy (strEnd, "=");
+	strEnd = stpcpy (strEnd, quoteString);
+	strEnd = stpcpy (strEnd, dsConfig->metaTableName);
+	strEnd = stpcpy (strEnd, quoteString);
+	strEnd = stpcpy (strEnd, ".");
+	strEnd = stpcpy (strEnd, quoteString);
+	strEnd = stpcpy (strEnd, dsConfig->metaTableKeyColName);
+	strEnd = stpcpy (strEnd, quoteString);
+	strEnd = stpcpy (strEnd, "}");
+
+	return queryString;
 }
 
 
-SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfig dsConfig, Key * parentKey)
+static SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfig * dsConfig, Key * parentKey)
 {
-
 	/* Handle for a statement */
 	SQLHSTMT sqlStmt = NULL;
 
@@ -297,7 +414,6 @@ SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfig dsCon
 	char * queryString;
 	if (quoteCharLen > 1)
 	{
-		//printf ("quoteCharLen was > 1!");
 		ELEKTRA_LOG_WARNING ("Got a string for the info SQL_IDENTIFIER_QUOTE_CHAR with more than one character, this is unusual.");
 		char * identifierQuoteStr = elektraMalloc ((quoteCharLen + 1) * sizeof (char));
 		ret = SQLGetInfo (sqlConnection, SQL_IDENTIFIER_QUOTE_CHAR, identifierQuoteStr, 1, &quoteCharLen);
@@ -378,10 +494,9 @@ SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfig dsCon
 }
 
 
-bool bindOutputColumns (SQLHSTMT sqlStmt, struct columnData * buffers, Key * parentKey)
+static bool bindOutputColumns (SQLHSTMT sqlStmt, struct columnData * buffers, Key * parentKey)
 {
 	/* TODO: Support for binary keys */
-
 
 	/* Bind column 1 (key-name) */
 	SQLRETURN ret = SQLBindCol (sqlStmt, 1, SQL_C_CHAR, buffers->bufferKeyName, KEYNAME_BUFFER_SIZE, &(buffers->nameLenInd));
@@ -397,7 +512,6 @@ bool bindOutputColumns (SQLHSTMT sqlStmt, struct columnData * buffers, Key * par
 	{
 		logError (SQL_HANDLE_STMT, sqlStmt, "bindOutputColumns (1)", true, parentKey);
 	}
-
 
 	/* Bind column 2 (key-value) */
 	ret = SQLBindCol (sqlStmt, 2, SQL_C_CHAR, buffers->bufferKeyStr, KEYSTRING_BUFFER_SIZE, &(buffers->strLenInd));
@@ -429,7 +543,6 @@ bool bindOutputColumns (SQLHSTMT sqlStmt, struct columnData * buffers, Key * par
 		logError (SQL_HANDLE_STMT, sqlStmt, "bindOutputColumns (3)", true, parentKey);
 	}
 
-
 	/* Bind column 4 (metakey-value) */
 	ret = SQLBindCol (sqlStmt, 4, SQL_C_CHAR, buffers->bufferMetaKeyStr, METASTRING_BUFFER_SIZE, &(buffers->metaStrLenInd));
 	if (!SQL_SUCCEEDED (ret))
@@ -449,7 +562,7 @@ bool bindOutputColumns (SQLHSTMT sqlStmt, struct columnData * buffers, Key * par
 }
 
 
-bool executeSelect (SQLHSTMT sqlStmt, Key * parentKey)
+static bool executeSelect (SQLHSTMT sqlStmt, Key * parentKey)
 {
 	SQLRETURN ret = SQLExecute (sqlStmt);
 
@@ -467,17 +580,14 @@ bool executeSelect (SQLHSTMT sqlStmt, Key * parentKey)
 		logError (SQL_HANDLE_STMT, sqlStmt, "executeSelect", true, parentKey);
 	}
 
-
 	return true;
 }
 
 
-bool getLongData (SQLHSTMT sqlStmt, SQLUSMALLINT colNumber, SQLSMALLINT targetType, char ** targetValue, SQLLEN bufferSize, Key * parentKey)
+static  bool getLongData (SQLHSTMT sqlStmt, SQLUSMALLINT colNumber, SQLSMALLINT targetType, char ** targetValue, SQLLEN bufferSize, Key * parentKey)
 {
-
 	SQLLEN getDataLenOrInd;
 	SQLRETURN getDataRet;
-
 	unsigned int iteration = 0;
 
 	do
@@ -491,7 +601,6 @@ bool getLongData (SQLHSTMT sqlStmt, SQLUSMALLINT colNumber, SQLSMALLINT targetTy
 				return false;
 			}
 		}
-
 
 		getDataRet = SQLGetData (sqlStmt, colNumber, targetType, (*targetValue) + (iteration * (bufferSize-1)), bufferSize, &getDataLenOrInd);
 
@@ -520,16 +629,14 @@ bool getLongData (SQLHSTMT sqlStmt, SQLUSMALLINT colNumber, SQLSMALLINT targetTy
 
 	} while (getDataRet != SQL_NO_DATA);
 
-
 	return true;
 }
 
 
-KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key * parentKey)
+static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key * parentKey)
 {
 	SQLRETURN ret;
 	KeySet * ksResult = NULL;
-
 
 	/* Needed for detecting if the current row contains a new key or just a further metakey for a previous key (outer join) */
 	char * prevKeyName = NULL;
@@ -540,12 +647,10 @@ KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key * pare
 	{
 		 ELEKTRA_ASSERT (buffers->bufferKeyName && buffers->nameLenInd != SQL_NULL_DATA, "The ODBC-backend retrieved an empty- or null-string for the key-name. This is not allowed! Please check you data source.");
 
-
 		if (!SQL_SUCCEEDED (ret))
 		{
 			fprintf (stderr, "Error SQLFetch %d\n", ret);
 			logError (SQL_HANDLE_STMT, sqlStmt, "fetchResults", false, parentKey);
-
 
 			elektraFree (prevKeyName);
 
@@ -554,16 +659,11 @@ KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key * pare
 				ksDel (ksResult);
 			}
 
-
 			SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 			return NULL;
 		}
 		else
 		{
-			/* FIXME: remove printf */
-			//printf ("Processing record number %d\n", i);
-			//printf ("NameLenInd: %ld, StrLenInd: %ld\n", *nameLenInd, *stringLenInd);
-
 			char * longKeyName = NULL;
 			char * longKeyString = NULL;
 			char * longMetaKeyName = NULL;
@@ -650,17 +750,9 @@ KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key * pare
 
 					if (!retGetLongData)
 					{
-						//if (longKeyName)
-						//{
-						//	ELEKTRA_ASSERT (prevKeyName == longKeyName, "The prevKeyName doesn't point to the current longKeyName. This looks like a programming error!\nPlease report the issue at https://issues.libelektra.org");
-						//	elektraFree (longKeyName);
-						//}
-						//else
-						//{
-
 						/* The variable longKeyName should not be freed here, it either points to the same memory as prevKeyName or is NULL */
+
 						elektraFree (prevKeyName);
-						//}
 						elektraFree (longKeyString);
 						elektraFree (longMetaKeyName);
 						elektraFree (longMetaKeyString);
@@ -754,7 +846,6 @@ KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key * pare
 			}
 			else
 			{
-				//printf ("longMetaKeyString: %s, buffer: %s", longMetaKeyString ? longMetaKeyString : "", buffers->bufferMetaKeyStr);
 				ELEKTRA_ASSERT (!longMetaKeyString && !(buffers->bufferMetaKeyStr[0]), "No metakey-name was found, but a metakey-string, maybe the datasource contains invalid data, please check your datasource!");
 			}
 
@@ -805,7 +896,6 @@ KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key * pare
 		ksAppendKey (ksResult, curKey);
 	}
 
-
 	return ksResult;
 }
 
@@ -815,7 +905,7 @@ KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key * pare
  * @param parentkey The keyname must be the mountpoint of the backend, the keynames found in the datasource are appended
  *                  to the keyname of the parent key, the value of the key is not used
  */
-KeySet * getKeysFromDataSource (struct dataSourceConfig dsConfig, Key * parentKey)
+static KeySet * getKeysFromDataSource (struct dataSourceConfig * dsConfig, Key * parentKey)
 {
 	/* 1. Allocate Environment handle and register version */
 	SQLHENV sqlEnv = allocateEnvHandle (parentKey);
@@ -830,7 +920,7 @@ KeySet * getKeysFromDataSource (struct dataSourceConfig dsConfig, Key * parentKe
 		return NULL;
 	}
 
-	/* 2. Allocate connection handle, set timeout */
+	/* 2. Allocate connection handle, set timeout and enable autocommit */
 	SQLHDBC sqlConnection = allocateConnectionHandle (sqlEnv, parentKey);
 	if (!sqlConnection)
 	{
@@ -838,6 +928,13 @@ KeySet * getKeysFromDataSource (struct dataSourceConfig dsConfig, Key * parentKe
 	}
 
 	if (!setLoginTimeout (sqlConnection, 5, parentKey))
+	{
+		SQLFreeHandle (SQL_HANDLE_ENV, sqlEnv);
+		return NULL;
+	}
+
+	/* For the GET operation, only a single SELECT-query is made, therefore we don't need a rollback of transactions here */
+	if (!setAutocommit (sqlConnection, true, parentKey))
 	{
 		SQLFreeHandle (SQL_HANDLE_ENV, sqlEnv);
 		return NULL;
@@ -906,22 +1003,20 @@ KeySet * getKeysFromDataSource (struct dataSourceConfig dsConfig, Key * parentKe
 }
 
 
-int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin ELEKTRA_UNUSED, KeySet * definition ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
-{
-	// init as read-only
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-}
-
-
 int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ksReturned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/backend_odbc"))
+	if (elektraStrCmp (keyName (parentKey), "system:/elektra/modules/backend_odbc") == 0)
 	{
 		KeySet * contract = ksNew (
 			30, keyNew ("system:/elektra/modules/backend_odbc", KEY_VALUE, "backend_odbc plugin waits for your orders", KEY_END),
 			keyNew ("system:/elektra/modules/backend_odbc/exports", KEY_END),
+			keyNew ("system:/elektra/modules/backend_odbc/exports/open", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (open), KEY_END),
 			keyNew ("system:/elektra/modules/backend_odbc/exports/init", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (init), KEY_END),
 			keyNew ("system:/elektra/modules/backend_odbc/exports/get", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (get), KEY_END),
+			keyNew ("system:/elektra/modules/backend_odbc/exports/set", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (set), KEY_END),
+			keyNew ("system:/elektra/modules/backend_odbc/exports/commit", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (commit), KEY_END),
+			keyNew ("system:/elektra/modules/backend_odbc/exports/error", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (error), KEY_END),
+			keyNew ("system:/elektra/modules/backend_odbc/exports/close", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (close), KEY_END),
 #include ELEKTRA_README
 			keyNew ("system:/elektra/modules/backend_odbc/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (ksReturned, contract);
@@ -931,23 +1026,19 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ksReturned, Key * p
 	}
 
 	/* Gets filled in the resolver phase and is used in later phases (esp. storage-phase) */
-	static struct dataSourceConfig dsConfig;
+	struct dataSourceConfig * dsConfig = elektraPluginGetData (plugin);
+	if (!dsConfig)
+	{
+		ELEKTRA_SET_INTERNAL_ERROR (parentKey,
+					    "Internal plugin data for the ODBC backend was NULL. Please report this bug at https://issues.libelektra.org.");
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
 
 	ElektraKdbPhase phase = elektraPluginGetPhase (plugin);
 	switch (phase)
 	{
 	case ELEKTRA_KDB_GET_PHASE_RESOLVER:
 	{
-		dsConfig.dataSourceName = "Pelektra";
-		dsConfig.tableName = "elektra";
-		dsConfig.keyColName = "key";
-		dsConfig.valColName = "val";
-		dsConfig.userName = "flo";
-		dsConfig.password = "elektra";
-		dsConfig.metaTableName = "elektrameta";
-		dsConfig.metaTableKeyColName = "key";
-		dsConfig.metaTableMetaKeyColName = "metakey";
-		dsConfig.metaTableMetaValColName = "metaval";
 		ssize_t ret = keySetString (parentKey, dsConfigToString (dsConfig));
 		ELEKTRA_ASSERT (ret != 0, "keySetString returned 0. This looks like a programming error!\\nPlease report the issue at https://issues.libelektra.org");
 		if (ret == 1 || ret == -1)
@@ -961,7 +1052,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ksReturned, Key * p
 	}
 	case ELEKTRA_KDB_GET_PHASE_CACHECHECK:
 		/* TODO: implement cache */
-		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+		//return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	case ELEKTRA_KDB_GET_PHASE_PRE_STORAGE:
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	case ELEKTRA_KDB_GET_PHASE_STORAGE:
@@ -973,7 +1064,8 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ksReturned, Key * p
 		{
 			return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 		}
-		default:
+	case ELEKTRA_KDB_GET_PHASE_POST_STORAGE:
+	default:
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	}
 }
@@ -983,8 +1075,13 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("backend_odbc",
+		ELEKTRA_PLUGIN_OPEN, &ELEKTRA_PLUGIN_FUNCTION (open),
 		ELEKTRA_PLUGIN_INIT, &ELEKTRA_PLUGIN_FUNCTION (init),
 		ELEKTRA_PLUGIN_GET, &ELEKTRA_PLUGIN_FUNCTION (get),
+		ELEKTRA_PLUGIN_SET, &ELEKTRA_PLUGIN_FUNCTION (set),
+		ELEKTRA_PLUGIN_COMMIT, &ELEKTRA_PLUGIN_FUNCTION (commit),
+		ELEKTRA_PLUGIN_ERROR, &ELEKTRA_PLUGIN_FUNCTION (error),
+		ELEKTRA_PLUGIN_CLOSE, &ELEKTRA_PLUGIN_FUNCTION (close),
 	ELEKTRA_PLUGIN_END);
 	// clang-format on
 }

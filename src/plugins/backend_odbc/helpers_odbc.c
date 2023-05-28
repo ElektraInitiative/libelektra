@@ -1,5 +1,6 @@
 #include "backendprivate_odbc.h"
 #include <stdio.h>
+#include <kdbassert.h>
 
 unsigned char getNumDigits (int i)
 {
@@ -196,54 +197,58 @@ char * getStringFromBaseName (KeySet * searchKs, Key * lookupKey, const char *ba
 	return resultString;
 }
 
-struct dataSourceConfig * fillDsStructFromKeys (Key * parentKey)
+
+/* make sure to free the returned string */
+static char * lookupStringFromKs (KeySet * ks, const char * keyName)
 {
-	KeySet * ksResults = ksNew (0, KS_END);
-	if (!ksResults)
+	Key * resultKey = ksLookupByName (ks, keyName, KDB_O_NONE);
+
+	if (!resultKey)
 	{
 		return NULL;
 	}
 
-	KDB * kdb = kdbOpen (NULL, parentKey);
-	if (!kdb)
+	char * resultString = elektraMalloc (keyGetValueSize (resultKey));
+
+	if (!resultString)
 	{
-		ksDel (ksResults);
 		return NULL;
 	}
 
-	if (kdbGet (kdb,ksResults, parentKey) == -1)
+	ssize_t ret = keyGetString (resultKey, resultString, keyGetValueSize (resultKey));
+	ELEKTRA_ASSERT (ret != 0, "keyGetString() returned 0! This should not have happened! Please report the bug at https://issues.libelektra.org");
+
+	if (ret == -1)
 	{
-		ksDel (ksResults);
-		kdbClose (kdb, parentKey);
+		elektraFree (resultString);
 		return NULL;
 	}
 
-	/* Only the call to kdbGet() was needed, we can close the handle now */
-	kdbClose (kdb, parentKey);
+	return resultString;
+}
+
+
+struct dataSourceConfig * fillDsStructFromDefintionKs (KeySet * ksDefinition)
+{
+
+	if (!ksDefinition)
+	{
+		return NULL;
+	}
 
 	struct dataSourceConfig * dsConfig = elektraCalloc (sizeof(struct dataSourceConfig));
 	if (!dsConfig)
 	{
-		ksDel (ksResults);
 		return NULL;
 	}
-
-	Key * lookupKey = keyDup (parentKey, KEY_CP_NAME);
-	if (!lookupKey)
-	{
-		elektraFree (dsConfig);
-		ksDel (ksResults);
-		return NULL;
-	}
-
-
 
 	/* Get configuration data for the ODBC data source */
-
 	bool valueMissing = false;
 
-	dsConfig->dataSourceName = getStringFromBaseName (ksResults, lookupKey, "dataSourceName", true);
-	if(!dsConfig->dataSourceName)
+
+	dsConfig->dataSourceName = lookupStringFromKs (ksDefinition, "system:/dataSourceName");
+
+	if(!(dsConfig->dataSourceName))
 	{
 		valueMissing = true;
 	}
@@ -251,12 +256,11 @@ struct dataSourceConfig * fillDsStructFromKeys (Key * parentKey)
 	if (!valueMissing)
 	{
 		/* Username and password are optional (NULL = no username/password) */
-		dsConfig->userName = getStringFromBaseName (ksResults, lookupKey, "userName", false);
-		dsConfig->password = getStringFromBaseName (ksResults, lookupKey, "password", false);
-		keySetBaseName (lookupKey, "table");
+		dsConfig->userName = lookupStringFromKs (ksDefinition, "system:/userName");
+		dsConfig->password = lookupStringFromKs (ksDefinition, "system:/password");
 
-		dsConfig->tableName = getStringFromBaseName (ksResults, lookupKey, "name", true);
-		if (!dsConfig->tableName)
+		dsConfig->tableName = lookupStringFromKs (ksDefinition, "system:/table/name");
+		if (!(dsConfig->tableName))
 		{
 			valueMissing = true;
 		}
@@ -264,26 +268,24 @@ struct dataSourceConfig * fillDsStructFromKeys (Key * parentKey)
 
 	if (!valueMissing)
 	{
-		dsConfig->keyColName = getStringFromBaseName (ksResults, lookupKey, "keyColName", false);
-		dsConfig->valColName = getStringFromBaseName (ksResults, lookupKey, "valColName", false);
+		dsConfig->keyColName = lookupStringFromKs (ksDefinition, "system:/table/keyColName");
+		dsConfig->valColName = lookupStringFromKs (ksDefinition, "system:/table/valColName");
 
-		if (!(dsConfig->keyColName) || !(dsConfig->valColName) ||  (keySetBaseName (lookupKey, NULL) <= 0))
+		if (!(dsConfig->keyColName) || !(dsConfig->valColName))
 		{
 			valueMissing = true;
 		}
 	}
 
-
 	if (!valueMissing)
 	{
-		keySetBaseName (lookupKey, "metaTable");
-		dsConfig->metaTableName = getStringFromBaseName (ksResults, lookupKey, "name", true);
+		dsConfig->metaTableName = lookupStringFromKs (ksDefinition, "system:/metaTable/name");
 
 		if (dsConfig->metaTableName)
 		{
-			dsConfig->metaTableKeyColName = getStringFromBaseName (ksResults, lookupKey, "keyColName", false);
-			dsConfig->metaTableMetaKeyColName = getStringFromBaseName (ksResults, lookupKey, "metaKeyColName", false);
-			dsConfig->metaTableMetaValColName = getStringFromBaseName (ksResults, lookupKey, "metaKeyValColName", false);
+			dsConfig->metaTableKeyColName = lookupStringFromKs (ksDefinition, "system:/metaTable/keyColName");
+			dsConfig->metaTableMetaKeyColName = lookupStringFromKs (ksDefinition, "system:/metaTable/metaKeyColName");
+			dsConfig->metaTableMetaValColName = lookupStringFromKs (ksDefinition, "system:/metaTable/metaValColName");
 
 			if (!(dsConfig->metaTableKeyColName) || !(dsConfig->metaTableMetaKeyColName) || !(dsConfig->metaTableMetaValColName))
 			{
@@ -292,8 +294,6 @@ struct dataSourceConfig * fillDsStructFromKeys (Key * parentKey)
 		}
 	}
 
-	keyDel (lookupKey);
-	ksDel (ksResults);
 
 	if (valueMissing)
 	{
@@ -314,23 +314,27 @@ struct dataSourceConfig * fillDsStructFromKeys (Key * parentKey)
 		dsConfig = NULL;
 	}
 
-
 	return dsConfig;
 }
 
 
-char * dsConfigToString (struct dataSourceConfig dsConfig)
+char * dsConfigToString (struct dataSourceConfig * dsConfig)
 {
-	size_t dsConfigStrLen = (dsConfig.dataSourceName ? strlen (dsConfig.dataSourceName) : 0)
+	if (!dsConfig)
+	{
+		return NULL;
+	}
+
+	size_t dsConfigStrLen = (dsConfig->dataSourceName ? strlen (dsConfig->dataSourceName) : 0)
 	       	//+ (dsConfig.userName ? strlen (dsConfig.userName) : 0)
 	       	//+ (dsConfig.password ? strlen (dsConfig.password) : 0)
-	       	+ (dsConfig.tableName ? strlen (dsConfig.tableName) : 0)
-	       	+ (dsConfig.keyColName ? strlen (dsConfig.keyColName) : 0)
-	       	+ (dsConfig.valColName ? strlen (dsConfig.valColName) : 0)
-	       	+ (dsConfig.metaTableName ? strlen (dsConfig.metaTableName) : 0)
-	       	+ (dsConfig.metaTableKeyColName ? strlen (dsConfig.metaTableKeyColName) : 0)
-	       	+ (dsConfig.metaTableMetaKeyColName ? strlen (dsConfig.metaTableMetaKeyColName) : 0)
-	       	+ (dsConfig.metaTableMetaValColName ? strlen (dsConfig.metaTableMetaValColName) : 0);
+	       	+ (dsConfig->tableName ? strlen (dsConfig->tableName) : 0)
+	       	+ (dsConfig->keyColName ? strlen (dsConfig->keyColName) : 0)
+	       	+ (dsConfig->valColName ? strlen (dsConfig->valColName) : 0)
+	       	+ (dsConfig->metaTableName ? strlen (dsConfig->metaTableName) : 0)
+	       	+ (dsConfig->metaTableKeyColName ? strlen (dsConfig->metaTableKeyColName) : 0)
+	       	+ (dsConfig->metaTableMetaKeyColName ? strlen (dsConfig->metaTableMetaKeyColName) : 0)
+	       	+ (dsConfig->metaTableMetaValColName ? strlen (dsConfig->metaTableMetaValColName) : 0);
 
 	if (dsConfigStrLen == 0)
 	{
@@ -346,16 +350,16 @@ char * dsConfigToString (struct dataSourceConfig dsConfig)
 
 	char * curPart = retStr;
 
-	curPart = (dsConfig.dataSourceName ? stpcpy (curPart, dsConfig.dataSourceName) : curPart);
+	curPart = (dsConfig->dataSourceName ? stpcpy (curPart, dsConfig->dataSourceName) : curPart);
 	//curPart = (dsConfig.userName ? stpcpy (curPart, dsConfig.userName) : curPart);
 	//curPart = (dsConfig.password ? stpcpy (curPart, dsConfig.password) : curPart);
-	curPart = (dsConfig.tableName ? stpcpy (curPart, dsConfig.tableName) : curPart);
-	curPart = (dsConfig.keyColName ? stpcpy (curPart, dsConfig.keyColName) : curPart);
-	curPart = (dsConfig.valColName ? stpcpy (curPart, dsConfig.valColName) : curPart);
-	curPart = (dsConfig.metaTableName ? stpcpy (curPart, dsConfig.metaTableName) : curPart);
-	curPart = (dsConfig.metaTableKeyColName ? stpcpy (curPart, dsConfig.metaTableKeyColName) : curPart);
-	curPart = (dsConfig.metaTableMetaKeyColName ? stpcpy (curPart, dsConfig.metaTableMetaKeyColName) : curPart);
-	curPart = (dsConfig.metaTableMetaValColName ? stpcpy (curPart, dsConfig.metaTableMetaValColName) : curPart);
+	curPart = (dsConfig->tableName ? stpcpy (curPart, dsConfig->tableName) : curPart);
+	curPart = (dsConfig->keyColName ? stpcpy (curPart, dsConfig->keyColName) : curPart);
+	curPart = (dsConfig->valColName ? stpcpy (curPart, dsConfig->valColName) : curPart);
+	curPart = (dsConfig->metaTableName ? stpcpy (curPart, dsConfig->metaTableName) : curPart);
+	curPart = (dsConfig->metaTableKeyColName ? stpcpy (curPart, dsConfig->metaTableKeyColName) : curPart);
+	curPart = (dsConfig->metaTableMetaKeyColName ? stpcpy (curPart, dsConfig->metaTableMetaKeyColName) : curPart);
+	curPart = (dsConfig->metaTableMetaValColName ? stpcpy (curPart, dsConfig->metaTableMetaValColName) : curPart);
 
 	return retStr;
 }

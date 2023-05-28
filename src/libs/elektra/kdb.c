@@ -917,19 +917,6 @@ static bool addHardcodedMountpoints (KDB * handle, Key * errorKey)
 	version->global = handle->global;
 	addMountpoint (handle->backends, keyNew (KDB_SYSTEM_ELEKTRA "/version", KEY_END), version, ksNew (0, KS_END), ksNew (0, KS_END));
 
-
-	/* FIXME: Added for testing purpose only (during dev), must be removed before merging into master! */
-	Plugin * backend_odbc = elektraPluginOpen ("backend_odbc", handle->modules, ksNew (0, KS_END), errorKey);
-	if (backend_odbc == NULL)
-	{
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Could not open system:/elektra/odbc backend. See warnings for details.");
-		return false;
-	}
-	backend_odbc->global = handle->global;
-	addMountpoint (handle->backends, keyNew (KDB_SYSTEM_ELEKTRA "/odbc", KEY_END), backend_odbc, ksNew (0, KS_END), ksNew (0, KS_END));
-
-	/* FIXME: End of testing code to be removed */
-
 	return true;
 }
 

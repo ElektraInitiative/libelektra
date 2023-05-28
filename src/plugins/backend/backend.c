@@ -1,7 +1,7 @@
 
 
-#include "backend.h"
-#include "backendprivate.h"
+#include "./backend.h"
+#include "./backendprivate.h"
 
 #include <kdberrors.h>
 #include <kdblogger.h>
