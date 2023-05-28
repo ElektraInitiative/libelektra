@@ -187,10 +187,11 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 
-### <<Binding>>
+### Xfconf
 
-- <<TODO>>
-- <<TODO>>
+- Implemented the first revision of the Xfconf binding. _(Richard Stöckl @Eiskasten)_
+- This allows to use elektra as a drop-in replacement for applications which use Xfconf. _(Richard Stöckl @Eiskasten)_
+- Xfconf applications can now read and write configuration settings to elektra. _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 
 ## Tools

@@ -15,6 +15,11 @@ if (IS_INCLUDED)
 	add_subdirectory (rust)
 endif ()
 
+check_binding_included ("xfconf" IS_INCLUDED)
+if (IS_INCLUDED)
+	add_subdirectory (xfconf)
+endif ()
+
 check_binding_included ("go-elektra" IS_INCLUDED)
 if (IS_INCLUDED)
 	add_subdirectory (go-elektra)
