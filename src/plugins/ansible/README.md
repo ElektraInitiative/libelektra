@@ -18,12 +18,12 @@ The output format is an Ansible playbook that utilized the [ansible-libelektra](
 
 You can use the following configuration keys to modify the behavior and output of the plugin:
 
-| Key              | Default Value       | Description                                                      |
-| :--------------- | :------------------ | :--------------------------------------------------------------- |
-| `playbook`       | `true`              | Whether to generate a whole playbook or just a (list of) task(s) |
-| `playbook/name`  | My Elektra Playbook | The `name` property of the playbook                              |
-| `playbook/hosts` | all                 | The `hosts` property of the playbook                             |
-| `task/main/name` | Set Elektra Keys    | The name of the 'main' task of the playbook                      |
+| Key              | Default Value       | Description                                                            |
+| :--------------- | :------------------ | :--------------------------------------------------------------------- |
+| `playbook`       | `1`                 | Whether to generate a whole playbook or just a (list of) task(s) (`0`) |
+| `playbook/name`  | My Elektra Playbook | The `name` property of the playbook                                    |
+| `playbook/hosts` | all                 | The `hosts` property of the playbook                                   |
+| `task/main/name` | Set Elektra Keys    | The name of the 'main' task of the playbook                            |
 
 ## Dependencies
 

@@ -45,7 +45,7 @@ AnsibleDelegate::AnsibleDelegate (KeySet config)
 	{
 		auto value = configuration.lookup ("/playbook").getString ();
 		std::transform (value.begin (), value.end (), value.begin (), ::toupper);
-		only_tasks = value == "FALSE";
+		only_tasks = value == "FALSE" || value == "0";
 	}
 
 	if (!configuration.lookup ("/task/main/name").isNull ())

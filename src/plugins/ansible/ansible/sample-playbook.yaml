@@ -1,0 +1,56 @@
+---
+- name: My Elektra Playbook
+  hosts: all
+  collections:
+    - elektra_initiative.libelektra
+  tasks:
+    - name: Mount Configuration
+      elektra:
+        keys:
+          - system:
+              elektra:
+                mountpoints:
+                  user:\/test:
+                    - value: test
+    - name: Set Elektra Keys
+      elektra:
+        keys:
+          - user:
+              examples:
+                ansible:
+                  different:
+                    - value: "{{ my_variable | default('nice') }}"
+                    - meta:
+                        elektra:
+                          export:
+                            variable:
+                              - value: my_variable
+                  double quoted:
+                    - value: single quoted
+                  forward\/slash:
+                    - value: value containing spaces
+                  hello:
+                    - value: world
+                  level1:
+                    - value: l1
+                    - keys:
+                        level2-1:
+                          - value: l2-1
+                        level2-2:
+                          - value: l2-2
+                  longish key:
+                    - value: 10-9-8-7 everybody’s coming to burn this city
+                  thisisdeleted:
+                    - remove: true
+                  withmeta:
+                    - value: cool
+                    - meta:
+                        my:
+                          order:
+                            - value: 123
+          - system:
+              mountpoint:
+                user:\/test:
+                  - value: test
+...
+
