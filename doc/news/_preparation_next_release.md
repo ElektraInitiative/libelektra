@@ -68,6 +68,11 @@ We think that this feature offers significant time savings and improved accuracy
 Whether you're a system administrator, developer, or DevOps engineer, we believe that the session recording feature in Elektra will become an essential tool for managing and maintaining system configurations.
 [Try it today](../tutorials/recording.md) and experience the benefits of streamlined configuration management.
 
+**Note:** when you activate session recording, concurrency of Elektra will be somewhat limited.
+As long as it is active, a global lock will be created to ensure no two processes will write data simultaneously.
+This behavior is similar as to when multiple processes will write to the same configuration file.
+Applications should already handle this case gracefully, and just retry writing their configuration.
+
 ### New Changetracking API
 
 ### <<HIGHLIGHT>>
