@@ -120,7 +120,7 @@
   The recording session provides a complete audit trail of all changes made to the KDB during the specified period of time.
 
 - **part diff**:
-  The changes made during a single `kdbGet` - `kdbSet` roundtrip.
+  The changes made during a single `kdbGet` - `kdbSet` round-trip.
 
 - **session diff**:
   The changes made during the entire recording session.
