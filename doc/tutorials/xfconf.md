@@ -123,7 +123,7 @@ contain anything related to Xfconf.
 Xfconf uses the glib2 type system.
 This system is not fully compatible with Elektra.
 However, all values are stored in Elektra in their string representation when used as a drop-in replacement.
-In addition, the name of the glib2 type is stored in Elektra as a meta key.
+In addition, the name of the glib2 type is stored in Elektra as a metakey.
 This makes Xfconf's type system completely independent of Elektra, at the cost of memory and computational resources.
 
 The following table shows a comparison between the different type systems.
