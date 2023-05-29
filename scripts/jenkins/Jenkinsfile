@@ -732,7 +732,7 @@ def generateFullBuildStages() {
     "debian-bullseye-full-xdg",
     DOCKER_IMAGES.bullseye,
     [
-      'PLUGINS': "${xdgResolver};dump;sync;base64;spec;error;timeofday;profile;mathcheck;tracer;hosts;network;glob;backend;modules;version;missing",
+      'PLUGINS': "${xdgResolver};line;dump;sync;base64;spec;error;timeofday;profile;mathcheck;tracer;hosts;network;glob;backend;modules;version;missing",
       'KDB_DEFAULT_RESOLVER': xdgResolver
     ],
     [TEST.ALL, TEST.MEM]
