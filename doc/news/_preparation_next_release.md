@@ -49,6 +49,7 @@ docker run -it elektra/elektra
 - <<HIGHLIGHT>>
 
 ### <<HIGHLIGHT>>
+
 - Session Recording
 - New Changetracking API
 - New spec plugin
@@ -78,6 +79,7 @@ Whether you're a system administrator, developer, or DevOps engineer, we believe
 The following text lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
 ### <<Plugin>>
+
 ### General
 
 - Updated target name of shared object files according to [#3486](https://issues.libelektra.org/3486)
@@ -107,6 +109,7 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 
 ### <<Plugin>>
+
 ### ansible
 
 - Add `ansible` plugin for exporting keysets as [ansible-libelektra](https://galaxy.ansible.com/elektra_initiative/libelektra) playbooks. _(Maximilian Irlinger @atmaxinger)_
