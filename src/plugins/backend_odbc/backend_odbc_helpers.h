@@ -7,16 +7,20 @@
  *
  */
 
-#ifndef ELEKTRA_BACKENDPRIVATE_ODBC_H
-#define ELEKTRA_BACKENDPRIVATE_ODBC_H
+#ifndef ELEKTRA_BACKEND_ODBC_HELPERS_H
+#define ELEKTRA_BACKEND_ODBC_HELPERS_H
 
-#include <kdbprivate.h>
+#include <kdb.h>
+#include <stdbool.h>
 
 /* ODBC related includes */
 #include <sql.h>
-#include <sqlext.h>
-#include <sqltypes.h>
 
+/* Define standard buffer sizes (longer values should be handled by dynamically allocating larger buffers!) */
+#define KEYNAME_BUFFER_SIZE 63
+#define METAKEYNAME_BUFFER_SIZE 31
+#define KEYSTRING_BUFFER_SIZE 255
+#define METASTRING_BUFFER_SIZE KEYSTRING_BUFFER_SIZE
 
 struct dataSourceConfig
 {
@@ -31,11 +35,6 @@ struct dataSourceConfig
 	char * metaTableMetaKeyColName;
 	char * metaTableMetaValColName;
 };
-
-#define KEYNAME_BUFFER_SIZE 63
-#define METAKEYNAME_BUFFER_SIZE 31
-#define KEYSTRING_BUFFER_SIZE 255
-#define METASTRING_BUFFER_SIZE KEYSTRING_BUFFER_SIZE
 
 struct columnData
 {
@@ -52,11 +51,10 @@ struct columnData
 	SQLLEN metaStrLenInd;
 };
 
-
 /* Helper functions */
 
 /* Extract ODBC driver errors, make sure to free the returned strings and the string array itself! */
-char ** extractOdbcErrors (char * fn, SQLHANDLE odbcHandle, SQLSMALLINT type);
+char ** extractOdbcErrors (SQLSMALLINT handleType, SQLHANDLE odbcHandle);
 
 /* Log error or warning with the ELEKTRA_LOG_* macros */
 void logError (SQLSMALLINT handleType, SQLHANDLE handle, char * functionName, bool isInfo, Key * parentKey);
@@ -74,4 +72,4 @@ struct dataSourceConfig * fillDsStructFromDefintionKs (KeySet * ksDefinition);
 char * dsConfigToString (struct dataSourceConfig * dsConfig);
 
 
-#endif // ELEKTRA_BACKENDPRIVATE_ODBC_H
+#endif // ELEKTRA_BACKEND_ODBC_HELPERS_H

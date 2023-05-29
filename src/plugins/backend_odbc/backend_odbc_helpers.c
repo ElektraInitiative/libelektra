@@ -1,6 +1,11 @@
-#include "backendprivate_odbc.h"
+#include "backend_odbc_helpers.h"
+
 #include <kdbassert.h>
-#include <stdio.h>
+#include <kdbhelper.h>
+#include <sqlext.h>
+#include <stdio.h> /* for sprintf */
+#include <string.h>
+
 
 unsigned char getNumDigits (int i)
 {
@@ -15,7 +20,7 @@ unsigned char getNumDigits (int i)
 }
 
 
-char ** extractOdbcErrors (char * fn, SQLHANDLE odbcHandle, SQLSMALLINT type)
+char ** extractOdbcErrors (SQLSMALLINT handleType, SQLHANDLE odbcHandle)
 {
 	SQLINTEGER nativeErrCode;
 	SQLCHAR state[SQL_SQLSTATE_SIZE + 1];
@@ -36,7 +41,7 @@ char ** extractOdbcErrors (char * fn, SQLHANDLE odbcHandle, SQLSMALLINT type)
 		}
 
 		SQLINTEGER recNum = 1;
-		for (msgCount = 0; SQL_SUCCEEDED (ret = SQLGetDiagRec (type, odbcHandle, recNum++, state, &nativeErrCode, text,
+		for (msgCount = 0; SQL_SUCCEEDED (ret = SQLGetDiagRec (handleType, odbcHandle, recNum++, state, &nativeErrCode, text,
 								       (i ? maxLenText + 1 : 0), &lenText));
 		     msgCount++)
 		{
@@ -328,10 +333,8 @@ char * dsConfigToString (struct dataSourceConfig * dsConfig)
 		return NULL;
 	}
 
-	size_t dsConfigStrLen = (dsConfig->dataSourceName ? strlen (dsConfig->dataSourceName) : 0)
-				//+ (dsConfig.userName ? strlen (dsConfig.userName) : 0)
-				//+ (dsConfig.password ? strlen (dsConfig.password) : 0)
-				+ (dsConfig->tableName ? strlen (dsConfig->tableName) : 0) +
+	size_t dsConfigStrLen = 1 + (dsConfig->dataSourceName ? strlen (dsConfig->dataSourceName) : 0) +
+				(dsConfig->tableName ? strlen (dsConfig->tableName) : 0) +
 				(dsConfig->keyColName ? strlen (dsConfig->keyColName) : 0) +
 				(dsConfig->valColName ? strlen (dsConfig->valColName) : 0) +
 				(dsConfig->metaTableName ? strlen (dsConfig->metaTableName) : 0) +

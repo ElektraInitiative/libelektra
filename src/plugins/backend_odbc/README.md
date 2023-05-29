@@ -5,22 +5,28 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = backend
-- infos/status = unfinished experimental concept nodoc
+- infos/status = unfinished experimental
 - infos/description = Plugin implementing full backend functionality for ODBC data sources
 
 ## Introduction
 
-This plugin is a backend plugin that stores and retrieves data using ODBC (Open Database Connectivity) sources.
+This plugin is a backend plugin that stores and retrieves data using ODBC (Open Database Connectivity) data sources.
 It was tested with unixODBC on Linux, but should also work with iODBC and Microsoft ODBC (on Windows).
 
-The minimum requirements are a table with at least two columns:
+> If you want to use it with one of the latter two ODBC implementations, feel free to update this documentation with your experiences!
 
-- Key names
+The minimum requirement is a table with at least two columns:
+
+- Key names (string, primary key)
 - Key values (strings)
 
-The table may also contain other columns, but they are not processed by this plugin.
+If you want to support metadata, a second table with at least three colums is required.
 
-> If you want to use it with one of the latter two ODBC implementations, feel free to update this documentation with your experiences!
+- Key name (string, FK to the first table)
+- Metakey name (string)
+- Metakey value (string)
+
+The tables may also contain other columns, but they are not processed by this plugin.
 
 The following properties are available:
 
@@ -30,5 +36,9 @@ The following properties are available:
 - TableName: Name of the table where the data is stored (default: "elektraKeys")
 - KeyNameColumnName: The name of the column where the keynames are stored (by default the first column in the table is used)
 - KeyStringColumnName: The name of the column where the key-values (strings) are stored (by default the second column in the table is used)
+- MetaTableName: The name of the table where the metadata is stored (default: metaKeys)
+- MetaTableKeyColName: The name of the column in the MetaTable where the FK to the table with the keys is stored.
+- MetaTableMetaKeyColName: The name of the column where the name of the metakeys is stored
+- MetaTableMetaValColName: The name of the column where the value of the metakeys is stored
 
 <!-- TODO [new_backend]: finish README -->
