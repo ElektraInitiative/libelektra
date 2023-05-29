@@ -12,6 +12,11 @@ If you want to make sure you start at a clean state, use `kdb record-reset` firs
 By default, all changes to the KDB are recorded.
 The optional parameter `parent_key` can be used to restrict recording to a specific subtree of the KDB.
 
+Note: when you activate session recording, concurrency of Elektra will be somewhat limited.
+As long as it is active, a global lock will be created to ensure no two processes will write data simultaneously.
+This behavior is similar as to when multiple processes will write to the same configuration file.
+Applications should already handle this case gracefully, and just retry writing their configuration.
+
 ## OPTIONS
 
 - `-H`, `--help`:

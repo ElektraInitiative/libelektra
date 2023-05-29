@@ -8,6 +8,8 @@
 .br
 .SH "DESCRIPTION"
 This command starts session recording\. If there is already a previous session, this only changes the parent key\. If you want to make sure you start at a clean state, use \fBkdb record\-reset\fR first\. By default, all changes to the KDB are recorded\. The optional parameter \fBparent_key\fR can be used to restrict recording to a specific subtree of the KDB\.
+.P
+Note: when you activate session recording, concurrency of Elektra will be somewhat limited\. As long as it is active, a global lock will be created to ensure no two processes will write data simultaneously\. This behaviour is similar as to when multiple processes will write to the same configuration file\. Applications should already handle this case gracefully, and just retry writing their configuration\.
 .SH "OPTIONS"
 .TP
 \fB\-H\fR, \fB\-\-help\fR
