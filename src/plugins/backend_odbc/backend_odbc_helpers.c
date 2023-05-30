@@ -86,7 +86,7 @@ char ** extractOdbcErrors (SQLSMALLINT handleType, SQLHANDLE odbcHandle)
 
 		SQLINTEGER recNum = 1;
 		for (msgCount = 0; SQL_SUCCEEDED (SQLGetDiagRec (handleType, odbcHandle, recNum++, state, &nativeErrCode, text,
-								       (i ? maxLenText + 1 : 0), &lenText));
+								 (i ? maxLenText + 1 : 0), &lenText));
 		     msgCount++)
 		{
 			if (i)
