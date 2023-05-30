@@ -3,6 +3,8 @@
  *
  * @brief Header file for the ODBC backend plugin
  *
+ * This file contains the functions that are called by the Elektra core when it uses plugins
+ *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 

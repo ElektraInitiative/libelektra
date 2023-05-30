@@ -1,3 +1,13 @@
+/**
+ * @file
+ *
+ * @brief Source file for the ODBC backend plugin
+ *
+ * This file contains the functions that are called by the Elektra core when it uses plugins
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
+
 #include "./backend_odbc.h"
 #include "./backend_odbc_get.h"
 
@@ -5,20 +15,33 @@
 #include <kdberrors.h>
 #include <kdblogger.h>
 
+
 int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * plugin ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-
 int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * ksDefinition, Key * parentKey)
 {
-	struct dataSourceConfig * dsConfig = fillDsStructFromDefintionKs (ksDefinition);
+	if (!ksDefinition)
+	{
+		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "Got NULL for the KeySet 'ksDefinition' for the mountpoint at %s\n",
+						 keyName (parentKey));
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+	else if (!plugin)
+	{
+		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "Got NULL for the 'plugin' argument for the mountpoint at %s\n",
+						 keyName (parentKey));
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	struct dataSourceConfig * dsConfig = fillDsStructFromDefinitionKs (ksDefinition);
 
 	if (!dsConfig)
 	{
-		ELEKTRA_SET_INTERNAL_ERRORF (parentKey, "Could not get all necessary data from the mountpoint definition at %s\n",
-					     keyName (parentKey));
+		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "Could not get all necessary data from the mountpoint definition at %s\n",
+						 keyName (parentKey));
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -33,8 +56,6 @@ int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * ksDefinition, Key 
 
 int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ksReturned, Key * parentKey)
 {
-
-
 	if (elektraStrCmp (keyName (parentKey), "system:/elektra/modules/backend_odbc") == 0)
 	{
 		KeySet * contract = ksNew (
@@ -56,8 +77,9 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ksReturned, Key * p
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	/* Gets filled in the resolver phase and is used in later phases (esp. storage-phase) */
+	/* Gets filled by the init-function of this plugin (see above) and is used in later phases (esp. storage-phase) */
 	struct dataSourceConfig * dsConfig = elektraPluginGetData (plugin);
+
 	if (!dsConfig)
 	{
 		ELEKTRA_SET_INTERNAL_ERROR (
@@ -132,7 +154,6 @@ int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * plugin, Key * errorKey ELEKTRA_UNU
 	elektraPluginSetData (plugin, NULL);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
-
 
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {

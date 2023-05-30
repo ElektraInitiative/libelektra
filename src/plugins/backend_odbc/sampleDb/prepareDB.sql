@@ -1,4 +1,4 @@
--- noinspection SqlNoDataSourceInspectionForFile
+-- This file contains the SQL statements that were used for creating the sample SQLite database "elektraDB.db"
 
 CREATE TABLE elektraKeys (
     keyName TEXT PRIMARY KEY NOT NULL,

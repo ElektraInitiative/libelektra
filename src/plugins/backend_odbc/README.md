@@ -20,7 +20,7 @@ The minimum requirement is a table with at least two columns:
 - Key names (string, primary key)
 - Key values (strings)
 
-If you want to support metadata, a second table with at least three colums is required.
+If you want to support metadata, a second table with at least three columns is required.
 
 - Key name (string, FK to the first table)
 - Metakey name (string)
