@@ -344,7 +344,7 @@ void elektraCopyWarnings (Key * target, Key * source)
 		keySetString (tempKey, keyString (configfileKey));
 
 		addWarningF (tempKey, keyString (numberKey), keyString (descriptionKey), keyString (fileKey), keyString (lineKey),
-			     keyString (moduleKey), keyString (reasonKey));
+			     keyString (moduleKey), "%s", keyString (reasonKey));
 
 		// Append all meta from the temp key to target
 		ksAppend (keyMeta (target), keyMeta (tempKey));
