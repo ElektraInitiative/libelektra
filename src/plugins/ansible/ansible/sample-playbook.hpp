@@ -11,7 +11,7 @@ kdb::KeySet
 	ckdb::keyNew (PREFIX "level1/level2-1", KEY_VALUE, "l2-1", KEY_END),
 	ckdb::keyNew (PREFIX "level1/level2-2", KEY_VALUE, "l2-2", KEY_END),
 	ckdb::keyNew (PREFIX "withmeta", KEY_VALUE, "cool", KEY_META, "meta:/my/order", "123", KEY_END),
-	ckdb::keyNew (PREFIX "thisisdeleted", KEY_VALUE, "cool", KEY_META, "meta:/elektra/deleted", "1", KEY_END),
+	ckdb::keyNew (PREFIX "thisisdeleted", KEY_VALUE, "cool", KEY_META, "meta:/elektra/removed", "1", KEY_END),
 	ckdb::keyNew ("system:/mountpoint/user:\\/test", KEY_VALUE, "test", KEY_END),
 	ckdb::keyNew ("system:/elektra/mountpoints/user:\\/test", KEY_VALUE, "test", KEY_END),
 	KS_END

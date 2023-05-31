@@ -94,7 +94,7 @@ void addKey (YAML::Node & parent, kdb::Key const & key, kdb::NameIterator & name
 
 		ckdb::KeySet * metaKeys = ckdb::keyMeta (*key);
 
-		if (ckdb::ksLookupByName (metaKeys, "meta:/elektra/deleted", 0) != nullptr)
+		if (ckdb::ksLookupByName (metaKeys, "meta:/elektra/removed", 0) != nullptr)
 		{
 			// This key should be deleted.
 			YAML::Node removedNode;

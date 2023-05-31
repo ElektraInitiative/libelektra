@@ -696,7 +696,7 @@ static KeySet * buildExportKeySet (ElektraDiff * diff)
 	for (elektraCursor i = 0; i < ksGetSize (removedKeys); i++)
 	{
 		Key * k = ksAtCursor (removedKeys, i);
-		keySetMeta (k, "meta:/elektra/deleted", "1");
+		keySetMeta (k, "meta:/elektra/removed", "1");
 	}
 	ksAppend (ks, removedKeys);
 	ksDel (removedKeys);
