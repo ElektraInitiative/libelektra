@@ -68,6 +68,7 @@ task:
       llvm12
       ninja
       pkgconf
+      unixODBC
       xfce4-conf
       yajl
       yaml-cpp
@@ -145,6 +146,7 @@ task:
         shfmt \
         swig \
         tree \
+        unixodbc \
         xerces-c \
         yajl \
         yaml-cpp \
