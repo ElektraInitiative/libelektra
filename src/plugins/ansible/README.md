@@ -14,6 +14,8 @@
 Provides a write-only storage plugin for use with `kdb export` and `kdb record-export`.
 The output format is an Ansible playbook that utilized the [ansible-libelektra](https://github.com/ElektraInitiative/ansible-libelektra) module.
 
+Keys that possess the meta key `meta:/elektra/deleted` will be removed using the `remove` option in ansible-libelektra.
+
 ## Plugin Configuration
 
 You can use the following configuration keys to modify the behavior and output of the plugin:
