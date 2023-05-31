@@ -17,6 +17,8 @@ How many keys have been recorded
 .IP "\(bu" 4
 Which keys have been recorded
 .IP "" 0
+.P
+For now, the output format is not considered stable and may change over time\.
 .SH "OPTIONS"
 .TP
 \fB\-H\fR, \fB\-\-help\fR
@@ -46,6 +48,21 @@ standard exit codes, see kdb(1) \fIkdb\.md\fR
 .TP
 11
 An error occurred during gathering the state information\.
+.SH "EXAMPLES"
+Here is an example output of \fBkdb record\-state\fR:
+.IP "" 4
+.nf
+Recording is active for user:/
+
+Added 1 key(s)
+Modified 1 key(s)
+Removed 1 key(s)
+
+Added key user:/test/age
+Modified key user:/test/name
+Removed key user:/test/color
+.fi
+.IP "" 0
 .SH "SEE ALSO"
 .IP "\(bu" 4
 kdb\-record\-start(1) \fIkdb\-record\-start\.md\fR on how to start the recording session

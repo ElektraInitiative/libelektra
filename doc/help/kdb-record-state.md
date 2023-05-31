@@ -15,6 +15,8 @@ This includes:
 - How many keys have been recorded
 - Which keys have been recorded
 
+For now, the output format is not considered stable and may change over time.
+
 ## OPTIONS
 
 - `-H`, `--help`:
@@ -38,6 +40,22 @@ This includes:
   standard exit codes, see [kdb(1)](kdb.md)
 - 11:
   An error occurred during gathering the state information.
+
+## EXAMPLES
+
+Here is an example output of `kdb record-state`:
+
+```
+Recording is active for user:/
+
+Added 1 key(s)
+Modified 1 key(s)
+Removed 1 key(s)
+
+Added key user:/test/age
+Modified key user:/test/name
+Removed key user:/test/color
+```
 
 ## SEE ALSO
 

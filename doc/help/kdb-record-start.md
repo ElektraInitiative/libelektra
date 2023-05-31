@@ -14,8 +14,9 @@ The optional parameter `parent_key` can be used to restrict recording to a speci
 
 Note: when you activate session recording, concurrency of Elektra will be somewhat limited.
 As long as it is active, a global lock will be created to ensure no two processes will write data simultaneously.
-This behavior is similar as to when multiple processes will write to the same configuration file.
+The errors reported to applications in such cases are similar to when multiple processes write to the same configuration file.
 Applications should already handle this case gracefully, and just retry writing their configuration.
+Therefore, activating recording may reduce performance slightly, but (assuming well-written applications) it should not cause application errors.
 
 ## OPTIONS
 
