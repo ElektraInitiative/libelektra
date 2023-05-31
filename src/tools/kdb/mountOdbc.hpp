@@ -16,35 +16,42 @@ class MountOdbcCommand : public Command
 {
 	kdb::Key root;
 	kdb::KDB kdb;
-	kdb::KeySet ks;
 
 public:
 	MountOdbcCommand ();
-	~MountOdbcCommand ();
+	~MountOdbcCommand () override;
 
-	virtual std::string getShortOptions () override
+	std::string getShortOptions () override
 	{
 		return "";
 	}
 
-	virtual std::string getSynopsis () override
+	std::string getSynopsis () override
 	{
-		return "";
+		return "<data source name> <user name> <password> <table name> <key column name> <value column name> <meta table name> <mt "
+		       "key column name> <mt metakey column name> <mt metavalue column name> <mountpoint>";
 	}
 
-	virtual std::string getShortHelpText () override
+	std::string getShortHelpText () override
 	{
 		return "Mount a new ODBC data source";
 	}
 
-	virtual std::string getLongHelpText () override
+	std::string getLongHelpText () override
 	{
-		return "Mount a new ODBC data source.\n"
-		       "This is only a first alpha version for testing\n"
-		       "the final version will offer more configuration options.";
+		return "You need a working ODBC driver and configuration on your system to use this backend.\n"
+		       "If no username and/or password is needed or if they are defined in the ODBC data source config, "
+		       "please pass \"\" (empty string) as value for these arguments.\n"
+		       "If you need more information about setting up and using the ODBC backend, there is a detailed tutorial about "
+		       "this topic available. (see https://www.libelektra.org/tutorials/readme)\n\n"
+		       "There is no special command for unmounting ODBC mountpoints, just use 'kdb umount <mountpoint>' for unmounting";
 	}
 
-	virtual int execute (Cmdline const & cmdline) override;
+	int execute (Cmdline const & cmdline) override;
+
+
+private:
+	void checkArguments (Cmdline const & cl);
 };
 
 

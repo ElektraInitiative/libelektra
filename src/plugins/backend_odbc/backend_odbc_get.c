@@ -780,15 +780,14 @@ KeySet * getKeysFromDataSource (struct dataSourceConfig * dsConfig, Key * errorK
 		return NULL;
 	}
 
-	struct columnData outputBuffers;
-	outputBuffers.bufferKeyName[0] = 0;
-	outputBuffers.bufferKeyStr[0] = 0;
-	outputBuffers.bufferMetaKeyName[0] = 0;
-	outputBuffers.bufferMetaKeyStr[0] = 0;
-	outputBuffers.nameLenInd = 0;
-	outputBuffers.strLenInd = 0;
-	outputBuffers.metaNameLenInd = 0;
-	outputBuffers.metaStrLenInd = 0;
+	struct columnData outputBuffers = { .bufferKeyName[0] = 0,
+					    .bufferKeyStr[0] = 0,
+					    .bufferMetaKeyName[0] = 0,
+					    .bufferMetaKeyStr[0] = 0,
+					    .nameLenInd = 0,
+					    .strLenInd = 0,
+					    .metaNameLenInd = 0,
+					    .metaStrLenInd = 0 };
 
 	/* 5. Bind output columns to variables */
 	if (!bindColumns (sqlStmt, &outputBuffers, errorKey))
