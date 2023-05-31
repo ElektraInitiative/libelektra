@@ -14,6 +14,7 @@ RUN pacman -Sy --noconfirm \
     qt5-declarative \
     rubygems \
     texlive-most \
+    unixodbc \
     wget \
     xfconf \
     yajl \

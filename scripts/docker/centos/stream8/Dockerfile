@@ -55,6 +55,7 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         strace \
         swig \
         systemd-devel \
+        unixODBC \
         unzip \
         valgrind \
         wget \
@@ -65,7 +66,7 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         zeromq-devel \
         zlib-devel \
         python3-pip \
-    	golang \
+        golang \
     && dnf debuginfo-install -y \
         bison \
         flex \

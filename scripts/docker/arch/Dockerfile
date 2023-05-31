@@ -11,6 +11,7 @@ RUN pacman -Sy --noconfirm \
     rubygems \
     swig \
     tar \
+    unixodbc \
     python-pip
 
 # Dependency for libelektra-fuse

@@ -63,6 +63,7 @@ RUN apt-get update && apt-get -y install \
         swig4.0 \
         systemd \
         tclcl-dev \
+        unixodbc \
         unzip \
         valgrind \
         wget \

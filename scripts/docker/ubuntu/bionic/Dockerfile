@@ -44,10 +44,11 @@ RUN apt-get update && apt-get -y install \
         qtdeclarative5-dev \
         ruby-dev \
         swig \
+        unixodbc \
         unzip \
         valgrind \
         python3-pip \
-    	golang \
+        golang \
     && rm -rf /var/lib/apt/lists/*
 
 # Build dependency for libelektra-fuse

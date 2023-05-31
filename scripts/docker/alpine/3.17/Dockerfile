@@ -11,6 +11,7 @@ RUN apk update \
         flex \
         git \
         ninja \
+        unixodbc \
         yaml-cpp-dev \
 	py3-pip
 

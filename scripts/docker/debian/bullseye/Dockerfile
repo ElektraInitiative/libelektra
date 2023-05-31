@@ -13,7 +13,7 @@ RUN apt-get update && apt-get -y install \
         clang-13 \
         cmake \
         curl \
-    	dbus-x11 \
+        dbus-x11 \
         debsigs \
         default-jdk \
         devscripts \
@@ -78,12 +78,13 @@ RUN apt-get update && apt-get -y install \
         swig4.0 \
         systemd \
         tclcl-dev \
+        unixodbc \
         uuid-dev \
         unzip \
         valgrind \
         virtualenv \
         wine \
-    	golang \
+        golang \
     && rm -rf /var/lib/apt/lists/*
 
 # Build dependency for libelektra-fuse
