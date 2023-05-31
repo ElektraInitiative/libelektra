@@ -99,7 +99,7 @@ int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex)
  * Get the base name of the passed array.
  * The returned value must be freed (if not null)
  *
- * e.g. user:/abc/\#9 will return
+ * e.g. user:/abc/\#9/foo\#1 wil return
  *      user:/abc
  * @param key
  * @retval @p NULL if key is not array
