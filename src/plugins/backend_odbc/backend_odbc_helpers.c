@@ -351,7 +351,8 @@ static char * lookupStringFromKs (KeySet * ks, const char * keyName)
  * @return The filled struct with the configuration of the datasource
  * 	Make sure to free the struct itself as well as the strings it contains.
  *
- * @retval If a mandatory configuration value was not present in the given KeySet, a NULL pointer was given, or memory allocation failed
+ * @retval NULL if a mandatory configuration value was not present in the given KeySet, a NULL pointer was given, or memory allocation
+ * failed
  *
  * @see ELEKTRA_PLUGIN_FUNCTION (init)
  * @see https://www.libelektra.org/devdocu/backend-plugins
@@ -450,18 +451,15 @@ struct dataSourceConfig * fillDsStructFromDefinitionKs (KeySet * ksDefinition)
 /**
  * @brief Creates a string the contains all mandatory configuration values for an ODBC data source
  *
- * The created string is intended for use as an identifier for a data source, not for creating human-readable output.
- * Therefore, all the required configuration strings are simply concatenated.
- *
+ * The created string is intended for use as an identifier for a data source.
  * This function should be used during the @b RESOLVER phase of the ODBC backend.
  *
- * @param dsConfig A valid data source config, as returned by the \ref fillDsStructFromDefinitionKs "fillDsStructFromDefinitionKs" function
+ * @param dsConfig A valid data source config, as returned by the \ref fillDsStructFromDefinitionKs() function
  *
  * @return A string that contains all fields of the config that identify a data source for the ODBC backend, copied to newly allocated
  * memory Make sure to free the returned string.
  *
- * @retval NULL if the Key could not be found, didn't contain a string-value, memory allocation for the string to copy failed
- * 	or a mandatory configuration value was not found in the definition KeySet.
+ * @retval NULL If an empty configuration struct was passed, no data source name was found or memory allocation failed
  *
  * @see 'fillDsStructFromDefinitionKs(KeySet * ksDefinition)' to get a dataSourceConfig struct from a KeySet with the mountpoint definition
  */
@@ -472,14 +470,15 @@ char * dsConfigToString (struct dataSourceConfig * dsConfig)
 		return NULL;
 	}
 
+	/* add one char for the \0 and 3 char for separating the values with ' - ' */
 	size_t dsConfigStrLen = 1 + (dsConfig->dataSourceName ? strlen (dsConfig->dataSourceName) : 0) +
-				(dsConfig->tableName ? strlen (dsConfig->tableName) : 0) +
-				(dsConfig->keyColName ? strlen (dsConfig->keyColName) : 0) +
-				(dsConfig->valColName ? strlen (dsConfig->valColName) : 0) +
-				(dsConfig->metaTableName ? strlen (dsConfig->metaTableName) : 0) +
-				(dsConfig->metaTableKeyColName ? strlen (dsConfig->metaTableKeyColName) : 0) +
-				(dsConfig->metaTableMetaKeyColName ? strlen (dsConfig->metaTableMetaKeyColName) : 0) +
-				(dsConfig->metaTableMetaValColName ? strlen (dsConfig->metaTableMetaValColName) : 0);
+				+(dsConfig->tableName ? 3 + strlen (dsConfig->tableName) : 0) +
+				+(dsConfig->keyColName ? 3 + strlen (dsConfig->keyColName) : 0) +
+				+(dsConfig->valColName ? 3 + strlen (dsConfig->valColName) : 0) +
+				+(dsConfig->metaTableName ? 3 + strlen (dsConfig->metaTableName) : 0) +
+				+(dsConfig->metaTableKeyColName ? 3 + strlen (dsConfig->metaTableKeyColName) : 0) +
+				+(dsConfig->metaTableMetaKeyColName ? 3 + strlen (dsConfig->metaTableMetaKeyColName) : 0) +
+				+(dsConfig->metaTableMetaValColName ? 3 + strlen (dsConfig->metaTableMetaValColName) : 0);
 
 	if (dsConfigStrLen == 0)
 	{
@@ -493,16 +492,54 @@ char * dsConfigToString (struct dataSourceConfig * dsConfig)
 		return NULL;
 	}
 
-	char * curPart = retStr;
+	char * curPart;
 
-	curPart = (dsConfig->dataSourceName ? stpcpy (curPart, dsConfig->dataSourceName) : curPart);
-	curPart = (dsConfig->tableName ? stpcpy (curPart, dsConfig->tableName) : curPart);
-	curPart = (dsConfig->keyColName ? stpcpy (curPart, dsConfig->keyColName) : curPart);
-	curPart = (dsConfig->valColName ? stpcpy (curPart, dsConfig->valColName) : curPart);
-	curPart = (dsConfig->metaTableName ? stpcpy (curPart, dsConfig->metaTableName) : curPart);
-	curPart = (dsConfig->metaTableKeyColName ? stpcpy (curPart, dsConfig->metaTableKeyColName) : curPart);
-	curPart = (dsConfig->metaTableMetaKeyColName ? stpcpy (curPart, dsConfig->metaTableMetaKeyColName) : curPart);
-	(dsConfig->metaTableMetaValColName ? stpcpy (curPart, dsConfig->metaTableMetaValColName) : curPart);
+	if (dsConfig->dataSourceName)
+	{
+		curPart = stpcpy (retStr, dsConfig->dataSourceName);
+	}
+	else
+	{
+		elektraFree (retStr);
+		return NULL;
+	}
+
+
+	if (dsConfig->tableName)
+	{
+		curPart = stpcpy (curPart, " - ");
+		curPart = stpcpy (curPart, dsConfig->tableName);
+	}
+	if (dsConfig->keyColName)
+	{
+		curPart = stpcpy (curPart, " - ");
+		curPart = stpcpy (curPart, dsConfig->keyColName);
+	}
+	if (dsConfig->valColName)
+	{
+		curPart = stpcpy (curPart, " - ");
+		curPart = stpcpy (curPart, dsConfig->valColName);
+	}
+	if (dsConfig->metaTableName)
+	{
+		curPart = stpcpy (curPart, " - ");
+		curPart = stpcpy (curPart, dsConfig->metaTableName);
+	}
+	if (dsConfig->metaTableKeyColName)
+	{
+		curPart = stpcpy (curPart, " - ");
+		curPart = stpcpy (curPart, dsConfig->metaTableKeyColName);
+	}
+	if (dsConfig->metaTableMetaKeyColName)
+	{
+		curPart = stpcpy (curPart, " - ");
+		curPart = stpcpy (curPart, dsConfig->metaTableMetaKeyColName);
+	}
+	if (dsConfig->metaTableMetaValColName)
+	{
+		curPart = stpcpy (curPart, " - ");
+		stpcpy (curPart, dsConfig->metaTableMetaValColName);
+	}
 
 	return retStr;
 }

@@ -23,7 +23,7 @@ public:
 
 	std::string getShortOptions () override
 	{
-		return "";
+		return "f";
 	}
 
 	std::string getSynopsis () override

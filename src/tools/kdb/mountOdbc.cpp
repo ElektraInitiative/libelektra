@@ -12,6 +12,7 @@
 #include <cmdline.hpp>
 #include <iostream>
 #include <kdbassert.h>
+#include <modules.hpp>
 
 
 MountOdbcCommand::MountOdbcCommand () : kdb (root)
@@ -127,16 +128,60 @@ int MountOdbcCommand::execute (Cmdline const & cl)
 		return EXIT_FAILURE;
 	}
 
+	kdb::KeySet ksReturnedOriginal = ksReturned.dup ();
 
 	ksReturned.append (ksOdbcConfig);
 	if (kdb.set (ksReturned, "system:/elektra/mountpoints") == 1)
 	{
-		std::cout << "This new mountpoint for the ODBC data source was successfully created!" << std::endl;
-		return EXIT_SUCCESS;
+		/* Check if the backend_odbc plugin works with the mountpoint (this e.g. verifies that the given table- and column names are
+		 * correct) */
+		kdb::KeySet keys;
+		kdb::Key parentKey (mpOriginal, KEY_END);
+
+		kdb.close ();
+
+		kdb::Key errorKey;
+		kdb.open (errorKey);
+		kdb::printWarnings (std::cerr, parentKey, cl.verbose, cl.debug);
+		kdb::printError (std::cerr, parentKey, cl.verbose, cl.debug);
+
+		try
+		{
+			kdb.get (keys, parentKey);
+			std::cout << "This new mountpoint for the ODBC data source was successfully created!" << std::endl;
+			kdb.close ();
+			return EXIT_SUCCESS;
+		}
+		catch (kdb::KDBException & kdbex)
+		{
+			/* Restore original value --> remove definition for new mountpoint after failed kdbGet() */
+			if (!cl.force)
+			{
+				kdb.get (ksReturned, "system:/elektra/mountpoints");
+				kdb.set (ksReturnedOriginal, "system:/elektra/mountpoints");
+				std::cerr << "Sorry, the mountpoint could not be created, please check that the provided ODBC "
+					     "configuration is valid and the data source can be reached."
+					  << std::endl
+					  << "If you nevertheless want to create the mountpoint, use the --force (-f) option." << std::endl;
+			}
+			else
+			{
+				std::cerr << "An error occurred while creating the mountpoint. Because you used the --force (-f) option, "
+					     "the mountpoint was created nevertheless."
+					  << std::endl;
+			}
+			std::cerr << "See the error and warnings below for more information." << std::endl << std::endl;
+
+
+			kdb::printError (std::cerr, parentKey, cl.verbose, cl.debug);
+			kdb::printWarnings (std::cerr, parentKey, cl.verbose, cl.debug);
+			kdb.close ();
+			return EXIT_FAILURE;
+		}
 	}
 	else
-
 	{
+		kdb.close ();
 		return EXIT_FAILURE;
 	}
 }

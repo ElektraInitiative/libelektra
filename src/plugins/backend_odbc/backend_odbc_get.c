@@ -456,9 +456,6 @@ KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key * erro
 
 	for (unsigned int i = 1; (ret = SQLFetch (sqlStmt)) != SQL_NO_DATA; i++)
 	{
-		ELEKTRA_ASSERT (buffers->bufferKeyName[0] && buffers->nameLenInd != SQL_NULL_DATA,
-				"The ODBC-backend retrieved an empty- or null-string for the key-name. This is not allowed! Please check "
-				"you data source.");
 
 		if (!SQL_SUCCEEDED (ret))
 		{
@@ -475,6 +472,11 @@ KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key * erro
 		}
 		else
 		{
+			ELEKTRA_ASSERT (
+				buffers->bufferKeyName[0] && buffers->nameLenInd != SQL_NULL_DATA,
+				"The ODBC-backend retrieved an empty- or null-string for the key-name. This is not allowed! Please check "
+				"you data source.");
+
 			char * longKeyName = NULL;
 			char * longKeyString = NULL;
 			char * longMetaKeyName = NULL;

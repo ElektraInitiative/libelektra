@@ -36,6 +36,7 @@ int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * ksDefinition, Key 
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
+	/* Parse the mountpoint definition and check if the mountpoint definition CAN be valid */
 	struct dataSourceConfig * dsConfig = fillDsStructFromDefinitionKs (ksDefinition);
 
 	if (!dsConfig)
@@ -93,6 +94,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ksReturned, Key * p
 	{
 	case ELEKTRA_KDB_GET_PHASE_RESOLVER: {
 		ssize_t ret = keySetString (parentKey, dsConfigToString (dsConfig));
+
 		ELEKTRA_ASSERT (ret != 0,
 				"keySetString returned 0. This looks like a programming error!\\nPlease report the issue at "
 				"https://issues.libelektra.org");
