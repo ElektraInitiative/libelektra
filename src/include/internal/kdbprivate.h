@@ -72,27 +72,6 @@ namespace ckdb
 extern "C" {
 #endif
 
-#pragma region bitflags
-
-#ifdef __cplusplus
-/** Test a bit. @see set_bit(), clear_bit() */
-#define test_bit(var, bit) ((static_cast<unsigned long long> (var)) & (static_cast<unsigned long long> (bit)))
-/** Set a bit. @see clear_bit() */
-#define set_bit(var, bit) ((var) |= (static_cast<unsigned long long> (bit)))
-/** Clear a bit. @see set_bit() */
-#define clear_bit(var, bit) ((var) &= ~(static_cast<unsigned long long> (bit)))
-
-#else
-
-/** Test a bit. @see set_bit(), clear_bit() */
-#define test_bit(var, bit) (((unsigned long long) (var)) & ((unsigned long long) (bit)))
-/** Set a bit. @see clear_bit() */
-#define set_bit(var, bit) ((var) |= ((unsigned long long) (bit)))
-/** Clear a bit. @see set_bit() */
-#define clear_bit(var, bit) ((var) &= ~((unsigned long long) (bit)))
-
-#endif
-
 #pragma endregion
 
 
@@ -372,7 +351,6 @@ struct _Key
 /*Private helper for key*/
 ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize);
 void keyInit (Key * key);
-void keyClearSync (Key * key);
 int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix);
 
 /* Conveniences Methods for Making Tests */

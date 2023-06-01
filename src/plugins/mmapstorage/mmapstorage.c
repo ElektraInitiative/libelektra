@@ -24,21 +24,21 @@
 #include <internal/utility/assert.h>
 #include <internal/utility/compare.h>
 #include <internal/utility/logger.h>
+
 #ifdef HAVE_KDBCONFIG_H
 #include <internal/config.h>
 #endif
 
 #include <errno.h>
-#include <fcntl.h>		// fcntl()
-#include <internal/macros/os.h> // SSIZE_MAX
-#include <stdint.h>		// uintN_t, uintptr_t
-#include <stdio.h>		// fopen(), fileno()
-#include <stdlib.h>		// strtol()
-#include <string.h>		// memcmp()
-#include <sys/mman.h>		// mmap()
-#include <sys/stat.h>		// stat(), fstat()
-#include <sys/types.h>		// ftruncate (), size_t
-#include <unistd.h>		// close(), ftruncate(), unlink(), read(), write()
+#include <fcntl.h>     // fcntl()
+#include <stdint.h>    // uintN_t, uintptr_t
+#include <stdio.h>     // fopen(), fileno()
+#include <stdlib.h>    // strtol()
+#include <string.h>    // memcmp()
+#include <sys/mman.h>  // mmap()
+#include <sys/stat.h>  // stat(), fstat()
+#include <sys/types.h> // ftruncate (), size_t
+#include <unistd.h>    // close(), ftruncate(), unlink(), read(), write()
 
 #ifdef ELEKTRA_MMAP_CHECKSUM
 #include <zlib.h> // crc32()

@@ -49,6 +49,7 @@
 
 #include <internal/config.h>
 #include <internal/kdbprivate.h>
+#include <internal/macros/bitfields.h>
 #include <internal/pluginload/module.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/logger.h>

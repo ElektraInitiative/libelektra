@@ -33,16 +33,14 @@
 #include <elektra/core/errors.h>
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
+#include <elektra/core/namespace.h>
 #include <elektra/ease/meta.h>
 #include <elektra/plugin/plugin.h>
 
-#include <elektra/core/key.h>
-#include <elektra/core/keyset.h>
-#include <elektra/core/namespace.h>
-#include <elektra/plugin/plugin.h>
 #include <internal/config.h>
 #include <internal/core/lookup.h>
 #include <internal/kdbprivate.h>
+#include <internal/macros/bitfields.h>
 #include <internal/pluginload/module.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>

@@ -11,6 +11,7 @@
 #include <internal/core/opmphm.h>
 #include <internal/kdbprivate.h>
 #include <internal/macros/attributes.h>
+#include <internal/macros/bitfields.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
