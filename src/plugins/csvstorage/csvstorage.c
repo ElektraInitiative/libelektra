@@ -7,21 +7,20 @@
  *
  */
 
-
-#ifndef HAVE_KDBCONFIG
-#include <internal/config.h>
-#endif
-
 #include "./csvstorage.h"
+
 #include <elektra/core/errors.h>
 #include <elektra/ease/array.h>
-#include <errno.h>
-#include <internal/kdbprivate.h> // for ksRenameKeys
+
+#include <internal/config.h>
+#include <internal/core/keyset/api.h>
 #include <internal/macros/plugin_errors.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/compare.h>
 #include <internal/utility/string.h>
+
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

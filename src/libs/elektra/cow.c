@@ -6,9 +6,12 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include <elektra/core/key.h>
+
 #include <internal/core/key/data.h>
 #include <internal/core/key/name.h>
-#include <internal/kdbprivate.h>
+#include <internal/core/keyset/data.h>
+#include <internal/utility/alloc.h>
 
 /**
  * @internal

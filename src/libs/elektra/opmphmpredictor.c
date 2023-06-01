@@ -7,7 +7,6 @@
  */
 
 #include <internal/core/opmphmpredictor.h>
-#include <internal/kdbprivate.h>
 #include <internal/macros/bitfields.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>

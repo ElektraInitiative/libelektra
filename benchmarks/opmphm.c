@@ -34,6 +34,7 @@
 #include "../src/libs/elektra/rand.c"
 #include <sys/time.h>
 
+#include <internal/core/keyset.h>
 #include <internal/core/lookup.h>
 
 int32_t elektraRandBenchmarkInitSeed;

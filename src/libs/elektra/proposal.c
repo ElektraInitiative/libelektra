@@ -9,7 +9,7 @@
 
 #include <string.h>
 
-#include <internal/kdbprivate.h>
+#include <internal/core/keyset.h>
 #include <internal/macros/os.h>
 
 /**

@@ -16,8 +16,8 @@
 #include <elektra/plugin/plugin.h>
 
 #include <internal/config.h>
+#include <internal/core/keyset/api.h>
 #include <internal/kdb/struct.h>
-#include <internal/kdbprivate.h>
 #include <internal/plugin/load.h>
 #include <internal/plugin/struct.h>
 #include <internal/pluginload/module.h>

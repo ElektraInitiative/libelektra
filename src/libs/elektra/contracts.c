@@ -10,7 +10,7 @@
 #include <elektra/core/keyset.h>
 
 #include <internal/core/key/api.h>
-#include <internal/kdbprivate.h>
+#include <internal/core/keyset/api.h>
 
 #include <stddef.h>
 

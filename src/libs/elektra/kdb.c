@@ -47,8 +47,8 @@
 
 #include <internal/config.h>
 #include <internal/core/key.h>
+#include <internal/core/keyset.h>
 #include <internal/kdb/struct.h>
-#include <internal/kdbprivate.h>
 #include <internal/macros/bitfields.h>
 #include <internal/plugin/functions.h>
 #include <internal/plugin/load.h>

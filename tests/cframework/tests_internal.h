@@ -21,9 +21,10 @@
 #include <elektra/plugin/plugin.h>
 #include <internal/config.h>
 #include <internal/core/key.h>
-#include <internal/kdbprivate.h>
+#include <internal/core/keyset.h>
 #include <internal/plugin/struct.h>
 #include <internal/pluginload/module.h>
+#include <internal/utility/alloc.h>
 #include <internal/utility/logger.h>
 
 void clear_sync (KeySet * ks);

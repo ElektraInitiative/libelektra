@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <internal/kdbprivate.h> // for ksBelow
+#include <internal/core/keyset/api.h>
 #include <tests.h>
 
 #define NUMBER_OF_NAMESPACES 5

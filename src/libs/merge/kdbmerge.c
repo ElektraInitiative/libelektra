@@ -3,7 +3,8 @@
 #include <elektra/core/keyset.h>
 #include <elektra/ease/array.h>
 #include <elektra/merge.h>
-#include <internal/kdbprivate.h> // for ksFindHierarchy
+
+#include <internal/core/keyset/api.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>

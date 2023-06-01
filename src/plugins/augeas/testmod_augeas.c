@@ -19,8 +19,6 @@
 #include <string.h>
 #endif
 
-#include <internal/kdbprivate.h>
-
 #include <tests_plugin.h>
 
 #define return_if_fail(expression, message)                                                                                                \
