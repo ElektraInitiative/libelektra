@@ -12,8 +12,8 @@
 #include <elektra/ease/utils.h>
 
 #include <internal/config.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/string.h>
+#include <internal/utility/alloc.h>
 #include <errno.h>
 #include <stdbool.h>
 #include <stdlib.h>

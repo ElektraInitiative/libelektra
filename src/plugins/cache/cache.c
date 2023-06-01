@@ -18,8 +18,8 @@
 #include <internal/pluginload/module.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/compare.h>
+#include <internal/utility/alloc.h>
 #include <fcntl.h>     // access()
 #include <ftw.h>       // nftw()
 #include <stdint.h>    // nftw()

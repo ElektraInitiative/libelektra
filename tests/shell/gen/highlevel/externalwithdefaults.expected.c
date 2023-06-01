@@ -37,10 +37,7 @@
 #include <elektra/plugin/invoke.h>
 #include <elektra/type/conversion.h>
 
-#include <internal/utility/old_helper.h>
-
-
-
+#include <internal/utility/alloc.h>
 static const char * helpFallback = "Usage: tests_script_gen_highlevel_externalwithdefaults [OPTION...]\n\nOPTIONS\n  --help                      Print this help message\n";
 
 static int isHelpMode (int argc, const char * const * argv)

@@ -9,8 +9,7 @@
 #include "./path.h"
 
 #include <internal/config.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/alloc.h>
 static int createModeBits (const char * modes);
 
 static int handleNoUserCase (Key * parentKey, const char * validPath, const char * modes, Key * key);

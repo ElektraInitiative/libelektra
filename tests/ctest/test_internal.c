@@ -7,7 +7,8 @@
  */
 
 #include <internal/kdbprivate.h>
-#include <internal/utility/old_helper.h>
+#include <internal/utility/string.h>
+#include <internal/utility/alloc.h>
 #include <tests_internal.h>
 
 static void test_elektraMalloc (void)

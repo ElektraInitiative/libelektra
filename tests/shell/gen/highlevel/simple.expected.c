@@ -37,8 +37,7 @@
 #include <elektra/plugin/invoke.h>
 #include <elektra/type/conversion.h>
 
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/alloc.h>
 static KeySet * embeddedSpec (void)
 {
 	return ksNew (6,

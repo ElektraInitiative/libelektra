@@ -26,8 +26,7 @@
 #include <elektra/io/api.h>		 // I/O binding functions (elektraIo*)
 #include <elektra/io/uv.h>		 // I/O binding constructor for uv (elektraIoUvNew)
 #include <internal/utility/assert.h>	 // assertions (ELEKTRA_NOT_NULL)
-#include <internal/utility/old_helper.h> // malloc & free
-
+#include <internal/utility/alloc.h>
 #include <uv.h> // uv functions
 
 #define BUFFER_LENGTH 255

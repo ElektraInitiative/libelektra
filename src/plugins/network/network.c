@@ -9,9 +9,7 @@
 #include "./network.h"
 
 #include <internal/config.h>
-#include <internal/utility/old_helper.h>
-
-
+#include <internal/utility/alloc.h>
 /* Obtain address(es) matching host/port */
 int elektraNetworkAddrInfo (Key * toCheck)
 {

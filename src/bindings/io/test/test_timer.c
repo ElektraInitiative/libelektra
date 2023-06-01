@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <internal/utility/old_helper.h>
+#include <internal/utility/alloc.h>
 #include <tests.h>
 
 #include "./test.h"

@@ -11,8 +11,7 @@
 
 #include <internal/config.h>
 #include <internal/macros/plugin_errors.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/alloc.h>
 #include <elektra/ease/array.h>
 #include <elektra/ease/meta.h>
 #include <elektra/ease/utils.h>

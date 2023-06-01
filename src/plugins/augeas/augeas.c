@@ -18,8 +18,7 @@
 #include <internal/config.h>
 #include <internal/macros/attributes.h>
 #include <internal/macros/plugin_errors.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/alloc.h>
 #include <ctype.h>
 #include <glob.h>
 #include <libgen.h>

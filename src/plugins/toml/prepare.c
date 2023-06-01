@@ -11,7 +11,7 @@
 #include "./prepare.h"
 #include "./utility.h"
 #include <internal/utility/assert.h>
-#include <internal/utility/old_helper.h>
+#include <internal/utility/alloc.h>
 #include <stdio.h>
 #include <stdlib.h>
 

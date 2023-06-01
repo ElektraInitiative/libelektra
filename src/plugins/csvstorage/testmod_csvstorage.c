@@ -10,8 +10,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <internal/utility/old_helper.h>
-
 #include <tests_plugin.h>
 
 static void testread (const char * file)

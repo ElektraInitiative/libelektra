@@ -17,9 +17,8 @@
 #include <internal/macros/attributes.h>
 #include <internal/macros/plugin_errors.h>
 #include <internal/utility/logger.h>
-#include <internal/utility/old_helper.h>
-
-
+#include <internal/utility/compare.h>
+#include <internal/utility/alloc.h>
 int elektraDesktopGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	ELEKTRA_LOG ("get desktop %s from %s\n", keyName (parentKey), keyString (parentKey));

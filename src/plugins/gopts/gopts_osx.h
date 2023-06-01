@@ -13,8 +13,6 @@
 #include <crt_externs.h>
 #include <string.h>
 
-#include <internal/utility/old_helper.h>
-
 extern char ** environ;
 
 static int loadArgs (char *** argvp)

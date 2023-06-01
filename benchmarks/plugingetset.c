@@ -13,8 +13,9 @@
 #include <elektra/core/keyset.h>
 #include <internal/kdbprivate.h>
 #include <internal/pluginload/module.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/compare.h>
+#include <internal/utility/format.h>
+#include <internal/utility/alloc.h>
 int main (int argc, char ** argv)
 {
 	if (argc < 4 || argc > 5 || (argc == 5 && elektraStrCmp (argv[4], "get") != 0))

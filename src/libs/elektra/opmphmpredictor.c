@@ -10,7 +10,7 @@
 #include <internal/kdbprivate.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
-#include <internal/utility/old_helper.h>
+#include <internal/utility/alloc.h>
 #include <stdlib.h>
 #include <string.h>
 

@@ -19,9 +19,9 @@
 #include <elektra/type/conversion.h>
 
 #include <internal/macros/attributes.h>
-#include <internal/utility/old_helper.h>
-
-
+#include <internal/utility/array.h>
+#include <internal/utility/format.h>
+#include <internal/utility/alloc.h>
 #define CHECK_TYPE(key, var, toValue)                                                                                                      \
 	{                                                                                                                                  \
 		if (strlen (keyString (key)) == 0 || toValue (key, &var) != 1)                                                             \

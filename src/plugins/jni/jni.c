@@ -19,8 +19,7 @@
 #include <elektra/core.h>
 #include <elektra/core/errors.h>
 #include <elektra/plugin/plugin.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/alloc.h>
 // forward declarations
 int elektraJniOpen (Plugin * handle, Key * errorKey);
 int elektraJniClose (Plugin * handle, Key * errorKey);

@@ -22,7 +22,6 @@
 
 #include <gtest/gtest.h>
 #include <internal/config.h>
-#include <internal/utility/old_helper.h>
 #include <kdb.hpp>
 
 // We disable certain tests on ASAN enabled builds: https://travis-ci.org/sanssecours/elektra/jobs/418573941

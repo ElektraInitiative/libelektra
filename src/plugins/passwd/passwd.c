@@ -10,8 +10,8 @@
 #include "./passwd.h"
 
 #include <elektra/core/errors.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/compare.h>
+#include <internal/utility/alloc.h>
 #include <pwd.h>
 #include <stdio.h>
 #include <stdlib.h>

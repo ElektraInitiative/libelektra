@@ -24,8 +24,7 @@
 #include <elektra/io/glib.h> // I/O binding constructor for glib (elektraIoGlibNew)
 #include <elektra/kdb/kdb.h>
 #include <elektra/notifications.h>	 // notification functions
-#include <internal/utility/old_helper.h> // elektraFree
-
+#include <internal/utility/alloc.h>
 #include <glib-unix.h> // g_unix_signal_add()
 #include <glib.h>      // glib functions
 

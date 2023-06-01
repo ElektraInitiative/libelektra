@@ -9,8 +9,7 @@
 #include "./zeromqsend.h"
 
 #include <internal/utility/logger.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/string.h>
 #include <time.h>   // clock_gettime()
 #include <unistd.h> // usleep()
 

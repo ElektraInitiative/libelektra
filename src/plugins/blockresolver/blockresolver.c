@@ -15,8 +15,8 @@
 #include <internal/config.h>
 #include <internal/macros/attributes.h>
 #include <internal/resolver/shared.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/compare.h>
+#include <internal/utility/alloc.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

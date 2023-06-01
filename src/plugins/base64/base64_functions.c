@@ -1,8 +1,7 @@
 #include "./base64_functions.h"
 #include <elektra/core/errors.h>
 #include <internal/utility/assert.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/alloc.h>
 static const char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 #define ALPHABET_LENGTH (sizeof (alphabet) - 1)
 static const char padding = '=';

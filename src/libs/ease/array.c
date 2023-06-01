@@ -14,8 +14,7 @@
 #include <elektra/ease/utils.h>
 #include <elektra/type/types.h>
 #include <internal/kdbprivate.h> // for elektraIsArrayPart
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/array.h>
 #include <ctype.h>
 #include <errno.h>
 #include <limits.h>

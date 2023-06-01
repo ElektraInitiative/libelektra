@@ -17,8 +17,6 @@
 #include <elektra/core/keyset.h>
 #include <elektra/kdb/kdb.h>
 #include <elektra/notifications.h>
-#include <internal/utility/old_helper.h> // ELEKTRA_UNUSED
-
 #include <signal.h>
 #include <stdio.h>
 #include <string.h>

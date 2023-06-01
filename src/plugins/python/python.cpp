@@ -16,7 +16,7 @@
 #ifndef HAVE_KDBCONFIG
 #include <internal/config.h>
 #endif
-#include <internal/utility/old_helper.h>
+#include <internal/utility/alloc.h>
 #include SWIG_RUNTIME
 #include "./python.hpp"
 

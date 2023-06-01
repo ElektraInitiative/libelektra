@@ -10,8 +10,7 @@
 #include <elektra/core/keyset.h>
 #include <elektra/kdb/kdb.h>
 #include <internal/macros/attributes.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/alloc.h>
 #include <fcntl.h>
 #include <pthread.h>
 #include <stdio.h>

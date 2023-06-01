@@ -10,7 +10,7 @@
 #ifndef __bohr_ds_str_h__
 #define __bohr_ds_str_h__
 
-#include <internal/utility/old_helper.h>
+#include <internal/utility/alloc.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdio.h>

@@ -10,8 +10,8 @@
 #include <elektra/core/keyset.h>
 #include <elektra/ease/array.h>
 #include <elektra/ease/globbing.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/compare.h>
+#include <internal/utility/alloc.h>
 #include <ctype.h>
 #include <fnmatch.h>
 #include <stdlib.h>

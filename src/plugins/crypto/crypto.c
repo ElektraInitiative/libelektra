@@ -20,7 +20,7 @@
 #include <elektra/core/keyset.h>
 #include <elektra/core/namespace.h>
 #include <elektra/type/types.h>
-#include <internal/utility/old_helper.h>
+#include <internal/utility/alloc.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>

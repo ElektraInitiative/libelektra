@@ -12,8 +12,7 @@
 #include <command.hpp>
 #include <elektra/ease/array.h>
 #include <elektra/ease/reference.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/alloc.h>
 bool StructFieldsProcessor::shouldGenerateUnion (const kdb::Key & key)
 {
 	return !key.hasMeta ("gen/union/create") || key.getMeta<std::string> ("gen/union/create") == "1";

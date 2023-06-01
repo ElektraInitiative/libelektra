@@ -15,7 +15,10 @@
 #include <elektra/ease/array.h>
 #include <elektra/ease/name.h>
 #include <internal/utility/logger.h>
-#include <internal/utility/old_helper.h>
+#include <internal/utility/string.h>
+#include <internal/utility/compare.h>
+#include <internal/utility/array.h>
+#include <internal/utility/alloc.h>
 #include <xfconf/xfconf.h>
 
 int elektraXfconfInit (Key * errorKey, int xfconfCode, int xfconfShutdown)

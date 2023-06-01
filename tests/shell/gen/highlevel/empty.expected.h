@@ -34,8 +34,6 @@ extern "C" {
 
 #include <elektra/highlevel.h>
 
-#include <internal/utility/old_helper.h>
-
 #include <string.h>
 
 

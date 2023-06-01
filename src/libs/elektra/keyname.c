@@ -171,8 +171,8 @@
 #include <internal/macros/os.h>
 #include <internal/pluginload/module.h>
 #include <internal/utility/logger.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/string.h>
+#include <internal/utility/alloc.h>
 /**
  * @internal
  *

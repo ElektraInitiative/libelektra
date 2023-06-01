@@ -11,7 +11,8 @@
 #include <elektra/highlevel/errors.h>
 #include <elektra/type/conversion.h>
 #include <internal/kdbprivate.h>
-#include <internal/utility/old_helper.h>
+#include <internal/utility/format.h>
+#include <internal/utility/alloc.h>
 #include <string.h>
 
 #ifdef __cplusplus

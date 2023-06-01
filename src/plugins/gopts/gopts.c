@@ -13,8 +13,8 @@
 #include <elektra/opts.h>
 #include <elektra/type/conversion.h>
 #include <internal/utility/assert.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/compare.h>
+#include <internal/utility/alloc.h>
 static int loadArgs (char *** argvp);
 static char ** loadEnvp (void);
 static void cleanupArgs (int argc, char ** argv);

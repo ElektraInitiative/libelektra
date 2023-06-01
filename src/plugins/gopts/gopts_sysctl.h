@@ -16,8 +16,7 @@
 #include <sys/sysctl.h>
 #include <unistd.h>
 
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/alloc.h>
 extern char ** environ;
 
 static int loadArgs (char *** argvp)

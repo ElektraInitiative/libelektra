@@ -16,8 +16,6 @@
 
 #include <elektra/io/api.h>
 #include <internal/io/test.h>
-#include <internal/utility/old_helper.h>
-
 /**
  * Get current time.
  * Use together with elektraIoTestSuite_getTimeDifference to measure time differences

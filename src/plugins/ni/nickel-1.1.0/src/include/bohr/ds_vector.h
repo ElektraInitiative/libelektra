@@ -17,9 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <internal/utility/old_helper.h>
-
-
+#include <internal/utility/alloc.h>
 // Controls inlining of this library's functions.
 #ifndef Ds_VECTOR_INLINE
 #ifdef Ds_INLINE

@@ -13,8 +13,7 @@
 #include <internal/io/private.h>
 #include <internal/kdbprivate.h>
 #include <internal/utility/logger.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/alloc.h>
 #include <fcntl.h>
 #include <stdio.h>
 

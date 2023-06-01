@@ -11,8 +11,7 @@
 #include <elektra/core/errors.h>
 
 #include <internal/config.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/compare.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>

@@ -9,8 +9,8 @@
 #define _GNU_SOURCE
 #include <internal/config.h>
 #include <internal/macros/plugin_errors.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/format.h>
+#include <internal/utility/alloc.h>
 #include "./simpleini.h"
 #include <errno.h>
 

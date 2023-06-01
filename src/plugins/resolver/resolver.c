@@ -16,8 +16,7 @@
 #include <internal/resolver/stat.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
-#include <internal/utility/old_helper.h> // elektraStrDup
-
+#include <internal/utility/alloc.h>
 #include <ctype.h>
 #include <dirent.h>
 #include <errno.h>

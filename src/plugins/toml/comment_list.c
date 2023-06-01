@@ -11,7 +11,8 @@
 
 #include <elektra/core/key.h>
 #include <internal/utility/assert.h>
-#include <internal/utility/old_helper.h>
+#include <internal/utility/string.h>
+#include <internal/utility/alloc.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

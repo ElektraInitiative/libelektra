@@ -10,7 +10,8 @@
 #include "./unit.h"
 #include <elektra/core/errors.h>
 #include <elektra/type/types.h>
-#include <internal/utility/old_helper.h>
+#include <internal/utility/compare.h>
+#include <internal/utility/alloc.h>
 #include <stdio.h>
 #include <stdlib.h>
 

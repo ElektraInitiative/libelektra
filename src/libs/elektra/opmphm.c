@@ -13,7 +13,7 @@
 #include <internal/macros/attributes.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
-#include <internal/utility/old_helper.h>
+#include <internal/utility/alloc.h>
 #include <internal/utility/rand.h>
 
 #include <string.h>

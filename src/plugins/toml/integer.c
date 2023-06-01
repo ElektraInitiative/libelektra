@@ -1,5 +1,5 @@
 
-#include <internal/utility/old_helper.h>
+#include <internal/utility/string.h>
 #include <limits.h>
 
 #include "./integer.h"

@@ -14,8 +14,8 @@
 
 #include <internal/macros/attributes.h>
 #include <internal/resolver/shared.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/compare.h>
+#include <internal/utility/alloc.h>
 #include <curl/curl.h>
 #include <curl/easy.h>
 

@@ -8,8 +8,8 @@
 
 #include <stdio.h>
 
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/compare.h>
+#include <internal/utility/alloc.h>
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
 #endif

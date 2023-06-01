@@ -19,8 +19,8 @@
 #include <internal/notifications.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/compare.h>
+#include <internal/utility/alloc.h>
 #include <ctype.h> // isspace()
 #include <errno.h> // errno
 #include <limits.h>

@@ -13,8 +13,7 @@
 #include <string.h>
 #include <windows.h>
 
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/alloc.h>
 static int loadArgs (char *** argvp)
 {
 	int argc;

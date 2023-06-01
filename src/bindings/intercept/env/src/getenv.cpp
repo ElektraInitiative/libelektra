@@ -21,8 +21,7 @@
 
 #include <kdbcontext.hpp>
 
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/alloc.h>
 #include <dlfcn.h>
 #include <libgen.h>
 #include <signal.h>

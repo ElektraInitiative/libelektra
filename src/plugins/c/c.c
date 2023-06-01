@@ -13,8 +13,8 @@
 
 #include <internal/macros/attributes.h>
 #include <internal/macros/plugin_errors.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/compare.h>
+#include <internal/utility/alloc.h>
 #include <ctype.h>
 #include <stdio.h>
 

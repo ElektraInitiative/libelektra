@@ -3,8 +3,10 @@
 
 #include <elektra/core/errors.h>
 
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/string.h>
+#include <internal/utility/compare.h>
+#include <internal/utility/format.h>
+#include <internal/utility/alloc.h>
 #include <ctype.h>
 #include <math.h>
 #include <stdio.h>

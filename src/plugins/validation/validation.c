@@ -7,8 +7,7 @@
  */
 
 #include <internal/config.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/alloc.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
