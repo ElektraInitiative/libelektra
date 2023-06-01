@@ -2,8 +2,8 @@
 #include <elektra/core/keyset.h>
 #include <elektra/ease/globbing.h>
 
-#include <string.h>
 #include <stdbool.h>
+#include <string.h>
 
 #ifdef __MINGW32__
 bool specMatches (Key * specKey, Key * otherKey)

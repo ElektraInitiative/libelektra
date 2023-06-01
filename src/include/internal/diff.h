@@ -28,7 +28,6 @@ struct _ElektraDiff
 struct _ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKey, Key * parentKey);
 
 
-
 #ifdef __cplusplus
 }
 }

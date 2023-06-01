@@ -10,8 +10,8 @@
 #include "./blockresolver.h"
 
 #include <elektra/core/errors.h>
-#include <elektra/type/types.h>
 #include <elektra/plugin/invoke.h>
+#include <elektra/type/types.h>
 
 #include <internal/config.h>
 #include <internal/macros/attributes.h>

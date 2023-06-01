@@ -6,8 +6,8 @@
 #include <elektra/kdb/kdb.h>
 #include <elektra/plugin/plugin.h>
 
-#include <internal/plugin/functions.h>
 #include <internal/changetracking.h>
+#include <internal/plugin/functions.h>
 
 #include <stdbool.h>
 #include <stddef.h>
