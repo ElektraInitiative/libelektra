@@ -454,7 +454,7 @@ KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key * erro
 		return NULL;
 	}
 
-	for (unsigned int i = 1; (ret = SQLFetch (sqlStmt)) != SQL_NO_DATA; i++)
+	while ((ret = SQLFetch (sqlStmt)) != SQL_NO_DATA)
 	{
 
 		if (!SQL_SUCCEEDED (ret))

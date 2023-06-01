@@ -1,7 +1,7 @@
 include (LibAddMacros)
 
 if (DEPENDENCY_PHASE)
-	find_package (ODBC REQUIRED)
+	find_package (ODBC)
 	if (NOT ODBC_FOUND)
 		remove_plugin (backend_odbc "ODBC library files not found, make sure an ODBC variant (e.g. unixODBC) is installed")
 	endif ()
