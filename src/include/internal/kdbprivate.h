@@ -33,39 +33,6 @@
 
 #pragma endregion
 
-#pragma region unclear
-
-/** The minimal allocation size of a keyset inclusive
-	NULL byte. ksGetAlloc() will return one less because
-	it says how much can actually be stored.*/
-#define KEYSET_SIZE 16
-
-/** Trie optimization */
-#define APPROXIMATE_NR_OF_BACKENDS 16
-
-/** The maximum value of unsigned char+1, needed
- *  for iteration over trie children/values:
- *
- *  for (i=0; i<KDB_MAX_UCHAR; ++i)
- * */
-#define KDB_MAX_UCHAR (UCHAR_MAX + 1)
-
-
-/**The maximum of how many characters an integer
-  needs as decimal number.*/
-#define MAX_LEN_INT 31
-
-/**Backend mounting information.
- *
- * This key directory tells you where each backend is mounted
- * to which mountpoint. */
-#define KDB_SYSTEM_ELEKTRA "system:/elektra"
-
-/** All keys below this are used for cache metadata in the global keyset */
-#define KDB_CACHE_PREFIX "system:/elektra/cache"
-
-#pragma endregion
-
 #ifdef __cplusplus
 namespace ckdb
 {

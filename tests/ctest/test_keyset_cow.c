@@ -11,6 +11,8 @@
 
 #include <internal/core/lookup.h>
 
+#define DEFAULT_KEYSET_SIZE 16
+
 static void ksBelow_root_in_keyset_should_work (void)
 {
 	printf ("Test %s\n", __func__);
@@ -18,7 +20,7 @@ static void ksBelow_root_in_keyset_should_work (void)
 	// Arrange
 	Key * root = keyNew ("system:/root", KS_END);
 
-	KeySet * ks = ksNew (KEYSET_SIZE, root, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
+	KeySet * ks = ksNew (DEFAULT_KEYSET_SIZE, root, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
 			     keyNew ("system:/other", KEY_END), KS_END);
 
 	// Act
@@ -43,7 +45,7 @@ static void ksBelow_key_copied_from_root_in_keyset_should_work (void)
 	Key * root = keyNew ("system:/root", KS_END);
 	Key * copy = keyCopy (keyNew ("/", KEY_END), root, KEY_CP_ALL);
 
-	KeySet * ks = ksNew (KEYSET_SIZE, copy, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
+	KeySet * ks = ksNew (DEFAULT_KEYSET_SIZE, copy, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
 			     keyNew ("system:/other", KEY_END), KS_END);
 
 	// Act
@@ -68,7 +70,7 @@ static void ksBelow_cascading_root_in_keyset_should_work (void)
 	// Arrange
 	Key * root = keyNew ("/root", KS_END);
 
-	KeySet * ks = ksNew (KEYSET_SIZE, root, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
+	KeySet * ks = ksNew (DEFAULT_KEYSET_SIZE, root, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
 			     keyNew ("system:/other", KEY_END), KS_END);
 
 	// Act
@@ -94,7 +96,7 @@ static void ksBelow_cascading_key_copied_from_root_in_keyset_should_work (void)
 	Key * root = keyNew ("/root", KS_END);
 	Key * copy = keyCopy (keyNew ("/", KEY_END), root, KEY_CP_ALL);
 
-	KeySet * ks = ksNew (KEYSET_SIZE, copy, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
+	KeySet * ks = ksNew (DEFAULT_KEYSET_SIZE, copy, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
 			     keyNew ("system:/other", KEY_END), KS_END);
 
 	// Act
@@ -121,7 +123,7 @@ static void ksCut_root_in_keyset_should_work (void)
 	// Arrange
 	Key * root = keyNew ("system:/root", KS_END);
 
-	KeySet * ks = ksNew (KEYSET_SIZE, root, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
+	KeySet * ks = ksNew (DEFAULT_KEYSET_SIZE, root, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
 			     keyNew ("system:/other", KEY_END), KS_END);
 
 	// Act
@@ -148,7 +150,7 @@ static void ksCut_key_copied_from_root_in_keyset_should_work (void)
 	Key * root = keyNew ("system:/root", KS_END);
 	Key * copy = keyCopy (keyNew ("/", KEY_END), root, KEY_CP_ALL);
 
-	KeySet * ks = ksNew (KEYSET_SIZE, copy, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
+	KeySet * ks = ksNew (DEFAULT_KEYSET_SIZE, copy, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
 			     keyNew ("system:/other", KEY_END), KS_END);
 
 	// Act
@@ -175,7 +177,7 @@ static void ksCut_cascading_root_in_keyset_should_work (void)
 	// Arrange
 	Key * root = keyNew ("/root", KS_END);
 
-	KeySet * ks = ksNew (KEYSET_SIZE, root, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
+	KeySet * ks = ksNew (DEFAULT_KEYSET_SIZE, root, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
 			     keyNew ("system:/other", KEY_END), KS_END);
 
 	// Act
@@ -202,7 +204,7 @@ static void ksCut_cascading_key_copied_from_root_in_keyset_should_work (void)
 	Key * root = keyNew ("/root", KS_END);
 	Key * copy = keyCopy (keyNew ("/", KEY_END), root, KEY_CP_ALL);
 
-	KeySet * ks = ksNew (KEYSET_SIZE, copy, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
+	KeySet * ks = ksNew (DEFAULT_KEYSET_SIZE, copy, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
 			     keyNew ("system:/other", KEY_END), KS_END);
 
 	// Act
@@ -230,7 +232,7 @@ static void ksFindHierarchy_root_in_keyset_should_work (void)
 	// Arrange
 	Key * root = keyNew ("system:/root", KS_END);
 
-	KeySet * ks = ksNew (KEYSET_SIZE, root, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
+	KeySet * ks = ksNew (DEFAULT_KEYSET_SIZE, root, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
 			     keyNew ("system:/other", KEY_END), KS_END);
 
 	elektraCursor end = 999;
@@ -260,7 +262,7 @@ static void ksFindHierarchy_key_copied_from_root_in_keyset_should_work (void)
 	Key * root = keyNew ("system:/root", KS_END);
 	Key * copy = keyCopy (keyNew ("/", KEY_END), root, KEY_CP_ALL);
 
-	KeySet * ks = ksNew (KEYSET_SIZE, copy, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
+	KeySet * ks = ksNew (DEFAULT_KEYSET_SIZE, copy, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
 			     keyNew ("system:/other", KEY_END), KS_END);
 
 	elektraCursor end = 999;
@@ -290,7 +292,7 @@ static void ksFindHierarchy_cascading_root_in_keyset_should_work (void)
 	// Arrange
 	Key * root = keyNew ("/root", KS_END);
 
-	KeySet * ks = ksNew (KEYSET_SIZE, root, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
+	KeySet * ks = ksNew (DEFAULT_KEYSET_SIZE, root, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
 			     keyNew ("system:/other", KEY_END), KS_END);
 
 	elektraCursor end = 999;
@@ -320,7 +322,7 @@ static void ksFindHierarchy_cascading_key_copied_from_root_in_keyset_should_work
 	Key * root = keyNew ("/root", KS_END);
 	Key * copy = keyCopy (keyNew ("/", KEY_END), root, KEY_CP_ALL);
 
-	KeySet * ks = ksNew (KEYSET_SIZE, copy, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
+	KeySet * ks = ksNew (DEFAULT_KEYSET_SIZE, copy, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
 			     keyNew ("system:/other", KEY_END), KS_END);
 
 	elektraCursor end = 999;
@@ -362,11 +364,11 @@ static void ksNew_should_alloc_data (void)
 	printf ("Test %s\n", __func__);
 
 	// Arrange & Act
-	KeySet * ks = ksNew (KEYSET_SIZE, KS_END);
+	KeySet * ks = ksNew (DEFAULT_KEYSET_SIZE, KS_END);
 
 	// Assert
 	succeed_if (ks->data != NULL, "ks->data should not be NULL");
-	succeed_if (ks->data->alloc == KEYSET_SIZE + 1, "ks->data->alloc should be KEYSET_SIZE + 1");
+	succeed_if (ks->data->alloc == DEFAULT_KEYSET_SIZE + 1, "ks->data->alloc should be DEFAULT_KEYSET_SIZE + 1");
 	succeed_if (ks->data->size == 0, "ks->data->size should be 0");
 
 	ksDel (ks);
@@ -378,7 +380,7 @@ static void ksDup_should_point_to_the_same_data (void)
 
 	// Arrange
 	Key * key = keyNew ("system:/test", KEY_END);
-	KeySet * original = ksNew (KEYSET_SIZE, key, KS_END);
+	KeySet * original = ksNew (DEFAULT_KEYSET_SIZE, key, KS_END);
 
 	// Act
 	KeySet * copy = ksDup (original);
@@ -416,8 +418,8 @@ static void ksCopy_should_point_to_the_same_data (void)
 	// Arrange
 	Key * key = keyNew ("system:/test", KEY_END);
 
-	KeySet * original = ksNew (KEYSET_SIZE, key, KS_END);
-	KeySet * copied = ksNew (KEYSET_SIZE, KS_END);
+	KeySet * original = ksNew (DEFAULT_KEYSET_SIZE, key, KS_END);
+	KeySet * copied = ksNew (DEFAULT_KEYSET_SIZE, KS_END);
 
 	// Act
 	ksCopy (copied, original);
@@ -436,7 +438,7 @@ static void ksDel_should_decrease_reference_pointer (void)
 	printf ("Test %s\n", __func__);
 
 	// Arrange
-	KeySet * original = ksNew (KEYSET_SIZE, KS_END);
+	KeySet * original = ksNew (DEFAULT_KEYSET_SIZE, KS_END);
 	KeySet * copy = ksDup (original);
 
 	succeed_if (copy->data->refs == 2, "data->refs should be 2");

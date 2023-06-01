@@ -47,6 +47,7 @@
 #include <internal/utility/logger.h>
 #include <internal/utility/rand.h>
 
+#define DEFAULT_KEYSET_SIZE 16
 
 #define ELEKTRA_MAX_PREFIX_SIZE sizeof ("namespace/")
 #define ELEKTRA_MAX_NAMESPACE_SIZE sizeof ("system")
@@ -335,8 +336,8 @@ KeySet * ksVNew (size_t alloc, va_list va)
 	keySetDataRefInc (keyset->data);
 
 	alloc++; /* for ending null byte */
-	if (alloc < KEYSET_SIZE)
-		keyset->data->alloc = KEYSET_SIZE;
+	if (alloc < DEFAULT_KEYSET_SIZE)
+		keyset->data->alloc = DEFAULT_KEYSET_SIZE;
 	else
 		keyset->data->alloc = alloc;
 
@@ -579,12 +580,12 @@ int ksClear (KeySet * ks)
 	ks->data = keySetDataNew ();
 	keySetDataRefInc (ks->data);
 
-	if ((ks->data->array = elektraCalloc (sizeof (struct _Key *) * KEYSET_SIZE)) == 0)
+	if ((ks->data->array = elektraCalloc (sizeof (struct _Key *) * DEFAULT_KEYSET_SIZE)) == 0)
 	{
 		ks->data->size = 0;
 		return -1;
 	}
-	ks->data->alloc = KEYSET_SIZE;
+	ks->data->alloc = DEFAULT_KEYSET_SIZE;
 
 	elektraOpmphmInvalidate (ks->data);
 	return 0;
@@ -1029,7 +1030,7 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 		if (ks->data->size >= ks->data->alloc)
 		{
 
-			size_t newSize = ks->data->alloc == 0 ? KEYSET_SIZE : ks->data->alloc * 2;
+			size_t newSize = ks->data->alloc == 0 ? DEFAULT_KEYSET_SIZE : ks->data->alloc * 2;
 			--newSize;
 
 			if (ksResize (ks, newSize) == -1)
@@ -1108,7 +1109,7 @@ ssize_t ksAppend (KeySet * ks, const KeySet * toAppend)
 	if (toAppend->data->array == NULL) return ks->data->size;
 
 	if (ks->data->array == NULL)
-		toAlloc = KEYSET_SIZE;
+		toAlloc = DEFAULT_KEYSET_SIZE;
 	else
 		toAlloc = ks->data->alloc;
 
@@ -2855,10 +2856,10 @@ int ksResize (KeySet * ks, size_t alloc)
 	alloc++; /* for ending null byte */
 	if (alloc == ks->data->alloc) return 1;
 	if (alloc < ks->data->size) return 0;
-	if (alloc < KEYSET_SIZE)
+	if (alloc < DEFAULT_KEYSET_SIZE)
 	{
-		if (ks->data->alloc != KEYSET_SIZE)
-			alloc = KEYSET_SIZE;
+		if (ks->data->alloc != DEFAULT_KEYSET_SIZE)
+			alloc = DEFAULT_KEYSET_SIZE;
 		else
 			return 0;
 	}

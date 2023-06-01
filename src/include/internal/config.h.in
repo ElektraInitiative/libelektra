@@ -201,4 +201,13 @@
 #define ELEKTRA_TIME_USEC_F @ELEKTRA_TIME_USEC_F@
 #define ELEKTRA_STAT_ST_SIZE_F @ELEKTRA_STAT_ST_SIZE_F@
 
+/**Backend mounting information.
+ *
+ * This key directory tells you where each backend is mounted
+ * to which mountpoint. */
+#define KDB_SYSTEM_ELEKTRA "system:/elektra"
+
+/** All keys below this are used for cache metadata in the global keyset */
+#define KDB_CACHE_PREFIX "system:/elektra/cache"
+
 #endif
