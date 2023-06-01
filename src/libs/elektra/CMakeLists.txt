@@ -138,6 +138,8 @@ if (BUILD_FULL)
 	add_dependencies (elektra-full generate_version_script)
 
 	target_link_libraries (elektra-full ${elektra-full_LIBRARIES})
+	# include the current binary directory to get exported_symbols.h
+	target_include_directories (elektra-full PRIVATE ${elektra-full_INCLUDES} "${CMAKE_CURRENT_BINARY_DIR}")
 
 	set_target_properties (
 		elektra-full

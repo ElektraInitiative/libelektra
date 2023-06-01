@@ -46,6 +46,7 @@ BEGIN {
 OUTFILE=$1
 shift
 
+mkdir -p "$(dirname "$OUTFILE")"
 printf "" > "$OUTFILE"
 
 cat << EOF >> "$OUTFILE"
