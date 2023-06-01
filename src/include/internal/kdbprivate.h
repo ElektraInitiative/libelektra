@@ -9,6 +9,8 @@
 #ifndef KDBPRIVATE_H
 #define KDBPRIVATE_H
 
+#pragma region includes
+
 #include <elektra/config.h>
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
@@ -28,6 +30,10 @@
 #include <internal/utility/alloc.h>
 
 #include <limits.h>
+
+#pragma endregion
+
+#pragma region unclear
 
 /** The minimal allocation size of a keyset inclusive
 	NULL byte. ksGetAlloc() will return one less because
@@ -58,12 +64,17 @@
 /** All keys below this are used for cache metadata in the global keyset */
 #define KDB_CACHE_PREFIX "system:/elektra/cache"
 
+#pragma endregion
 
 #ifdef __cplusplus
 namespace ckdb
 {
 extern "C" {
+#endif
 
+#pragma region bitflags
+
+#ifdef __cplusplus
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var, bit) ((static_cast<unsigned long long> (var)) & (static_cast<unsigned long long> (bit)))
 /** Set a bit. @see clear_bit() */
@@ -82,7 +93,10 @@ extern "C" {
 
 #endif
 
+#pragma endregion
 
+
+#pragma region plugins
 /* These define the type for pointers to all the kdb functions */
 typedef int (*kdbOpenPtr) (Plugin *, Key * errorKey);
 typedef int (*kdbClosePtr) (Plugin *, Key * errorKey);
@@ -103,6 +117,55 @@ typedef int (*kdbHookSendNotificationSetPtr) (Plugin * handle, KeySet * returned
 
 typedef Plugin * (*OpenMapper) (const char *, const char *, KeySet *);
 typedef int (*CloseMapper) (Plugin *);
+
+/**
+ * Holds all information related to a plugin.
+ *
+ * Since Elektra 0.8 a Backend consists of many plugins.
+ *
+ * A plugin should be reusable and only implement a single concern.
+ * Plugins which are supplied with Elektra are located below src/plugins.
+ * It is no problem that plugins are developed external too.
+ *
+ * @ingroup backend
+ */
+struct _Plugin
+{
+	KeySet * config; /*!< This keyset contains configuration for the plugin.
+	 Direct below system:/ there is the configuration supplied for the backend.
+	 Direct below user:/ there is the configuration supplied just for the
+	 plugin, which should be of course preferred to the backend configuration.
+	 The keys inside contain information like /path which path should be used
+	 to write configuration to or /host to which host packets should be send.
+	 @see elektraPluginGetConfig() */
+
+	kdbOpenPtr kdbOpen;   /*!< The pointer to kdbOpen_template() of the backend. */
+	kdbClosePtr kdbClose; /*!< The pointer to kdbClose_template() of the backend. */
+
+	kdbInitPtr kdbInit;	/*!< The pointer to kdbInit_template() of the backend. */
+	kdbGetPtr kdbGet;	/*!< The pointer to kdbGet_template() of the backend. */
+	kdbSetPtr kdbSet;	/*!< The pointer to kdbSet_template() of the backend. */
+	kdbErrorPtr kdbError;	/*!< The pointer to kdbError_template() of the backend. */
+	kdbCommitPtr kdbCommit; /*!< The pointer to kdbCommit_template() of the backend. */
+
+	const char * name; /*!< The name of the module responsible for that plugin. */
+
+	size_t refcounter; /*!< This refcounter shows how often the plugin
+	   is used.  Not shared plugins have 1 in it */
+
+	void * data; /*!< This handle can be used for a plugin to store
+	 any data its want to. */
+
+	KeySet * global; /*!< This keyset can be used by plugins to pass data through
+			the KDB and communicate with other plugins. Plugins shall clean
+			up their parts of the global keyset, which they do not need any more.*/
+
+	KeySet * modules; /*!< A list of all currently loaded modules.*/
+};
+
+#pragma endregion
+
+#pragma region core /key
 
 /**
  * The private copy-on-write key data structure.
@@ -306,6 +369,38 @@ struct _Key
 	int : 11;
 };
 
+/*Private helper for key*/
+ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize);
+void keyInit (Key * key);
+void keyClearSync (Key * key);
+int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix);
+
+/* Conveniences Methods for Making Tests */
+
+int keyIsSpec (const Key * key);
+int keyIsProc (const Key * key);
+int keyIsDir (const Key * key);
+int keyIsSystem (const Key * key);
+int keyIsUser (const Key * key);
+
+/* Name handling */
+bool elektraKeyNameValidate (const char * name, bool isComplete);
+void elektraKeyNameCanonicalize (const char * name, char ** canonicalName, size_t * canonicalSizePtr, size_t offset, size_t * usizePtr);
+void elektraKeyNameUnescape (const char * name, char * unescapedName);
+size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart);
+
+// TODO (kodebaach) [Q]: make public?
+int elektraIsArrayPart (const char * namePart);
+
+static inline KeySet * keyMetaNoAlloc (const Key * key)
+{
+	if (!key) return NULL;
+	return key->meta;
+}
+#pragma endregion
+
+#pragma region core /keyset
+
 struct _KeySetData
 {
 	struct _Key ** array; /**<Array which holds the keys */
@@ -408,6 +503,34 @@ struct _KeySet
 	int : 14;
 };
 
+
+/*Private helper for keyset*/
+int ksInit (KeySet * ks);
+int ksClose (KeySet * ks);
+
+int ksResize (KeySet * ks, size_t size);
+size_t ksGetAlloc (const KeySet * ks);
+KeySet * ksDeepDup (const KeySet * source);
+
+Key * elektraKsPopAtCursor (KeySet * ks, elektraCursor pos);
+
+KeySet * ksRenameKeys (KeySet * config, const char * name);
+
+ssize_t ksRename (KeySet * ks, const Key * root, const Key * newRoot);
+
+elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCursor * end);
+KeySet * ksBelow (const KeySet * ks, const Key * root);
+
+#pragma endregion
+
+#pragma region core /namespace
+
+elektraNamespace elektraReadNamespace (const char * namespaceStr, size_t len);
+
+#pragma endregion
+
+#pragma region kdb
+
 typedef struct _SendNotificationHook
 {
 	struct _Plugin * plugin;
@@ -499,51 +622,6 @@ struct _KDB
 };
 
 /**
- * Holds all information related to a plugin.
- *
- * Since Elektra 0.8 a Backend consists of many plugins.
- *
- * A plugin should be reusable and only implement a single concern.
- * Plugins which are supplied with Elektra are located below src/plugins.
- * It is no problem that plugins are developed external too.
- *
- * @ingroup backend
- */
-struct _Plugin
-{
-	KeySet * config; /*!< This keyset contains configuration for the plugin.
-	 Direct below system:/ there is the configuration supplied for the backend.
-	 Direct below user:/ there is the configuration supplied just for the
-	 plugin, which should be of course preferred to the backend configuration.
-	 The keys inside contain information like /path which path should be used
-	 to write configuration to or /host to which host packets should be send.
-	 @see elektraPluginGetConfig() */
-
-	kdbOpenPtr kdbOpen;   /*!< The pointer to kdbOpen_template() of the backend. */
-	kdbClosePtr kdbClose; /*!< The pointer to kdbClose_template() of the backend. */
-
-	kdbInitPtr kdbInit;	/*!< The pointer to kdbInit_template() of the backend. */
-	kdbGetPtr kdbGet;	/*!< The pointer to kdbGet_template() of the backend. */
-	kdbSetPtr kdbSet;	/*!< The pointer to kdbSet_template() of the backend. */
-	kdbErrorPtr kdbError;	/*!< The pointer to kdbError_template() of the backend. */
-	kdbCommitPtr kdbCommit; /*!< The pointer to kdbCommit_template() of the backend. */
-
-	const char * name; /*!< The name of the module responsible for that plugin. */
-
-	size_t refcounter; /*!< This refcounter shows how often the plugin
-	   is used.  Not shared plugins have 1 in it */
-
-	void * data; /*!< This handle can be used for a plugin to store
-	 any data its want to. */
-
-	KeySet * global; /*!< This keyset can be used by plugins to pass data through
-			the KDB and communicate with other plugins. Plugins shall clean
-			up their parts of the global keyset, which they do not need any more.*/
-
-	KeySet * modules; /*!< A list of all currently loaded modules.*/
-};
-
-/**
  * Holds all data for one backend.
  *
  * This struct is used for the key values in @ref _KDB.backends
@@ -564,14 +642,6 @@ typedef struct _BackendData
 	bool initialized;	     /*!< whether or not the init function of this backend has been called */
 } BackendData;
 
-// clang-format on
-
-/***************************************
- *
- * Not exported functions, for internal use only
- *
- **************************************/
-
 /* Backends handling */
 Key * backendsFindParent (KeySet * backends, const Key * key);
 KeySet * backendsForParentKey (KeySet * backends, Key * parentKey);
@@ -582,63 +652,21 @@ void backendsMerge (KeySet * backends, KeySet * ks);
 // visible for testing
 KeySet * elektraMountpointsParse (KeySet * elektraKs, KeySet * modules, KeySet * global, Key * errorKey);
 
-/* Plugin handling */
-Plugin * elektraPluginOpen (const char * backendname, KeySet * modules, KeySet * config, Key * errorKey);
-int elektraPluginClose (Plugin * handle, Key * errorKey);
-size_t elektraPluginGetFunction (Plugin * plugin, const char * name);
-
 /* Hooks handling */
 int initHooks (KDB * kdb, const KeySet * config, KeySet * modules, const KeySet * contract, Key * errorKey);
 void freeHooks (KDB * kdb, Key * errorKey);
 Plugin * elektraFindInternalNotificationPlugin (KDB * kdb);
 
+#pragma endregion
 
-/*Private helper for key*/
-ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize);
-void keyInit (Key * key);
-int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix);
+#pragma region kdb or plugin
 
-static inline KeySet * keyMetaNoAlloc (const Key * key)
-{
-	if (!key) return NULL;
-	return key->meta;
-}
+/* Plugin handling */
+Plugin * elektraPluginOpen (const char * backendname, KeySet * modules, KeySet * config, Key * errorKey);
+int elektraPluginClose (Plugin * handle, Key * errorKey);
+size_t elektraPluginGetFunction (Plugin * plugin, const char * name);
 
-
-/*Private helper for keyset*/
-int ksInit (KeySet * ks);
-int ksClose (KeySet * ks);
-
-int ksResize (KeySet * ks, size_t size);
-size_t ksGetAlloc (const KeySet * ks);
-KeySet * ksDeepDup (const KeySet * source);
-
-Key * elektraKsPopAtCursor (KeySet * ks, elektraCursor pos);
-
-KeySet * ksRenameKeys (KeySet * config, const char * name);
-
-ssize_t ksRename (KeySet * ks, const Key * root, const Key * newRoot);
-
-elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCursor * end);
-KeySet * ksBelow (const KeySet * ks, const Key * root);
-
-/* Conveniences Methods for Making Tests */
-
-int keyIsSpec (const Key * key);
-int keyIsProc (const Key * key);
-int keyIsDir (const Key * key);
-int keyIsSystem (const Key * key);
-int keyIsUser (const Key * key);
-
-elektraNamespace elektraReadNamespace (const char * namespaceStr, size_t len);
-
-bool elektraKeyNameValidate (const char * name, bool isComplete);
-void elektraKeyNameCanonicalize (const char * name, char ** canonicalName, size_t * canonicalSizePtr, size_t offset, size_t * usizePtr);
-void elektraKeyNameUnescape (const char * name, char * unescapedName);
-size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart);
-
-// TODO (kodebaach) [Q]: make public?
-int elektraIsArrayPart (const char * namePart);
+#pragma endregion
 
 #ifdef __cplusplus
 }
@@ -649,6 +677,8 @@ int elektraIsArrayPart (const char * namePart);
 #define KeySet ckdb::KeySet
 extern "C" {
 #endif
+
+#pragma region highlevel
 
 struct _Elektra
 {
@@ -690,6 +720,7 @@ ElektraError * elektraErrorWrongType (const char * keyname, KDBType expectedType
 ElektraError * elektraErrorNullError (const char * function);
 ElektraError * elektraErrorEnsureFailed (const char * reason);
 
+#pragma endregion
 
 #ifdef __cplusplus
 }
