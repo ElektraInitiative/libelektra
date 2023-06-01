@@ -12,6 +12,7 @@
 #include <elektra/core/keyset.h>
 #include <elektra/core/namespace.h>
 
+#include <internal/core/key.h>
 #include <internal/kdb/struct.h>
 #include <internal/kdbprivate.h>
 

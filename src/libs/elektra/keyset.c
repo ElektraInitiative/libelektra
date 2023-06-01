@@ -38,6 +38,7 @@
 #include <elektra/plugin/plugin.h>
 
 #include <internal/config.h>
+#include <internal/core/key.h>
 #include <internal/core/lookup.h>
 #include <internal/kdbprivate.h>
 #include <internal/macros/bitfields.h>

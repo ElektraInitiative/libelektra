@@ -20,6 +20,7 @@
 #include <elektra/ease/meta.h>
 #include <elektra/plugin/plugin.h>
 #include <internal/config.h>
+#include <internal/core/key.h>
 #include <internal/kdbprivate.h>
 #include <internal/plugin/struct.h>
 #include <internal/pluginload/module.h>

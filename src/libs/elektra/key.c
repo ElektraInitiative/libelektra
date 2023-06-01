@@ -28,8 +28,9 @@
 
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
+#include <elektra/type/types.h>
 
-#include <internal/kdbprivate.h>
+#include <internal/core/key.h>
 #include <internal/macros/bitfields.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>

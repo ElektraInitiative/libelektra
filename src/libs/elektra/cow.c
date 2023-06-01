@@ -6,6 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include <internal/core/key/data.h>
+#include <internal/core/key/name.h>
 #include <internal/kdbprivate.h>
 
 /**

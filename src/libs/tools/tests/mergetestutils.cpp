@@ -8,7 +8,9 @@
  */
 
 #include <gtest/gtest.h>
-#include <internal/kdbprivate.h>
+
+#include <internal/core/key/api.h>
+
 #include <iostream>
 #include <keysetio.hpp>
 #include <merging/threewaymerge.hpp>

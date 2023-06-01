@@ -102,6 +102,8 @@
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 #include <internal/config.h>
+
+#include <internal/core/key.h>
 #include <internal/kdbprivate.h>
 #include <internal/utility/string.h>
 

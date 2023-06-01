@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <internal/kdbprivate.h>
+#include <internal/core/key/name.h>
 
 #include "tests.h"
 
