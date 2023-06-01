@@ -6,7 +6,6 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 #include <elektra/plugin/invoke.h>
-#include <internal/kdbprivate.h> // for elektraPluginOpen/Close
 #include <internal/plugin/load.h>
 #include <internal/plugin/struct.h>
 #include <internal/pluginload/module.h>

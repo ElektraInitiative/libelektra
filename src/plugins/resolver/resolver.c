@@ -15,7 +15,6 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <internal/config.h>
-#include <internal/kdbprivate.h> // KDB_CACHE_PREFIX
 #include <internal/macros/attributes.h>
 #include <internal/resolver/stat.h>
 #include <internal/utility/alloc.h>

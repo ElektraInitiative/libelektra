@@ -6,7 +6,6 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <internal/kdbprivate.h>
 #include <tests_internal.h>
 
 #include <internal/core/lookup.h>

@@ -10,7 +10,6 @@
 #include "./kconfig.hpp"
 
 #include <fstream>
-#include <internal/kdbprivate.h>
 #include <internal/plugin/load.h>
 #include <internal/plugin/struct.h>
 #include <internal/pluginload/module.h>

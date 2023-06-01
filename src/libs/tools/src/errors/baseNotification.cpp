@@ -1,6 +1,5 @@
 
 #include "./errors/baseNotification.hpp"
-#include <internal/kdbprivate.h>
 #include <iostream>
 #include <utility>
 

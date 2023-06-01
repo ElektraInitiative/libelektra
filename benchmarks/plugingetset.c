@@ -12,7 +12,6 @@
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 
-#include <internal/kdbprivate.h>
 #include <internal/plugin/load.h>
 #include <internal/plugin/struct.h>
 #include <internal/pluginload/module.h>

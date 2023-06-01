@@ -9,7 +9,6 @@
 #include <tests.h>
 
 #include <internal/core/lookup.h>
-#include <internal/kdbprivate.h>
 
 static void test_lookupSingle (void)
 {

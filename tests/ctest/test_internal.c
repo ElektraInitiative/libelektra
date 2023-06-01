@@ -6,7 +6,6 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <internal/kdbprivate.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/string.h>
 #include <tests_internal.h>

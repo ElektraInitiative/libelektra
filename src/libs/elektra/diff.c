@@ -1,11 +1,13 @@
 #include <elektra/diff.h>
 
+#include <elektra/core.h>
+
 #include <internal/core/key/api.h>
 #include <internal/core/key/data.h>
 #include <internal/core/key/name.h>
 #include <internal/core/key/struct.h>
 #include <internal/diff.h>
-#include <internal/kdbprivate.h>
+#include <internal/utility/alloc.h>
 
 #include <stdbool.h>
 #include <string.h>

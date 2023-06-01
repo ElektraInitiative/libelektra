@@ -37,7 +37,6 @@
 #include <elektra/plugin/plugin.h>
 
 #include <internal/config.h>
-#include <internal/kdbprivate.h>
 #include <internal/plugin/functions.h>
 #include <internal/plugin/load.h>
 #include <internal/plugin/struct.h>

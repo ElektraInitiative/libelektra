@@ -9,7 +9,6 @@
 
 #include "./mergetestutils.cpp"
 #include <gtest/gtest.h>
-#include <internal/kdbprivate.h>
 #include <iostream>
 
 using namespace kdb;

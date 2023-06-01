@@ -140,7 +140,6 @@
  */
 
 
-#include <internal/kdbprivate.h>
 #ifdef HAVE_KDBCONFIG_H
 #include <internal/config.h>
 #endif

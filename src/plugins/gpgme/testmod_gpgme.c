@@ -16,7 +16,6 @@
 #include <elektra/plugin/plugin.h>
 #include <gpgme.h>
 #include <internal/config.h>
-#include <internal/kdbprivate.h>
 #include <internal/pluginload/module.h>
 #include <internal/utility/logger.h>
 #include <locale.h>

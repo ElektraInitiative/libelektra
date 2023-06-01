@@ -13,7 +13,6 @@
 
 #include <internal/io/private.h>
 #include <internal/kdb/struct.h>
-#include <internal/kdbprivate.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/logger.h>
 

@@ -9,10 +9,6 @@
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 #include <elektra/core/namespace.h>
-#include <internal/kdbprivate.h>
-#ifdef HAVE_KDBCONFIG_H
-#include <internal/config.h>
-#endif
 
 #include <stdio.h>
 

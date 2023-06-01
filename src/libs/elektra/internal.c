@@ -8,7 +8,6 @@
 
 #include <elektra/core/key.h>
 #include <elektra/core/namespace.h>
-#include <internal/kdbprivate.h>
 #ifdef HAVE_KDBCONFIG_H
 #include <internal/config.h>
 #endif
@@ -47,7 +46,6 @@
 #include <elektra/ease/meta.h>
 #include <elektra/plugin/plugin.h>
 #include <internal/config.h>
-#include <internal/kdbprivate.h>
 #include <internal/macros/os.h>
 #include <internal/pluginload/module.h>
 #include <internal/utility/alloc.h>

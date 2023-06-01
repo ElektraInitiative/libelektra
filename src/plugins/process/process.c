@@ -13,7 +13,6 @@
 #include <elektra/plugin/invoke.h>
 
 #include <internal/core/keyset/api.h>
-#include <internal/kdbprivate.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/array.h>
 #include <internal/utility/compare.h>

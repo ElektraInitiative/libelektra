@@ -17,7 +17,6 @@
 #include <internal/changetracking.h>
 #include <internal/config.h>
 #include <internal/diff.h>
-#include <internal/kdbprivate.h>
 #include <internal/macros/attributes.h>
 #include <internal/notifications.h>
 #include <internal/utility/format.h>

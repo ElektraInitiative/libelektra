@@ -12,7 +12,6 @@
 #include <assert.h>
 #include <ctype.h>
 #include <elektra/core/errors.h>
-#include <internal/kdbprivate.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/compare.h>
 #include <regex.h>

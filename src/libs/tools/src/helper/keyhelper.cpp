@@ -10,7 +10,6 @@
 #include <helper/keyhelper.hpp>
 
 #include <internal/core/key/api.h>
-#include <internal/kdbprivate.h>
 
 using namespace std;
 

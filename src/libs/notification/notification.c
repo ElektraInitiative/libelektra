@@ -14,7 +14,6 @@
 #include <elektra/plugin/plugin.h>
 
 #include <internal/io/private.h>
-#include <internal/kdbprivate.h>
 #include <internal/notifications.h>
 #include <internal/plugin/load.h>
 #include <internal/utility/alloc.h>

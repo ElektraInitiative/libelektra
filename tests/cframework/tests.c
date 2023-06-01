@@ -37,7 +37,6 @@
 
 #include <internal/config.h>
 #include <internal/core/key.h>
-#include <internal/kdbprivate.h>
 #include <internal/macros/os.h>
 #include <internal/pluginload/module.h>
 #include <internal/utility/logger.h>

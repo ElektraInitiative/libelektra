@@ -50,9 +50,9 @@
 
 #include <elektra/core/errors.h>
 #include <elektra/plugin/invoke.h>
-#include <internal/kdbprivate.h> // To access the plugin function pointers
 #include <internal/plugin/struct.h>
 #include <internal/pluginprocess.h>
+#include <internal/utility/alloc.h>
 #include <internal/utility/logger.h>
 
 #include <errno.h>

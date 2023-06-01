@@ -9,7 +9,6 @@
 #ifndef ELEKTRA_MMAPSTORAGE_DYNARRAY_H
 #define ELEKTRA_MMAPSTORAGE_DYNARRAY_H
 
-#include <internal/kdbprivate.h>
 
 struct _dynArray
 {

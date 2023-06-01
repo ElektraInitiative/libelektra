@@ -12,7 +12,6 @@
 #include <elektra/core/keyset.h>
 
 #include <internal/kdb/struct.h>
-#include <internal/kdbprivate.h>
 
 #include <stdlib.h>
 #include <tests.h>

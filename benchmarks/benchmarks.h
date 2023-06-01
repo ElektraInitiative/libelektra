@@ -13,9 +13,10 @@
 #include <elektra/core/keyset.h>
 #include <elektra/ease/meta.h>
 #include <elektra/plugin/plugin.h>
+
 #include <internal/config.h>
-#include <internal/kdbprivate.h>
 #include <internal/pluginload/module.h>
+#include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
 #include <internal/utility/rand.h>

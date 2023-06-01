@@ -104,7 +104,6 @@
 #include <internal/config.h>
 
 #include <internal/core/key.h>
-#include <internal/kdbprivate.h>
 #include <internal/utility/string.h>
 
 #ifdef HAVE_STDIO_H
