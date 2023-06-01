@@ -10,11 +10,14 @@
 #include <elektra/io/api.h>
 #include <elektra/io/plugin.h>
 #include <elektra/plugin/invoke.h>
-#include <fcntl.h>
+
 #include <internal/io/private.h>
+#include <internal/kdb/struct.h>
 #include <internal/kdbprivate.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/logger.h>
+
+#include <fcntl.h>
 #include <stdio.h>
 
 int elektraIoContract (KeySet * contract, ElektraIoInterface * ioBinding)

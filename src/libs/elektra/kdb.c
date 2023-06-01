@@ -46,6 +46,7 @@
 #include <elektra/plugin/plugin.h>
 
 #include <internal/config.h>
+#include <internal/kdb/struct.h>
 #include <internal/kdbprivate.h>
 #include <internal/macros/bitfields.h>
 #include <internal/plugin/functions.h>
@@ -56,6 +57,9 @@
 #include <internal/utility/assert.h>
 #include <internal/utility/compare.h>
 #include <internal/utility/logger.h>
+
+#include "./backends.h"
+#include "./hooks.h"
 
 #define KDB_GET_PHASE_POST_STORAGE_SPEC (KDB_GET_PHASE_POST_STORAGE "/spec")
 #define KDB_GET_PHASE_POST_STORAGE_NONSPEC (KDB_GET_PHASE_POST_STORAGE "/nonspec")

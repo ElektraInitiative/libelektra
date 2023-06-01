@@ -8,6 +8,7 @@
  *
  */
 
+#include <elektra/kdb/hooks.h>
 #include <elektra/notifications.h>
 #include <elektra/plugin/invoke.h>
 #include <elektra/plugin/plugin.h>

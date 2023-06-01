@@ -6,6 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include "./hooks.h"
+
 #include <elektra/core/errors.h>
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
@@ -14,6 +16,7 @@
 #include <elektra/plugin/plugin.h>
 
 #include <internal/config.h>
+#include <internal/kdb/struct.h>
 #include <internal/kdbprivate.h>
 #include <internal/plugin/load.h>
 #include <internal/plugin/struct.h>

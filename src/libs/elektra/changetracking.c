@@ -1,5 +1,8 @@
 #include <elektra/changetracking.h>
 
+#include <internal/changetracking.h>
+#include <internal/kdb/struct.h>
+#include <internal/plugin/struct.h>
 #include <internal/kdbprivate.h>
 
 /**

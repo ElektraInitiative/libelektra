@@ -1,4 +1,6 @@
 #include <elektra/diff.h>
+
+#include <internal/diff.h>
 #include <internal/kdbprivate.h>
 
 /**

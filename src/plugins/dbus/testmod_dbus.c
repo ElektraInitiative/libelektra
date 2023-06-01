@@ -16,6 +16,8 @@
 
 #include <elektra/changetracking.h>
 
+#include <internal/changetracking.h>
+
 typedef struct
 {
 	char * lookupSignalName;
