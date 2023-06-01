@@ -398,11 +398,6 @@ KeySet * ksBelow (const KeySet * ks, const Key * root);
 
 #pragma endregion
 
-#pragma region core /namespace
-elektraNamespace elektraReadNamespace (const char * namespaceStr, size_t len);
-
-#pragma endregion
-
 #pragma region kdb
 
 #include <internal/plugin/functions.h>

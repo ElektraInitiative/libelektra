@@ -199,6 +199,7 @@ libelektraprivate_1.0 {
 	ksBelow;
 
 	elektraIsArrayPart;
+	elektraReadNamespace;
 
 	# TODO [new_backend]: should be removed, tests should depend differently on this
 	backendsDivide;

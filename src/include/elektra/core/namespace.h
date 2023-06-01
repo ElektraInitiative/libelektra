@@ -9,6 +9,8 @@
 #ifndef ELEKTRA_CORE_NAMESPACE_H
 #define ELEKTRA_CORE_NAMESPACE_H
 
+#include <stddef.h>
+
 enum
 {
 	KEY_NS_NONE = 0,
@@ -25,5 +27,7 @@ typedef int elektraNamespace;
 
 static const elektraNamespace KEY_NS_FIRST = KEY_NS_META;
 static const elektraNamespace KEY_NS_LAST = KEY_NS_DEFAULT;
+
+elektraNamespace elektraReadNamespace (const char * namespaceStr, size_t len);
 
 #endif // ELEKTRA_CORE_NAMESPACE_H
