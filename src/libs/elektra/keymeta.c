@@ -99,9 +99,10 @@
  */
 
 
-#include <kdb.h>
-#include <kdbconfig.h>
-#include <kdbprivate.h>
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <internal/config.h>
+#include <internal/kdbprivate.h>
 
 #ifdef HAVE_STDIO_H
 #include <stdio.h>

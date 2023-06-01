@@ -1,7 +1,7 @@
-#include "elektra-xfconf-errors.h"
-#include "elektra-xfconf-util.h"
+#include "./elektra-xfconf-errors.h"
+#include "./elektra-xfconf-util.h"
 
-#include <elektra.h>
+#include <internal/macros/attributes.h>
 
 ELEKTRA_UNUSED GType xfconf_error_get_type (void)
 {

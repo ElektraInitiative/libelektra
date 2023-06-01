@@ -6,35 +6,28 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "resolver.h"
+#include "./resolver.h"
 
-#include <kdbassert.h>
-#include <kdbconfig.h>
-#include <kdbhelper.h>	// elektraStrDup
-#include <kdbprivate.h> // KDB_CACHE_PREFIX
+#include <elektra/core/errors.h>
 
-#include "kdbos.h"
+#include <internal/config.h>
+#include <internal/kdbprivate.h> // KDB_CACHE_PREFIX
+#include <internal/macros/attributes.h>
+#include <internal/resolver/stat.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/logger.h>
+#include <internal/utility/old_helper.h> // elektraStrDup
 
-#include <stdlib.h>
-
-#ifdef HAVE_CTYPE_H
 #include <ctype.h>
-#endif
-
-/* Needs posix */
+#include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <unistd.h>
-
-#include <dirent.h>
-
-#include <kdberrors.h>
-#include <kdblogger.h>
-#include <kdbmacros.h>
 
 #ifdef ELEKTRA_LOCK_MUTEX
 #include <pthread.h>
@@ -52,6 +45,16 @@ static unsigned char elektraResolverMutexInitialized = 0;
 #define ELEKTRA_RESOLVER_RECURSIVE_MUTEX_INITIALIZATION
 #endif
 #endif
+
+/**Default Mode.
+ * This mode will be used for new files*/
+#define KDB_FILE_MODE 0600
+
+/**Default directory mode.
+ * This mode will be used for new directories.
+ * Will be ORed together with KDB_FILE_MODE
+ * to get the permissions of an directory.*/
+#define KDB_DIR_MODE 0100
 
 static void resolverInit (resolverHandle * p, const char * path)
 {
@@ -524,7 +527,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 	{
 		keyDel (root);
 		KeySet * info =
-#include "contract.h"
+#include "./contract.h"
 			ksAppend (returned, info);
 		ksDel (info);
 		return 1;

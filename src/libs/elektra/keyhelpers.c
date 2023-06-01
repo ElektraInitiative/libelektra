@@ -7,7 +7,7 @@
  */
 
 #ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
 #ifdef HAVE_STDARG_H
@@ -23,9 +23,9 @@
 #endif
 
 
-#include "kdb.h"
-#include "kdbprivate.h"
-#include "kdbtypes.h"
+#include <elektra/core/key.h>
+#include <elektra/type/types.h>
+#include <internal/kdbprivate.h>
 
 /**
  * @internal

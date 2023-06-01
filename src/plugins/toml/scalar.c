@@ -8,16 +8,16 @@
  */
 
 
-#include "scalar.h"
+#include "./scalar.h"
 
-#include <kdbassert.h>
-#include <kdbhelper.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/old_helper.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "codepoint.h"
-#include "type.h"
+#include "./codepoint.h"
+#include "./type.h"
 
 static char * convertBinary (const char * binStr);
 static char * convertBoolean (const char * str);

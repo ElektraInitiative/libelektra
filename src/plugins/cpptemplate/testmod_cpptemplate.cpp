@@ -7,10 +7,10 @@
  *
  */
 
-#include "cpptemplate.hpp"
+#include "./cpptemplate.hpp"
 
-#include <kdbmodule.h>
-#include <kdbprivate.h>
+#include <internal/kdbprivate.h>
+#include <internal/pluginload/module.h>
 
 #include <tests.hpp>
 

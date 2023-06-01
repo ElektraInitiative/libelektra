@@ -7,7 +7,7 @@
  */
 
 #ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
 #include <stdio.h>
@@ -18,7 +18,7 @@
 #include <string.h>
 #endif
 
-#include "hexcode.h"
+#include "./hexcode.h"
 
 #include <tests_internal.h>
 

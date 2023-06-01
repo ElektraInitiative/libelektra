@@ -7,7 +7,7 @@
  *
  */
 
-#include "xfconf.h"
+#include "./xfconf.h"
 #include <stdlib.h>
 
 #include <tests_plugin.h>

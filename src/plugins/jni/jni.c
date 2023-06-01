@@ -7,7 +7,7 @@
  */
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
 #include <string.h>
@@ -16,8 +16,10 @@
 #include <stdlib.h>
 
 
-#include <kdberrors.h>
-#include <kdbplugin.h>
+#include <elektra/core.h>
+#include <elektra/core/errors.h>
+#include <elektra/plugin/plugin.h>
+#include <internal/utility/old_helper.h>
 
 // forward declarations
 int elektraJniOpen (Plugin * handle, Key * errorKey);

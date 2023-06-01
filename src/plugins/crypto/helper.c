@@ -7,12 +7,13 @@
  *
  */
 
-#include "helper.h"
-#include "crypto.h"
-#include "gpg.h"
-#include <kdbassert.h>
-#include <kdberrors.h>
-#include <kdbinvoke.h>
+#include "./helper.h"
+#include "./crypto.h"
+#include "./gpg.h"
+#include <elektra/core/errors.h>
+#include <elektra/plugin/invoke.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/old_helper.h>
 #include <stdlib.h>
 
 /**

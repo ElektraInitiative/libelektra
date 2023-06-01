@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "findvisitor.hpp"
-#include "treeviewmodel.hpp"
+#include "./findvisitor.hpp"
+#include "./treeviewmodel.hpp"
 
 FindVisitor::FindVisitor (TreeViewModel * searchResults, QString term) : m_searchResults (searchResults), m_term (std::move (term))
 {

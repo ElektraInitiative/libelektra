@@ -7,13 +7,13 @@
  *
  */
 
-#include <kdbmodule.h>
-#include <kdbprivate.h>
+#include <internal/kdbprivate.h>
+#include <internal/pluginload/module.h>
 
 #include <tests.hpp>
 
-#include "directoryvalue.hpp"
-#include "directoryvalue_delegate.hpp"
+#include "./directoryvalue.hpp"
+#include "./directoryvalue_delegate.hpp"
 
 using std::tie;
 
@@ -145,67 +145,67 @@ __attribute__ ((annotate ("oclint:suppress[empty if statement]"), annotate ("ocl
 TEST (directoryvalue, get) //! OCLint (avoid private static members)
 {
 	test_get (
-#include "directoryvalue/simple_set.hpp"
+#include "./directoryvalue/simple_set.hpp"
 		,
-#include "directoryvalue/simple_get.hpp"
+#include "./directoryvalue/simple_get.hpp"
 	);
 	test_get (
-#include "directoryvalue/arrays_set.hpp"
+#include "./directoryvalue/arrays_set.hpp"
 		,
-#include "directoryvalue/arrays_get.hpp"
+#include "./directoryvalue/arrays_get.hpp"
 	);
 	test_get (
-#include "directoryvalue/mixed_set.hpp"
+#include "./directoryvalue/mixed_set.hpp"
 		,
-#include "directoryvalue/mixed_get.hpp"
+#include "./directoryvalue/mixed_get.hpp"
 	);
 }
 
 TEST (directoryvalue, set) //! OCLint (avoid private static members)
 {
 	test_set (
-#include "directoryvalue/empty.hpp"
+#include "./directoryvalue/empty.hpp"
 		,
-#include "directoryvalue/empty.hpp"
+#include "./directoryvalue/empty.hpp"
 		, ELEKTRA_PLUGIN_STATUS_NO_UPDATE);
 
 	test_set (
-#include "directoryvalue/simple_get.hpp"
+#include "./directoryvalue/simple_get.hpp"
 		,
-#include "directoryvalue/simple_set.hpp"
+#include "./directoryvalue/simple_set.hpp"
 	);
 
 	test_set (
-#include "directoryvalue/extended_get.hpp"
+#include "./directoryvalue/extended_get.hpp"
 		,
-#include "directoryvalue/extended_set.hpp"
+#include "./directoryvalue/extended_set.hpp"
 	);
 
 	test_set (
-#include "directoryvalue/arrays.hpp"
+#include "./directoryvalue/arrays.hpp"
 		,
-#include "directoryvalue/arrays_set.hpp"
+#include "./directoryvalue/arrays_set.hpp"
 	);
 
 	test_set (
-#include "directoryvalue/mixed_get.hpp"
+#include "./directoryvalue/mixed_get.hpp"
 		,
-#include "directoryvalue/mixed_set.hpp"
+#include "./directoryvalue/mixed_set.hpp"
 	);
 }
 
 TEST (directoryvalue, roundtrip) //! OCLint (avoid private static members)
 {
 	test_roundtrip (
-#include "directoryvalue/simple_get.hpp"
+#include "./directoryvalue/simple_get.hpp"
 	);
 	test_roundtrip (
-#include "directoryvalue/extended_get.hpp"
+#include "./directoryvalue/extended_get.hpp"
 	);
 	test_roundtrip (
-#include "directoryvalue/arrays_get.hpp"
+#include "./directoryvalue/arrays_get.hpp"
 	);
 	test_roundtrip (
-#include "directoryvalue/mixed_get.hpp"
+#include "./directoryvalue/mixed_get.hpp"
 	);
 }

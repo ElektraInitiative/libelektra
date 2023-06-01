@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "gelektra-key.h"
+#include <elektra/glib/gelektra-key.h>
 #include <glib-object.h>
 #include <tests.h>
 

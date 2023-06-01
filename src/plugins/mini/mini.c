@@ -9,16 +9,20 @@
 
 /* -- Imports --------------------------------------------------------------------------------------------------------------------------- */
 
-#include "mini.h"
+#include "./mini.h"
 
-#include <kdbassert.h>
-#include <kdbease.h>
-#include <kdberrors.h>
-#include <kdblogger.h>
-#include <kdbutility.h>
 // The definition `_WITH_GETLINE` is required for FreeBSD
 #define _WITH_GETLINE
 #include <stdio.h>
+
+#include <elektra/core/errors.h>
+#include <elektra/ease/name.h>
+#include <internal/macros/attributes.h>
+#include <internal/macros/plugin_errors.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/logger.h>
+#include <internal/utility/old_helper.h>
+#include <internal/utility/string.h>
 
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
 

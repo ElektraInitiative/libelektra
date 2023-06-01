@@ -74,10 +74,6 @@ else ()
 	message (FATAL_ERROR "Couldn't find a 64-bit integer type for use as kdb_long_long_t")
 endif ()
 
-if (HAVE_SIZEOF_LONG_DOUBLE AND SIZEOF_LONG_DOUBLE GREATER 9)
-	set (ELEKTRA_HAVE_KDB_LONG_DOUBLE "1")
-endif ()
-
 if (SIZEOF_TV_USEC EQUAL SIZEOF_LONG)
 	set (ELEKTRA_TIME_USEC_F "\"%ld\"")
 elseif (SIZEOF_TV_USEC EQUAL SIZEOF_LONG_LONG)
@@ -113,8 +109,6 @@ if (SIZEOF_SIZE_T EQUAL 8)
 else ()
 	set (KDB_OPMPHM_MAX_N "795364313") # bound by opmphm->size max value
 endif ()
-
-configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/kdbtypes.h.in" "${CMAKE_CURRENT_BINARY_DIR}/kdbtypes.h")
 
 unset (INT32_T)
 unset (UINT32_T)
@@ -164,43 +158,23 @@ endif (ENABLE_OPTIMIZATIONS)
 
 test_big_endian (ELEKTRA_BIG_ENDIAN)
 
-configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/kdb.h.in" "${CMAKE_CURRENT_BINARY_DIR}/kdb.h")
-
-configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/kdbconfig.h.in" "${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h")
-
-configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/kdbversion.h.in" "${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h")
+configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektra/config.h.in" "${CMAKE_CURRENT_BINARY_DIR}/elektra/config.h")
+configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/internal/config.h.in" "${CMAKE_CURRENT_BINARY_DIR}/internal/config.h")
 
 # DO NOT install kdbconfig.h it may cause conflicts with applications own config.h files
 install (
-	FILES kdbextension.h
-	      kdbmeta.h
-	      kdbease.h
-	      kdbchangetracking.h
-	      "${CMAKE_CURRENT_BINARY_DIR}/kdbtypes.h"
-	      kdbhelper.h
-	      "${CMAKE_CURRENT_BINARY_DIR}/kdb.h"
-	      kdbmodule.h
-	      kdbos.h
-	      kdbopts.h
-	      kdbplugin.h
-	      kdbpluginprocess.h
-	      kdbprivate.h
-	      kdbinvoke.h
-	      kdbutility.h
-	      kdbio.h
-	      kdbnotification.h
-	      kdbglobbing.h
-	      "${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
-	      elektra.h
-	      kdbendian.h
-	      kdbmacros.h
-	      kdbmerge.h
-	      kdbgopts.h
-	DESTINATION include/${TARGET_INCLUDE_FOLDER}
-	COMPONENT libelektra-dev)
+	DIRECTORY elektra
+	DESTINATION include
+	COMPONENT libelektra-dev
+	FILES_MATCHING
+	PATTERN "*.h")
 
-add_custom_target (elektra_config_headers ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/kdb.h ${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h
-						      ${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h)
+install (
+	DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/elektra"
+	DESTINATION include
+	COMPONENT libelektra-dev
+	FILES_MATCHING
+	PATTERN "*.h")
 
-add_subdirectory (kdbio)
-add_subdirectory (elektra)
+add_custom_target (elektra_config_headers ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/elektra/config.h"
+						      "${CMAKE_CURRENT_BINARY_DIR}/internal/config.h")

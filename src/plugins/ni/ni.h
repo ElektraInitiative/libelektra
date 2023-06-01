@@ -9,7 +9,8 @@
 #ifndef ELEKTRA_PLUGIN_NI_H
 #define ELEKTRA_PLUGIN_NI_H
 
-#include <kdbplugin.h>
+#include <elektra/core.h>
+#include <elektra/plugin/plugin.h>
 
 #include <bohr/ni.h>
 

@@ -1,8 +1,8 @@
 #ifndef ELEKTRA_DUMP_TESTDATA
 #define ELEKTRA_DUMP_TESTDATA
 
-#include <kdb.h>
-
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
 static inline KeySet * testdata_oneValue (void)
 {
 	return ksNew (1, keyNew ("user:/tests/script", KEY_VALUE, "root", KEY_END), KS_END);

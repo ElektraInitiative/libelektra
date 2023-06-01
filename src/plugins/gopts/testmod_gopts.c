@@ -11,7 +11,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <kdbconfig.h>
+#include <internal/config.h>
 
 #include <tests_plugin.h>
 
@@ -20,7 +20,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#include "testdata.h"
+#include "./testdata.h"
 
 #define ARGS(NAME, ...) ((const char *[]){ TESTAPP_NAME, NAME, __VA_ARGS__, NULL })
 #define ENVP(LD_LIB_PATH, ...) ((const char *[]){ LD_LIB_PATH, __VA_ARGS__, NULL })

@@ -11,7 +11,7 @@
 
 #include <tests_plugin.h>
 
-#include <kdbconfig.h>
+#include <internal/config.h>
 
 #ifdef HAVE_FEATURES_H
 

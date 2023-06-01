@@ -11,7 +11,9 @@
 #include <helper/keyhelper.hpp>
 #include <plugins.hpp>
 
-#include <kdbprivate.h>
+#include <internal/kdbprivate.h>
+
+#include <elektra/ease/array.h>
 
 #include <algorithm>
 #include <iterator>

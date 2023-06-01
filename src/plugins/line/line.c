@@ -6,20 +6,22 @@
  *
  */
 
-#ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
-#endif
 
-#include "line.h"
-
-#include <kdbease.h>
-#include <kdberrors.h>
-
-#include <errno.h>
-#include <stddef.h>
 // The definition `_WITH_GETLINE` is required for FreeBSD
 #define _WITH_GETLINE
 #include <stdio.h>
+
+#include <internal/config.h>
+#include <internal/macros/plugin_errors.h>
+#include <internal/utility/old_helper.h>
+
+#include "./line.h"
+
+#include <elektra/core/errors.h>
+#include <elektra/ease/array.h>
+
+#include <errno.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -29,7 +31,7 @@ static inline KeySet * elektraLineContract (void)
 		      keyNew ("system:/elektra/modules/line/exports", KEY_END),
 		      keyNew ("system:/elektra/modules/line/exports/get", KEY_FUNC, elektraLineGet, KEY_END),
 		      keyNew ("system:/elektra/modules/line/exports/set", KEY_FUNC, elektraLineSet, KEY_END),
-#include "readme_line.c"
+#include "./readme_line.c"
 		      keyNew ("system:/elektra/modules/line/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 

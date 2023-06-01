@@ -8,7 +8,7 @@
 
 
 #ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
 #ifdef HAVE_STDARG_H
@@ -23,7 +23,8 @@
 #include <stdlib.h>
 #endif
 
-#include "kdbprivate.h"
+#include <internal/kdbprivate.h>
+#include <internal/macros/os.h>
 
 
 /**

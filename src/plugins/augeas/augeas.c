@@ -7,18 +7,24 @@
  *
  */
 
-#ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
-#endif
-
 /* used for asprintf */
 #define _GNU_SOURCE
+#include <stdio.h>
+
+#include <ctype.h>
+#include <elektra/core/errors.h>
+#include <elektra/ease/utils.h>
+#include <glob.h>
+#include <internal/config.h>
+#include <internal/macros/attributes.h>
+#include <internal/macros/plugin_errors.h>
+#include <internal/utility/old_helper.h>
 
 #include <ctype.h>
 #include <glob.h>
 #include <libgen.h>
 
-#include "aug.h"
+#include "./aug.h"
 
 struct KeyConversion
 {
@@ -497,7 +503,7 @@ int elektraAugeasGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/augeas"))
 	{
 		KeySet * info =
-#include "contract.h"
+#include "./contract.h"
 
 			ksAppend (returned, info);
 		ksDel (info);

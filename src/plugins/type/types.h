@@ -7,14 +7,15 @@
  *
  */
 
-#ifndef ELEKTRA_TYPE_TYPES_H
-#define ELEKTRA_TYPE_TYPES_H
+#ifndef ELEKTRA_PLUGIN_TYPE_TYPES_H
+#define ELEKTRA_PLUGIN_TYPE_TYPES_H
 
 #include <stdbool.h>
 
-#include <kdb.h>
-#include <kdbplugin.h>
-#include <kdbtypes.h>
+#include <elektra/core.h>
+#include <elektra/core/key.h>
+#include <elektra/plugin/plugin.h>
+#include <elektra/type.h>
 
 bool elektraTypeCheckAny (const Key * key);
 bool elektraTypeCheckEmpty (const Key * key);
@@ -29,10 +30,7 @@ bool elektraTypeRestoreBoolean (Plugin * handle, Key * key);
 
 bool elektraTypeCheckFloat (const Key * key);
 bool elektraTypeCheckDouble (const Key * key);
-
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 bool elektraTypeCheckLongDouble (const Key * key);
-#endif
 
 bool elektraTypeCheckShort (const Key * key);
 bool elektraTypeCheckLong (const Key * key);
@@ -46,4 +44,4 @@ bool elektraTypeCheckEnum (const Key * key);
 bool elektraTypeRestoreEnum (Plugin * handle, Key * key);
 void elektraTypeSetErrorEnum (Plugin * handle, Key * errorKey, const Key * key);
 
-#endif
+#endif // ELEKTRA_PLUGIN_TYPE_TYPES_H

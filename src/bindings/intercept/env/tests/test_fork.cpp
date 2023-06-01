@@ -8,7 +8,7 @@
  */
 
 #include <gtest/gtest.h>
-#include <kdbconfig.h>
+#include <internal/config.h>
 #include <kdbgetenv.h>
 
 namespace ckdb
@@ -44,4 +44,4 @@ TEST (GetEnv, SimpleFork)
 	elektraClose ();
 }
 
-#include "main.cpp"
+#include "./main.cpp"

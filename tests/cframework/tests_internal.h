@@ -15,8 +15,14 @@
 
 #include <tests.h>
 
-#include <kdbinternal.h>
-
+#include <elektra/core/errors.h>
+#include <elektra/core/keyset.h>
+#include <elektra/ease/meta.h>
+#include <elektra/plugin/plugin.h>
+#include <internal/config.h>
+#include <internal/kdbprivate.h>
+#include <internal/pluginload/module.h>
+#include <internal/utility/logger.h>
 void clear_sync (KeySet * ks);
 void output_plugin (Plugin * plugin);
 void output_backend (Plugin * backend);

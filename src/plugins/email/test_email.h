@@ -11,7 +11,7 @@
 
 #include <tests_plugin.h>
 
-#include <kdbconfig.h>
+#include <internal/config.h>
 
 static void testEmail (char const * const email, const int ret)
 {

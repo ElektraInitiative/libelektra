@@ -6,9 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdbease.h>
-
 #include "tests.h"
+#include <elektra/type/conversion.h>
 
 #define TEST_TO_STRING(Type, value, expect)                                                                                                \
 	do                                                                                                                                 \
@@ -171,16 +170,12 @@ static void test_to_string (void)
 	TEST_TO_STRING (Double, 1.1000000000000001, "1.1000000000000001");
 	TEST_TO_STRING (Double, -1.1000000000000001, "-1.1000000000000001");
 
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 	TEST_TO_STRING (LongDouble, 0, "0");
 	TEST_TO_STRING (LongDouble, 1, "1");
 	TEST_TO_STRING (LongDouble, 2.5, "2.5");
 	TEST_TO_STRING (LongDouble, -2.5, "-2.5");
 	TEST_TO_STRING (LongDouble, 1.10000000000000008882, "1.10000000000000008882");
 	TEST_TO_STRING (LongDouble, -1.10000000000000008882, "-1.10000000000000008882");
-
-#endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 }
 
 static void test_from_key (void)
@@ -260,16 +255,12 @@ static void test_from_key (void)
 	TEST_FROM_KEY (Double, kdb_double_t, "1.1000000000000001", 1.1000000000000001);
 	TEST_FROM_KEY (Double, kdb_double_t, "-1.1000000000000001", -1.1000000000000001);
 
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 	TEST_FROM_KEY (LongDouble, kdb_long_double_t, "0", 0);
 	TEST_FROM_KEY (LongDouble, kdb_long_double_t, "1", 1);
 	TEST_FROM_KEY (LongDouble, kdb_long_double_t, "2.5", 2.5);
 	TEST_FROM_KEY (LongDouble, kdb_long_double_t, "2.5", 2.5);
 	TEST_FROM_KEY (LongDouble, kdb_long_double_t, "1.10000000000000008882", 1.10000000000000008882);
 	TEST_FROM_KEY (LongDouble, kdb_long_double_t, "-1.10000000000000008882", -1.10000000000000008882);
-
-#endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 	ELEKTRA_DIAG_RESTORE
 }
@@ -355,16 +346,12 @@ static void test_roundtrip (void)
 	TEST_DOUBLE_ROUNDTRIP (Double, kdb_double_t, "1.1", 1.1);
 	TEST_DOUBLE_ROUNDTRIP (Double, kdb_double_t, "-1.1", -1.1);
 
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
 	TEST_DOUBLE_ROUNDTRIP (LongDouble, kdb_long_double_t, "0", 0);
 	TEST_DOUBLE_ROUNDTRIP (LongDouble, kdb_long_double_t, "1", 1);
 	TEST_DOUBLE_ROUNDTRIP (LongDouble, kdb_long_double_t, "2.5", 2.5);
 	TEST_DOUBLE_ROUNDTRIP (LongDouble, kdb_long_double_t, "2.5", 2.5);
 	TEST_DOUBLE_ROUNDTRIP (LongDouble, kdb_long_double_t, "1.1", 1.1);
 	TEST_DOUBLE_ROUNDTRIP (LongDouble, kdb_long_double_t, "-1.1", -1.1);
-
-#endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 	ELEKTRA_DIAG_RESTORE
 }

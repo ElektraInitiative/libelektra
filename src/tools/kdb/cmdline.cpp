@@ -9,8 +9,8 @@
 #include <cmdline.hpp>
 
 #include <backendparser.hpp>
+#include <internal/config.h>
 #include <kdb.hpp>
-#include <kdbconfig.h>
 #include <keysetget.hpp>
 #include <keysetio.hpp>
 #include <mergehelper.hpp>

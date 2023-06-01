@@ -8,9 +8,9 @@ endif (SHARED_ONLY_PLUGINS)
 include (ExportPluginSymbols)
 elektra_export_plugin_symbols (
 	SOURCE
-	${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.c
+	"${CMAKE_BINARY_DIR}/src/exported_symbols.c"
 	HEADER
-	${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.h
+	"${CMAKE_BINARY_DIR}/src/include/internal/exported_symbols.h"
 	RESOLVER
 	${KDB_DEFAULT_RESOLVER}
 	STORAGE
@@ -21,9 +21,6 @@ elektra_export_plugin_symbols (
 # Include the shared header files of the Elektra project
 include (LibAddMacros)
 add_headers (HDR_FILES)
-
-# include the current binary directory to get exported_symbols.h
-include_directories ("${CMAKE_CURRENT_BINARY_DIR}")
 
 # now add all source files of this folder
 file (GLOB SRC_FILES *.c)
@@ -49,7 +46,7 @@ get_property (elektra_SRCS GLOBAL PROPERTY elektra_SRCS)
 list (APPEND SRC_FILES ${elektra_SRCS})
 
 set (SOURCES ${SRC_FILES} ${HDR_FILES})
-list (APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.h")
+list (APPEND SOURCES "${CMAKE_BINARY_DIR}/src/include/internal/exported_symbols.h")
 
 # the targets built to export
 set (targets_built)
@@ -124,7 +121,7 @@ if (BUILD_FULL OR BUILD_STATIC)
 	# for the next two builds, append some more sources
 	get_property (elektra-full_SRCS GLOBAL PROPERTY elektra-full_SRCS)
 	list (APPEND SOURCES ${elektra-full_SRCS} ${BINARY_INCLUDE_DIR}/kdberrors.h)
-	list (APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.c")
+	list (APPEND SOURCES "${CMAKE_BINARY_DIR}/src/exported_symbols.c")
 
 	# and get all libraries to link against
 	get_property (elektra-full_LIBRARIES GLOBAL PROPERTY elektra-full_LIBRARIES)

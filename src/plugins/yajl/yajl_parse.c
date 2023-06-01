@@ -6,15 +6,16 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "yajl.h"
+#include "./yajl.h"
 
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
 
-#include <kdbease.h>
-#include <kdberrors.h>
-#include <kdbmacros.h>
+#include <elektra/core/errors.h>
+#include <elektra/ease/array.h>
+#include <internal/macros/attributes.h>
+#include <internal/macros/plugin_errors.h>
 #include <yajl/yajl_parse.h>
 
 typedef struct
@@ -349,7 +350,7 @@ static inline KeySet * elektraGetModuleConfig (void)
 		      keyNew ("system:/elektra/modules/yajl/exports", KEY_END),
 		      keyNew ("system:/elektra/modules/yajl/exports/get", KEY_FUNC, elektraYajlGet, KEY_END),
 		      keyNew ("system:/elektra/modules/yajl/exports/set", KEY_FUNC, elektraYajlSet, KEY_END),
-#include "readme_yajl.c"
+#include "./readme_yajl.c"
 		      keyNew ("system:/elektra/modules/yajl/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 		      keyNew ("system:/elektra/modules/yajl/config", KEY_END),
 		      keyNew ("system:/elektra/modules/yajl/config/", KEY_VALUE, "system", KEY_END),

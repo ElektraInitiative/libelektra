@@ -6,12 +6,12 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "dbusrecv.h"
+#include "./dbusrecv.h"
 
 #include <stdio.h> // printf() & co
 
-#include <kdbio/uv.h>
-#include <kdbioplugin.h>
+#include <elektra/io/plugin.h>
+#include <elektra/io/uv.h>
 
 #include <uv.h>
 

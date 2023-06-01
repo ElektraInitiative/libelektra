@@ -7,7 +7,7 @@
  */
 
 #ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
 #include <stdio.h>
@@ -23,7 +23,7 @@
 
 #include <tests.h>
 
-#include "validation.h"
+#include "./validation.h"
 
 #include <tests_internal.h>
 #include <tests_plugin.h>

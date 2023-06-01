@@ -6,14 +6,14 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "zeromqrecv.h"
+#include "./zeromqrecv.h"
 
 #include <stdio.h>  // printf() & co
 #include <time.h>   // time()
 #include <unistd.h> // usleep()
 
-#include <kdbio/uv.h>	 // elektraIoUvNew()
-#include <kdbioplugin.h> // ElektraIoPluginSetBinding
+#include <elektra/io/plugin.h> // ElektraIoPluginSetBinding
+#include <elektra/io/uv.h>     // elektraIoUvNew()
 
 #include <tests.h>
 #include <tests_plugin.h>

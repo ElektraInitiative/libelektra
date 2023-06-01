@@ -9,7 +9,7 @@
 #ifndef CUTKEYCOMMAND_H
 #define CUTKEYCOMMAND_H
 
-#include "treeviewmodel.hpp"
+#include "./treeviewmodel.hpp"
 #include <QUndoCommand>
 
 /**

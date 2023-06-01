@@ -6,11 +6,11 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "utility.h"
+#include "./utility.h"
 
-#include <kdbassert.h>
-#include <kdbease.h>
-#include <kdbhelper.h>
+#include <elektra/ease/array.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/old_helper.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

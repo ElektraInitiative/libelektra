@@ -7,10 +7,10 @@
  *
  */
 
-#include "mergetestutils.cpp"
+#include "./mergetestutils.cpp"
 #include <gtest/gtest.h>
+#include <internal/kdbprivate.h>
 #include <iostream>
-#include <kdbprivate.h>
 
 using namespace kdb;
 using namespace kdb::tools::merging;

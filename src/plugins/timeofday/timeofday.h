@@ -6,7 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdbplugin.h>
+#include <elektra/core.h>
+#include <elektra/plugin/plugin.h>
 
 #include <stdio.h>
 #include <stdlib.h>

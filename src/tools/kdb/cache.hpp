@@ -9,7 +9,7 @@
 #ifndef CACHE_HPP
 #define CACHE_HPP
 
-#include "coloredkdbio.hpp"
+#include "./coloredkdbio.hpp"
 #include <command.hpp>
 
 class CacheCommand : public Command

@@ -8,15 +8,15 @@
  */
 
 
-#ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
-#endif
+#include <internal/config.h>
+#include <internal/macros/attributes.h>
 
-#include <kdbchangetracking.h>
+#include <elektra/changetracking.h>
+
 #include <stdio.h>
 #include <string.h>
 
-#include "logchange.h"
+#include "./logchange.h"
 
 static void logKeys (KeySet * ks, const char * message)
 {

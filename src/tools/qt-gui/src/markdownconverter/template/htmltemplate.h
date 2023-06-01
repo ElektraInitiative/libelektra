@@ -32,7 +32,7 @@
 #ifndef HTMLTEMPLATE_H
 #define HTMLTEMPLATE_H
 
-#include "template.h"
+#include "./template.h"
 
 class HtmlTemplate : public Template
 {

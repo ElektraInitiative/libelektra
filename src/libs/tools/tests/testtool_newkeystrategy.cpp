@@ -7,7 +7,7 @@
  *
  */
 
-#include "mergetestutils.cpp"
+#include "./mergetestutils.cpp"
 #include <gtest/gtest.h>
 #include <merging/newkeystrategy.hpp>
 

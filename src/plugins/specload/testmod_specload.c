@@ -7,17 +7,17 @@
  *
  */
 
-#include "specload.h"
+#include "./specload.h"
 
 #include <config.c>
 
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdbconfig.h>
+#include <internal/config.h>
 #include <tests_plugin.h>
 
-#include "testdata.h"
+#include "./testdata.h"
 
 #include <unistd.h>
 

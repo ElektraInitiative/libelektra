@@ -8,13 +8,13 @@
  */
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
-#include "zeromqrecv.h"
+#include "./zeromqrecv.h"
 
-#include <kdbhelper.h>
-#include <kdblogger.h>
+#include <internal/utility/logger.h>
+#include <internal/utility/old_helper.h>
 
 #include <stdio.h>
 

@@ -7,7 +7,7 @@
  * @copyright relicenced under BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "QQuickThemeIconProvider.hpp"
+#include "./QQuickThemeIconProvider.hpp"
 
 #include <QDebug>
 #include <QIcon>

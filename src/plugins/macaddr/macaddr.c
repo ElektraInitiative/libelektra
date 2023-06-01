@@ -7,13 +7,13 @@
  *
  */
 
-#include "macaddr.h"
+#include "./macaddr.h"
 
 #include <assert.h>
 #include <ctype.h>
-#include <kdberrors.h>
-#include <kdbhelper.h>
-#include <kdbprivate.h>
+#include <elektra/core/errors.h>
+#include <internal/kdbprivate.h>
+#include <internal/utility/old_helper.h>
 #include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>

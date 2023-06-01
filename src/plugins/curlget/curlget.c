@@ -7,14 +7,20 @@
  *
  */
 
-#include "curlget.h"
+#include "./curlget.h"
+
+#include <elektra/core/errors.h>
+#include <elektra/plugin/invoke.h>
+
+#include <internal/macros/attributes.h>
+#include <internal/resolver/shared.h>
+#include <internal/utility/old_helper.h>
 
 #include <curl/curl.h>
 #include <curl/easy.h>
+
 #include <errno.h>
 #include <fcntl.h>
-#include <kdberrors.h>
-#include <kdbhelper.h>
 #include <libgen.h>
 #include <openssl/md5.h>
 #include <stdio.h>
@@ -25,9 +31,6 @@
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
-
-#include "../resolver/shared.h"
-#include <kdbinvoke.h>
 
 #define TMP_NAME "/tmp/elektraCurlTempXXXXXX"
 
@@ -95,8 +98,7 @@ static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFi
 		goto RESOLVE_FAILED;
 	}
 	ElektraResolved * resolved = NULL;
-	typedef ElektraResolved * (*resolveFileFunc) (elektraNamespace, const char *, ElektraResolveTempfile, Key *);
-	resolveFileFunc resolveFunc = *(resolveFileFunc *) elektraInvokeGetFunction (handle, "filename");
+	elektraResolveFileFunc resolveFunc = *(elektraResolveFileFunc *) elektraInvokeGetFunction (handle, "filename");
 
 	if (!resolveFunc)
 	{
@@ -104,8 +106,7 @@ static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFi
 		goto RESOLVE_FAILED;
 	}
 
-	typedef void (*freeHandleFunc) (ElektraResolved *);
-	freeHandleFunc freeHandle = *(freeHandleFunc *) elektraInvokeGetFunction (handle, "freeHandle");
+	elektraFreeResolvedFunc freeHandle = *(elektraFreeResolvedFunc *) elektraInvokeGetFunction (handle, "freeHandle");
 
 	if (!freeHandle)
 	{

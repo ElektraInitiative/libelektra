@@ -15,9 +15,9 @@
 
 #include <algorithm>
 #include <helper/keyhelper.hpp>
-#include <kdbconfig.h>
-#include <kdblogger.h>
-#include <kdbmacros.h>
+#include <internal/config.h>
+#include <internal/macros/attributes.h>
+#include <internal/utility/logger.h>
 
 #ifdef HAVE_GLOB
 #include <glob.h>

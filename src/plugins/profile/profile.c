@@ -7,13 +7,14 @@
  *
  */
 
-#include "profile.h"
+#include "./profile.h"
 
-#include <kdbhelper.h>
+#include <internal/utility/old_helper.h>
 
-#include <kdb.h>     //actual namespaces
-#include <kdbease.h> //elektraKeyGetRelativeName
-#include <kdbos.h>   //elektraNamespace
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/core/namespace.h>
+#include <elektra/ease/name.h>
 #include <stdio.h>
 #include <string.h>
 

@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "yajl.h"
+#include "./yajl.h"
 
 
 Plugin * ELEKTRA_PLUGIN_EXPORT

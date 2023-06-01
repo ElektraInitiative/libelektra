@@ -16,15 +16,19 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdb.h>
-#include <kdbassert.h>
-#include <kdberrors.h>
-#include <kdbhelper.h>
+#include <elektra/core/errors.h>
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
 
-#include "driver.h"
-#include "error.h"
-#include "parser.h"
-#include "utility.h"
+#include <internal/macros/attributes.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/old_helper.h>
+#include <internal/utility/string.h>
+
+#include "./driver.h"
+#include "./error.h"
+#include "./parser.h"
+#include "./utility.h"
 
 extern int yyparse (Driver * driver, yyscan_t yyscanner);
 extern int yyget_lineno (yyscan_t yyscanner);

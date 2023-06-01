@@ -22,7 +22,7 @@ ksNew (30,
 		keyNew ("system:/elektra/modules/hosts/exports/set",
 			KEY_FUNC, elektraHostsSet,
 			KEY_END),
-#include "readme_hosts.c"
+#include "./readme_hosts.c"
 		keyNew ("system:/elektra/modules/hosts/infos/version",
 			KEY_VALUE, PLUGINVERSION,
 			KEY_END),

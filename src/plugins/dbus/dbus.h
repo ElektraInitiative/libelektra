@@ -10,15 +10,16 @@
 #ifndef ELEKTRA_PLUGIN_DBUS_H
 #define ELEKTRA_PLUGIN_DBUS_H
 
-#include <kdbassert.h>
-#include <kdbioplugin.h>
-#include <kdbplugin.h>
+#include <elektra/core.h>
+#include <elektra/io/plugin.h>
+#include <elektra/plugin/plugin.h>
+#include <internal/utility/assert.h>
 
 #include <dbus/dbus.h>
 #include <string.h>
 
 // elektraIoDbus*()
-#include <kdbio/adapters/dbus.h>
+#include <elektra/io/adapters/dbus.h>
 
 /**
  * @internal

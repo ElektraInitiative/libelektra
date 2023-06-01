@@ -7,30 +7,29 @@
  *
  */
 
-#include "gopts.h"
+#include "./gopts.h"
 
-#include <kdbassert.h>
-#include <kdbease.h>
-#include <kdberrors.h>
-#include <kdbhelper.h>
-#include <kdbmacros.h>
-#include <kdbopts.h>
+#include <elektra/core/errors.h>
+#include <elektra/opts.h>
+#include <elektra/type/conversion.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/old_helper.h>
 
 static int loadArgs (char *** argvp);
 static char ** loadEnvp (void);
 static void cleanupArgs (int argc, char ** argv);
 static void cleanupEnvp (char ** envp);
 
-#include "gopts_impl.c"
+#include "./gopts_impl.c"
 
 #if defined(ELEKTRA_GOPTS_PROCFS)
-#include "gopts_procfs.h"
+#include "./gopts_procfs.h"
 #elif defined(ELEKTRA_GOPTS_OSX)
-#include "gopts_osx.h"
+#include "./gopts_osx.h"
 #elif defined(ELEKTRA_GOPTS_WIN32)
-#include "gopts_win32.h"
+#include "./gopts_win32.h"
 #elif defined(ELEKTRA_GOPTS_SYSCTL)
-#include "gopts_sysctl.h"
+#include "./gopts_sysctl.h"
 #else
 #error "No implementation available"
 #endif

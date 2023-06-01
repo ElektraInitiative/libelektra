@@ -181,7 +181,6 @@ libelektraprivate_1.0 {
 	elektraPluginMissing;
 	elektraPluginVersion;
 	elektraRenameKeys;
-	keyClearSync;
 	keyIsDir;
 	keyIsProc;
 	keyIsSpec;

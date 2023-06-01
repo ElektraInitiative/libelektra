@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-#include "coloredkdbio.hpp"
+#include "./coloredkdbio.hpp"
 #include <command.hpp>
 #include <kdb.hpp>
 

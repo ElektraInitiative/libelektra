@@ -7,13 +7,13 @@
  *
  */
 
-#include <kdbhelper.h>
-#include <kdbinvoke.h>
-#include <kdbio.h>
-#include <kdbioplugin.h>
-#include <kdbioprivate.h>
-#include <kdblogger.h>
-#include <kdbprivate.h>
+#include <elektra/io/api.h>
+#include <elektra/io/plugin.h>
+#include <elektra/plugin/invoke.h>
+#include <internal/io/private.h>
+#include <internal/kdbprivate.h>
+#include <internal/utility/logger.h>
+#include <internal/utility/old_helper.h>
 
 #include <fcntl.h>
 #include <stdio.h>

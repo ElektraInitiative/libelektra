@@ -1,8 +1,8 @@
 #ifndef ELEKTRA_KCONFIGPARSER_HPP
 #define ELEKTRA_KCONFIGPARSER_HPP
 
-#include "file_utility.hpp"
-#include <kdberrors.h>
+#include "./file_utility.hpp"
+#include <elektra/core/errors.h>
 #include <kdbplugin.hpp>
 
 using CppKeySet = kdb::KeySet;

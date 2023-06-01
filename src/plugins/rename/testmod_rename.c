@@ -8,7 +8,7 @@
  */
 
 #ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
 /* used for asprintf */
@@ -21,7 +21,7 @@
 #include <string.h>
 #endif
 
-#include "rename.h"
+#include "./rename.h"
 #include <tests_plugin.h>
 
 

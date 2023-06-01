@@ -19,14 +19,13 @@
 #include <unordered_map>
 
 #include <gtest/gtest.h>
+#include <internal/config.h>
+#include <internal/macros/attributes.h>
 #include <kdb.hpp>
-#include <kdbconfig.h>
 
 #ifdef ENABLE_ASAN
 #include <sanitizer/lsan_interface.h>
 #endif
-
-#include <kdbmacros.h>
 
 ELEKTRA_UNUSED static bool isRunningWithValgrind (void)
 {

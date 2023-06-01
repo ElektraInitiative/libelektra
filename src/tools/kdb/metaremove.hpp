@@ -9,7 +9,7 @@
 #ifndef METAREMOVE_HPP
 #define METAREMOVE_HPP
 
-#include "coloredkdbio.hpp"
+#include "./coloredkdbio.hpp"
 #include <command.hpp>
 #include <kdb.hpp>
 

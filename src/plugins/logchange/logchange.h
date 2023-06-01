@@ -10,7 +10,8 @@
 #ifndef ELEKTRA_PLUGIN_LOGCHANGE_H
 #define ELEKTRA_PLUGIN_LOGCHANGE_H
 
-#include <kdbplugin.h>
+#include <elektra/core.h>
+#include <elektra/plugin/plugin.h>
 
 
 int elektraLogchangeGet (Plugin * handle, KeySet * ks, Key * parentKey);

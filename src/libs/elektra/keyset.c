@@ -6,10 +6,12 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "kdbprivate.h"
-#include <kdb.h>
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/core/namespace.h>
+#include <internal/kdbprivate.h>
 #ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
 #include <stdio.h>
@@ -26,11 +28,24 @@
 #include <string.h>
 #endif
 
-#include <kdbtypes.h>
+#include <elektra/type/types.h>
 
-#include "kdbinternal.h"
-#include <kdbassert.h>
-#include <kdbrand.h>
+#include <elektra/core/errors.h>
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/ease/meta.h>
+#include <elektra/plugin/plugin.h>
+
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/core/namespace.h>
+#include <elektra/plugin/plugin.h>
+#include <internal/config.h>
+#include <internal/kdbprivate.h>
+#include <internal/pluginload/module.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/logger.h>
+#include <internal/utility/rand.h>
 
 
 #define ELEKTRA_MAX_PREFIX_SIZE sizeof ("namespace/")

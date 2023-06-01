@@ -1,7 +1,7 @@
 #ifndef ELEKTRA_BASENOTIFICATION_HPP
 #define ELEKTRA_BASENOTIFICATION_HPP
 
-#include <kdbtypes.h>
+#include <elektra/type/types.h>
 #include <key.hpp>
 #include <string>
 #include <utility>

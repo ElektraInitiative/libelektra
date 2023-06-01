@@ -8,7 +8,8 @@
 
 // clang-format off
 
-#include <kdb.h>
+#include <elektra/core/keyset.h>
+#include <elektra/core/key.h>
 #include <stdio.h>
 
 static void shortExamples(void)

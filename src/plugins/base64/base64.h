@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_BASE64_H
 #define ELEKTRA_PLUGIN_BASE64_H
 
-#include "base64_functions.h"
+#include "./base64_functions.h"
 
 // kdb functions
 int PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks, Key * parentKey);

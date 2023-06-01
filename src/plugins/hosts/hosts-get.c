@@ -7,17 +7,17 @@
  *
  */
 
-#include "hosts.h"
-#include "keymetaformatting.h"
+#include "./hosts.h"
+#include "./keymetaformatting.h"
 
 #include <errno.h>
 #include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 
-#ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
-#endif
+#include <internal/config.h>
+#include <internal/macros/plugin_errors.h>
+#include <internal/utility/old_helper.h>
 
 
 typedef void CommentConstructor (KeySet *, size_t, const char *, const char *);
@@ -206,7 +206,7 @@ int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/hosts"))
 	{
 		KeySet * moduleConfig =
-#include "contract.h"
+#include "./contract.h"
 			ksAppend (returned, moduleConfig);
 		ksDel (moduleConfig);
 		return 1;

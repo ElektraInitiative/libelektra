@@ -6,13 +6,13 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "dbus.h"
+#include "./dbus.h"
 
 #ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
-#include <kdbhelper.h>
+#include <internal/utility/old_helper.h>
 
 #include <stdio.h>
 

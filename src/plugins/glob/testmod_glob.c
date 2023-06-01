@@ -7,12 +7,12 @@
  */
 
 #ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
 #include <stdio.h>
 
-#include "glob.h"
+#include "./glob.h"
 #include <fnmatch.h>
 #include <tests.h>
 

@@ -7,10 +7,10 @@
  *
  */
 
-#include "rgbcolor.h"
-#include <kdberrors.h>
-#include <kdbhelper.h>
-#include <kdbtypes.h>
+#include "./rgbcolor.h"
+#include <elektra/core/errors.h>
+#include <elektra/type/types.h>
+#include <internal/utility/old_helper.h>
 #include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_TOML_TABLE_ARRAY_H
 #define ELEKTRA_PLUGIN_TOML_TABLE_ARRAY_H
 
-#include <kdb.h>
+#include <elektra/core/key.h>
 #include <stddef.h>
 
 typedef struct _TableArrayList

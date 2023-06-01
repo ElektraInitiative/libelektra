@@ -10,6 +10,8 @@
 
 %define CPPDOCURL "https://doc.libelektra.org/api/latest/html" %enddef
 
+%define ELEKTRA_SENTINEL %enddef
+
 %define DOCSTRING
 "This module is a SWIG generated binding for KDB (https://www.libelektra.org),
 therefore the module provides wrapper classes to KDBs C++ interface and is
@@ -46,15 +48,18 @@ namespace std {
 
 %{
   extern "C" {
-    #include "kdbconfig.h"
-    #include "kdb.h"
+    #include <internal/config.h>
+    #include <elektra/core/keyset.h>
+    #include <elektra/core/key.h>
+    #include <elektra/kdb/kdb.h>
+    #include <elektra/config.h>
   }
 
-  #include "keyexcept.hpp"
-  #include "kdbexcept.hpp"
-  #include "key.hpp"
-  #include "keyset.hpp"
-  #include "kdb.hpp"
+  #include <keyexcept.hpp>
+  #include <kdbexcept.hpp>
+  #include <key.hpp>
+  #include <keyset.hpp>
+  #include <kdb.hpp>
   using namespace kdb;
 %}
 
@@ -74,8 +79,9 @@ namespace std {
 %constant const short VERSION_PATCH = KDB_VERSION_PATCH;
 /* we only care about the enums. ignore the c functions */
 %ignore ckdb;
-%include "kdb.h"
-
+%include <elektra/core/keyset.h>
+%include <elektra/core/key.h>
+%include <elektra/core/namespace.h>
 
 
 /****************************************************************************

@@ -6,12 +6,12 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "name.h"
+#include "./name.h"
 
 #include <string.h>
 
-#include "iterator.h"
-#include "yajl.h"
+#include "./iterator.h"
+#include "./yajl.h"
 
 /**
  * @brief Count number of levels in name of key

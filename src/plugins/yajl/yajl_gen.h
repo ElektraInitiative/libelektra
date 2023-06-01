@@ -9,19 +9,17 @@
 #ifndef YAJL_GEN_H
 #define YAJL_GEN_H
 
-#include "yajl.h"
+#include "./yajl.h"
 
 #include <stdio.h>
 #include <string.h>
 
-#include <kdberrors.h>
-#include <kdbmacros.h>
-
+#include <elektra/core/errors.h>
 #include <yajl/yajl_gen.h>
 
 
-#include "iterator.h"
-#include "name.h"
+#include "./iterator.h"
+#include "./name.h"
 
 typedef enum
 {

@@ -8,13 +8,12 @@
 
 #include <gen.hpp>
 
-#include "gen/template.hpp"
+#include "./gen/template.hpp"
 #include <cmdline.hpp>
 #include <kdb.hpp>
 
+#include <elektra/plugin/plugin.h>
 #include <fstream>
-#include <kdbease.h>
-#include <kdbplugin.h>
 #include <modules.hpp>
 
 using namespace kdb;

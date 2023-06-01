@@ -30,7 +30,8 @@
 #ifndef ELEKTRA_PLUGIN_YAJL_H
 #define ELEKTRA_PLUGIN_YAJL_H
 
-#include <kdbplugin.h>
+#include <elektra/plugin/plugin.h>
+#include <elektra/core.h>
 
 #cmakedefine YAJL_NO_VERSION
 

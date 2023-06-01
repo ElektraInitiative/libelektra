@@ -16,10 +16,10 @@
 #include <key.hpp>
 #include <keyset.hpp>
 
-#include <kdb.h>
-#include <kdbgopts.h>
-
-
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/kdb/contracts/gopts.h>
+#include <elektra/kdb/kdb.h>
 /**
  * @brief This is the main namespace for the C++ binding and libraries.
  *

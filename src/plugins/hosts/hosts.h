@@ -13,9 +13,11 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <kdb.h>
-#include <kdberrors.h>
-#include <kdbplugin.h>
+#include <elektra/core.h>
+#include <elektra/core/errors.h>
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/plugin/plugin.h>
 
 #include <stdlib.h>
 

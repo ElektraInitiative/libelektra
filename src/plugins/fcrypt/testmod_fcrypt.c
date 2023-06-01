@@ -7,8 +7,16 @@
  *
  */
 
-#include <kdb.h>
-#include <kdbinternal.h>
+#include <elektra/core.h>
+#include <elektra/core/errors.h>
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/ease/meta.h>
+#include <elektra/plugin/plugin.h>
+#include <internal/config.h>
+#include <internal/kdbprivate.h>
+#include <internal/pluginload/module.h>
+#include <internal/utility/logger.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,7 +28,7 @@
 
 #include "../crypto/common_gpg_tests.c"
 #include "../crypto/gpgagent_teardown.h"
-#include "fcrypt.h"
+#include "./fcrypt.h"
 
 #define PLUGIN_NAME "fcrypt"
 #define TEST_KEY_ID "DDEBEF9EE2DC931701338212DAF635B17F230E8D"

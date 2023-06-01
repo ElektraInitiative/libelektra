@@ -7,11 +7,12 @@
  *
  */
 
-#include <kdberrors.h>
+#include <elektra/core/errors.h>
+#include <internal/utility/old_helper.h>
 #include <regex.h>
 #include <stdio.h>
 
-#include "ipaddr.h"
+#include "./ipaddr.h"
 
 static int validateIPv4 (const char * addr)
 {

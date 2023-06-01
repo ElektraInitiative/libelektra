@@ -11,4 +11,4 @@ Description: Elektra Highlevel API Code-generation
 Requires:
 Version: @KDB_VERSION@
 Libs: -L${libdir} @CODEGEN_LIBRARIES@
-Cflags: -I${includedir}
+Cflags: -I${prefix}/include

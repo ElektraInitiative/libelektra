@@ -10,11 +10,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <kdbio.h>
-#include <kdbiotest.h>
+#include <elektra/io/api.h>
+#include <internal/io/test.h>
 #include <uv.h>
 
-#include "kdbio_doc.h"
+#include "./kdbio_doc.h"
 
 #include <tests.h>
 

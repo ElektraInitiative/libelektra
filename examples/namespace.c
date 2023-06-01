@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdb.h>
-
+#include <elektra/core/key.h>
+#include <elektra/core/namespace.h>
 #include <stdio.h>
 #include <stdlib.h>
 

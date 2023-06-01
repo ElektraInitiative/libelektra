@@ -10,14 +10,15 @@
 #ifndef ELEKTRA_PLUGIN_ZEROMQSEND_H
 #define ELEKTRA_PLUGIN_ZEROMQSEND_H
 
-#include <kdbassert.h>
-#include <kdbioplugin.h>
-#include <kdbnotificationinternal.h>
-#include <kdbplugin.h>
+#include <elektra/core.h>
+#include <elektra/io/plugin.h>
+#include <elektra/plugin/plugin.h>
+#include <internal/notifications.h>
+#include <internal/utility/assert.h>
 
 #include <zmq.h>
 
-#include <kdbio/adapters/zeromq.h> // elektraIoAdapterZeroMq*()
+#include <elektra/io/adapters/zeromq.h> // elektraIoAdapterZeroMq*()
 
 #define ELEKTRA_ZEROMQ_DEFAULT_SUB_ENDPOINT "tcp://localhost:6001"
 

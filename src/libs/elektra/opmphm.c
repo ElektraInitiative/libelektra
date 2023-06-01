@@ -7,14 +7,14 @@
  */
 
 
-#include <kdbassert.h>
-#include <kdbconfig.h>
-#include <kdbhelper.h>
-#include <kdblogger.h>
-#include <kdbmacros.h>
-#include <kdbopmphm.h>
-#include <kdbprivate.h>
-#include <kdbrand.h>
+#include <internal/config.h>
+#include <internal/core/opmphm.h>
+#include <internal/kdbprivate.h>
+#include <internal/macros/attributes.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/logger.h>
+#include <internal/utility/old_helper.h>
+#include <internal/utility/rand.h>
 
 #include <string.h>
 

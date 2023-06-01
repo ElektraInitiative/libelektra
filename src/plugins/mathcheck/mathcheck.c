@@ -9,13 +9,14 @@
 
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
-#include "floathelper.h"
-#include "mathcheck.h"
+#include "./floathelper.h"
+#include "./mathcheck.h"
 #include <ctype.h>
-#include <kdberrors.h>
+#include <elektra/core/errors.h>
+#include <internal/utility/old_helper.h>
 #include <math.h>
 #include <regex.h>
 #include <stdio.h>

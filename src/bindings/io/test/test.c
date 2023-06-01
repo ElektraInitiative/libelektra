@@ -13,10 +13,10 @@
 
 #include <tests.h>
 
-#include "test.h"
-#include <kdbio.h>
-#include <kdbioprivate.h>
-#include <kdbiotest.h>
+#include "./test.h"
+#include <elektra/io/api.h>
+#include <internal/io/private.h>
+#include <internal/io/test.h>
 
 static void test_timing (void)
 {

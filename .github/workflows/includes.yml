@@ -1,0 +1,39 @@
+name: "#include rules"
+
+on: [push, pull_request]
+
+jobs:
+  check:
+    name: "Check #include rules"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: 'Check #include "./*"'
+        run: |
+          IFS="
+          "
+          HAS_ERROR=0
+
+          for error in $(scripts/dev/check-includes.sh dotslash); do
+            HAS_ERROR=1
+            file=$(echo "$error" | cut -d: -f1)
+            line=$(echo "$error" | cut -d: -f2)
+            echo "::error file=$file,line=$line::Include using quotes must start with ./"
+          done
+
+          for error in $(scripts/dev/check-includes.sh dotdot); do
+            HAS_ERROR=1
+            file=$(echo "$error" | cut -d: -f1)
+            line=$(echo "$error" | cut -d: -f2)
+            echo "::error file=$file,line=$line::Include must not contain /../"
+          done
+
+          for error in $(scripts/dev/check-includes.sh internal); do
+            HAS_ERROR=1
+            file=$(echo "$error" | cut -d: -f1)
+            line=$(echo "$error" | cut -d: -f2)
+            echo "::error file=$file,line=$line::Cannot include internal headers in installed headers"
+          done
+
+          exit $HAS_ERROR

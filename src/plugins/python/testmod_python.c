@@ -6,11 +6,11 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdbmacros.h>
+#include <elektra/macros/utils.h>
 #include <stdlib.h>
 
 #ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
 #include <tests_plugin.h>

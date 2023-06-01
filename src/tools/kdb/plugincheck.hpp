@@ -11,7 +11,7 @@
 
 #include <command.hpp>
 
-#include "coloredkdbio.hpp"
+#include "./coloredkdbio.hpp"
 #include <kdb.hpp>
 
 class PluginCheckCommand : public Command

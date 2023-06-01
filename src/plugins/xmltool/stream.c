@@ -6,10 +6,10 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "xmltool.h"
+#include "./xmltool.h"
 
 #ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
 #include <stdio.h>
@@ -18,9 +18,18 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "kdbtools.h"
-#include <kdbinternal.h>
-
+#include "./kdbtools.h"
+#include <elektra/core.h>
+#include <elektra/core/errors.h>
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/ease/meta.h>
+#include <elektra/plugin/plugin.h>
+#include <internal/config.h>
+#include <internal/kdbprivate.h>
+#include <internal/macros/os.h>
+#include <internal/pluginload/module.h>
+#include <internal/utility/logger.h>
 
 /**
  * @brief Methods to output, generate and toXML Keys and Keysets.
@@ -161,7 +170,7 @@ ssize_t keyToStreamBasename (const Key * key, FILE * stream, const char * parent
 		found = memcmp (parent, keyName (key), skip);
 		if (found == 0)
 		{
-			while (*(keyName (key) + skip) == KDB_PATH_SEPARATOR)
+			while (*(keyName (key) + skip) == '/')
 				++skip;
 
 			if (*(keyName (key) + skip) != 0) /* we don't want a null basename */

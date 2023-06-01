@@ -8,12 +8,12 @@
  */
 
 
+#include "./version.h"
+
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdbconfig.h>
-#include <kdbversion.h>
-
+#include <internal/config.h>
 #include <tests_plugin.h>
 
 static void test_basics (void)

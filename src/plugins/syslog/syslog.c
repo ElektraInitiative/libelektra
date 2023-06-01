@@ -6,13 +6,12 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
-#endif
+#include <internal/config.h>
+#include <internal/macros/attributes.h>
 
-#include <kdbchangetracking.h>
+#include <elektra/changetracking.h>
 
-#include "log.h"
+#include "./log.h"
 
 int elektraSyslogOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
@@ -56,7 +55,7 @@ int elektraSyslogGet (Plugin * handle, KeySet * returned, Key * parentKey)
 					     elektraSyslogGet, KEY_END),
 				     keyNew ("system:/elektra/modules/syslog/exports/hook/notification/send/set", KEY_FUNC,
 					     elektraSyslogCommit, KEY_END),
-#include "readme_syslog.c"
+#include "./readme_syslog.c"
 				     keyNew ("system:/elektra/modules/syslog/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
 		ksDel (n);
 

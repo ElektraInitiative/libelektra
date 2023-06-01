@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include "coder.hpp"
+#include "./coder.hpp"
 
 namespace
 {

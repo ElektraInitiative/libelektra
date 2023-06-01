@@ -7,9 +7,10 @@
  *
  */
 
-#include "dpkg.h"
-#include <kdb.h>
-#include <kdbhelper.h>
+#include "./dpkg.h"
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <internal/utility/old_helper.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

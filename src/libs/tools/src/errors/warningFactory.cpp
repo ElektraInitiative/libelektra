@@ -1,7 +1,7 @@
 
-#include "errors/warningFactory.hpp"
-#include "errors/warningTypes.hpp"
-#include <kdberrors.h> // for code and description constants
+#include "./errors/warningFactory.hpp"
+#include "./errors/warningTypes.hpp"
+#include <elektra/core/errors.h> // for code and description constants
 
 namespace kdb
 {

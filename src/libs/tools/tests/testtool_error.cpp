@@ -7,11 +7,11 @@
  *
  */
 
+#include <elektra/core/errors.h> // for code and description constants
 #include <errors/errorFactory.hpp>
 #include <errors/errorTypes.hpp>
 #include <errors/warningTypes.hpp>
 #include <gtest/gtest.h>
-#include <kdberrors.h> // for code and description constants
 
 TEST (Error, TestWarnings)
 {

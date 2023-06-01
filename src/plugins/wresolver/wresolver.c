@@ -7,16 +7,19 @@
  */
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
 
-#include <kdbassert.h>
-#include <kdberrors.h>
+#include <elektra/core/errors.h>
+#include <internal/macros/attributes.h>
+#include <internal/macros/os.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/old_helper.h>
 
 #include <string.h>
 
-#include "wresolver.h"
+#include "./wresolver.h"
 #include <errno.h> /* errno in getcwd() */
 #include <stdlib.h>
 #include <sys/stat.h> /* mkdir() */

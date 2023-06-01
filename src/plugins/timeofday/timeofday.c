@@ -6,9 +6,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdbhelper.h>
+#include <internal/utility/old_helper.h>
 
-#include "timeofday.h"
+#include "./timeofday.h"
 
 #include <string.h>
 
@@ -119,7 +119,7 @@ int elektraTimeofdayGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			keyNew ("system:/elektra/modules/timeofday/exports/set", KEY_FUNC, elektraTimeofdaySet, KEY_END),
 			keyNew ("system:/elektra/modules/timeofday/exports/commit", KEY_FUNC, elektraTimeofdayCommit, KEY_END),
 			keyNew ("system:/elektra/modules/timeofday/exports/error", KEY_FUNC, elektraTimeofdayError, KEY_END),
-#include "readme_timeofday.c"
+#include "./readme_timeofday.c"
 			keyNew ("system:/elektra/modules/timeofday/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, pluginConfig);
 		ksDel (pluginConfig);

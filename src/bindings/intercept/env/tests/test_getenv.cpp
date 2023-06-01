@@ -211,4 +211,4 @@ TEST (GetEnv, DISABLED_NameExplicit)
 	elektraClose ();
 }
 
-#include "main.cpp"
+#include "./main.cpp"

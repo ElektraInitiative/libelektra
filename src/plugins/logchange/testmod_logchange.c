@@ -13,7 +13,7 @@
 #include <tests_plugin.h>
 
 #include "logchange.h"
-#include <kdbchangetracking.h>
+#include <elektra/changetracking.h>
 
 ChangeTrackingContext * changeTrackingContext = NULL;
 

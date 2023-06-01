@@ -1,6 +1,6 @@
 
-#include "errors/error.hpp"
-#include "iostream"
+#include "./errors/error.hpp"
+#include "./iostream"
 
 
 namespace kdb

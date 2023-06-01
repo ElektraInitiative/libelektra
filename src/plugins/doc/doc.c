@@ -6,23 +6,24 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "doc.h"
+#include "./doc.h"
 
 //! [plugin include]
-#include <kdbplugin.h>
+#include <elektra/core.h>
+#include <elektra/plugin/plugin.h>
 //! [plugin include]
 //
 //! [plugin errors include]
 // using namespace ckdb; // for C++
-#include <kdberrors.h>
+#include <elektra/core/errors.h>
 //! [plugin errors include]
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
-#endif
+#include <internal/config.h>
+#include <internal/macros/plugin_errors.h>
+#include <internal/utility/old_helper.h>
 
 
 //! [global data]
@@ -204,7 +205,8 @@ int elektraDocCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	return 0;
 }
 
-static Plugin * findPlugin (KDB * handle ELEKTRA_UNUSED)
+// Note: uses void so the include can be in the example section below
+static Plugin * findPlugin (void * handle ELEKTRA_UNUSED)
 {
 	return 0;
 }
@@ -227,6 +229,8 @@ int elektraDocCheckConf (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UN
 //![validate configuration]
 
 //![set full]
+#include <elektra/kdb/kdb.h>
+
 static void usercode (KDB * handle, KeySet * keyset, Key * key)
 {
 	// some more user code

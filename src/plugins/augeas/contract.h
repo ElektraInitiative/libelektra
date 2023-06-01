@@ -30,7 +30,7 @@ ksNew (30,
 		keyNew ("system:/elektra/modules/augeas/exports/close",
 				KEY_FUNC, elektraAugeasClose,
 				KEY_END),
-#include "readme_augeas.c"
+#include "./readme_augeas.c"
 		keyNew ("system:/elektra/modules/augeas/infos/version",
 				KEY_VALUE, PLUGINVERSION,
 				KEY_END),

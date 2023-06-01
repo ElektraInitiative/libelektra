@@ -6,18 +6,19 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "xerces.hpp"
-#include "deserializer.hpp"
-#include "serializer.hpp"
-#include "util.hpp"
+#include "./xerces.hpp"
+#include "./deserializer.hpp"
+#include "./serializer.hpp"
+#include "./util.hpp"
 
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/util/OutOfMemoryException.hpp>
 #include <xercesc/util/PlatformUtils.hpp>
 
 
-#include <kdberrors.h>
-#include <kdbhelper.h>
+#include <elektra/core/errors.h>
+#include <internal/macros/attributes.h>
+#include <internal/utility/old_helper.h>
 
 using namespace ckdb;
 using namespace xerces;

@@ -140,12 +140,12 @@
  */
 
 
-#include "kdbprivate.h"
+#include <internal/kdbprivate.h>
 #ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
-#include <kdbassert.h>
+#include <internal/utility/assert.h>
 
 #ifdef HAVE_STDARG_H
 #include <stdarg.h>
@@ -161,9 +161,17 @@
 
 #include <ctype.h>
 
-#include "kdb.h"
-#include "kdbhelper.h"
-#include "kdbinternal.h"
+#include <elektra/core/errors.h>
+#include <elektra/core/key.h>
+#include <elektra/core/namespace.h>
+#include <elektra/ease/meta.h>
+#include <elektra/plugin/plugin.h>
+#include <internal/config.h>
+#include <internal/kdbprivate.h>
+#include <internal/macros/os.h>
+#include <internal/pluginload/module.h>
+#include <internal/utility/logger.h>
+#include <internal/utility/old_helper.h>
 
 /**
  * @internal

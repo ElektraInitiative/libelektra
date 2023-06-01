@@ -1,11 +1,11 @@
 
 
-#include "backend.h"
-#include "backendprivate.h"
+#include "./backend.h"
+#include "./backendprivate.h"
 
-#include <kdberrors.h>
-#include <kdblogger.h>
-#include <kdbprivate.h>
+#include <elektra/core/errors.h>
+#include <internal/kdbprivate.h>
+#include <internal/utility/logger.h>
 
 int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * plugin, Key * errorKey ELEKTRA_UNUSED)
 {

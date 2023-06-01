@@ -10,7 +10,8 @@
 #ifndef ELEKTRA_PLUGIN_MINI_H
 #define ELEKTRA_PLUGIN_MINI_H
 
-#include <kdbplugin.h>
+#include <elektra/core.h>
+#include <elektra/plugin/plugin.h>
 
 
 int elektraMiniGet (Plugin * handle, KeySet * ks, Key * parentKey);

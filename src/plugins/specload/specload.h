@@ -10,8 +10,9 @@
 #ifndef ELEKTRA_PLUGIN_SPECLOAD_H
 #define ELEKTRA_PLUGIN_SPECLOAD_H
 
-#include <kdbinvoke.h>
-#include <kdbplugin.h>
+#include <elektra/core.h>
+#include <elektra/plugin/invoke.h>
+#include <elektra/plugin/plugin.h>
 
 typedef struct
 {

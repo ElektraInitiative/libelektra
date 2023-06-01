@@ -8,8 +8,8 @@
 
 #include <tests_internal.h>
 
-#include "kdbtools.h"
-#include "xmltool.h"
+#include "./kdbtools.h"
+#include "./xmltool.h"
 
 #include <unistd.h>
 

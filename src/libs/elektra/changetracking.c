@@ -1,5 +1,6 @@
-#include <kdbchangetracking.h>
-#include <kdbprivate.h>
+#include <elektra/changetracking.h>
+
+#include <internal/kdbprivate.h>
 
 /**
  * Returns the changetracking context of the given KDB instance

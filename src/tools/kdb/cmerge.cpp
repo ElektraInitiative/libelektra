@@ -6,11 +6,11 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "cmerge.hpp"
-#include "kdbmacros.h"
-#include "kdbmerge.h"
-#include "keyset.hpp"
+#include "./cmerge.hpp"
+#include "./keyset.hpp"
 #include <cmdline.hpp>
+#include <elektra/merge.h>
+#include <internal/macros/attributes.h>
 #include <iostream>
 #include <keysetio.hpp>
 #include <string>

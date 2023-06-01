@@ -6,20 +6,28 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
-#include "crypto.h"
-#include "gpg.h"
-#include "helper.h"
-#include <kdb.h>
-#include <kdbinternal.h>
+#include "./crypto.h"
+#include "./gpg.h"
+#include "./helper.h"
+#include <elektra/core.h>
+#include <elektra/core/errors.h>
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/ease/meta.h>
+#include <elektra/plugin/plugin.h>
+#include <internal/config.h>
+#include <internal/kdbprivate.h>
+#include <internal/pluginload/module.h>
+#include <internal/utility/logger.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <tests_internal.h>
 #include <tests_plugin.h>
 
-#include "common_gpg_tests.c"
-#include "gpgagent_teardown.h"
-#include "test_key.h"
+#include "./common_gpg_tests.c"
+#include "./gpgagent_teardown.h"
+#include "./test_key.h"
 
 #define PLUGIN_NAME "crypto"
 #define TEST_KEY_ID "DDEBEF9EE2DC931701338212DAF635B17F230E8D"

@@ -7,12 +7,12 @@
  *
  */
 
-#include "process.h"
+#include "./process.h"
 
-#include <kdberrors.h>
-#include <kdbhelper.h>
-#include <kdbinvoke.h>
-#include <kdbprivate.h>
+#include <elektra/core/errors.h>
+#include <elektra/plugin/invoke.h>
+#include <internal/kdbprivate.h>
+#include <internal/utility/old_helper.h>
 
 #include <signal.h>
 #include <stdio.h>

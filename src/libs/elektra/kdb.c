@@ -6,14 +6,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-
-#ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
-#endif
-
 #include <stdio.h>
 
-#include <kdbassert.h>
+#include <internal/utility/old_helper.h>
 
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
@@ -43,9 +38,19 @@
 #include <errno.h>
 #endif
 
-#include <kdbchangetracking.h>
-#include <kdbinternal.h>
+#include <elektra/changetracking.h>
+#include <elektra/core/errors.h>
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/core/namespace.h>
+#include <elektra/ease/meta.h>
+#include <elektra/kdb/kdb.h>
+#include <elektra/plugin/plugin.h>
 
+#include <internal/config.h>
+#include <internal/kdbprivate.h>
+#include <internal/pluginload/module.h>
+#include <internal/utility/logger.h>
 
 #define KDB_GET_PHASE_POST_STORAGE_SPEC (KDB_GET_PHASE_POST_STORAGE "/spec")
 #define KDB_GET_PHASE_POST_STORAGE_NONSPEC (KDB_GET_PHASE_POST_STORAGE "/nonspec")

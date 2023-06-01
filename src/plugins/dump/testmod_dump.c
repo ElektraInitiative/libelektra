@@ -11,11 +11,11 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <kdbconfig.h>
+#include <internal/config.h>
 
 #include <tests_plugin.h>
 
-#include "testdata.h"
+#include "./testdata.h"
 
 static void test_v1_oneValue (void)
 {

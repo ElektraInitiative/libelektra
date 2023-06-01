@@ -6,14 +6,13 @@
  ******************************************************************************/
 
 
-#include "internal.h"
+#include "./internal.h"
 #include <bohr/ds_hash.h>
 #include <bohr/ni.h>
 
-#include <kdbmacros.h>
-
 #include <assert.h>
 #include <ctype.h>
+#include <internal/macros/attributes.h>
 #include <inttypes.h>
 #include <stdarg.h>
 #include <stddef.h>

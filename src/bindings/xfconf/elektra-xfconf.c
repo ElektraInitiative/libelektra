@@ -1,5 +1,11 @@
-#include "elektra-xfconf.h"
-#include "elektra-xfconf-util.h"
+#include "./elektra-xfconf.h"
+#include "./elektra-xfconf-util.h"
+
+#include <elektra/core.h>
+#include <elektra/kdb/kdb.h>
+
+#include <internal/macros/attributes.h>
+
 #include <pthread.h>
 
 

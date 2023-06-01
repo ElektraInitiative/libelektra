@@ -10,7 +10,8 @@
 #ifndef ELEKTRA_PLUGIN_SHELL_H
 #define ELEKTRA_PLUGIN_SHELL_H
 
-#include <kdbplugin.h>
+#include <elektra/core.h>
+#include <elektra/plugin/plugin.h>
 
 
 int elektraShellOpen (Plugin * handle, Key * errorKey);

@@ -1,7 +1,7 @@
 #ifndef ELEKTRA_KCONFIG_SERIALIZER_HPP
 #define ELEKTRA_KCONFIG_SERIALIZER_HPP
 
-#include <kdberrors.h>
+#include <elektra/core/errors.h>
 #include <kdbplugin.hpp>
 #include <memory>
 

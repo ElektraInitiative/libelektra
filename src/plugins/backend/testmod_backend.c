@@ -7,11 +7,11 @@
  *
  */
 
-#include "backendprivate.h"
+#include "./backendprivate.h"
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdbconfig.h>
+#include <internal/config.h>
 
 #include <tests_plugin.h>
 

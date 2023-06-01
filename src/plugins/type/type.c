@@ -8,11 +8,15 @@
  */
 
 
-#include "type.h"
-#include "types.h"
+#include "./type.h"
+#include "./types.h"
 
-#include <kdbease.h>
-#include <kdberrors.h>
+#include <elektra/core/errors.h>
+#include <elektra/ease/array.h>
+#include <elektra/type/conversion.h>
+#include <elektra/type/types.h>
+
+#include <internal/utility/old_helper.h>
 
 struct _Type
 {
@@ -40,9 +44,7 @@ static const Type elektraTypesList[] = {
 	{ "unsigned_long_long", NULL, &elektraTypeCheckUnsignedLongLong, NULL, &elektraTypeSetDefaultError },
 	{ "float", NULL, &elektraTypeCheckFloat, NULL, &elektraTypeSetDefaultError },
 	{ "double", NULL, &elektraTypeCheckDouble, NULL, &elektraTypeSetDefaultError },
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 	{ "long_double", NULL, &elektraTypeCheckLongDouble, NULL, &elektraTypeSetDefaultError },
-#endif
 	{ "boolean", &elektraTypeNormalizeBoolean, &elektraTypeCheckBoolean, &elektraTypeRestoreBoolean, &elektraTypeSetDefaultError },
 	{ "enum", &elektraTypeNormalizeEnum, &elektraTypeCheckEnum, &elektraTypeRestoreEnum, &elektraTypeSetErrorEnum },
 	{ NULL, NULL, NULL, NULL, NULL }

@@ -6,9 +6,11 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdb.h>
-#include <kdbhelper.h>
-#include <kdbmacros.h>
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/kdb/kdb.h>
+#include <internal/macros/attributes.h>
+#include <internal/utility/old_helper.h>
 
 #include <fcntl.h>
 #include <pthread.h>

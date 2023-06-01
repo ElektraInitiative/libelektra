@@ -12,7 +12,7 @@
 #include <tests_internal.h>
 #include <tests_plugin.h>
 
-#include <kdbconfig.h>
+#include <internal/config.h>
 
 /* -- Macros & Test Configuration ------------------------------------------------------------------------------------------------------- */
 

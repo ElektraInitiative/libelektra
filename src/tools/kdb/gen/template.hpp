@@ -9,7 +9,7 @@
 #ifndef ELEKTRA_KDB_GEN_TEMPLATE_HPP
 #define ELEKTRA_KDB_GEN_TEMPLATE_HPP
 
-#include "mustache.hpp"
+#include "./mustache.hpp"
 
 #include <algorithm>
 #include <iostream>
@@ -17,8 +17,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include <internal/macros/attributes.h>
 #include <kdb.hpp>
-#include <kdbmacros.h>
 
 class EmptyGenTemplate;
 

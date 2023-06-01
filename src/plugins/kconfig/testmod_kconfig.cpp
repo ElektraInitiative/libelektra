@@ -7,11 +7,11 @@
  *
  */
 
-#include "kconfig.hpp"
+#include "./kconfig.hpp"
 
 #include <fstream>
-#include <kdbmodule.h>
-#include <kdbprivate.h>
+#include <internal/kdbprivate.h>
+#include <internal/pluginload/module.h>
 
 #include <tests.h>
 #include <tests.hpp>
@@ -149,7 +149,7 @@ TEST (kconfig, read_and_write_test)
 
 #define TEST_VALID_PREFIX ""
 		CppKeySet keys{
-#include "kconfig/test_valid.h"
+#include "./kconfig/test_valid.h"
 		};
 
 		CppKey parent;
@@ -162,7 +162,7 @@ TEST (kconfig, read_and_write_test)
 #undef TEST_VALID_PREFIX
 #define TEST_VALID_PREFIX "/kconfig/prefix"
 		CppKeySet keys{
-#include "kconfig/test_valid.h"
+#include "./kconfig/test_valid.h"
 		};
 
 		CppKey parent{ "/kconfig/prefix", KEY_END };
@@ -175,7 +175,7 @@ TEST (kconfig, read_tests)
 {
 	{
 		CppKeySet keys{
-#include "kconfig/meta_example.h"
+#include "./kconfig/meta_example.h"
 		};
 
 		CppKey parent;
@@ -184,7 +184,7 @@ TEST (kconfig, read_tests)
 	}
 	{
 		CppKeySet keys{
-#include "kconfig/simple_example.h"
+#include "./kconfig/simple_example.h"
 		};
 
 		CppKey parent;

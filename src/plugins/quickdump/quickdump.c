@@ -7,12 +7,15 @@
  *
  */
 
-#include "quickdump.h"
+#include "./quickdump.h"
 
-#include <kdbendian.h>
-#include <kdbhelper.h>
+#include <elektra/core/errors.h>
+#include <elektra/type/types.h>
+#include <internal/macros/attributes.h>
+#include <internal/macros/plugin_errors.h>
+#include <internal/utility/endian.h>
+#include <internal/utility/old_helper.h>
 
-#include <kdberrors.h>
 #include <stdio.h>
 
 #define MAGIC_NUMBER_BASE (0x454b444200000000UL) // EKDB (in ASCII) + Version placeholder
@@ -55,7 +58,7 @@ static void ensureBufferSize (struct stringbuffer * buffer, size_t minSize);
 #define STDOUT_FILENAME ("/dev/stdout")
 #endif
 
-#include "varint.c"
+#include "./varint.c"
 
 static inline void closeFile (FILE * file)
 {

@@ -9,10 +9,16 @@
 #ifndef BENCHMARKS_H
 #define BENCHMARKS_H
 
-#include <kdb.h>
-#include <kdbassert.h>
-#include <kdbinternal.h>
-#include <kdbrand.h>
+#include <elektra/core/errors.h>
+#include <elektra/core/keyset.h>
+#include <elektra/ease/meta.h>
+#include <elektra/plugin/plugin.h>
+#include <internal/config.h>
+#include <internal/kdbprivate.h>
+#include <internal/pluginload/module.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/logger.h>
+#include <internal/utility/rand.h>
 
 #include <stdbool.h>
 #include <stdio.h>

@@ -10,8 +10,9 @@
 #ifndef ARRAY_SPEC_H
 #define ARRAY_SPEC_H
 
-#include <elektra.h>
-#include <kdbtypes.h> /* for bool */
+#include <elektra/core/types.h>
+
+#include <stdbool.h>
 
 char * createArrayElementName (int arrayNumber);
 char * createFormattedArrayKeyNameInDefaultNamespace (char * keyNameWithoutNamespace, int arrayNumber, int pos);

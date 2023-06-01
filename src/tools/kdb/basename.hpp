@@ -9,7 +9,7 @@
 #ifndef BASENAME_HPP
 #define BASENAME_HPP
 
-#include "coloredkdbio.hpp"
+#include "./coloredkdbio.hpp"
 #include <command.hpp>
 #include <kdb.hpp>
 

@@ -1,7 +1,9 @@
-#include "kdb.h"
-#include "kdbglobbing.h"
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/ease/globbing.h>
 
-#include <kdbhelper.h>
+#include <internal/utility/old_helper.h>
+
 #include <string.h>
 
 #ifdef __MINGW32__

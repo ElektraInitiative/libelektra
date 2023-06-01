@@ -11,8 +11,9 @@
 
 #include <unistd.h>
 
-#include <kdberrors.h>
-#include <kdbplugin.h>
+#include <elektra/core.h>
+#include <elektra/core/errors.h>
+#include <elektra/plugin/plugin.h>
 
 #include <errno.h>
 #include <stdlib.h>

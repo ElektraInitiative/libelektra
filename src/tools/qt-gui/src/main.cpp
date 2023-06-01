@@ -17,14 +17,14 @@
 #include <kdb.hpp>
 #include <merging/mergingkdb.hpp>
 
-#include "QQuickThemeIconProvider.hpp"
+#include "./QQuickThemeIconProvider.hpp"
 
-#include "confignode.hpp"
-#include "datacontainer.hpp"
-#include "guibackend.hpp"
-#include "guisettings.hpp"
-#include "treeviewmodel.hpp"
-#include "undomanager.hpp"
+#include "./confignode.hpp"
+#include "./datacontainer.hpp"
+#include "./guibackend.hpp"
+#include "./guisettings.hpp"
+#include "./treeviewmodel.hpp"
+#include "./undomanager.hpp"
 
 int main (int argc, char * argv[])
 {

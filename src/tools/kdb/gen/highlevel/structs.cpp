@@ -6,12 +6,13 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "structs.hpp"
-#include "common.hpp"
-#include "enums.hpp"
+#include "./structs.hpp"
+#include "./common.hpp"
+#include "./enums.hpp"
 #include <command.hpp>
-#include <kdbease.h>
-#include <kdbhelper.h>
+#include <elektra/ease/array.h>
+#include <elektra/ease/reference.h>
+#include <internal/utility/old_helper.h>
 
 bool StructFieldsProcessor::shouldGenerateUnion (const kdb::Key & key)
 {

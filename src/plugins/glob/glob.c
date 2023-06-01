@@ -7,14 +7,14 @@
  *
  */
 
-#include "glob.h"
+#include "./glob.h"
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
 #include <fnmatch.h>
-#include <kdbhelper.h>
+#include <internal/utility/old_helper.h>
 
 struct GlobFlagMap
 {
@@ -193,7 +193,7 @@ int elektraGlobGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	{
 		// TODO: improve plugin contract
 		KeySet * config =
-#include "contract.h"
+#include "./contract.h"
 			ksAppend (returned, config);
 		ksDel (config);
 		return 1;

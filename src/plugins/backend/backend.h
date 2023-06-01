@@ -9,7 +9,8 @@
 #ifndef ELEKTRA_BACKEND_H
 #define ELEKTRA_BACKEND_H
 
-#include <kdbplugin.h>
+#include <elektra/core.h>
+#include <elektra/plugin/plugin.h>
 
 int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey);
 int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * handle, KeySet * definition, Key * parentKey);

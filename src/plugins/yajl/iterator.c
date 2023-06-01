@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "iterator.h"
+#include "./iterator.h"
 
 keyNameReverseIterator elektraKeyNameGetReverseIterator (const Key * k)
 {
@@ -44,13 +44,13 @@ int elektraKeyNameReverseNext (keyNameReverseIterator * it)
 	while (real >= it->rend)
 	{
 		--real;
-		while (real >= it->rend && *real != KDB_PATH_SEPARATOR)
+		while (real >= it->rend && *real != '/')
 		{
 			--real;
 		}
 
 		size_t backslashes = 0;
-		while (real - backslashes > it->rend && *(real - backslashes - 1) == KDB_PATH_ESCAPE)
+		while (real - backslashes > it->rend && *(real - backslashes - 1) == '\\')
 		{
 			++backslashes;
 		}

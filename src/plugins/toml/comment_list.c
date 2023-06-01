@@ -7,17 +7,17 @@
  *
  */
 
-#include "comment_list.h"
+#include "./comment_list.h"
 
-#include <kdb.h>
-#include <kdbassert.h>
-#include <kdbhelper.h>
+#include <elektra/core/key.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/old_helper.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "error.h"
-#include "utility.h"
+#include "./error.h"
+#include "./utility.h"
 
 static int keyAddComment (Key * key, const char * commentStr, const char * origStr, size_t index);
 

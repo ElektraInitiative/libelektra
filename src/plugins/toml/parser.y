@@ -13,10 +13,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdbhelper.h>
-#include "error.h"
-#include "scalar.h"
-#include "driver.h"
+#include <internal/utility/old_helper.h>
+#include "./error.h"
+#include "./scalar.h"
+#include "./driver.h"
 
 #ifndef YY_TYPEDEF_YY_SCANNER_T
 #define YY_TYPEDEF_YY_SCANNER_T

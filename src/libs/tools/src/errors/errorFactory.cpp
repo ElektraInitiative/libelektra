@@ -1,8 +1,10 @@
 
-#include "errors/errorFactory.hpp"
-#include "errors/errorTypes.hpp"
-#include "errors/warningFactory.hpp"
-#include <kdberrors.h> // for code and description constants
+#include <elektra/core/errors.h> // for code and description constants
+
+#include <errors/errorFactory.hpp>
+#include <errors/errorTypes.hpp>
+#include <errors/warningFactory.hpp>
+
 #include <keyset.hpp>
 
 namespace kdb

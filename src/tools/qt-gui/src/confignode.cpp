@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "confignode.hpp"
-#include "treeviewmodel.hpp"
+#include "./confignode.hpp"
+#include "./treeviewmodel.hpp"
 
 using namespace kdb;
 

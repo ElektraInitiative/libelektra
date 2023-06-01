@@ -6,8 +6,10 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdb.h>
-#include <kdbprivate.h>
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/core/namespace.h>
+#include <internal/kdbprivate.h>
 #include <stdlib.h>
 
 Key * backendsFindParent (KeySet * backends, const Key * key)

@@ -9,8 +9,8 @@
 #ifndef EDITKEYCOMMAND_HPP
 #define EDITKEYCOMMAND_HPP
 
-#include "datacontainer.hpp"
-#include "treeviewmodel.hpp"
+#include "./datacontainer.hpp"
+#include "./treeviewmodel.hpp"
 #include <QUndoCommand>
 
 /**

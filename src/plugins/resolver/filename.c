@@ -6,11 +6,15 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "resolver.h"
+#include "./resolver.h"
+
+#include <elektra/type/types.h>
+
+#include <internal/config.h>
+#include <internal/utility/old_helper.h>
+#include <internal/utility/string.h>
 
 #include <errno.h>
-#include <kdbhelper.h>
-#include <kdbtypes.h>
 #include <libgen.h>
 #include <pwd.h>
 #include <stdbool.h>

@@ -20,14 +20,14 @@
 #include <sys/wait.h>  // waitpit()
 #include <unistd.h>    // ftruncate(), pipe(), fork()
 
-#include <kdbconfig.h>
-#include <kdbprivate.h>
+#include <internal/config.h>
+#include <internal/kdbprivate.h>
 
 #include <tests_plugin.h>
 
-#include "dynarray.h"
-#include "internal.h"
-#include "mmapstorage.h"
+#include "./dynarray.h"
+#include "./internal.h"
+#include "./mmapstorage.h"
 
 /* -- Macros ---------------------------------------------------------------------------------------------------------------------------- */
 

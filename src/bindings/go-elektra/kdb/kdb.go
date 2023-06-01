@@ -1,7 +1,7 @@
 package kdb
 
 // #cgo pkg-config: elektra
-// #include <kdb.h>
+// #include <elektra/kdb.h>
 import "C"
 
 import (

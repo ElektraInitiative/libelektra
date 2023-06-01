@@ -12,12 +12,12 @@
 #include <backends.hpp>
 
 
+#include <elektra/plugin/plugin.h>
 #include <helper/keyhelper.hpp>
-#include <kdbmodule.h>
-#include <kdbplugin.h>
-#include <kdbprivate.h>
+#include <internal/kdbprivate.h>
+#include <internal/pluginload/module.h>
 
-#include <kdbease.h> // for ckdb::elektraArrayIncName
+#include <elektra/ease/array.h> // for ckdb::elektraArrayIncName
 
 #include <algorithm>
 

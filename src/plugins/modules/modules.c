@@ -7,11 +7,11 @@
  *
  */
 
-#include "modules.h"
+#include "./modules.h"
 
-#include <kdberrors.h>
-#include <kdbhelper.h>
-#include <kdbprivate.h> // for struct _Plugin internals
+#include <elektra/core/errors.h>
+#include <internal/kdbprivate.h> // for struct _Plugin internals
+#include <internal/utility/old_helper.h>
 
 /**
  * The modules backend is automatically configured by libelektra-kdb.

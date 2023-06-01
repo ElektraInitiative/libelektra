@@ -7,10 +7,9 @@
  *
  */
 
-#include "version.h"
+#include "./version.h"
 
-#include <kdbprivate.h> // for keyReplacePrefix
-#include <kdbversion.h>
+#include <internal/kdbprivate.h> // for keyReplacePrefix
 
 int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * handle ELEKTRA_UNUSED, KeySet * definition ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {

@@ -6,11 +6,11 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "treeviewmodel.hpp"
+#include "./treeviewmodel.hpp"
 
 #include <backends.hpp>
-#include <kdbconfig.h> // for DEBUG and VERBOSE
-#include <kdbease.h>
+#include <elektra/ease/array.h>
+#include <internal/config.h> // for DEBUG and VERBOSE
 #include <modules.hpp>
 #include <plugin.hpp>
 #include <plugins.hpp>
@@ -20,7 +20,7 @@
 #include <QtDBus/QtDBus>
 #endif
 
-#include "kdblogger.h"
+#include <internal/utility/logger.h>
 #include <merging/automergeconfiguration.hpp>
 #include <merging/automergestrategy.hpp>
 #include <merging/mergeconflictstrategy.hpp>

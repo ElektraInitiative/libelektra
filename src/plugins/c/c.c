@@ -7,10 +7,13 @@
  *
  */
 
-#include "c.h"
+#include "./c.h"
 
-#include <kdberrors.h>
-#include <kdbhelper.h>
+#include <elektra/core/errors.h>
+
+#include <internal/macros/attributes.h>
+#include <internal/macros/plugin_errors.h>
+#include <internal/utility/old_helper.h>
 
 #include <ctype.h>
 #include <stdio.h>

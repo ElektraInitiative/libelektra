@@ -6,13 +6,12 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "fstab.h"
+#include "./fstab.h"
 
-#ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
-#endif
-
-#include <kdblogger.h>
+#include <internal/config.h>
+#include <internal/macros/os.h>
+#include <internal/macros/plugin_errors.h>
+#include <internal/utility/logger.h>
 
 #define MAX_NUMBER_SIZE 10
 
@@ -71,7 +70,7 @@ int elektraFstabGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 			keyNew ("system:/elektra/modules/fstab/exports/set",
 				KEY_FUNC, elektraFstabSet,
 				KEY_END),
-#include "readme_fstab.c"
+#include "./readme_fstab.c"
 			keyNew ("system:/elektra/modules/fstab/infos/version",
 				KEY_VALUE, PLUGINVERSION, KEY_END),
 			keyNew ("system:/elektra/modules/fstab/config/needs",

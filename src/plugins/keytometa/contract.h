@@ -24,7 +24,7 @@ ksNew (30,
 			keyNew ("system:/elektra/modules/keytometa/exports/close",
 				KEY_FUNC, elektraKeyToMetaClose,
 				KEY_END),
-#include "readme_keytometa.c"
+#include "./readme_keytometa.c"
 			keyNew ("system:/elektra/modules/keytometa/infos",
 				KEY_VALUE, "All information you want to know", KEY_END),
 			keyNew ("system:/elektra/modules/keytometa/infos/version",

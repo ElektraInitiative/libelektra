@@ -7,8 +7,8 @@
  *
  */
 
-#include "floathelper.h"
-#include <kdbconfig.h>
+#include "./floathelper.h"
+#include <internal/config.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

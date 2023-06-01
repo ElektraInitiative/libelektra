@@ -7,14 +7,13 @@
  *
  */
 
-#ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
-#endif
+#include <internal/config.h>
 
-#include "dbus.h"
+#include "./dbus.h"
 
-#include <kdbchangetracking.h>
-#include <kdbhelper.h>
+#include <elektra/changetracking.h>
+
+#include <internal/utility/old_helper.h>
 
 int elektraDbusOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {

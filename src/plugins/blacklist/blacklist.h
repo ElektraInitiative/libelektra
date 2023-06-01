@@ -10,7 +10,8 @@
 #ifndef ELEKTRA_PLUGIN_BLACKLIST_H
 #define ELEKTRA_PLUGIN_BLACKLIST_H
 
-#include <kdbplugin.h>
+#include <elektra/core.h>
+#include <elektra/plugin/plugin.h>
 
 
 int elektraBlacklistGet (Plugin * handle, KeySet * ks, Key * parentKey);

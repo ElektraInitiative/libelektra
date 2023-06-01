@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "validation.h"
+#include "./validation.h"
 
 /*
  * Lookup for a key which any of its @p where components matches the

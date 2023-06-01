@@ -6,14 +6,14 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "zeromqsend.h"
+#include "./zeromqsend.h"
 
 #include <stdio.h>  // printf() & co
 #include <time.h>   // time()
 #include <unistd.h> // usleep()
 
-#include <kdberrors.h>	 // TIMEOUT ERROR
-#include <kdbioplugin.h> // ElektraIoPluginSetBinding
+#include <elektra/core/errors.h> // TIMEOUT ERROR
+#include <elektra/io/plugin.h>	 // ElektraIoPluginSetBinding
 
 #include <tests.h>
 #include <tests_plugin.h>

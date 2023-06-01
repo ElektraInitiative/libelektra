@@ -11,4 +11,4 @@ Description: Elektra Highlevel API
 Requires:
 Version: @KDB_VERSION@
 Libs: -L${libdir} @LIBRARIES@
-Cflags: -I${includedir}
+Cflags: -I${prefix}/include

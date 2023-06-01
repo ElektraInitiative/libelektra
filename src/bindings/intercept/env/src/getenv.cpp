@@ -16,13 +16,12 @@
 #define _GNU_SOURCE // for RTLD_NEXT (except BSDI)
 #endif
 
-#include <kdbconfig.h>
+#include <internal/config.h>
 #include <kdbgetenv.h>
-#include <kdbmacros.h>
 
 #include <kdbcontext.hpp>
 
-#include <kdbhelper.h>
+#include <internal/utility/old_helper.h>
 
 #include <dlfcn.h>
 #include <libgen.h>
@@ -144,7 +143,7 @@ std::chrono::system_clock::time_point elektraReloadNext;
 std::shared_ptr<ostream> elektraLog;
 bool elektraInGetEnv;
 KeySet * elektraDocu = ksNew (20,
-#include "readme_elektrify-getenv.c"
+#include "./readme_elektrify-getenv.c"
 			      KS_END);
 
 int to_ (int c)

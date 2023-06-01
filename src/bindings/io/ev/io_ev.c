@@ -10,10 +10,10 @@
 
 #include <ev.h>
 
-#include <kdbassert.h>
-#include <kdbhelper.h>
-#include <kdbio.h>
-#include <kdblogger.h>
+#include <elektra/io/api.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/logger.h>
+#include <internal/utility/old_helper.h>
 
 typedef struct ev_loop ev_loop_t;
 

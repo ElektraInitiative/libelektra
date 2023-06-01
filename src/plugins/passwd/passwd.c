@@ -7,10 +7,10 @@
  *
  */
 
-#include "passwd.h"
+#include "./passwd.h"
 
-#include <kdberrors.h>
-#include <kdbhelper.h>
+#include <elektra/core/errors.h>
+#include <internal/utility/old_helper.h>
 
 #include <pwd.h>
 #include <stdio.h>

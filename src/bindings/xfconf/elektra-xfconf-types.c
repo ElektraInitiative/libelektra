@@ -1,7 +1,7 @@
-#include "elektra-xfconf-types.h"
-#include "elektra-xfconf-util.h"
+#include "./elektra-xfconf-types.h"
+#include "./elektra-xfconf-util.h"
 
-#include <elektra.h>
+#include <internal/macros/attributes.h>
 
 ELEKTRA_UNUSED GType xfconf_uint16_get_type (void)
 {

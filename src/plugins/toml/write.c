@@ -7,25 +7,26 @@
  */
 
 
-#include <kdb.h>
-#include <kdbassert.h>
-#include <kdbease.h>
-#include <kdberrors.h>
-#include <kdbhelper.h>
-#include <kdbmeta.h>
+#include <elektra/core/errors.h>
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/ease/meta.h>
+
+#include <internal/utility/assert.h>
+#include <internal/utility/old_helper.h>
 #include <regex.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "codepoint.h"
-#include "error.h"
-#include "integer.h"
-#include "node.h"
-#include "prepare.h"
-#include "type.h"
-#include "utility.h"
-#include "write.h"
+#include "./codepoint.h"
+#include "./error.h"
+#include "./integer.h"
+#include "./node.h"
+#include "./prepare.h"
+#include "./type.h"
+#include "./utility.h"
+#include "./write.h"
 
 #define ASCII_CONTROL                                                                                                                      \
 	"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F"                                                                 \

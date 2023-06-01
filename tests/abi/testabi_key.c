@@ -6,6 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include <internal/macros/os.h>
 #include <tests.h>
 
 #define NUMBER_OF_NAMESPACES 6

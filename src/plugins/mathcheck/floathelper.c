@@ -6,13 +6,13 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdbhelper.h>
+#include <internal/utility/old_helper.h>
 #include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "floathelper.h"
+#include "./floathelper.h"
 
 char * elektraFtoA (char * buffer, ssize_t bufSize, double val)
 {

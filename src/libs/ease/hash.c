@@ -6,15 +6,16 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdb.h>
-#include <kdbease.h>
-#include <kdberrors.h>
-#include <kdbtypes.h>
+#include <elektra/core/errors.h>
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/ease/spec.h>
+#include <elektra/type/types.h>
 
 #include <stdio.h>
 #include <string.h>
 
-#include "sha-256.h"
+#include "./sha-256.h"
 
 static void hash_to_string (char string[65], const uint8_t hash[32]);
 

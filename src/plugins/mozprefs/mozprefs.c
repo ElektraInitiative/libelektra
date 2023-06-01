@@ -7,10 +7,10 @@
  *
  */
 
-#include "mozprefs.h"
+#include "./mozprefs.h"
 
-#include <kdbhelper.h>
-#include <kdbutility.h>
+#include <internal/utility/old_helper.h>
+#include <internal/utility/string.h>
 
 #include <ctype.h>
 #include <stdio.h>

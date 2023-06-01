@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "visit_context.hpp"
+#include "./visit_context.hpp"
 #include <kdb.hpp>
 
 #include <iostream>

@@ -1,10 +1,11 @@
-#include "kdbmerge.h"
-#include "kdb.h"
-#include "kdbassert.h"
-#include "kdbease.h"
-#include "kdberrors.h"
-#include "kdblogger.h"
-#include "kdbprivate.h" // for ksFindHierarchy
+#include <elektra/core/errors.h>
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/ease/array.h>
+#include <elektra/merge.h>
+#include <internal/kdbprivate.h> // for ksFindHierarchy
+#include <internal/utility/assert.h>
+#include <internal/utility/logger.h>
 
 #include <stdbool.h>
 #include <stdio.h>

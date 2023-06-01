@@ -1,8 +1,14 @@
-#include "elektra-xfconf-channel.h"
-#include "elektra-xfconf-binding.h"
-#include "elektra-xfconf-util.h"
-#include "elektra-xfconf.h"
-#include <kdbhelper.h>
+#include "./elektra-xfconf-channel.h"
+#include "./elektra-xfconf-binding.h"
+#include "./elektra-xfconf-util.h"
+#include "./elektra-xfconf.h"
+
+#include <elektra/core.h>
+#include <elektra/kdb/kdb.h>
+
+#include <internal/macros/attributes.h>
+#include <internal/utility/old_helper.h>
+
 #include <sys/mman.h>
 
 #define XFCONF_GET_TYPED(TYP, FUNC, SET_FUNC)                                                                                              \

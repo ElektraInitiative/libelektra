@@ -12,7 +12,7 @@
 #include <backend.hpp>
 #include <backends.hpp>
 
-#include <kdbconfig.h>
+#include <internal/config.h>
 
 namespace testing
 {

@@ -8,16 +8,19 @@
  */
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
-#include "crypto.h"
-#include "crypto_kdb_functions.h"
-#include "gcrypt_operations.h"
-#include "gpg.h"
-#include "helper.h"
-#include <kdb.h>
-#include <kdberrors.h>
-#include <kdbtypes.h>
+#include "./crypto.h"
+#include "./crypto_kdb_functions.h"
+#include "./gcrypt_operations.h"
+#include "./gpg.h"
+#include "./helper.h"
+#include <elektra/core/errors.h>
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/core/namespace.h>
+#include <elektra/type/types.h>
+#include <internal/utility/old_helper.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
@@ -369,7 +372,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks, Key * parentKey
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/" ELEKTRA_PLUGIN_NAME))
 	{
 		KeySet * moduleConfig = ksNew (30,
-#include "contract.h"
+#include "./contract.h"
 					       KS_END);
 		ksAppend (ks, moduleConfig);
 		ksDel (moduleConfig);

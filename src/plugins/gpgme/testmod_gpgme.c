@@ -8,8 +8,17 @@
  *
  */
 
+#include <elektra/core.h>
+#include <elektra/core/errors.h>
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/ease/meta.h>
+#include <elektra/plugin/plugin.h>
 #include <gpgme.h>
-#include <kdbinternal.h>
+#include <internal/config.h>
+#include <internal/kdbprivate.h>
+#include <internal/pluginload/module.h>
+#include <internal/utility/logger.h>
 #include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,7 +27,7 @@
 #include <tests_plugin.h>
 #include <unistd.h>
 
-#include "gpgme.h"
+#include "./gpgme.h"
 
 #include "../crypto/gpgagent_teardown.h"
 

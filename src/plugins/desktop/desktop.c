@@ -7,16 +7,17 @@
  *
  */
 
-#include "desktop.h"
+#include "./desktop.h"
 
 #include <ctype.h>   // for tolower
 #include <stdlib.h>  // for getenv
 #include <strings.h> // for strcasecmp
 
-#include <kdberrors.h>
-#include <kdbhelper.h>
-#include <kdblogger.h>
-#include <kdbmacros.h>
+#include <elektra/core/errors.h>
+#include <internal/macros/attributes.h>
+#include <internal/macros/plugin_errors.h>
+#include <internal/utility/logger.h>
+#include <internal/utility/old_helper.h>
 
 
 int elektraDesktopGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)

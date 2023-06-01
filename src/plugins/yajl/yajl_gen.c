@@ -6,8 +6,11 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "yajl_gen.h"
+#include "./yajl_gen.h"
 #include <errno.h>
+
+#include <internal/macros/plugin_errors.h>
+#include <internal/utility/old_helper.h>
 
 
 /**

@@ -7,16 +7,17 @@
  *
  */
 
+#include <elektra/core/errors.h>
+#include <elektra/ease/meta.h>
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
 #include <ctype.h>
+#include <elektra/ease/meta.h>
 #include <errno.h>
-#include <kdbease.h>
-#include <kdberrors.h>
-#include <kdbmeta.h>
+#include <internal/utility/old_helper.h>
 #include <math.h>
 #include <regex.h>
 #include <stdio.h>
@@ -24,7 +25,7 @@
 #include <string.h>
 #include <sys/types.h>
 
-#include "conditionals.h"
+#include "./conditionals.h"
 
 #define EPSILON 0.00001
 

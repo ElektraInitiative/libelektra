@@ -6,11 +6,11 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdbassert.h>
-#include <kdbhelper.h>
-#include <kdblogger.h>
-#include <kdbopmphmpredictor.h>
-#include <kdbprivate.h>
+#include <internal/core/opmphmpredictor.h>
+#include <internal/kdbprivate.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/logger.h>
+#include <internal/utility/old_helper.h>
 #include <stdlib.h>
 #include <string.h>
 

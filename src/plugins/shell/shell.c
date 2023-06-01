@@ -7,10 +7,10 @@
  *
  */
 
-#include "shell.h"
+#include "./shell.h"
+#include <elektra/core/errors.h>
 #include <errno.h>
-#include <kdberrors.h>
-#include <kdbhelper.h>
+#include <internal/utility/old_helper.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>

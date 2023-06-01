@@ -10,13 +10,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <kdbio.h>
-#include <kdbiotest.h>
+#include <elektra/io/api.h>
+#include <internal/io/test.h>
 #include <tests.h>
 
 #include <glib.h>
 
-#include <kdbio/glib.h>
+#include <elektra/io/glib.h>
 
 GMainLoop * loop;
 GMainContext * context;

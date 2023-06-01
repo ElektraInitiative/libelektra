@@ -11,13 +11,12 @@
 #include <cmdline.hpp>
 #include <kdb.hpp>
 
-#include <kdbhelper.h>
-#include <kdbmacros.h>
+#include <internal/macros/attributes.h>
+#include <internal/utility/old_helper.h>
 
 #include <iostream>
 
-#include <kdbmacros.h>
-
+#include <internal/macros/attributes.h>
 using namespace std;
 using namespace kdb;
 

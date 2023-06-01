@@ -9,7 +9,8 @@
 
 #include <string.h>
 
-#include <kdbprivate.h>
+#include <internal/kdbprivate.h>
+#include <internal/macros/os.h>
 
 /**
  * @brief Pop key at given cursor position

@@ -1,4 +1,4 @@
-#include <kdbdiff.h>
+#include <elektra/diff.h>
 #include <tests_internal.h>
 
 ElektraDiff * demoDiff = NULL;

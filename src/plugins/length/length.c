@@ -7,9 +7,10 @@
  *
  */
 
-#include "length.h"
-#include <kdbease.h>
-#include <kdberrors.h>
+#include "./length.h"
+#include <elektra/core/errors.h>
+#include <elektra/type/conversion.h>
+#include <internal/utility/old_helper.h>
 #include <stdlib.h>
 
 

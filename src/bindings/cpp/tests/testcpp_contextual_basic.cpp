@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "kdbconfig.h"
+#include <internal/config.h>
 
 #include <kdbcontext.hpp>
 #include <kdbthread.hpp>

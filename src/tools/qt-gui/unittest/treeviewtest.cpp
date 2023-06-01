@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "treeviewtest.hpp"
+#include "./treeviewtest.hpp"
 #include <kdb.hpp>
 
 using namespace kdb;

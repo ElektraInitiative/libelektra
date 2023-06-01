@@ -7,7 +7,7 @@
  *
  */
 
-#include "cpptemplate_delegate.hpp"
+#include "./cpptemplate_delegate.hpp"
 
 using kdb::Key;
 using kdb::KeySet;

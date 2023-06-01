@@ -1,7 +1,8 @@
-#include "referencegraph.h"
-#include <kdb.h>
-#include <kdbease.h>
-#include <kdbhelper.h>
+#include "./referencegraph.h"
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/ease/array.h>
+#include <internal/utility/old_helper.h>
 #include <stdlib.h>
 
 struct _RefGraph

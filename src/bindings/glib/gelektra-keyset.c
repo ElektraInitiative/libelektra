@@ -1,4 +1,4 @@
-#include "gelektra-keyset.h"
+#include <elektra/glib/gelektra-keyset.h>
 #include <string.h>
 
 G_DEFINE_TYPE (GElektraKeySet, gelektra_keyset, G_TYPE_OBJECT)

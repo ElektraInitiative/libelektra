@@ -12,8 +12,9 @@
 #include <regex.h>
 #include <sys/types.h>
 
-#include <kdberrors.h>
-#include <kdbplugin.h>
+#include <elektra/core.h>
+#include <elektra/core/errors.h>
+#include <elektra/plugin/plugin.h>
 
 int elektraValidationOpen (Plugin * handle, Key * errorKey);
 int elektraValidationClose (Plugin * handle, Key * errorKey);

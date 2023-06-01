@@ -9,11 +9,13 @@
 
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
-#include "lineendings.h"
-#include <kdberrors.h>
+#include "./lineendings.h"
+#include <elektra/core/errors.h>
+#include <internal/macros/attributes.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>

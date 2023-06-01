@@ -7,7 +7,7 @@
  */
 
 #ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
 #ifdef HAVE_LOCALE_H
@@ -30,11 +30,16 @@
 #include <string.h>
 #endif
 
-#include <kdbassert.h>
-#include <kdberrors.h>
-#include <kdbinternal.h>
-#include <kdbversion.h>
-
+#include <elektra/core/errors.h>
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/ease/meta.h>
+#include <elektra/plugin/plugin.h>
+#include <internal/config.h>
+#include <internal/kdbprivate.h>
+#include <internal/pluginload/module.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/logger.h>
 /**
  * Opens a plugin.
  *

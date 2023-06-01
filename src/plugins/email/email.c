@@ -7,11 +7,12 @@
  *
  */
 
-#include <kdberrors.h>
+#include <elektra/core/errors.h>
+#include <internal/utility/old_helper.h>
 #include <regex.h>
 #include <stdio.h>
 
-#include "email.h"
+#include "./email.h"
 
 static int validateEmail (Key * key, Key * parentKey)
 {

@@ -12,9 +12,9 @@
 #include <backends.hpp>
 
 #include <gtest/gtest.h>
+#include <internal/config.h>
 #include <iostream>
 #include <kdb.hpp>
-#include <kdbconfig.h>
 #include <string>
 
 // FIXME [new_backend]: tests disabled, mount tooling will be rewritten in C

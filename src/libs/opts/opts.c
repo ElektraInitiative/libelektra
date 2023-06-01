@@ -6,17 +6,18 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdbopts.h>
+#include <elektra/opts.h>
 
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdbease.h>
-#include <kdbhelper.h>
-#include <kdbmeta.h>
+#include <elektra/core/errors.h>
+#include <elektra/ease/array.h>
+#include <elektra/ease/meta.h>
+#include <elektra/type/conversion.h>
+#include <internal/utility/old_helper.h>
 
-#include <kdbassert.h>
-#include <kdberrors.h>
+#include <internal/utility/assert.h>
 
 #ifdef _WIN32
 static const char SEP_ENV_VALUE = ';';

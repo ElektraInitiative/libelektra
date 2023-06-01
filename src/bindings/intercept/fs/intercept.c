@@ -1,7 +1,9 @@
 #define _GNU_SOURCE
 #include <dlfcn.h>
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/kdb/kdb.h>
 #include <fcntl.h>
-#include <kdb.h>
 #include <libgen.h>
 #include <limits.h>
 #include <linux/limits.h>
@@ -15,9 +17,12 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include <kdb.h>
-#include <kdbmodule.h>
-#include <kdbprivate.h>
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/kdb/kdb.h>
+#include <internal/kdbprivate.h>
+#include <internal/macros/os.h>
+#include <internal/pluginload/module.h>
 
 #define PRELOAD_PATH "/elektra/intercept/open"
 #define TV_MAX_DIGITS 26

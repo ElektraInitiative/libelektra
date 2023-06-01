@@ -9,7 +9,7 @@
 #ifndef PRINTVISITOR_HPP
 #define PRINTVISITOR_HPP
 
-#include "visitor.hpp"
+#include "./visitor.hpp"
 
 /**
  * @brief The PrintVisitor class

@@ -7,8 +7,8 @@
  *
  */
 
-#include "keylist.h"
-#include <kdbhelper.h>
+#include "./keylist.h"
+#include <internal/utility/old_helper.h>
 
 /**
  * @brief initializes the internal key list

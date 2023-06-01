@@ -235,7 +235,8 @@
 #undef ELEKTRA_SET_ERROR_GET
 #undef ELEKTRA_SET_ERROR_SET
 
-#include <kdbplugin.h>
+#include <elektra/core.h>
+#include <elektra/plugin/plugin.h>
 
 
 /**

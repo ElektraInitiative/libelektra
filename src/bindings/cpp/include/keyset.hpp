@@ -9,11 +9,17 @@
 #ifndef ELEKTRA_KEYSET_HPP
 #define ELEKTRA_KEYSET_HPP
 
-#ifndef ELEKTRA_WRONG
+#undef ELEKTRA_WRONG
+#if defined(__clang__) // clang
+#define ELEKTRA_WRONG __attribute__ ((unused)) __attribute__ ((noinline)) __attribute__ ((unavailable ("wrong usage of API")))
+#elif defined(__GNUC__) // gcc compatible but not clang
+#define ELEKTRA_WRONG __attribute__ ((unused)) __attribute__ ((noinline)) __attribute__ ((error ("wrong usage of API")))
+#else
 #define ELEKTRA_WRONG // make swig happy
 #endif
 
-#include <kdb.h>
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
 #include <key.hpp>
 #include <string>
 

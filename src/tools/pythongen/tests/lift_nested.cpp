@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "lift_nested.hpp"
+#include "./lift_nested.hpp"
 
 #include <iostream>
 

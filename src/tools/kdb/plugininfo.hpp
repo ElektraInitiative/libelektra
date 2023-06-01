@@ -9,7 +9,7 @@
 #ifndef INFO_HPP
 #define INFO_HPP
 
-#include "coloredkdbio.hpp"
+#include "./coloredkdbio.hpp"
 #include <command.hpp>
 
 #include <kdb.hpp>

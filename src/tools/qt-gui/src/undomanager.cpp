@@ -6,13 +6,13 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "undomanager.hpp"
-#include "copykeycommand.hpp"
-#include "cutkeycommand.hpp"
-#include "deletekeycommand.hpp"
-#include "editkeycommand.hpp"
-#include "importconfigurationcommand.hpp"
-#include "newkeycommand.hpp"
+#include "./undomanager.hpp"
+#include "./copykeycommand.hpp"
+#include "./cutkeycommand.hpp"
+#include "./deletekeycommand.hpp"
+#include "./editkeycommand.hpp"
+#include "./importconfigurationcommand.hpp"
+#include "./newkeycommand.hpp"
 #include <QUndoStack>
 
 UndoManager::UndoManager (QObject * parentManager) : QObject (parentManager), m_undoStack (new QUndoStack (this)), m_clipboardEmpty (true)

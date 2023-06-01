@@ -6,9 +6,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "dbusrecv.h"
+#include "./dbusrecv.h"
 
-#include <kdblogger.h>
+#include <internal/utility/logger.h>
 
 #define RECEIVE_MATCH_RULE "type='signal',interface='org.libelektra',path='/org/libelektra/configuration'"
 

@@ -7,21 +7,21 @@
  *
  */
 
-#include "rename.h"
+#include "./rename.h"
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
 
 #include <ctype.h>
 #include <errno.h>
-#include <kdbhelper.h>
+#include <internal/utility/old_helper.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <kdbprivate.h> // for access to sync bit (keyClearSync)
+#include <internal/kdbprivate.h>
 
 #define ELEKTRA_ORIGINAL_NAME_META "origname"
 #define TOLOWER (-1)
@@ -248,7 +248,7 @@ int elektraRenameGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/rename"))
 	{
 		KeySet * info =
-#include "contract.h"
+#include "./contract.h"
 
 			ksAppend (returned, info);
 		ksDel (info);

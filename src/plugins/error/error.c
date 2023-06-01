@@ -6,10 +6,10 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "error.h"
+#include "./error.h"
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
 #include <stdlib.h>
@@ -55,7 +55,7 @@ int elektraErrorGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 				     keyNew ("system:/elektra/modules/error/exports/open", KEY_FUNC, elektraErrorOpen, KEY_END),
 				     keyNew ("system:/elektra/modules/error/exports/get", KEY_FUNC, elektraErrorGet, KEY_END),
 				     keyNew ("system:/elektra/modules/error/exports/set", KEY_FUNC, elektraErrorSet, KEY_END),
-#include "readme_error.c"
+#include "./readme_error.c"
 				     keyNew ("system:/elektra/modules/error/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
 		ksDel (n);
 

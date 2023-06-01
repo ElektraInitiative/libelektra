@@ -8,7 +8,7 @@
  */
 
 #ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
 #include <stdio.h>
@@ -19,7 +19,7 @@
 #include <string.h>
 #endif
 
-#include "keymetaformatting.h"
+#include "./keymetaformatting.h"
 #include <tests_plugin.h>
 
 void test_readHostsSimple (char * fileName)

@@ -9,8 +9,8 @@
 #ifndef ELEKTRA_PLUGIN_YAJL_ITERATOR_H
 #define ELEKTRA_PLUGIN_YAJL_ITERATOR_H
 
-#include "kdb.h"
-
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
 typedef struct _keyNameReverseIterator
 {
 	const char * rbegin;  ///< begin of name (constant during iteration)

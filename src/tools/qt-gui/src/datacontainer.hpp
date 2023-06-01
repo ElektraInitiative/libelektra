@@ -9,7 +9,7 @@
 #ifndef DATACONTAINER_HPP
 #define DATACONTAINER_HPP
 
-#include "treeviewmodel.hpp"
+#include "./treeviewmodel.hpp"
 #include <QObject>
 
 /**

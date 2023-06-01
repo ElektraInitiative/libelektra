@@ -6,10 +6,10 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "zeromqsend.h"
+#include "./zeromqsend.h"
 
-#include <kdbhelper.h>
-#include <kdblogger.h>
+#include <internal/utility/logger.h>
+#include <internal/utility/old_helper.h>
 
 #include <time.h>   // clock_gettime()
 #include <unistd.h> // usleep()

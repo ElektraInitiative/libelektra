@@ -10,9 +10,10 @@
 #ifndef ELEKTRA_PLUGIN_CRYPTO_HELPER_H
 #define ELEKTRA_PLUGIN_CRYPTO_HELPER_H
 
-#include "crypto.h"
-#include <kdb.h>
-#include <kdbtypes.h>
+#include "./crypto.h"
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/type/types.h>
 
 int ELEKTRA_PLUGIN_FUNCTION (getSaltFromMetakey) (Key * errorKey, Key * k, kdb_octet_t ** salt, kdb_unsigned_long_t * saltLen);
 int ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_octet_t ** salt, kdb_unsigned_long_t * saltLen);

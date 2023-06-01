@@ -6,11 +6,11 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "network.h"
+#include "./network.h"
 
-#ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
-#endif
+#include <internal/config.h>
+#include <internal/utility/old_helper.h>
+
 
 /* Obtain address(es) matching host/port */
 int elektraNetworkAddrInfo (Key * toCheck)
@@ -170,7 +170,7 @@ int elektraNetworkGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 				     KEY_END),
 			     keyNew ("system:/elektra/modules/network/exports/elektraPortInfo", KEY_FUNC, elektraNetworkAddrInfo, KEY_END),
 
-#include "readme_network.c"
+#include "./readme_network.c"
 
 			     keyNew ("system:/elektra/modules/network/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
 	ksDel (n);

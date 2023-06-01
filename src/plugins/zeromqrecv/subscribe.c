@@ -6,10 +6,10 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "zeromqrecv.h"
+#include "./zeromqrecv.h"
 
-#include <kdbhelper.h>
-#include <kdblogger.h>
+#include <internal/utility/logger.h>
+#include <internal/utility/old_helper.h>
 
 static int setupNotificationCallback (Plugin * handle)
 {

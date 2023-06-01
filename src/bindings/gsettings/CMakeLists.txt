@@ -1,3 +1,4 @@
+# TODO: why a separate project?
 project (
 	elektrasettings
 	VERSION 0.1.1
@@ -41,20 +42,10 @@ set (
 	50
 	CACHE STRING "GIO Module Priority. Higher than 100 means the Elektra gsettings backend will be default.")
 target_compile_definitions (elektrasettings PRIVATE G_ELEKTRA_SETTINGS_MODULE_PRIORITY=${GSETTINGS_MODULE_PRIORITY})
+include_directories (${CMAKE_SOURCE_DIR}/src/include)
 if (GELEKTRA_LIBRARY)
 	pkg_get_variable (GIO_MODULE_DIR gio-2.0 giomoduledir)
 	add_dependencies (elektrasettings elektra_config_headers)
-	file (MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/include/elektra/)
-	file (GLOB GS_ELEKTRA_HEADERS ../glib/*.h)
-	foreach (filename ${GS_ELEKTRA_HEADERS})
-		configure_file (${filename} ${CMAKE_BINARY_DIR}/include/elektra/ COPYONLY)
-	endforeach ()
-	file (GLOB GS_KDB_HEADERS ${CMAKE_SOURCE_DIR}/src/include/*.h)
-	foreach (filename ${GS_KDB_HEADERS})
-		configure_file (${filename} ${CMAKE_BINARY_DIR}/include/ COPYONLY)
-	endforeach ()
-	include_directories (${CMAKE_BINARY_DIR}/include/)
-	include_directories (${CMAKE_BINARY_DIR}/src/include/)
 	target_link_libraries (elektrasettings ${GLIB_LIBRARIES} ${GMODULE_LIBRARIES} ${GIO_LIBRARIES} ${GELEKTRA_LIBRARY} elektra-core)
 	if (INSTALL_SYSTEM_FILES)
 		install (TARGETS elektrasettings LIBRARY DESTINATION ${GIO_MODULE_DIR})
@@ -65,7 +56,6 @@ else ()
 	if (!GELEKTRA_FOUND)
 		remove_binding (gsettings "elektra glib bindings needed for gsettings backend")
 	endif ()
-	include_directories (${GELEKTRA_INCLUDE_DIRS})
 	target_link_libraries (elektrasettings ${GLIB_LIBRARIES} ${GMODULE_LIBRARIES} ${GIO_LIBRARIES} ${GELEKTRA_LIBRARIES})
 	install (TARGETS elektrasettings LIBRARY DESTINATION ${GIO_MODULE_DIR})
 endif ()

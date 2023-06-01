@@ -11,8 +11,9 @@
 #include <signal.h> // signal
 #include <stdio.h>  // printf
 
-#include <kdb.h> // KDB
-
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/kdb/kdb.h>
 #include <zmq.h> // ZeroMq function
 
 void * context;

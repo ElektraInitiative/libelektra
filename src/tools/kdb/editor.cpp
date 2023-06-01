@@ -11,8 +11,6 @@
 #include <modules.hpp>
 #include <plugindatabase.hpp>
 
-#include <kdbmacros.h>
-
 #include <export.hpp>
 #include <import.hpp>
 
@@ -22,6 +20,8 @@
 #include <mergehelper.hpp>
 #include <merging/metamergestrategy.hpp>
 #include <merging/threewaymerge.hpp>
+
+#include <internal/resolver/stat.h>
 
 using namespace kdb;
 using namespace kdb::tools;

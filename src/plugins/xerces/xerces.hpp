@@ -10,7 +10,8 @@
 #define ELEKTRA_PLUGIN_XERCES_H
 
 extern "C" {
-#include <kdbplugin.h>
+#include <elektra/core.h>
+#include <elektra/plugin/plugin.h>
 
 int elektraXercesOpen (ckdb::Plugin * handle, ckdb::Key * errorKey);
 int elektraXercesClose (ckdb::Plugin * handle, ckdb::Key * errorKey);

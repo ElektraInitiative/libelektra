@@ -11,4 +11,4 @@ Description: Elektra I/O binding using ev
 Requires: elektra-io
 Version: @KDB_VERSION@
 Libs: -L${libdir} -l@IO_VARIANT_LIBRARY@ -lev
-Cflags: -I${includedir}
+Cflags: -I${prefix}/include

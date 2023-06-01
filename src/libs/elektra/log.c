@@ -25,7 +25,7 @@
 #define _GNU_SOURCE /* For asprintf */
 #include <stdio.h>
 
-#include <kdblogger.h>
+#include <internal/utility/logger.h>
 
 #ifdef USE_SYSLOG_SINK
 #include <syslog.h>
@@ -35,7 +35,7 @@
 #include <stdio.h>
 #endif
 
-#include <kdbhelper.h>
+#include <internal/utility/old_helper.h>
 
 #include <stdarg.h>
 #include <stdlib.h>

@@ -9,8 +9,8 @@
 #ifndef IMPORTCONFIGURATIONCOMMAND_H
 #define IMPORTCONFIGURATIONCOMMAND_H
 
-#include "datacontainer.hpp"
-#include "treeviewmodel.hpp"
+#include "./datacontainer.hpp"
+#include "./treeviewmodel.hpp"
 #include <QUndoCommand>
 #include <kdb.hpp>
 

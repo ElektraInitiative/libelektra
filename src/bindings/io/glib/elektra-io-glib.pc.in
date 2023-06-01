@@ -11,4 +11,4 @@ Description: Elektra I/O binding using glib
 Requires: glib-2.0 elektra-io
 Version: @KDB_VERSION@
 Libs: -L${libdir} -l@IO_VARIANT_LIBRARY@
-Cflags: -I${includedir}
+Cflags: -I${prefix}/include

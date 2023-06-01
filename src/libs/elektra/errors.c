@@ -6,7 +6,8 @@
  * @copyright BSD License (see doc/COPYING or https://www.libelektra.org)
  */
 
-#include <kdberrors.h>
+#include <elektra/core/errors.h>
+#include <internal/utility/old_helper.h>
 
 #include <string.h>
 

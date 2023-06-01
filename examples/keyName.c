@@ -9,8 +9,7 @@
 #include <assert.h>
 #include <string.h>
 
-#include <kdb.h>
-
+#include <elektra/core/key.h>
 int main (void)
 {
 	// clang-format off

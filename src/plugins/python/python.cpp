@@ -14,20 +14,20 @@
 #include <Python.h>
 
 #ifndef HAVE_KDBCONFIG
-#include <kdbconfig.h>
+#include <internal/config.h>
 #endif
-#include <kdbhelper.h>
+#include <internal/utility/old_helper.h>
 #include SWIG_RUNTIME
-#include "python.hpp"
+#include "./python.hpp"
 
 #include <config.h>
-#include <kdbpluginprocess.h>
+#include <internal/pluginprocess.h>
 #include <key.hpp>
 #include <keyset.hpp>
 #include <libgen.h>
 #include <mutex>
 
-#include <kdberrors.h>
+#include <elektra/core/errors.h>
 using namespace ckdb;
 
 #define PYTHON_PLUGIN_NAME_STR2(x) ELEKTRA_QUOTE (x)

@@ -32,12 +32,12 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <kdbhelper.h>
-#include <kdbinvoke.h>
-#include <kdbopts.h>
-#include <kdbgopts.h>
+#include <elektra/kdb/contracts/gopts.h>
+#include <elektra/opts.h>
+#include <elektra/plugin/invoke.h>
+#include <elektra/type/conversion.h>
 
-#include <elektra/conversion.h>
+#include <internal/utility/old_helper.h>
 
 
 

@@ -6,9 +6,9 @@
  * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  */
 
-#include "spec.h"
+#include "./spec.h"
 
-#include "kdb.h"
+#include <elektra/kdb.h>
 
 #include <tests_plugin.h>
 

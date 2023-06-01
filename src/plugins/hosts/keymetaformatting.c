@@ -7,12 +7,21 @@
  *
  */
 
-#include "keymetaformatting.h"
+#include "./keymetaformatting.h"
 
 #include <ctype.h>
-#include <kdbease.h>
-#include <kdbhelper.h>
-#include <kdbinternal.h>
+#include <elektra/core.h>
+#include <elektra/core/errors.h>
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/ease/array.h>
+#include <elektra/ease/meta.h>
+#include <elektra/plugin/plugin.h>
+#include <internal/config.h>
+#include <internal/kdbprivate.h>
+#include <internal/pluginload/module.h>
+#include <internal/utility/logger.h>
+#include <internal/utility/old_helper.h>
 #include <string.h>
 
 /**

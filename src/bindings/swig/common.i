@@ -6,6 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+%define ELEKTRA_SENTINEL %enddef
+
 %include <attribute.i>
 %include <std_string.i>
 %include <stdint.i>
@@ -13,15 +15,17 @@
 
 %{
   extern "C" {
-    #include "kdbconfig.h"
-    #include "kdb.h"
+    #include <elektra/config.h>
+    #include <internal/config.h>
+    #include <elektra/core/keyset.h>
+    #include <elektra/core/key.h>
   }
 
-  #include "keyexcept.hpp"
-  #include "kdbexcept.hpp"
-  #include "key.hpp"
-  #include "keyset.hpp"
-  #include "kdb.hpp"
+  #include <keyexcept.hpp>
+  #include <kdbexcept.hpp>
+  #include <key.hpp>
+  #include <keyset.hpp>
+  #include <kdb.hpp>
   using namespace kdb;
 %}
 
@@ -48,7 +52,9 @@
 %constant const short VERSION_PATCH = KDB_VERSION_PATCH;
 // we only care about the enums. ignore the c functions
 %ignore ckdb;
-%include "kdb.h"
+%include <elektra/core/keyset.h>
+%include <elektra/core/key.h>
+%include <elektra/core/namespace.h>
 
 
 /* handle exceptions */

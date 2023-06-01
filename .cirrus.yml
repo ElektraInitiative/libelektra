@@ -21,14 +21,12 @@ commands:
     fi
 
     if [ "$ENABLE_ASAN" = 'ON' ]; then
-      KDB=""
-    elif [ "$BUILD_FULL" = 'ON' ]; then
-      KDB=kdb-full
+      RUN_KDB=0
     else
-      KDB=kdb
+      RUN_KDB=1
     fi
 
-    env AUTO_RERUN_TESTS="$AUTO_RERUN_TESTS" KDB="$KDB" sh scripts/dev/ci_run_tests.sh
+    env AUTO_RERUN_TESTS="$AUTO_RERUN_TESTS" RUN_KDB="$RUN_KDB" sh scripts/dev/ci_run_tests.sh
 
 task:
   matrix:
@@ -348,7 +346,7 @@ task:
       -DPLUGINS='dump;list;resolver_fm_hpu_b;spec;sync;yajl'
       -DTOOLS='ALL'
     - *generate
-    - *build
+    - cmake --build "$BUILD_DIR" --target html latex man pdf
 
   tests_script:
     - |

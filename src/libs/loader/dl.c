@@ -22,13 +22,13 @@
   exists.
   */
 
-#include <kdbconfig.h>
-#include <kdbmacros.h>
-
 #include <dlfcn.h>
+#include <internal/config.h>
+#include <internal/macros/attributes.h>
 
-#include <kdberrors.h>
-#include <kdbmodule.h>
+#include <elektra/core/errors.h>
+#include <internal/pluginload/module.h>
+#include <internal/utility/old_helper.h>
 
 #include <stdlib.h>
 #include <string.h>

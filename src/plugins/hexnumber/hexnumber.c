@@ -7,11 +7,13 @@
  *
  */
 
-#include "hexnumber.h"
+#include "./hexnumber.h"
 
-#include <kdbease.h>
-#include <kdberrors.h>
-#include <kdbhelper.h>
+#include <elektra/core/errors.h>
+#include <elektra/ease/array.h>
+#include <elektra/ease/utils.h>
+#include <internal/utility/old_helper.h>
+#include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -7,10 +7,11 @@
  *
  */
 
-#include <kdberrors.h>
+#include <elektra/core/errors.h>
+#include <internal/utility/old_helper.h>
 #include <stdio.h>
 
-#include "blacklist.h"
+#include "./blacklist.h"
 
 static void blacklistValidValues (const Key * key, KeySet * validValues)
 {

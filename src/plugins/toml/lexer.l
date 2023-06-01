@@ -7,8 +7,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdbassert.h>
-#include <kdbhelper.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/old_helper.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -16,14 +16,14 @@
 #include <string.h>
 #include <limits.h>
 
-#include "codepoint.h"
-#include "driver.h"
-#include "error.h"
-#include "parser.h"
-#include "scalar.h"
-#include "utility.h"
-#include "type.h"
-#include "integer.h"
+#include "./codepoint.h"
+#include "./driver.h"
+#include "./error.h"
+#include "./parser.h"
+#include "./scalar.h"
+#include "./utility.h"
+#include "./type.h"
+#include "./integer.h"
 
 #define BASIC_TERMINATOR '\"'
 #define LITERAL_TERMINATOR '\''

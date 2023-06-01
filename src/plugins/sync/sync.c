@@ -6,13 +6,12 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
-#endif
+#include "./sync.h"
 
-#include "sync.h"
+#include <elektra/core/errors.h>
 
-#include <kdberrors.h>
+#include <internal/config.h>
+#include <internal/utility/old_helper.h>
 
 #include <errno.h>
 #include <fcntl.h>

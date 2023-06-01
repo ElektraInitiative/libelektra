@@ -8,18 +8,17 @@
  */
 #define _XOPEN_SOURCE 600
 
-#include "cache.h"
+#include "./cache.h"
 
-#ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
-#endif
 
-#include <kdbassert.h>
-#include <kdberrors.h>
-#include <kdbhelper.h>
-#include <kdblogger.h>
-#include <kdbmodule.h>
-#include <kdbprivate.h>
+#include <elektra/core/errors.h>
+
+#include <internal/config.h>
+#include <internal/kdbprivate.h>
+#include <internal/pluginload/module.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/logger.h>
+#include <internal/utility/old_helper.h>
 
 #include <fcntl.h>     // access()
 #include <ftw.h>       // nftw()

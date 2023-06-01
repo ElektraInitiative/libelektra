@@ -10,13 +10,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <kdb.h>
-#include <kdbopts.h>
-#include <kdbplugin.h>
+#include <elektra/core.h>
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/opts.h>
+#include <elektra/plugin/plugin.h>
 
 #include <tests_plugin.h>
 
-#include "testdata.h"
+#include "./testdata.h"
 
 extern char ** environ;
 

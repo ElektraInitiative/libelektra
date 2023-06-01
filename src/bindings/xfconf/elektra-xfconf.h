@@ -1,8 +1,9 @@
 #ifndef ELEKTRA_XFCONF_H
 #define ELEKTRA_XFCONF_H
 
-#include <elektra.h>
-#include <kdb.h>
+#include <elektra/core/types.h>
+#include <elektra/kdb/kdb.h>
+
 #include <xfconf/xfconf.h>
 
 #define I_(string) (g_intern_static_string ((string)))

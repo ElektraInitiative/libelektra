@@ -6,22 +6,22 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "highlevel.hpp"
+#include "./highlevel.hpp"
 
-#include "common.hpp"
-#include "enums.hpp"
-#include "structs.hpp"
+#include "./common.hpp"
+#include "./enums.hpp"
+#include "./structs.hpp"
 
 #include <command.hpp>
 #include <modules.hpp>
 
 #include <coloredkdbio.hpp>
-#include <kdb.h>
-#include <kdbease.h>
-#include <kdbhelper.h>
-#include <kdbopts.h>
-#include <kdbplugin.h>
-#include <kdbtypes.h>
+#include <elektra/core.h>
+#include <elektra/ease/spec.h>
+#include <elektra/opts.h>
+#include <elektra/plugin/plugin.h>
+#include <elektra/type/types.h>
+#include <internal/utility/old_helper.h>
 
 #include <fstream>
 #include <key.hpp>

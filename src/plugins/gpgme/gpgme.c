@@ -7,15 +7,19 @@
  *
  */
 
-#ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
-#endif
-#include "gpgme.h"
-#include "keylist.h"
+#include "./gpgme.h"
+#include "./keylist.h"
+
+#include <elektra/core/errors.h>
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/core/namespace.h>
+#include <elektra/type/types.h>
+
+#include <internal/config.h>
+#include <internal/utility/old_helper.h>
+
 #include <gpgme.h>
-#include <kdb.h>
-#include <kdberrors.h>
-#include <kdbtypes.h>
 #include <locale.h>
 #include <stdlib.h>
 #include <string.h>
@@ -586,7 +590,7 @@ int elektraGpgmeGet (Plugin * handle, KeySet * ks, Key * parentKey)
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/" ELEKTRA_PLUGIN_NAME))
 	{
 		KeySet * moduleConfig = ksNew (30,
-#include "contract.h"
+#include "./contract.h"
 					       KS_END);
 		ksAppend (ks, moduleConfig);
 		ksDel (moduleConfig);

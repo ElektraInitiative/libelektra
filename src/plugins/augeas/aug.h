@@ -9,9 +9,10 @@
 #ifndef ELEKTRA_PLUGIN_augeas_H
 #define ELEKTRA_PLUGIN_augeas_H
 
-#include <kdberrors.h>
-#include <kdbextension.h>
-#include <kdbplugin.h>
+#include <elektra/core.h>
+#include <elektra/core/errors.h>
+#include <elektra/ease/meta.h>
+#include <elektra/plugin/plugin.h>
 
 #include <augeas.h>
 #include <errno.h>

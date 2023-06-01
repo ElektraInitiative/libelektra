@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "keysetvisitor.hpp"
-#include "treeviewmodel.hpp"
+#include "./keysetvisitor.hpp"
+#include "./treeviewmodel.hpp"
 
 using namespace kdb;
 

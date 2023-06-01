@@ -9,7 +9,8 @@
 #ifndef ELEKTRA_PLUGIN_COUNTER_H
 #define ELEKTRA_PLUGIN_COUNTER_H
 
-#include <kdbplugin.h>
+#include <elektra/core.h>
+#include <elektra/plugin/plugin.h>
 
 
 int elektraCounterOpen (Plugin * handle, Key * errorKey);

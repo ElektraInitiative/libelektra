@@ -1,7 +1,9 @@
-#include "elektra-xfconf-binding.h"
-#include "elektra-xfconf-channel.h"
-#include "elektra-xfconf-util.h"
-#include "elektra-xfconf.h"
+#include "./elektra-xfconf-binding.h"
+#include "./elektra-xfconf-channel.h"
+#include "./elektra-xfconf-util.h"
+#include "./elektra-xfconf.h"
+
+#include <internal/macros/attributes.h>
 
 #define require_binding_read_lock() require_read_lock (&binding_lock, "BINDING")
 #define require_binding_write_lock() require_read_lock (&binding_lock, "BINDING")

@@ -6,12 +6,13 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "write.hpp"
-#include "yaml-cpp/yaml.h"
+#include "./write.hpp"
+#include "./yaml-cpp/yaml.h"
 
+#include <internal/utility/logger.h>
 #include <kdb.hpp>
-#include <kdbease.h>
-#include <kdblogger.h>
+
+#include <elektra/ease/array.h>
 
 #include <fstream>
 #include <stack>

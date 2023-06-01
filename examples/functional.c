@@ -6,11 +6,10 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdb.h>
-
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
 // for keySetComment
-#include <kdbextension.h>
-
+#include <elektra/ease/meta.h>
 #include <stdlib.h>
 
 /* TODO: With an external iterator, ksCurrent() to get the position where execution stopped is no longer available.

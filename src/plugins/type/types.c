@@ -7,18 +7,20 @@
  *
  */
 
-#include "types.h"
-#include "type.h"
+#include "./types.h"
+#include "./type.h"
 
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdbhelper.h>
+#include <elektra/core/errors.h>
+#include <elektra/type/conversion.h>
 
-#include <kdbease.h>
-#include <kdberrors.h>
+#include <internal/macros/attributes.h>
+#include <internal/utility/old_helper.h>
+
 
 #define CHECK_TYPE(key, var, toValue)                                                                                                      \
 	{                                                                                                                                  \
@@ -190,15 +192,12 @@ bool elektraTypeCheckDouble (const Key * key)
 	return true;
 }
 
-#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 bool elektraTypeCheckLongDouble (const Key * key)
 {
 	kdb_long_double_t value;
 	CHECK_TYPE (key, value, elektraKeyToLongDouble)
 	return true;
 }
-
-#endif
 
 bool elektraTypeCheckShort (const Key * key)
 {

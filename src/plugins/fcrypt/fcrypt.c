@@ -8,10 +8,10 @@
  */
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
-#include "fcrypt.h"
+#include "./fcrypt.h"
 
 
 #include <errno.h>
@@ -25,10 +25,12 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include <kdb.h>
-#include <kdberrors.h>
-#include <kdbmacros.h>
-#include <kdbtypes.h>
+#include <elektra/core/errors.h>
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/type/types.h>
+#include <internal/macros/attributes.h>
+#include <internal/utility/old_helper.h>
 
 /**
  * @brief Defines the plugin state during the <code>kdb get</code> phase.
@@ -605,7 +607,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, 
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/" ELEKTRA_PLUGIN_NAME))
 	{
 		KeySet * moduleConfig = ksNew (30,
-#include "contract.h"
+#include "./contract.h"
 					       KS_END);
 		ksAppend (ks, moduleConfig);
 		ksDel (moduleConfig);

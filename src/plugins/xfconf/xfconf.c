@@ -7,13 +7,15 @@
  *
  */
 
-#include "xfconf.h"
-#include "kdberrors.h"
+#include "./xfconf.h"
+#include <elektra/core/errors.h>
 
-#include <kdb.h>
-#include <kdbease.h>
-#include <kdbhelper.h>
-#include <kdblogger.h>
+#include <elektra/core/key.h>
+#include <elektra/core/keyset.h>
+#include <elektra/ease/array.h>
+#include <elektra/ease/name.h>
+#include <internal/utility/logger.h>
+#include <internal/utility/old_helper.h>
 #include <xfconf/xfconf.h>
 
 int elektraXfconfInit (Key * errorKey, int xfconfCode, int xfconfShutdown)

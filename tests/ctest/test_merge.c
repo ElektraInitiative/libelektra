@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdbmerge.h>
+#include <elektra/merge.h>
 #include <tests_internal.h>
 
 static Key * addKeyToKeySet (Key * key, KeySet * ks)

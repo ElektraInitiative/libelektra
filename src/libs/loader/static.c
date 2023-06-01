@@ -7,15 +7,17 @@
  */
 
 #ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
 #include <stdlib.h>
 #include <string.h>
 
-#include <exported_symbols.h>
-#include <kdberrors.h>
-#include <kdbmodule.h>
+#include <elektra/core/errors.h>
+
+#include <internal/exported_symbols.h>
+#include <internal/macros/attributes.h>
+#include <internal/pluginload/module.h>
 
 
 int elektraModulesInit (KeySet * modules, Key * error ELEKTRA_UNUSED)

@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "deserializer.hpp"
-#include "util.hpp"
+#include "./deserializer.hpp"
+#include "./util.hpp"
 
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/dom/DOMAttr.hpp>
@@ -21,8 +21,8 @@
 #include <locale>
 #include <map>
 
-#include <kdbease.h>
-#include <kdblogger.h>
+#include <elektra/ease/array.h>
+#include <internal/utility/logger.h>
 #include <key.hpp>
 
 XERCES_CPP_NAMESPACE_USE

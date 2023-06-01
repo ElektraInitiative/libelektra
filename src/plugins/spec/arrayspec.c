@@ -1,9 +1,11 @@
-#include "arrayspec.h"
-#include "kdberrors.h"
-#include "matching.h"
+#include "./arrayspec.h"
+#include "./matching.h"
+
+#include <elektra/core/errors.h>
+
+#include <internal/utility/old_helper.h>
 
 #include <ctype.h>
-#include <kdbhelper.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>

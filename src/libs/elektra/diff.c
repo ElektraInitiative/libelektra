@@ -1,5 +1,5 @@
-#include <kdbdiff.h>
-#include <kdbprivate.h>
+#include <elektra/diff.h>
+#include <internal/kdbprivate.h>
 
 /**
  * Determines whether two keys have a different value

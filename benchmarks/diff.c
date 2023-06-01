@@ -1,6 +1,6 @@
 #include <benchmarks.h>
-#include <kdb.h>
-#include <kdbdiff.h>
+#include <elektra/core.h>
+#include <elektra/diff.h>
 
 int main (void)
 {

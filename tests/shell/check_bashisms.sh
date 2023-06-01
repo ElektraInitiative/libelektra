@@ -13,13 +13,18 @@ command -v checkbashisms > /dev/null 2>&1 || {
 
 cd "@CMAKE_SOURCE_DIR@" || exit
 
+CHECKBASHISMS_VERSION=$(checkbashisms --version | head -n1 | rev | cut -d' ' -f1 | rev)
+CHECKBASHISMS_VERSION_MAJOR=$(echo "$CHECKBASHISMS_VERSION" | cut -d. -f1)
+CHECKBASHISMS_VERSION_MINOR=$(echo "$CHECKBASHISMS_VERSION" | cut -d. -f2)
+
+if [ "$CHECKBASHISMS_VERSION_MAJOR" -lt 2 ] || [ "$CHECKBASHISMS_VERSION_MINOR" -lt 21 ]; then
+	echo "checkbashisms version 2.21+ required"
+	exit 0
+fi
+
 # Use (non-emacs) extended regex for GNU find or BSD find
 find -version > /dev/null 2>&1 > /dev/null && FIND='find scripts -regextype egrep' || FIND='find -E scripts'
 
-# - The scripts `reformat-c`, `reformat-java` and `install-config-file` use `command -v`,
-# which was optional in POSIX until issue 7. Since `which` is not part of POSIX
-# at all `command -v` is probably the most portable solution to detect the
-# location of a command.
 set $(
 	$FIND -type f -not \( \
 		-path '*COPYING-CMAKE-SCRIPTS' -or \
@@ -28,9 +33,6 @@ set $(
 		-path '*gitignore' -or \
 		-path '*kdb_zsh_completion' -or \
 		-path '*kdb-zsh-noglob' -or \
-		-path '*install-config-file' -or \
-		-path '*reformat-c' -or \
-		-path '*reformat-java' -or \
 		-path '*run_env' -or \
 		-path '*sed' -or \
 		-path '*update-infos-status' -or \

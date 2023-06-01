@@ -1,4 +1,5 @@
-#include <benchmarks.h>
+#include "./benchmarks.h"
+
 #include <getopt.h>
 #include <stdbool.h>
 

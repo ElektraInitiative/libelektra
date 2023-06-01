@@ -10,31 +10,35 @@
 
 /* -- Imports --------------------------------------------------------------------------------------------------------------------------- */
 
-#include "mmapstorage.h"
-#include "dynarray.h"
-#include "internal.h"
+#include "./mmapstorage.h"
+#include "./dynarray.h"
+#include "./internal.h"
 
-#include <kdbassert.h>
-#include <kdberrors.h>
-#include <kdbhelper.h>
-#include <kdblogger.h>
-#include <kdbprivate.h>
+#include <elektra/core/errors.h>
+#include <internal/kdbprivate.h>
+
+#include <internal/macros/attributes.h>
+#include <internal/macros/bitfields.h>
+#include <internal/macros/os.h> // SSIZE_MAX
+#include <internal/utility/assert.h>
+#include <internal/utility/logger.h>
+#include <internal/utility/old_helper.h>
 
 #ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
 #include <errno.h>
-#include <fcntl.h>     // fcntl()
-#include <limits.h>    // SSIZE_MAX
-#include <stdint.h>    // uintN_t, uintptr_t
-#include <stdio.h>     // fopen(), fileno()
-#include <stdlib.h>    // strtol()
-#include <string.h>    // memcmp()
-#include <sys/mman.h>  // mmap()
-#include <sys/stat.h>  // stat(), fstat()
-#include <sys/types.h> // ftruncate (), size_t
-#include <unistd.h>    // close(), ftruncate(), unlink(), read(), write()
+#include <fcntl.h>		// fcntl()
+#include <internal/macros/os.h> // SSIZE_MAX
+#include <stdint.h>		// uintN_t, uintptr_t
+#include <stdio.h>		// fopen(), fileno()
+#include <stdlib.h>		// strtol()
+#include <string.h>		// memcmp()
+#include <sys/mman.h>		// mmap()
+#include <sys/stat.h>		// stat(), fstat()
+#include <sys/types.h>		// ftruncate (), size_t
+#include <unistd.h>		// close(), ftruncate(), unlink(), read(), write()
 
 #ifdef ELEKTRA_MMAP_CHECKSUM
 #include <zlib.h> // crc32()
@@ -1243,7 +1247,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	{
 		keyDel (root);
 		KeySet * contract =
-#include "contract.h"
+#include "./contract.h"
 			ksAppend (ks, contract);
 		ksDel (contract);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;

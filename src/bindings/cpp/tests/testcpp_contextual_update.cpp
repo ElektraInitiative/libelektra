@@ -8,7 +8,7 @@
 
 #include <kdbthread.hpp>
 
-#include <kdbprivate.h>
+#include <internal/kdbprivate.h>
 
 #include <gtest/gtest.h>
 

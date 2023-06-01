@@ -1,5 +1,5 @@
-#include "gelektra-kdb.h"
-#include <kdbextension.h>
+#include <elektra/ease/meta.h>
+#include <elektra/glib/gelektra-kdb.h>
 #include <string.h>
 
 G_DEFINE_TYPE (GElektraKdb, gelektra_kdb, G_TYPE_OBJECT)

@@ -7,7 +7,7 @@
  *
  */
 
-#include <kdbconfig.h>
+#include <internal/config.h>
 #include <limits.h>
 #include <locale.h>
 #include <stdio.h>

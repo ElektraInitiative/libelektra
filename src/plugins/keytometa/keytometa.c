@@ -7,12 +7,12 @@
  *
  */
 
-#include "keytometa.h"
+#include "./keytometa.h"
 
-#ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
-#endif
+#include <elektra/ease/utils.h>
 
+#include <internal/config.h>
+#include <internal/utility/old_helper.h>
 
 #include <errno.h>
 #include <stdbool.h>
@@ -240,7 +240,7 @@ int elektraKeyToMetaGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/keytometa"))
 	{
 		KeySet * info =
-#include "contract.h"
+#include "./contract.h"
 
 			ksAppend (returned, info);
 		ksDel (info);

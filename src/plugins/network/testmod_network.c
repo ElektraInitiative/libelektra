@@ -7,12 +7,12 @@
  */
 
 #ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
 #include <stdio.h>
 
-#include "network.h"
+#include "./network.h"
 
 #include <tests.h>
 

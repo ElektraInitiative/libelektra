@@ -8,15 +8,15 @@
  */
 
 #ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
+#include <internal/config.h>
 #endif
 
-#include <kdberrors.h>
+#include <elektra/core/errors.h>
 
-#include "zeromqsend.h"
+#include "./zeromqsend.h"
 
-#include <kdbhelper.h>
-#include <kdblogger.h>
+#include <internal/utility/logger.h>
+#include <internal/utility/old_helper.h>
 
 #include <errno.h>  // errno
 #include <stdlib.h> // strtol()

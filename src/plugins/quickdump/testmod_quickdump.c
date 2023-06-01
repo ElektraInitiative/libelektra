@@ -10,15 +10,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdbconfig.h>
-#include <kdbtypes.h>
+#include <elektra/type/types.h>
+#include <internal/config.h>
 
 #include <tests_plugin.h>
 
 #include <stdio.h>
 #include <unistd.h>
 
-#include "quickdump/test.quickdump.h"
+#include "./quickdump/test.quickdump.h"
 
 static int compare_binary_files (const char * filename1, const char * filename2)
 {
@@ -216,7 +216,7 @@ static void test_parentKeyValue (void)
 	ksDel (expected);
 }
 
-#include "varint.c"
+#include "./varint.c"
 
 static void test_varint (void)
 {
