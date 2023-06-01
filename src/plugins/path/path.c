@@ -10,6 +10,9 @@
 
 #include <internal/config.h>
 #include <internal/utility/alloc.h>
+
+#include <stdbool.h>
+
 static int createModeBits (const char * modes);
 
 static int handleNoUserCase (Key * parentKey, const char * validPath, const char * modes, Key * key);

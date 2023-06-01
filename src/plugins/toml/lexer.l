@@ -8,7 +8,7 @@
  */
 
 #include <internal/utility/assert.h>
-#include <internal/utility/old_helper.h>
+#include <internal/utility/alloc.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>

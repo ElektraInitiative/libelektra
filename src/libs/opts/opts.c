@@ -21,6 +21,8 @@
 #include <internal/utility/compare.h>
 #include <internal/utility/format.h>
 
+#include <internal/core/lookup.h>
+
 #ifdef _WIN32
 static const char SEP_ENV_VALUE = ';';
 #else

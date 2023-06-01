@@ -25,6 +25,8 @@
 #include <internal/utility/logger.h>
 #include <internal/utility/string.h>
 
+#include <stdbool.h>
+
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
 
 // ===========

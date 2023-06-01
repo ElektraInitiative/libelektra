@@ -9,6 +9,8 @@
 #include <opmphmpredictor.c>
 #include <tests_internal.h>
 
+#include <internal/core/lookup.h>
+
 void test_internal_basic (void)
 {
 	OpmphmPredictor * op = opmphmPredictorNew ();

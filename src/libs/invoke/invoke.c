@@ -8,6 +8,7 @@
 #include <elektra/plugin/invoke.h>
 #include <internal/kdbprivate.h> // for elektraPluginOpen/Close
 #include <internal/pluginload/module.h>
+#include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>
 
 #include <stdio.h>

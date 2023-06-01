@@ -24,6 +24,8 @@
 #include <internal/config.h>
 #include <kdb.hpp>
 
+#include <internal/macros/attributes.h>
+
 // We disable certain tests on ASAN enabled builds: https://travis-ci.org/sanssecours/elektra/jobs/418573941
 #ifdef ENABLE_ASAN
 #define GTEST_DISABLE_ASAN(name) DISABLED_##name

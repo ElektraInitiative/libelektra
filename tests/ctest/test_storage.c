@@ -13,6 +13,8 @@
 #include <tests_plugin.h>
 
 #include <internal/config.h>
+#include <internal/utility/compare.h>
+#include <internal/utility/string.h>
 
 /* -- Macros & Test Configuration ------------------------------------------------------------------------------------------------------- */
 

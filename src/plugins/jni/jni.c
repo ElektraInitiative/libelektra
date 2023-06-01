@@ -10,6 +10,7 @@
 #include <internal/config.h>
 #endif
 
+#include <stdbool.h>
 #include <string.h>
 
 #include <jni.h>

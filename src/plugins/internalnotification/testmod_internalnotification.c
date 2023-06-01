@@ -18,6 +18,7 @@
 #include <internal/kdbprivate.h>
 #include <internal/macros/attributes.h>
 #include <internal/notifications.h>
+#include <internal/utility/format.h>
 
 #include <tests.h>
 #include <tests_plugin.h>

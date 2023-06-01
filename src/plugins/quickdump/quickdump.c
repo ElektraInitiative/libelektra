@@ -16,6 +16,7 @@
 #include <internal/utility/alloc.h>
 #include <internal/utility/compare.h>
 #include <internal/utility/endian.h>
+#include <stdbool.h>
 #include <stdio.h>
 
 #define MAGIC_NUMBER_BASE (0x454b444200000000UL) // EKDB (in ASCII) + Version placeholder

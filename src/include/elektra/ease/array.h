@@ -3,6 +3,7 @@
 
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
+#include <elektra/type/types.h>
 
 #ifdef __cplusplus
 namespace ckdb

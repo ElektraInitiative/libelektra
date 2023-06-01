@@ -14,7 +14,8 @@
 #include <internal/macros/attributes.h>
 #include <iostream>
 
-#include <internal/macros/attributes.h>
+#include <internal/core/lookup.h>
+
 using namespace std;
 using namespace kdb;
 

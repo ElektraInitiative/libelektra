@@ -22,6 +22,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <internal/macros/attributes.h>
+
 static volatile int keepRunning = 0;
 
 // from https://en.wikipedia.org/wiki/ANSI_escape_code#Colors

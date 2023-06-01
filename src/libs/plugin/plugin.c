@@ -14,8 +14,10 @@
 #include <internal/config.h>
 #include <internal/kdbprivate.h>
 #include <internal/pluginload/module.h>
+#include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
+
 /**
  * @brief Allows one to Export Methods for a Plugin.
  *

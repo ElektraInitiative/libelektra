@@ -21,7 +21,7 @@
 #include <elektra/opts.h>
 #include <elektra/plugin/plugin.h>
 #include <elektra/type/types.h>
-#include <internal/utility/old_helper.h>
+#include <internal/utility/alloc.h>
 
 #include <fstream>
 #include <key.hpp>

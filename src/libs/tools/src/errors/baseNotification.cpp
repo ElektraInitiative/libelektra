@@ -4,6 +4,7 @@
 #include <iostream>
 #include <utility>
 
+#include <internal/macros/attributes.h>
 namespace kdb
 {
 namespace tools

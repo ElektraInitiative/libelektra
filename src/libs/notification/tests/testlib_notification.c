@@ -14,6 +14,8 @@
 #include <elektra/notifications.h>
 #include <tests.h>
 
+#include <internal/macros/attributes.h>
+
 int callback_called;
 
 static void test_registerInt (void)

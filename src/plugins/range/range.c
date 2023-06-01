@@ -16,11 +16,11 @@
 #include <internal/utility/compare.h>
 #include <limits.h>
 #include <math.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
-
 
 typedef enum
 {

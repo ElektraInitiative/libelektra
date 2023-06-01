@@ -103,6 +103,7 @@
 #include <elektra/core/keyset.h>
 #include <internal/config.h>
 #include <internal/kdbprivate.h>
+#include <internal/utility/string.h>
 
 #ifdef HAVE_STDIO_H
 #include <stdio.h>

@@ -9,6 +9,8 @@
 #include <internal/kdbprivate.h>
 #include <tests_internal.h>
 
+#include <internal/core/lookup.h>
+
 static void ksBelow_root_in_keyset_should_work (void)
 {
 	printf ("Test %s\n", __func__);

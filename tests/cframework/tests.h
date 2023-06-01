@@ -12,6 +12,8 @@
 #include <elektra/macros/utils.h>
 #include <internal/config.h>
 
+#include <internal/utility/alloc.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

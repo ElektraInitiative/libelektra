@@ -50,6 +50,7 @@
 #include <internal/config.h>
 #include <internal/kdbprivate.h>
 #include <internal/pluginload/module.h>
+#include <internal/utility/alloc.h>
 #include <internal/utility/logger.h>
 
 #define KDB_GET_PHASE_POST_STORAGE_SPEC (KDB_GET_PHASE_POST_STORAGE "/spec")

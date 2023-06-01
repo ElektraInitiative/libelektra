@@ -3,6 +3,7 @@
 #include <elektra/ease/globbing.h>
 
 #include <string.h>
+#include <stdbool.h>
 
 #ifdef __MINGW32__
 bool specMatches (Key * specKey, Key * otherKey)

@@ -9,6 +9,8 @@
 #include <elektra/ease/utils.h>
 #include <tests_internal.h>
 
+#include <internal/core/lookup.h>
+
 ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from);
 
 static void test_ksRenameKeys (void)

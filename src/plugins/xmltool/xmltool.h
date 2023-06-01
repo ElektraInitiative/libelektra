@@ -15,7 +15,6 @@
 
 
 size_t ksGetCommonParentName (KeySet * ks, char * returnedCommonParent, size_t maxSize);
-size_t elektraStrLen (const char * s);
 
 int elektraXmltoolOpen (Plugin * handle, Key * errorKey);
 int elektraXmltoolClose (Plugin * handle, Key * errorKey);

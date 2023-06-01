@@ -38,6 +38,11 @@
 #include <elektra/type/conversion.h>
 
 #include <internal/utility/alloc.h>
+#include <internal/utility/array.h>
+#include <internal/utility/format.h>
+
+
+
 static const char * helpFallback = "Usage: tests_script_gen_highlevel_externalspec [OPTION...]\n\nOPTIONS\n  --help                      Print this help message\n";
 
 static int isHelpMode (int argc, const char * const * argv)

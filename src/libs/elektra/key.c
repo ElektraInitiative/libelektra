@@ -29,7 +29,9 @@
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 #include <internal/kdbprivate.h>
+#include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>
+#include <internal/utility/string.h>
 
 /**
  * @defgroup key Key

@@ -15,7 +15,9 @@
 #include <internal/config.h>
 #include <internal/kdbprivate.h>
 #include <internal/pluginload/module.h>
+#include <internal/utility/alloc.h>
 #include <internal/utility/logger.h>
+
 static Plugin * loadPlugin (const char * pluginName, KeySet * global, KeySet * modules, const KeySet * contract, Key * errorKey);
 
 /**

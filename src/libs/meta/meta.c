@@ -15,6 +15,8 @@
 #include <internal/config.h>
 #include <internal/kdbprivate.h>
 #include <internal/macros/os.h>
+#include <internal/utility/alloc.h>
+#include <internal/utility/string.h>
 
 #ifdef HAVE_STDIO_H
 #include <stdio.h>

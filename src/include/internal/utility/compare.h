@@ -16,11 +16,15 @@
 
 #include <stddef.h>
 #include <string.h>
+#include <strings.h>
 
 #ifdef __cplusplus
+#define VOID_CAST(x) (static_cast<const void *> (x))
 namespace ckdb
 {
 extern "C" {
+#else
+#define VOID_CAST(x) ((const void *) (x))
 #endif
 
 int elektraStrCmp (const char * s1, const char * s2);
@@ -29,6 +33,8 @@ int elektraStrCaseCmp (const char * s1, const char * s2);
 int elektraStrNCaseCmp (const char * s1, const char * s2, size_t n);
 
 int elektraMemCaseCmp (const char * s1, const char * s2, size_t size);
+
+#undef VOID_CAST
 
 #ifdef __cplusplus
 }

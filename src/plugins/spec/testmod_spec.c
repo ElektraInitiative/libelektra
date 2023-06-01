@@ -10,6 +10,9 @@
 
 #include <elektra/kdb.h>
 
+#include <internal/utility/compare.h>
+#include <internal/utility/format.h>
+
 #include <tests_plugin.h>
 
 #include <stdio.h>

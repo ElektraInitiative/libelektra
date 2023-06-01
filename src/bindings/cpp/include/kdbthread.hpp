@@ -21,6 +21,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include <internal/macros/attributes.h>
+
 namespace kdb
 {
 

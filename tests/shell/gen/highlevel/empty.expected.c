@@ -38,6 +38,9 @@
 #include <elektra/type/conversion.h>
 
 #include <internal/utility/alloc.h>
+#include <internal/utility/array.h>
+#include <internal/utility/format.h>
+
 static KeySet * embeddedSpec (void)
 {
 	return ksNew (1,

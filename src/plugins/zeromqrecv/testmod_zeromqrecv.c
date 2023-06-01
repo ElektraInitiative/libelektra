@@ -20,6 +20,8 @@
 
 #include <uv.h>
 
+#include <internal/utility/string.h>
+
 /** zmq context for tests */
 void * context;
 
