@@ -35,5 +35,10 @@
 #define ELEKTRA_WEAK __attribute__ ((weak))
 #endif
 
+#ifdef __GNUC__
+#define ELEKTRA_ATTRIBUTE_FORMAT(archetype, stringIndex, firstToCheck) __attribute__ ((format (archetype, stringIndex, firstToCheck)))
+#else
+#define ELEKTRA_ATTRIBUTE_FORMAT(archetype, stringIndex, firstToCheck)
+#endif
 
 #endif // ELEKTRA_MACROS_ATTRIBUTES_H

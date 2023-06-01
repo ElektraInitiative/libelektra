@@ -12,7 +12,8 @@
 #ifndef ELEKTRA_UTILITY_FORMAT_H
 #define ELEKTRA_UTILITY_FORMAT_H
 
-#include <internal/macros/attributes.h>
+#include <elektra/macros/attributes.h>
+
 #include <stdarg.h>
 #include <stddef.h>
 
