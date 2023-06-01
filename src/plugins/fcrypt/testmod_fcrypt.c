@@ -13,6 +13,7 @@
 #include <elektra/core/keyset.h>
 #include <elektra/ease/meta.h>
 #include <elektra/plugin/plugin.h>
+#include <elektra/type/types.h>
 #include <internal/config.h>
 #include <internal/pluginload/module.h>
 #include <internal/utility/logger.h>
