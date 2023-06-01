@@ -52,6 +52,8 @@
 #define ELEKTRA_MAX_NAMESPACE_SIZE sizeof ("system")
 
 static void elektraOpmphmCopy (struct _KeySetData * dest ELEKTRA_UNUSED, const struct _KeySetData * source ELEKTRA_UNUSED);
+static ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size);
+static ssize_t elektraMemmove (Key ** array1, Key ** array2, size_t size);
 
 /**
  * @internal
@@ -2957,6 +2959,61 @@ int ksClose (KeySet * ks)
 	return 0;
 }
 
+
+/**
+ * Copies the key array2 into where array1 points.
+ * It copies size elements.
+ *
+ * Overlapping is prohibited, use elektraMemmove() instead.
+ *
+ * @param array1 the destination
+ * @param array2 the source
+ * @param size how many pointer to Keys to copy
+ * @retval -1 on null pointers
+ * @retval 0 if nothing was done
+ * @return size how many keys were copied
+ */
+static ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size)
+{
+	if (!array1) return -1;
+	if (!array2) return -1;
+	if (size > SSIZE_MAX) return -1;
+	if (size == 0) return 0;
+#if DEBUG
+	char * a = (char *) array1;
+	char * b = (char *) array2;
+	for (size_t i = 0; i < size; i++)
+	{
+		ELEKTRA_ASSERT (a + i != b && b + i != a, "memcpy overlap: %p and %p with size %zu", (void *) a, (void *) b, size);
+	}
+#endif
+	memcpy (array1, array2, size * sizeof (Key *));
+	return size;
+}
+
+/**
+ * Copies the key array2 into where array1 points.
+ * It copies size elements.
+ *
+ * Overlapping is ok. If they do not overlap consider
+ * elektraMemcpy() instead.
+ *
+ * @param array1 the destination
+ * @param array2 the source
+ * @param size how many pointer to Keys to copy
+ * @retval -1 on null pointers
+ * @retval 0 if nothing was done
+ * @return size how many keys were copied
+ */
+static ssize_t elektraMemmove (Key ** array1, Key ** array2, size_t size)
+{
+	if (!array1) return -1;
+	if (!array2) return -1;
+	if (size > SSIZE_MAX) return -1;
+	if (size == 0) return 0;
+	memmove (array1, array2, size * sizeof (Key *));
+	return size;
+}
 
 /**
  * @}

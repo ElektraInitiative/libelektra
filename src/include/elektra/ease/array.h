@@ -21,6 +21,8 @@ int elektraArrayValidateBaseNameString (const char * baseName);
 KeySet * elektraArrayGet (const Key * arrayParent, KeySet * keys);
 Key * elektraArrayGetNextKey (KeySet * arrayKeys);
 
+int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex);
+
 #ifdef __cplusplus
 }
 }
