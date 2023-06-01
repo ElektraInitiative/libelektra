@@ -1,9 +1,9 @@
 # The Elektra ODBC Backend
 
 This tutorial describes how to set up unixODBC on Linux and use Elektra to retrieve
-configuration data from an *SQLite* or *PostgreSQL* database.
+configuration data from an _SQLite_ or _PostgreSQL_ database.
 
-> Currently, the *backend_odbc* plugin is marked as EXPERIMENTAL and only supports reading
+> Currently, the _backend_odbc_ plugin is marked as EXPERIMENTAL and only supports reading
 > data from data sources.
 > Writing data (e.g. with `kdb set`) should be supported soon.
 
@@ -15,8 +15,7 @@ configuration data from an *SQLite* or *PostgreSQL* database.
 > This tutorial uses SQLite- and PostgreSQL databases as data sources, but ODBC drivers for other data sources
 > are also supported.
 >
-> Please be aware that if you want to use metadata, *outer joins* have to be supported by the ODBC driver.
-
+> Please be aware that if you want to use metadata, _outer joins_ have to be supported by the ODBC driver.
 
 ## Overview
 
@@ -30,7 +29,6 @@ The tutorial covers the following steps:
 6. Compiling Elektra with support for the ODBC Backend
 7. Mounting the data sources into the Global Key Database (KDB) of Elektra
 
-
 ## 1. Introduction
 
 ### Database scheme
@@ -39,15 +37,16 @@ The basic database scheme is quite simple.
 You just need a table that contains two columns which can store a text of arbitrary length.
 Usually, the SQL data type `TEXT` is used for that purpose.
 One column is used for storing the **names** of the keys, the other one for storing their **values**.
-The column where the key-names are stored should be defined as the *primary key* (PK) for that table.
+The column where the key-names are stored should be defined as the _primary key_ (PK) for that table.
 
-It is *highly* recommended, that you also define a table for storing *metadata*.
+It is _highly_ recommended, that you also define a table for storing _metadata_.
 Otherwise, lots of Elektra's features are not supported.
 
 The table for the metadata needs at least three columns:
-- A column with the *key-name* which must be defined as a *foreign key* (FK) to the PK of the table where the keys are stored.
-- A column for the *name* of the metakeys.
-- A column for the *value* of the metakeys.
+
+- A column with the _key-name_ which must be defined as a _foreign key_ (FK) to the PK of the table where the keys are stored.
+- A column for the _name_ of the metakeys.
+- A column for the _value_ of the metakeys.
 
 > The column for the **keyname** and the column for the **metakey-name** together form the PK of that table.
 
@@ -55,15 +54,13 @@ Again, all these column should be defined to store the data type `TEXT`.
 If you want to use `CHAR` or `VARCHAR` columns, it's your responsibility to make sure that the stored values
 don't exceed the maximum defined length.
 
-It is allowed that the tables contain more columns, these additional columns are not processed by Elektra, *must
-not* be part of a PK and *must* support NULL-values (if you want to add new keys in a future version of Elektra).
+It is allowed that the tables contain more columns, these additional columns are not processed by Elektra, _must
+not_ be part of a PK and _must_ support NULL-values (if you want to add new keys in a future version of Elektra).
 Currently, as only read support is implemented, columns that don't support NULL values are also possible, but not recommended.
 
 The following ER-diagram shows the described scheme:
 
 ![ER-digramm](/doc/images/unixODBC.png "The ER-diagramm for the described database scheme")
-
-
 
 ## 2. Setting up the Databases for Configuration Data
 
@@ -72,19 +69,18 @@ databases and store some configuration data in them.
 
 > This tutorial is neither an introduction to SQL nor to SQLite or PostgresSQL.
 > If you need more information about these topics, there are plenty of resources available.
-> 
+>
 > For downloads and documentation, please visit the respective websites:
+>
 > - https://www.sqlite.org
 > - https://www.postgresql.org
-> 
+>
 > Usually, both data base management systems (DBMS) can be installed by the package manager
 > of your operating system.
-
 
 > A pre-configured example SQLite database and the SQL-script that was used
 > to create the tables and fill them with some test data is available at
 > [/src/plugins/backend_odbc/sampleDb](/src/plugins/backend_odbc/sampleDb).
-
 
 ### Preparing the SQLite database
 
@@ -92,7 +88,6 @@ As SQLite as a file-based DBMS, we first create a file for the new database.
 Afterwards, we execute the SQL-statements to create the tables and insert some tuples.
 Please note that the command `sqlite3` may is named differently on your system, especially
 if you use another version of SQLite.
-
 
 ```sh
 sqlite3 ~/elektraOdbc.db
@@ -132,6 +127,7 @@ INSERT INTO metaKeys (keyName, metaKeyName, metaKeyValue) VALUES ('sqliteapp2/ke
 INSERT INTO metaKeys (keyName, metaKeyName, metaKeyValue) VALUES ('sqliteapp2/key2', 'metakey 2.2.2', 'metaval 2.2.2');
 INSERT INTO metaKeys (keyName, metaKeyName, metaKeyValue) VALUES ('sqliteapp2/key3', 'metakey 2.3.1', 'metaval 2.3.1');
 ```
+
 With typing `.exit`, you can leave the SQLite command prompt and return to your shell.
 
 ### Preparing the PostgreSQL database
@@ -170,6 +166,7 @@ supported ODBC drivers. Using drivers not mentioned in that list is in many case
 ## 4. Installing the SQLite and PostgreSQL ODBC Drivers
 
 The ODBC backend was tested with the following ODBC drivers for unixODBC:
+
 - SQLite: http://www.ch-werner.de/sqliteodbc
 - PostgresSQL: https://odbc.postgresql.org
 
@@ -177,7 +174,6 @@ The installation of the drivers should be straightforward.
 Please refer to the instructions on the websites and the downloaded drivers for how to install these
 ODBC drivers on your system.
 Maybe the drivers are also offered as packages by the package manager of your OS.
-
 
 ## 5. Creating the ODBC data sources for the Databases
 
@@ -193,8 +189,10 @@ the unixODBC configuration files.
 Therefore, we have to write the configuration files manually the classic way using a text editor.
 
 ### odbcinst.ini
+
 At first, we tell unixODBC where it can find the ODBC drivers we want to use.
 The content of the `/etc/unixODBC/odbcinst.ini` file might look like that:
+
 ```ini
 [SQLite]
 Description=SQLite ODBC Driver
@@ -210,16 +208,16 @@ Setup=/usr/lib/libodbcpsqlS.so
 Setup64=/usr/libd64/libodbcpsqlS.so
 ```
 
-Please check these paths and adjust them so that they match the place where the drivers 
+Please check these paths and adjust them so that they match the place where the drivers
 and setup libraries are stored on your system.
 At first, the name of the entry is defined, in our example `SQLite` and `postgresql`,
 then the configuration for the driver is given.
-
 
 The `Threading=2` option enables multithreading support for the SQLite driver.
 If you don't need to use multiple threads/instances accessing the SQLite ODBC data source
 in parallel, you can gain a bit of performance by activating the single-threaded mode.
 In this case you can set `Threading=0`.
+
 > You have to make sure for yourself that only single-threaded use is present.
 > This setting just disables mutexes in the driver.
 > So if you are not really sure what you are doing, it's safer to enable the multi-thread support!
@@ -232,6 +230,7 @@ The setting `FileUsage=1` indicates to unixODBC that the driver is file-based.
 
 After the driver settings, we have to define the actual ODBC data sources in `/etc/unixODBC/odbc.ini`.
 This file might look like this:
+
 ```ini
 [Pelektra]
 Description=postgresql
@@ -255,12 +254,11 @@ Driver=SQLite
 Database=home/user/elektraOdbc.db
 Timeout=3500
 ```
+
 At first, the data source name is chosen, in our example `Pelektra` and `Selektra`,
 then the configuration values for the data source are defined.
 The value for the key `Driver` must match the corresponding name of the entry that is
 defined in `odbcinst.ini`.
-
-
 
 ## 6. Compiling Elektra with support for the ODBC Backend
 
@@ -269,11 +267,14 @@ not built by default.
 
 You must use the correct cmake-parameters for the plugin to be built.
 If you want to build all plugins, you can just use
+
 ```sh
 cmake -DPLUGINS="ALL" <path to elektra root dir>
 ```
+
 If you want the default behaviour and just additionally include the ODBC backend plugin,
 you can use the following command:
+
 ```sh
 cmake -DPLUGINS="ALL;backend_odbc;-EXPERIMENTAL" <path to elektra root dir>
 ```
@@ -283,7 +284,6 @@ For more information about how to build Elektra, please see [/doc/COMPILE.md](/d
 
 Check the cmake output to be sure that the build system finds the ODBC libraries.
 Otherwise, the `backend_odbc` plugin gets automatically excluded.
-
 
 ## 7. Mounting the data sources into the Global Key Database (KDB) of Elektra
 
@@ -302,6 +302,7 @@ To fully define a mountpoint for an ODBC data source, we need 11 arguments, 10 f
 the last argument is the path where the mountpoint should be created in the KDB.
 
 The usage-message tells us which arguments are needed and in which order they must be given:
+
 ```sh
 Usage: kdb mountOdbc <data source name> <user name> <password> <table name>
       <key column name> <value column name> <meta table name> <mt key column name>
@@ -311,6 +312,7 @@ Usage: kdb mountOdbc <data source name> <user name> <password> <table name>
 If you have read the first section about the expected scheme of the used databases, the arguments
 should be self-explanatory.
 Nevertheless, here is a listing that describes the different arguments:
+
 - **\<data source name\>:** The name of the data source as defined in `/etc/unixODBC/odbc.ini`.
 - **\<user name\>:** The name of the user that should be used for connecting to the data source.
   - If your data source doesn't need a username or you have defined a username in the `odbc.ini` file, you can just pass an empty string `""` here.
@@ -328,12 +330,14 @@ Nevertheless, here is a listing that describes the different arguments:
 - **\<mountpoint\>:** The place in the KDB where the new mountpoint should be created (e.g. `user:/odbcData`).
 
 Finally we can create the mountpoint for our SQLite database:
+
 ```sh
 kdb mountOdbc Selektra "" "" elektraKeys keyName keyValue metaKeys keyName metaKeyName metaKeyValue user:/odbcSqlite
 # The new mountpoint for the ODBC data source was successfully created!
 ```
 
 Now we can just access the data like with any other mountpoint.
+
 ```sh
 kdb ls user:/odbcSqlite/
 # user:/odbcSqlite/sqliteapp1/key1
@@ -355,6 +359,7 @@ kdb meta-show user:/odbcSqlite/sqliteapp1/key1
 
 For unmounting, there is not an extra command for ODBC data sources.
 You can unmount the ODBC backend, exactly like mounted files:
+
 ```sh
 kdb umount user:/odbcSqlite
 ```
