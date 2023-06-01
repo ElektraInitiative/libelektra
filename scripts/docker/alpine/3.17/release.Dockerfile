@@ -15,7 +15,7 @@ RUN apk update \
         libgit2-dev \
         ninja \
         sudo \
-        unixODBC \
+        unixodbc \
         yajl \
         yajl-dev \
         yaml-cpp \

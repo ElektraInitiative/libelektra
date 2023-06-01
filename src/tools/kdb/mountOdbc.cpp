@@ -148,7 +148,7 @@ int MountOdbcCommand::execute (Cmdline const & cl)
 		try
 		{
 			kdb.get (keys, parentKey);
-			std::cout << "This new mountpoint for the ODBC data source was successfully created!" << std::endl;
+			std::cout << "The new mountpoint for the ODBC data source was successfully created!" << std::endl;
 			kdb.close ();
 			return EXIT_SUCCESS;
 		}
