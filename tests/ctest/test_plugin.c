@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <tests_internal.h>
+#include <tests_plugin.h>
 
 KeySet * set_pluginconf (void)
 {

@@ -11,11 +11,15 @@
 
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
+
 #include <internal/kdbprivate.h>
+#include <internal/plugin/load.h>
+#include <internal/plugin/struct.h>
 #include <internal/pluginload/module.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/compare.h>
 #include <internal/utility/format.h>
+
 int main (int argc, char ** argv)
 {
 	if (argc < 4 || argc > 5 || (argc == 5 && elektraStrCmp (argv[4], "get") != 0))

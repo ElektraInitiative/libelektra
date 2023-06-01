@@ -11,12 +11,15 @@
 #include <elektra/notifications.h>
 #include <elektra/plugin/invoke.h>
 #include <elektra/plugin/plugin.h>
+
 #include <internal/io/private.h>
-#include <internal/kdbprivate.h> // for elektraGetPluginFunction, elektraPluginFindGlobal, kdb->globalPlugins and plugin->config
+#include <internal/kdbprivate.h>
 #include <internal/notifications.h>
+#include <internal/plugin/load.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
+
 #include <stdio.h>
 
 /**

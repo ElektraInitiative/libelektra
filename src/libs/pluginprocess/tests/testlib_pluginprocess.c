@@ -7,16 +7,19 @@
  *
  */
 
-#include <stdio.h>
 
 #include <internal/pluginprocess.h>
 
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 #include <elektra/plugin/plugin.h>
+
 #include <internal/kdbprivate.h>
+#include <internal/plugin/struct.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/compare.h>
+
+#include <stdio.h>
 #include <stdlib.h>
 
 #include <tests.h>

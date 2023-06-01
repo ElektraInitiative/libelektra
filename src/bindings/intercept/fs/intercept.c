@@ -22,6 +22,8 @@
 #include <elektra/kdb/kdb.h>
 #include <internal/kdbprivate.h>
 #include <internal/macros/os.h>
+#include <internal/plugin/load.h>
+#include <internal/plugin/struct.h>
 #include <internal/pluginload/module.h>
 
 #define PRELOAD_PATH "/elektra/intercept/open"

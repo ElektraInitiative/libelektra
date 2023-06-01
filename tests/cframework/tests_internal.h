@@ -21,8 +21,10 @@
 #include <elektra/plugin/plugin.h>
 #include <internal/config.h>
 #include <internal/kdbprivate.h>
+#include <internal/plugin/struct.h>
 #include <internal/pluginload/module.h>
 #include <internal/utility/logger.h>
+
 void clear_sync (KeySet * ks);
 void output_plugin (Plugin * plugin);
 void output_backend (Plugin * backend);

@@ -4,7 +4,8 @@
 #include "./backendprivate.h"
 
 #include <elektra/core/errors.h>
-#include <internal/kdbprivate.h>
+
+#include <internal/plugin/struct.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/compare.h>
 #include <internal/utility/logger.h>
