@@ -14,8 +14,8 @@
 #include <elektra/core/errors.h>
 #include <internal/macros/attributes.h>
 #include <internal/macros/os.h>
-#include <internal/utility/assert.h>
 #include <internal/utility/alloc.h>
+#include <internal/utility/assert.h>
 #include <string.h>
 
 #include "./wresolver.h"

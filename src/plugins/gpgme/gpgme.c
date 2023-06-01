@@ -16,9 +16,9 @@
 #include <elektra/core/namespace.h>
 #include <elektra/type/types.h>
 
+#include <gpgme.h>
 #include <internal/config.h>
 #include <internal/utility/alloc.h>
-#include <gpgme.h>
 #include <locale.h>
 #include <stdlib.h>
 #include <string.h>

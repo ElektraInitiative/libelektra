@@ -9,9 +9,9 @@
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 #include <elektra/kdb/kdb.h>
+#include <fcntl.h>
 #include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
-#include <fcntl.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>

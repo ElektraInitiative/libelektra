@@ -16,8 +16,8 @@
 
 #include <ctype.h>
 #include <errno.h>
-#include <internal/utility/string.h>
 #include <internal/utility/alloc.h>
+#include <internal/utility/string.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>

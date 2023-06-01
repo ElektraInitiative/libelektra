@@ -11,9 +11,9 @@
 #include <ev.h>
 
 #include <elektra/io/api.h>
+#include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
-#include <internal/utility/alloc.h>
 typedef struct ev_loop ev_loop_t;
 
 /**

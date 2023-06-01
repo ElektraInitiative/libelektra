@@ -10,17 +10,17 @@
 
 #include <elektra/core/errors.h>
 
-#include <internal/config.h>
-#include <internal/kdbprivate.h> // KDB_CACHE_PREFIX
-#include <internal/macros/attributes.h>
-#include <internal/resolver/stat.h>
-#include <internal/utility/assert.h>
-#include <internal/utility/logger.h>
-#include <internal/utility/alloc.h>
 #include <ctype.h>
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <internal/config.h>
+#include <internal/kdbprivate.h> // KDB_CACHE_PREFIX
+#include <internal/macros/attributes.h>
+#include <internal/resolver/stat.h>
+#include <internal/utility/alloc.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/logger.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

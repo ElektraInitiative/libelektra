@@ -7,12 +7,12 @@
  */
 
 #define _GNU_SOURCE
-#include <internal/config.h>
-#include <internal/macros/plugin_errors.h>
-#include <internal/utility/format.h>
-#include <internal/utility/alloc.h>
 #include "./simpleini.h"
 #include <errno.h>
+#include <internal/config.h>
+#include <internal/macros/plugin_errors.h>
+#include <internal/utility/alloc.h>
+#include <internal/utility/format.h>
 
 #include <elektra/core/errors.h>
 #include <elektra/ease/name.h>

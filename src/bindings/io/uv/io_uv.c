@@ -11,9 +11,9 @@
 #include <uv.h>
 
 #include <elektra/io/api.h>
+#include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
-#include <internal/utility/alloc.h>
 /**
  * Container for required additional information for
  * I/O binding operations & libuv Handles

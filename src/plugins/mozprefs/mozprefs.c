@@ -9,8 +9,8 @@
 
 #include "./mozprefs.h"
 
-#include <internal/utility/compare.h>
 #include <internal/utility/alloc.h>
+#include <internal/utility/compare.h>
 #include <internal/utility/string.h>
 
 #include <ctype.h>

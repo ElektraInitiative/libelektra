@@ -18,10 +18,10 @@
 #include <errno.h>
 #include <internal/kdbprivate.h> // for ksRenameKeys
 #include <internal/macros/plugin_errors.h>
-#include <internal/utility/assert.h>
-#include <internal/utility/string.h>
-#include <internal/utility/compare.h>
 #include <internal/utility/alloc.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/compare.h>
+#include <internal/utility/string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

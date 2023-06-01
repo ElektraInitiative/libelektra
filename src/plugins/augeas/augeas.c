@@ -19,8 +19,6 @@
 #include <internal/macros/attributes.h>
 #include <internal/macros/plugin_errors.h>
 #include <internal/utility/alloc.h>
-#include <ctype.h>
-#include <glob.h>
 #include <libgen.h>
 
 #include "./aug.h"

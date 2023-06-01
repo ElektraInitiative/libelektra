@@ -14,9 +14,9 @@
 #include <internal/io/private.h>
 #include <internal/kdbprivate.h> // for elektraGetPluginFunction, elektraPluginFindGlobal, kdb->globalPlugins and plugin->config
 #include <internal/notifications.h>
+#include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
-#include <internal/utility/alloc.h>
 #include <stdio.h>
 
 /**

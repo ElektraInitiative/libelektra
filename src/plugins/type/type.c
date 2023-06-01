@@ -16,9 +16,9 @@
 #include <elektra/type/conversion.h>
 #include <elektra/type/types.h>
 
-#include <internal/utility/compare.h>
-#include <internal/utility/array.h>
 #include <internal/utility/alloc.h>
+#include <internal/utility/array.h>
+#include <internal/utility/compare.h>
 struct _Type
 {
 	const char * name;

@@ -20,10 +20,10 @@
 #include <internal/macros/attributes.h>
 #include <internal/macros/bitfields.h>
 #include <internal/macros/os.h> // SSIZE_MAX
-#include <internal/utility/assert.h>
-#include <internal/utility/logger.h>
-#include <internal/utility/compare.h>
 #include <internal/utility/alloc.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/compare.h>
+#include <internal/utility/logger.h>
 #ifdef HAVE_KDBCONFIG_H
 #include <internal/config.h>
 #endif

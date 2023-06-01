@@ -8,8 +8,8 @@
 
 #include <stdio.h>
 
-#include <internal/utility/compare.h>
 #include <internal/utility/alloc.h>
+#include <internal/utility/compare.h>
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
 #endif

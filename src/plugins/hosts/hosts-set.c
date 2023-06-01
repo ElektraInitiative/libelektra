@@ -9,12 +9,12 @@
 
 #include "./hosts.h"
 
-#include <internal/config.h>
-#include <internal/macros/plugin_errors.h>
-#include <internal/utility/alloc.h>
 #include <elektra/ease/array.h>
 #include <elektra/ease/meta.h>
 #include <elektra/ease/utils.h>
+#include <internal/config.h>
+#include <internal/macros/plugin_errors.h>
+#include <internal/utility/alloc.h>
 static int keyCmpOrderWrapper (const void * a, const void * b)
 {
 	return elektraKeyCmpOrder (*((const Key **) a), *((const Key **) b));

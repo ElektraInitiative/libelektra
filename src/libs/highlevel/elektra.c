@@ -13,10 +13,10 @@
 #include <elektra/type/conversion.h>
 #include <internal/kdbprivate.h>
 #include <internal/macros/symver.h>
-#include <internal/utility/logger.h>
+#include <internal/utility/alloc.h>
 #include <internal/utility/array.h>
 #include <internal/utility/format.h>
-#include <internal/utility/alloc.h>
+#include <internal/utility/logger.h>
 #include <stdlib.h>
 
 #ifdef __cplusplus

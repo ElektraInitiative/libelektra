@@ -21,8 +21,8 @@
 
 #include <kdbcontext.hpp>
 
-#include <internal/utility/alloc.h>
 #include <dlfcn.h>
+#include <internal/utility/alloc.h>
 #include <libgen.h>
 #include <signal.h>
 #include <stdio.h>

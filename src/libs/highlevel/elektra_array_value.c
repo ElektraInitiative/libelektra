@@ -11,8 +11,8 @@
 #include <elektra/highlevel.h>
 #include <elektra/type/conversion.h>
 #include <internal/kdbprivate.h>
-#include <internal/utility/array.h>
 #include <internal/utility/alloc.h>
+#include <internal/utility/array.h>
 #include <stdlib.h>
 #include <string.h>
 

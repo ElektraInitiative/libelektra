@@ -23,10 +23,10 @@
 #include <elektra/io/api.h>  // I/O binding functions (elektraIo*)
 #include <elektra/io/glib.h> // I/O binding constructor for glib (elektraIoGlibNew)
 #include <elektra/kdb/kdb.h>
-#include <elektra/notifications.h>	 // notification functions
+#include <elektra/notifications.h> // notification functions
+#include <glib-unix.h>		   // g_unix_signal_add()
+#include <glib.h>		   // glib functions
 #include <internal/utility/alloc.h>
-#include <glib-unix.h> // g_unix_signal_add()
-#include <glib.h>      // glib functions
 
 #include <signal.h> // signal()
 #include <stdio.h>  // printf() & co

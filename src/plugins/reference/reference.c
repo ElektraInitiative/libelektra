@@ -16,8 +16,8 @@
 #include <elektra/ease/reference.h>
 #include <elektra/ease/utils.h>
 #include <internal/macros/attributes.h>
-#include <internal/utility/compare.h>
 #include <internal/utility/alloc.h>
+#include <internal/utility/compare.h>
 #include <stdbool.h>
 
 int elektraReferenceGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
