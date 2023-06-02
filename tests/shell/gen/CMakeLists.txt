@@ -5,7 +5,7 @@ file (
 	*.sh)
 
 if (BUILD_SHARED)
-	set (ElektraCodegen_ALL_LIBRARIES "elektra-highlevel;elektra-opts;elektra-invoke;elektra-ease;elektra-kdb;elektra-core")
+	set (ElektraCodegen_ALL_LIBRARIES "elektra-highlevel;elektra-opts;elektra-invoke;elektra-ease;elektra-kdb;elektra-core;elektra-types;elektra-utility")
 elseif (BUILD_FULL)
 	set (ElektraCodegen_ALL_LIBRARIES "elektra-full")
 elseif (BUILD_STATIC)

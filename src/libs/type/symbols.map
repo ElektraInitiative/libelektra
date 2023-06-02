@@ -1,0 +1,30 @@
+libelektra_1.0 {
+	## ToString;
+	elektraBooleanToString;
+	elektraCharToString;
+	elektraDoubleToString;
+	elektraFloatToString;
+	elektraLongDoubleToString;
+	elektraLongLongToString;
+	elektraLongToString;
+	elektraOctetToString;
+	elektraShortToString;
+	elektraUnsignedLongLongToString;
+	elektraUnsignedLongToString;
+	elektraUnsignedShortToString;
+
+	## FromKey;
+	elektraKeyToBoolean;
+	elektraKeyToChar;
+	elektraKeyToDouble;
+	elektraKeyToFloat;
+	elektraKeyToLong;
+	elektraKeyToLongDouble;
+	elektraKeyToLongLong;
+	elektraKeyToOctet;
+	elektraKeyToShort;
+	elektraKeyToString;
+	elektraKeyToUnsignedLong;
+	elektraKeyToUnsignedLongLong;
+	elektraKeyToUnsignedShort;
+};

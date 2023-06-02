@@ -10,7 +10,7 @@ foreach (file ${TESTS})
 endforeach (file ${TESTS})
 
 target_link_elektra (test_array elektra-ease)
-target_link_elektra (test_conversion elektra-ease)
+target_link_elektra (test_conversion elektra-types)
 target_link_elektra (test_keyname elektra-ease)
 
 target_link_elektra (test_plugin elektra-plugin)

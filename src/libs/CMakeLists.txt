@@ -4,6 +4,7 @@ set (
 	SUBDIRS
 	core
 	kdb
+	type
 	ease
 	globbing
 	meta

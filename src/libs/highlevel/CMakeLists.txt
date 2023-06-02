@@ -7,13 +7,16 @@ add_lib (
 	LINK_ELEKTRA
 	elektra-kdb
 	elektra-ease
+	elektra-types
 	COMPONENT
 	libelektra${SO_VERSION})
 
 if (BUILD_SHARED)
-	set (LIBRARIES "-lelektra-highlevel -lelektra-kdb -lelektra-ease -lelektra-core")
-	set (CODEGEN_LIBRARIES
-	     "-lelektra-opts -lelektra-invoke -lelektra-highlevel -lelektra-kdb -lelektra-ease -lelektra-core -lelektra-meta")
+	set (LIBRARIES "-lelektra-types -lelektra-highlevel -lelektra-kdb -lelektra-ease -lelektra-core")
+	set (
+		CODEGEN_LIBRARIES
+		"-lelektra-types -lelektra-opts -lelektra-invoke -lelektra-highlevel -lelektra-kdb -lelektra-ease -lelektra-core -lelektra-meta  -lelektra-utility"
+	)
 elseif (BUILD_FULL)
 	set (LIBRARIES "-lelektra-full")
 	set (CODEGEN_LIBRARIES "-lelektra-full")
