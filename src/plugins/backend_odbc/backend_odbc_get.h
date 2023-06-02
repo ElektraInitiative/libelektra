@@ -19,12 +19,6 @@
 #include <sqlext.h>
 #include <sqltypes.h>
 
-
-char * getSelectQueryString (struct dataSourceConfig * dsConfig, char * quoteString);
-SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfig * dsConfig, Key * errorKey);
-bool executeSqlStatement (SQLHSTMT sqlStmt, Key * errorKey);
-bool getLongData (SQLHSTMT sqlStmt, SQLUSMALLINT colNumber, SQLSMALLINT targetType, char ** targetValue, SQLLEN bufferSize, Key * errorKey);
-KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key * errorKey);
 KeySet * getKeysFromDataSource (struct dataSourceConfig * dsConfig, Key * errorKey);
 
 #endif // ELEKTRA_BACKEND_ODBC_GET_H

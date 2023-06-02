@@ -40,7 +40,7 @@ int MountOdbcCommand::execute (Cmdline const & cl)
 {
 	/* Check if the backend_odbc plugin is available */
 	kdb::tools::ModulesPluginDatabase pd;
-	std::vector<std::string> allPlugins = pd.listAllPlugins();
+	std::vector<std::string> allPlugins = pd.listAllPlugins ();
 
 	bool odbcPluginFound = false;
 	for (std::string const & curPlugin : allPlugins)
@@ -57,7 +57,8 @@ int MountOdbcCommand::execute (Cmdline const & cl)
 		std::cerr << "I could not find the 'backend_odbc' plugin." << std::endl
 			  << "Please make sure that you have included the plugin at build-time." << std::endl
 			  << "The ODBC backend is currently in the category 'EXPERIMENTAL' and therefore not built by default." << std::endl
-			  << "See /doc/COMPILE.md for more information." << std::endl << std::endl;
+			  << "See /doc/COMPILE.md for more information." << std::endl
+			  << std::endl;
 		return EXIT_FAILURE;
 	}
 

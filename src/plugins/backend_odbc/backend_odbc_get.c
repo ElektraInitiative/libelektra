@@ -28,11 +28,11 @@
  *
  * @return The query string for the select query to get keynames, key-values and metadata from an SQL data source.
  * 	Make sure to free the returned string.
- * @retval "" (empty string) invalid input detected
+ * @retval "" (empty string) if invalid input detected
  * 	This string must not be freed!
- * @retval NULL memory allocation failed
+ * @retval NULL if memory allocation failed
  */
-char * getSelectQueryString (struct dataSourceConfig * dsConfig, char * quoteString)
+static char * getSelectQueryString (struct dataSourceConfig * dsConfig, char * quoteString)
 {
 	/* A sample query string that shows the structure of the SELECT query that this function generates:
 	 * SELECT "elektra"."key", "elektra"."val", "elektrameta"."metakey", "elektrameta"."metaval" FROM {oj "elektra" LEFT OUTER JOIN
@@ -159,7 +159,7 @@ char * getSelectQueryString (struct dataSourceConfig * dsConfig, char * quoteStr
  * 	Make sure to free the returned handle with @b 'SQLFreeHandle()'.
  * @retval NULL if an error occurred (see @p errorKey for details)
  */
-SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfig * dsConfig, Key * errorKey)
+static SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfig * dsConfig, Key * errorKey)
 {
 	/* Handle for a statement */
 	SQLHSTMT sqlStmt = NULL;
@@ -305,7 +305,7 @@ SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfig * dsC
  *
  * @see prepareSelectStmt() for getting a valid and prepared SELECT statement that can be used by this function
  */
-bool executeSqlStatement (SQLHSTMT sqlStmt, Key * errorKey)
+static bool executeSqlStatement (SQLHSTMT sqlStmt, Key * errorKey)
 {
 	SQLRETURN ret = SQLExecute (sqlStmt);
 
@@ -352,7 +352,8 @@ bool executeSqlStatement (SQLHSTMT sqlStmt, Key * errorKey)
  *
  * @see fetchResults() for processing the results of an executed SELECT statement
  */
-bool getLongData (SQLHSTMT sqlStmt, SQLUSMALLINT colNumber, SQLSMALLINT targetType, char ** targetValue, SQLLEN bufferSize, Key * errorKey)
+static bool getLongData (SQLHSTMT sqlStmt, SQLUSMALLINT colNumber, SQLSMALLINT targetType, char ** targetValue, SQLLEN bufferSize,
+			 Key * errorKey)
 {
 	SQLLEN getDataLenOrInd;
 	SQLRETURN getDataRet;
@@ -434,7 +435,7 @@ bool getLongData (SQLHSTMT sqlStmt, SQLUSMALLINT colNumber, SQLSMALLINT targetTy
  *
  * @see executeSqlStatement() for executing a prepared SQL statement
  */
-KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key * errorKey)
+static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key * errorKey)
 {
 	SQLRETURN ret;
 	KeySet * ksResult = NULL;

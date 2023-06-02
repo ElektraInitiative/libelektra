@@ -465,7 +465,7 @@ struct dataSourceConfig * fillDsStructFromDefinitionKs (KeySet * ksDefinition)
  */
 char * dsConfigToString (struct dataSourceConfig * dsConfig)
 {
-	if (!dsConfig)
+	if (!dsConfig || !dsConfig->dataSourceName || !(*(dsConfig->dataSourceName)))
 	{
 		return NULL;
 	}
@@ -480,10 +480,9 @@ char * dsConfigToString (struct dataSourceConfig * dsConfig)
 				+(dsConfig->metaTableMetaKeyColName ? 3 + strlen (dsConfig->metaTableMetaKeyColName) : 0) +
 				+(dsConfig->metaTableMetaValColName ? 3 + strlen (dsConfig->metaTableMetaValColName) : 0);
 
-	if (dsConfigStrLen == 0)
-	{
-		return NULL;
-	}
+	ELEKTRA_ASSERT (dsConfigStrLen > 1,
+			"Calculated length for dsConfig was <= 1. This looks like a bug. Please report this issue at "
+			"https://issues.libelektra.org");
 
 	char * retStr = elektraMalloc (dsConfigStrLen * sizeof (char));
 
@@ -492,18 +491,7 @@ char * dsConfigToString (struct dataSourceConfig * dsConfig)
 		return NULL;
 	}
 
-	char * curPart;
-
-	if (dsConfig->dataSourceName)
-	{
-		curPart = stpcpy (retStr, dsConfig->dataSourceName);
-	}
-	else
-	{
-		elektraFree (retStr);
-		return NULL;
-	}
-
+	char * curPart = stpcpy (retStr, dsConfig->dataSourceName);
 
 	if (dsConfig->tableName)
 	{
