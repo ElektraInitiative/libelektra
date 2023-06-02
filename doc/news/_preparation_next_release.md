@@ -48,7 +48,53 @@ docker run -it elektra/elektra
 - <<HIGHLIGHT>>
 - <<HIGHLIGHT>>
 
-### <<HIGHLIGHT>>
+### BREAKING: New header and library structure
+
+We implemented the previously decided, new [Header File Structure](/doc/decisions/6_implemented/header_file_structure.md), [Including Headers](/doc/decisions/6_implemented/header_include.md), [Library Directory Structure](/doc/decisions/6_implemented/library_directory_structure.md) and [Library Split](/doc/decisions/6_implemented/library_split.md).
+With this change it should be easier to find things in source code and know which headers are public (i.e., included in packages) and which are just internal to the repository.
+
+#### Changed headers
+
+For developers building applications/libraries that link against Elektra, this means a breaking change.
+The biggest part is the source-breaking change of the header structure.
+Please look at `src/include/elektra` to find the headers containing the symbols you need and include them in your code as e.g.
+
+```c
+#include <elektra/kdb.h>
+```
+
+Importantly, it is no longer required to set additional include paths.
+Only the standard include paths (`/usr/include`, or `/usr/local/include` when you install from source) are required.
+
+The new `src/include/elektra` folder includes all headers that Elektra installs (*), it is copied directly to `/usr/include` on install.
+The layout of `src/include/elektra` (and consequently the layout of installed headers), follows a fixed pattern:
+
+```c
+// include all/default symbols of library libelektra-[LIB].so
+// almost all libraries provide such a header
+#include <elektra/[LIB].h>
+
+// include only foo symbols of library libelektra-[LIB].so
+// not all libraries provide modularized headers like this
+#include <elektra/[LIB]/foo.h>
+```
+
+
+(*) For now, some bindings (e.g., the C++ binding) still install additional headers located in other places.
+    These will also be moved to `src/include/elektra` in the future.
+
+#### Changed libraries
+
+For the actual libraries `libelektra-*.so`, the biggest change was restructuring the source code for easier development.
+However, there are a few breaking changes for third party code as well:
+
+- `libelektra-types.so` is a new library implementing the type conversion functions `elektraKeyTo*` and `elektra*ToString`, which were previously part of `libelektra-ease.so`.
+- `libelektra-utility.so` is a new library implementing some low-level helper functions that don't require Elektra-specific types, which were previously part of `libelektra-core.so`.
+  Because of the way these libraries are built internally, both `libelektra-utility.so` and `libelektra-core.so` are dependency-free.
+  You can still use `libelektra-core.so` without linking against additional libraries.
+  This is works, because the functions exported by `libelektra-utility.so` which are required by `libelektra-core.so` are statically linked into `libelektra-core.so` and not exported there.
+  If you need e.g., `elektraFree` then link against `libelektra-utility.so`.
+  While `elektraFree` is included in `libelektra-core.so`, it is not exported anymore.
 
 ### <<HIGHLIGHT>>
 
@@ -291,7 +337,6 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Started implementing the decisions [Header File Structure](/doc/decisions/5_partially_implemented/header_file_structure.md), [Including Headers](/doc/decisions/5_partially_implemented/header_include.md), [Library Directory Structure](/doc/decisions/5_partially_implemented/library_directory_structure.md) and [Library Split](/doc/decisions/5_partially_implemented/library_split.md). _(@kodebach)_
 - <<TODO>>
 - Continued implementing the decisions [Header File Structure](/doc/decisions/5_partially_implemented/header_file_structure.md), [Including Headers](/doc/decisions/5_partially_implemented/header_include.md), [Library Directory Structure](/doc/decisions/5_partially_implemented/library_directory_structure.md) and [Library Split](/doc/decisions/5_partially_implemented/library_split.md). _(@kodebach)_
-- Started implementing the decisions [Header File Structure](/doc/decisions/6_implemented/header_file_structure.md), [Including Headers](/doc/decisions/6_implemented/header_include.md), [Library Directory Structure](/doc/decisions/6_implemented/library_directory_structure.md) and [Library Split](/doc/decisions/6_implemented/library_split.md). _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
