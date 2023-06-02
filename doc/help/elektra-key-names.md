@@ -107,7 +107,7 @@ the key names of software-applications should always start with:
 
 - [see application integration tutorial](/doc/tutorials/application-integration.md)
 - [see namespaces tutorial](/doc/tutorials/namespaces.md)
-- [key name source file](/src/libs/elektra/keyname.c) or [its rendered API documentation](https://doc.libelektra.org/api/master/html/group__keyname.html#details)
+- [key name source file](/src/libs/core/keyname.c) or [its rendered API documentation](https://doc.libelektra.org/api/master/html/group__keyname.html#details)
 
 - [elektra-namespaces(7)](elektra-namespaces.md)
 - [elektra-cascading(7)](elektra-cascading.md)

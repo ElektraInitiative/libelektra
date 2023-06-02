@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre3
-.TH "ELEKTRA\-LIBS" "7" "October 2022" ""
+.TH "ELEKTRA\-LIBS" "7" "April 2023" ""
 .SH "NAME"
 \fBelektra\-libs\fR \- libs overview
 .IP "" 4
@@ -27,18 +27,18 @@ Using asynchronous I/O bindings \fIhttps://www\.libelektra\.org/examples/notific
 Reload KDB when Elektra's configuration has changed \fIhttps://www\.libelektra\.org/examples/notificationreload\fR
 .IP "" 0
 .SH "Base Elektra Libraries"
-Since version \fB0\.8\.15\fR \fBlibelektra \fIelektra/\fR\fR is split into following libraries:
+Since version \fB0\.8\.15\fR \fBlibelektra\fR is split into following libraries:
 .P
 .SS "Libkdb"
 .nf
 libelektra\-kdb\.so
 .fi
 .P
-Accesses the configuration files by orchestrating the plugins\. The implementation lives in \fIelektra\fR\.
+Accesses the configuration files by orchestrating the plugins\. The implementation lives in \fIkdb\fR\.
 .P
 It coordinates the interactions between the applications and the plugins\.
 .P
-\fBloader \fIloader/\fR\fR contains source files that implement the plugin loader functionality as used by \fBlibelektra\-kdb\fR\.
+\fBpluginload \fIpluginload/\fR\fR contains source files that implement the plugin loader functionality as used by \fBlibelektra\-kdb\fR\.
 .SS "Libcore"
 .nf
 libelektra\-core\.so
@@ -46,7 +46,7 @@ libelektra\-core\.so
 <kdb\.h> (key* and ks*)
 .fi
 .P
-Contains the fundamental data\-structures every participant of Elektra needs to link against\. It should be the only part that access the internal data structures\. The implementation lives in \fIelektra\fR\.
+Contains the fundamental data\-structures every participant of Elektra needs to link against\. It should be the only part that access the internal data structures\. The implementation lives in \fIcore\fR\.
 .SS "Libease"
 .nf
 libelektra\-ease\.so
@@ -71,8 +71,6 @@ libelektra\-merge\.so
 .fi
 .P
 \fBlibmerge \fImerge/\fR\fR provides functionality for 3\-way merges of keysets\.
-.SS "Libelektra"
-Is a legacy library that provides the same functionality as \fBlibelektra\-kdb\fR and \fBlibelektra\-core\fR\. The sources can be found in \fBlibelektra \fIelektra/\fR\fR\.
 .SH "Other Libraries"
 .SS "Libpluginprocess"
 .nf

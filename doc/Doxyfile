@@ -907,8 +907,8 @@ WARN_LOGFILE           = @OUTPUT_DIRECTORY@/doxygen.log
 # Note: If this tag is empty the current directory is searched.
 
 INPUT                  = @PROJECT_SOURCE_DIR@/src/libs \
-                         @PROJECT_SOURCE_DIR@/src/libs/loader/doc.c \
-                         @PROJECT_SOURCE_DIR@/src/libs/getenv/README.md \
+                         @PROJECT_SOURCE_DIR@/src/libs/pluginload/doc.c \
+                         @PROJECT_SOURCE_DIR@/src/bindings/intercept/env/README.md \
                          @PROJECT_SOURCE_DIR@/src/include \
                          @PROJECT_SOURCE_DIR@/src/bindings/cpp/include \
                          @PROJECT_SOURCE_DIR@/src/bindings/jna/libelektra/src \

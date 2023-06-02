@@ -25,7 +25,7 @@ Since we want to improve the readability of the Callgrind output we choose a bui
 
 #### Disabling `dlclose` Calls
 
-For this tutorial we decided to profile the [YAJL][] plugin. Since Elektra loads plugin code via `dlopen` and Callgrind [does not support the function `dlclose` properly](https://stackoverflow.com/questions/16719395) we remove the `dlclose` calls in the file [`dl.c`](../../src/libs/loader/dl.c) temporarily. At the time of writing one option to do that is deleting
+For this tutorial we decided to profile the [YAJL][] plugin. Since Elektra loads plugin code via `dlopen` and Callgrind [does not support the function `dlclose` properly](https://stackoverflow.com/questions/16719395) we remove the `dlclose` calls in the file [`dl.c`](../../src/libs/pluginload/dl.c) temporarily. At the time of writing one option to do that is deleting
 
 - a single line `dlclose` statement, and
 - an `if`-statement that checks the return value of a `dlclose` call

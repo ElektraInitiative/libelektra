@@ -28,8 +28,9 @@ Usage examples:
 
 ## Base Elektra Libraries
 
-Since version **0.8.15** **[libelektra](elektra/)**
-is split into following libraries:
+<!-- TODO: update section -->
+
+Since version **0.8.15** `libelektra` is split into following libraries:
 
 ![Overview of Libraries](/doc/images/overview_libs.png)
 
@@ -40,12 +41,11 @@ libelektra-kdb.so
 ```
 
 Accesses the configuration files by orchestrating the plugins.
-The implementation lives in [elektra](elektra).
+The implementation lives in [kdb](kdb).
 
 It coordinates the interactions between the applications and the plugins.
 
-**[loader](loader/)** contains source files that implement the plugin
-loader functionality as used by `libelektra-kdb`.
+**[pluginload](pluginload/)** contains source files that implement the plugin loader functionality as used by `libelektra-kdb`.
 
 ### Libcore
 
@@ -55,10 +55,8 @@ libelektra-core.so
 <kdb.h> (key* and ks*)
 ```
 
-Contains the fundamental data-structures every participant of Elektra needs
-to link against. It should be the only part that access the internal
-data structures.
-The implementation lives in [elektra](elektra).
+Contains the fundamental data-structures every participant of Elektra needs to link against. It should be the only part that access the internal data structures.
+The implementation lives in [core](core).
 
 ### Libease
 
@@ -95,11 +93,6 @@ libelektra-merge.so
 
 **[libmerge](merge/)** provides functionality for 3-way merges of keysets.
 
-### Libelektra
-
-Is a legacy library that provides the same functionality as `libelektra-kdb` and `libelektra-core`.
-The sources can be found in **[libelektra](elektra/)**.
-
 ## Other Libraries
 
 ### Libpluginprocess
@@ -108,15 +101,12 @@ The sources can be found in **[libelektra](elektra/)**.
 libelektra-pluginprocess.so
 ```
 
-**[libpluginprocess](pluginprocess/)** contains functions aiding in executing plugins in a separate
-process and communicating with those child processes. This child process is forked from Elektra's
-main process each time such plugin is used and gets closed again afterwards. It uses a simple
-communication protocol based on a KeySet that gets serialized through a pipe via the dump plugin to
-orchestrate the processes.
+**[libpluginprocess](pluginprocess/)** contains functions aiding in executing plugins in a separate process and communicating with those child processes.
+This child process is forked from Elektra's main process each time such plugin is used and gets closed again afterwards.
+It uses a simple communication protocol based on a KeySet that gets serialized through a pipe via the dump plugin to orchestrate the processes.
 
-This is useful for plugins which cause memory leaks to be isolated in an own process. Furthermore
-this is useful for runtimes or libraries that cannot be reinitialized in the same process after they
-have been used.
+This is useful for plugins which cause memory leaks to be isolated in an own process.
+Furthermore this is useful for runtimes or libraries that cannot be reinitialized in the same process after they have been used.
 
 ### Libtools
 
@@ -144,9 +134,7 @@ libelektra-invoke.so
 libelektra-io.so
 ```
 
-**[io](io/)** provides the
-[common API](https://doc.libelektra.org/api/latest/html/group__kdbio.html) for
-using asynchronous I/O bindings.
+**[io](io/)** provides the [common API](https://doc.libelektra.org/api/latest/html/group__kdbio.html) for using asynchronous I/O bindings.
 
 ### Globbing
 
@@ -156,7 +144,8 @@ libelektra-globbing.so
 
 **[globbing](globbing/)** provides globbing functionality for Elektra.
 
-The supported syntax is a superset of the syntax used by `glob(7)`. The following extensions are supported:
+The supported syntax is a superset of the syntax used by `glob(7)`.
+The following extensions are supported:
 
 - `#`, when used as `/#/` (or `/#"` at the end of the pattern), matches a valid array item
 - `_` is the exact opposite; it matches anything but a valid array item
