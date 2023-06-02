@@ -9,19 +9,17 @@
 
 #include "./rename.h"
 
-#ifndef HAVE_KDBCONFIG
-#include <internal/config.h>
-#endif
 
+#include <internal/config.h>
+#include <internal/macros/bitfields.h>
+#include <internal/utility/alloc.h>
+#include <internal/utility/string.h>
 
 #include <ctype.h>
 #include <errno.h>
-#include <internal/utility/old_helper.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#include <internal/kdbprivate.h>
 
 #define ELEKTRA_ORIGINAL_NAME_META "origname"
 #define TOLOWER (-1)

@@ -1,4 +1,7 @@
 #include <elektra/diff.h>
+
+#include <internal/diff.h>
+
 #include <tests_internal.h>
 
 ElektraDiff * demoDiff = NULL;

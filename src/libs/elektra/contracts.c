@@ -8,7 +8,9 @@
 
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
-#include <internal/kdbprivate.h>
+
+#include <internal/core/key/api.h>
+#include <internal/core/keyset/api.h>
 
 #include <stddef.h>
 

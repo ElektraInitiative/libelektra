@@ -1,9 +1,9 @@
 
 #include "./errors/baseNotification.hpp"
-#include <internal/kdbprivate.h>
 #include <iostream>
 #include <utility>
 
+#include <internal/macros/attributes.h>
 namespace kdb
 {
 namespace tools

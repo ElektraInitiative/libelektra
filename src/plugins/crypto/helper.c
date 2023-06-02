@@ -12,8 +12,8 @@
 #include "./gpg.h"
 #include <elektra/core/errors.h>
 #include <elektra/plugin/invoke.h>
+#include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>
-#include <internal/utility/old_helper.h>
 #include <stdlib.h>
 
 /**

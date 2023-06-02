@@ -18,6 +18,9 @@
 #include <tests.h>
 #include <tests_plugin.h>
 
+#include <internal/utility/format.h>
+#include <internal/utility/string.h>
+
 #include <pthread.h>
 
 /** change type received by readNotificationFromTestSocket() */

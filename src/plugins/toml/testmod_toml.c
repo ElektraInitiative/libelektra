@@ -9,7 +9,6 @@
 
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
-#include <internal/kdbprivate.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
 #include <tests.h>

@@ -17,11 +17,15 @@
 #include <elektra/ease/array.h>
 #include <elektra/ease/meta.h>
 #include <elektra/plugin/plugin.h>
+
 #include <internal/config.h>
-#include <internal/kdbprivate.h>
+#include <internal/core/key/api.h>
 #include <internal/pluginload/module.h>
+#include <internal/utility/alloc.h>
+#include <internal/utility/format.h>
 #include <internal/utility/logger.h>
-#include <internal/utility/old_helper.h>
+#include <internal/utility/string.h>
+
 #include <string.h>
 
 /**

@@ -6,7 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <internal/utility/old_helper.h>
+#include <internal/utility/alloc.h>
+#include <internal/utility/string.h>
 #include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>

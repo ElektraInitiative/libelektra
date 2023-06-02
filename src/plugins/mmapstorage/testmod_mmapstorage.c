@@ -21,7 +21,6 @@
 #include <unistd.h>    // ftruncate(), pipe(), fork()
 
 #include <internal/config.h>
-#include <internal/kdbprivate.h>
 
 #include <tests_plugin.h>
 

@@ -11,9 +11,10 @@
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 #include <elektra/ease/meta.h>
-
+#include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>
-#include <internal/utility/old_helper.h>
+#include <internal/utility/compare.h>
+#include <internal/utility/string.h>
 #include <regex.h>
 #include <stdbool.h>
 #include <stdio.h>

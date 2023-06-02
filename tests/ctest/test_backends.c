@@ -6,9 +6,13 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include "../../src/libs/elektra/backends.h"
+
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
-#include <internal/kdbprivate.h>
+
+#include <internal/kdb/struct.h>
+
 #include <stdlib.h>
 #include <tests.h>
 

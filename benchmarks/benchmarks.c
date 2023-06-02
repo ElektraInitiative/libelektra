@@ -13,6 +13,8 @@
 #endif
 #include <sys/time.h>
 
+#include <internal/utility/alloc.h>
+
 struct timeval start;
 int num_dir = NUM_DIR;
 int num_key = NUM_KEY;

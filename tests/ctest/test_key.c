@@ -6,8 +6,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <internal/kdbprivate.h>
 #include <tests_internal.h>
+
+#include <internal/utility/array.h>
 
 #ifdef HAVE_TIME_H
 #include <time.h>

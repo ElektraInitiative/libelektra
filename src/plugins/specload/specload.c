@@ -10,11 +10,12 @@
 #include "./specload.h"
 
 #include <elektra/core/errors.h>
-#include <internal/utility/old_helper.h>
-
 #include <elektra/ease/array.h>
 #include <elektra/plugin/invoke.h>
 #include <internal/pluginload/module.h>
+#include <internal/utility/alloc.h>
+#include <internal/utility/compare.h>
+#include <internal/utility/format.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

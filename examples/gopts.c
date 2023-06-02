@@ -11,8 +11,7 @@
 #include <elektra/ease/array.h>
 #include <elektra/kdb/contracts/gopts.h>
 #include <elektra/kdb/kdb.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/compare.h>
 #include <stdio.h>
 #include <stdlib.h>
 

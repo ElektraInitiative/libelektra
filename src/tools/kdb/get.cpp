@@ -12,11 +12,10 @@
 #include <kdb.hpp>
 
 #include <internal/macros/attributes.h>
-#include <internal/utility/old_helper.h>
-
 #include <iostream>
 
-#include <internal/macros/attributes.h>
+#include <internal/core/lookup.h>
+
 using namespace std;
 using namespace kdb;
 

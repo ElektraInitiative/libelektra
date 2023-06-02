@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <tests_internal.h>
+#include <tests_plugin.h>
 
 // clang-format off
 KeySet *getEmptyKeys(void)

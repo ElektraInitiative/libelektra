@@ -15,10 +15,9 @@
 
 #include "./zeromqsend.h"
 
+#include <errno.h> // errno
+#include <internal/utility/alloc.h>
 #include <internal/utility/logger.h>
-#include <internal/utility/old_helper.h>
-
-#include <errno.h>  // errno
 #include <stdlib.h> // strtol()
 
 static long convertUnsignedLong (const char * string, long defaultValue)

@@ -23,8 +23,10 @@
 #include <stdlib.h>
 #endif
 
-#include <internal/kdbprivate.h>
+#include <internal/core/key.h>
 #include <internal/macros/os.h>
+#include <internal/utility/alloc.h>
+#include <internal/utility/string.h>
 
 
 /**

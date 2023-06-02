@@ -16,13 +16,13 @@
 #include <elektra/kdb/kdb.h>
 #include <elektra/type/types.h>
 
-#include <internal/notifications.h>
-#include <internal/utility/assert.h>
-#include <internal/utility/logger.h>
-#include <internal/utility/old_helper.h>
-
 #include <ctype.h> // isspace()
 #include <errno.h> // errno
+#include <internal/notifications.h>
+#include <internal/utility/alloc.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/compare.h>
+#include <internal/utility/logger.h>
 #include <limits.h>
 #include <stdlib.h> // strto* functions
 

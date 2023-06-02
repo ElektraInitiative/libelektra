@@ -11,6 +11,8 @@
 #include <string.h>
 
 #include <internal/config.h>
+#include <internal/plugin/load.h>
+#include <internal/plugin/struct.h>
 
 #include <tests_plugin.h>
 

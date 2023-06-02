@@ -1,6 +1,10 @@
 #include <elektra/changetracking.h>
 
-#include <internal/kdbprivate.h>
+#include <internal/changetracking.h>
+#include <internal/core/key/api.h>
+#include <internal/kdb/struct.h>
+#include <internal/plugin/struct.h>
+#include <internal/utility/alloc.h>
 
 /**
  * Returns the changetracking context of the given KDB instance

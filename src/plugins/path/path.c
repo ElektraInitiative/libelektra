@@ -9,7 +9,9 @@
 #include "./path.h"
 
 #include <internal/config.h>
-#include <internal/utility/old_helper.h>
+#include <internal/utility/alloc.h>
+
+#include <stdbool.h>
 
 static int createModeBits (const char * modes);
 

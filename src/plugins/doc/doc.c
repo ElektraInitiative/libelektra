@@ -23,9 +23,7 @@
 
 #include <internal/config.h>
 #include <internal/macros/plugin_errors.h>
-#include <internal/utility/old_helper.h>
-
-
+#include <internal/utility/alloc.h>
 //! [global data]
 typedef struct
 {

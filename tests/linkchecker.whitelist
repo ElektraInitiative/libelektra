@@ -47,7 +47,6 @@ https://daringfireball.net/projects/markdown
 https://debian-stretch-repo.libelektra.org
 http://lcdproc.omnipotent.net
 
-
 # Broken links to MinGW builds for Windows (see issue #4624), temporary fix to get PRs merged!
 https://build.libelektra.org/job/libelektra/job/master/lastSuccessfulBuild/artifact/artifacts/debian-bullseye-mingw-w64-i686/elektra.zip
 https://build.libelektra.org/job/libelektra/job/master/lastSuccessfulBuild/artifact/artifacts/debian-bullseye-mingw-w64-x86_64/elektra.zip

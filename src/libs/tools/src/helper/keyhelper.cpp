@@ -8,7 +8,8 @@
  */
 
 #include <helper/keyhelper.hpp>
-#include <internal/kdbprivate.h>
+
+#include <internal/core/key/api.h>
 
 using namespace std;
 

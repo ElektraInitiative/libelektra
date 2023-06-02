@@ -13,7 +13,6 @@
 
 #include <elektra/core/errors.h>
 #include <fstream>
-#include <internal/utility/old_helper.h>
 
 using ckdb::keyNew;
 using std::exception;

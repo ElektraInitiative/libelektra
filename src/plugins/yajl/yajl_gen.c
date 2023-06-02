@@ -8,11 +8,10 @@
 
 #include "./yajl_gen.h"
 #include <errno.h>
+#include <stdbool.h>
 
 #include <internal/macros/plugin_errors.h>
-#include <internal/utility/old_helper.h>
-
-
+#include <internal/utility/compare.h>
 /**
  * @brief Return the first character of next name level
  *

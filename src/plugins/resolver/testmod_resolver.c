@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <tests_internal.h>
+#include <tests_plugin.h>
 
 #include <elektra/core.h>
 #include <elektra/core/errors.h>
@@ -15,7 +15,6 @@
 #include <elektra/ease/meta.h>
 #include <elektra/plugin/plugin.h>
 #include <internal/config.h>
-#include <internal/kdbprivate.h>
 #include <internal/pluginload/module.h>
 #include <internal/utility/logger.h>
 #include <langinfo.h>

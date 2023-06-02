@@ -10,8 +10,6 @@
 #include "./common.hpp"
 #include <command.hpp>
 #include <elektra/ease/array.h>
-#include <internal/utility/old_helper.h>
-
 kainjow::mustache::list EnumProcessor::getValues (const std::string & prefix, const kdb::Key & key, std::string & fromStringSwitch,
 						  std::string & valuesString, size_t & trieDepth)
 {

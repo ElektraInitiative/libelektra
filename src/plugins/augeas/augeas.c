@@ -18,10 +18,8 @@
 #include <internal/config.h>
 #include <internal/macros/attributes.h>
 #include <internal/macros/plugin_errors.h>
-#include <internal/utility/old_helper.h>
-
-#include <ctype.h>
-#include <glob.h>
+#include <internal/utility/alloc.h>
+#include <internal/utility/format.h>
 #include <libgen.h>
 
 #include "./aug.h"

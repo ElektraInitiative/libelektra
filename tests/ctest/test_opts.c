@@ -9,6 +9,8 @@
 #include <elektra/core/errors.h>
 #include <elektra/opts.h>
 
+#include <stdbool.h>
+
 #include "tests.h"
 
 #define PROC_BASE_KEY "proc:/tests/opts"

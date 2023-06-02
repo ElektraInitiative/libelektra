@@ -9,10 +9,6 @@
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 #include <elektra/core/namespace.h>
-#include <internal/kdbprivate.h>
-#ifdef HAVE_KDBCONFIG_H
-#include <internal/config.h>
-#endif
 
 #include <stdio.h>
 
@@ -33,25 +29,29 @@
 #include <elektra/core/errors.h>
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
+#include <elektra/core/namespace.h>
 #include <elektra/ease/meta.h>
 #include <elektra/plugin/plugin.h>
 
-#include <elektra/core/key.h>
-#include <elektra/core/keyset.h>
-#include <elektra/core/namespace.h>
-#include <elektra/plugin/plugin.h>
 #include <internal/config.h>
-#include <internal/kdbprivate.h>
+#include <internal/core/key.h>
+#include <internal/core/keyset.h>
+#include <internal/core/lookup.h>
+#include <internal/macros/bitfields.h>
 #include <internal/pluginload/module.h>
+#include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
 #include <internal/utility/rand.h>
 
+#define DEFAULT_KEYSET_SIZE 16
 
 #define ELEKTRA_MAX_PREFIX_SIZE sizeof ("namespace/")
 #define ELEKTRA_MAX_NAMESPACE_SIZE sizeof ("system")
 
 static void elektraOpmphmCopy (struct _KeySetData * dest ELEKTRA_UNUSED, const struct _KeySetData * source ELEKTRA_UNUSED);
+static ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size);
+static ssize_t elektraMemmove (Key ** array1, Key ** array2, size_t size);
 
 /**
  * @internal
@@ -333,8 +333,8 @@ KeySet * ksVNew (size_t alloc, va_list va)
 	keySetDataRefInc (keyset->data);
 
 	alloc++; /* for ending null byte */
-	if (alloc < KEYSET_SIZE)
-		keyset->data->alloc = KEYSET_SIZE;
+	if (alloc < DEFAULT_KEYSET_SIZE)
+		keyset->data->alloc = DEFAULT_KEYSET_SIZE;
 	else
 		keyset->data->alloc = alloc;
 
@@ -577,12 +577,12 @@ int ksClear (KeySet * ks)
 	ks->data = keySetDataNew ();
 	keySetDataRefInc (ks->data);
 
-	if ((ks->data->array = elektraCalloc (sizeof (struct _Key *) * KEYSET_SIZE)) == 0)
+	if ((ks->data->array = elektraCalloc (sizeof (struct _Key *) * DEFAULT_KEYSET_SIZE)) == 0)
 	{
 		ks->data->size = 0;
 		return -1;
 	}
-	ks->data->alloc = KEYSET_SIZE;
+	ks->data->alloc = DEFAULT_KEYSET_SIZE;
 
 	elektraOpmphmInvalidate (ks->data);
 	return 0;
@@ -1027,7 +1027,7 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 		if (ks->data->size >= ks->data->alloc)
 		{
 
-			size_t newSize = ks->data->alloc == 0 ? KEYSET_SIZE : ks->data->alloc * 2;
+			size_t newSize = ks->data->alloc == 0 ? DEFAULT_KEYSET_SIZE : ks->data->alloc * 2;
 			--newSize;
 
 			if (ksResize (ks, newSize) == -1)
@@ -1106,7 +1106,7 @@ ssize_t ksAppend (KeySet * ks, const KeySet * toAppend)
 	if (toAppend->data->array == NULL) return ks->data->size;
 
 	if (ks->data->array == NULL)
-		toAlloc = KEYSET_SIZE;
+		toAlloc = DEFAULT_KEYSET_SIZE;
 	else
 		toAlloc = ks->data->alloc;
 
@@ -2853,10 +2853,10 @@ int ksResize (KeySet * ks, size_t alloc)
 	alloc++; /* for ending null byte */
 	if (alloc == ks->data->alloc) return 1;
 	if (alloc < ks->data->size) return 0;
-	if (alloc < KEYSET_SIZE)
+	if (alloc < DEFAULT_KEYSET_SIZE)
 	{
-		if (ks->data->alloc != KEYSET_SIZE)
-			alloc = KEYSET_SIZE;
+		if (ks->data->alloc != DEFAULT_KEYSET_SIZE)
+			alloc = DEFAULT_KEYSET_SIZE;
 		else
 			return 0;
 	}
@@ -2957,6 +2957,61 @@ int ksClose (KeySet * ks)
 	return 0;
 }
 
+
+/**
+ * Copies the key array2 into where array1 points.
+ * It copies size elements.
+ *
+ * Overlapping is prohibited, use elektraMemmove() instead.
+ *
+ * @param array1 the destination
+ * @param array2 the source
+ * @param size how many pointer to Keys to copy
+ * @retval -1 on null pointers
+ * @retval 0 if nothing was done
+ * @return size how many keys were copied
+ */
+static ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size)
+{
+	if (!array1) return -1;
+	if (!array2) return -1;
+	if (size > SSIZE_MAX) return -1;
+	if (size == 0) return 0;
+#if DEBUG
+	char * a = (char *) array1;
+	char * b = (char *) array2;
+	for (size_t i = 0; i < size; i++)
+	{
+		ELEKTRA_ASSERT (a + i != b && b + i != a, "memcpy overlap: %p and %p with size %zu", (void *) a, (void *) b, size);
+	}
+#endif
+	memcpy (array1, array2, size * sizeof (Key *));
+	return size;
+}
+
+/**
+ * Copies the key array2 into where array1 points.
+ * It copies size elements.
+ *
+ * Overlapping is ok. If they do not overlap consider
+ * elektraMemcpy() instead.
+ *
+ * @param array1 the destination
+ * @param array2 the source
+ * @param size how many pointer to Keys to copy
+ * @retval -1 on null pointers
+ * @retval 0 if nothing was done
+ * @return size how many keys were copied
+ */
+static ssize_t elektraMemmove (Key ** array1, Key ** array2, size_t size)
+{
+	if (!array1) return -1;
+	if (!array2) return -1;
+	if (size > SSIZE_MAX) return -1;
+	if (size == 0) return 0;
+	memmove (array1, array2, size * sizeof (Key *));
+	return size;
+}
 
 /**
  * @}

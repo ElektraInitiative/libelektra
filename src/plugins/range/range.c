@@ -11,15 +11,16 @@
 #include <ctype.h>
 #include <elektra/core/errors.h>
 #include <errno.h>
+#include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>
-#include <internal/utility/old_helper.h>
+#include <internal/utility/compare.h>
 #include <limits.h>
 #include <math.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
-
 
 typedef enum
 {

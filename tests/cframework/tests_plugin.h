@@ -9,6 +9,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include <internal/plugin/load.h>
 #include <tests_internal.h>
 
 #define PLUGIN_OPEN(NAME)                                                                                                                  \

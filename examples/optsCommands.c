@@ -11,8 +11,8 @@
 #include <elektra/core/keyset.h>
 #include <elektra/ease/array.h>
 #include <elektra/opts.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/alloc.h>
+#include <internal/utility/compare.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

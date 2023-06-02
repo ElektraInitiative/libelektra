@@ -8,7 +8,8 @@
 
 #include "./table_array.h"
 
-#include <internal/utility/old_helper.h>
+#include <internal/utility/alloc.h>
+#include <internal/utility/string.h>
 #include <stdio.h>
 #include <string.h>
 

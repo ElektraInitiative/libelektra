@@ -9,7 +9,7 @@
 #include <ctype.h>
 #include <elektra/type/conversion.h>
 #include <errno.h>
-#include <internal/utility/old_helper.h>
+#include <internal/utility/format.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>

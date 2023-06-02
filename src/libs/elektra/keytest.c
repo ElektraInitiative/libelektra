@@ -28,8 +28,9 @@
 #include <elektra/core/namespace.h>
 #include <elektra/ease/meta.h>
 #include <elektra/plugin/plugin.h>
+
 #include <internal/config.h>
-#include <internal/kdbprivate.h>
+#include <internal/core/key.h>
 #include <internal/pluginload/module.h>
 #include <internal/utility/logger.h>
 
@@ -51,54 +52,6 @@
  *
  *
  */
-
-int keyIsSpec (const Key * key)
-{
-	return keyGetNamespace (key) == KEY_NS_SPEC;
-}
-
-int keyIsProc (const Key * key)
-{
-	return keyGetNamespace (key) == KEY_NS_PROC;
-}
-
-int keyIsDir (const Key * key)
-{
-	return keyGetNamespace (key) == KEY_NS_DIR;
-}
-
-/**
- * @internal
- *
- * Check whether a key is under the @p system namespace or not
- *
- * @param key the key object to work with
- * @retval 1 if key name begins with @p system, 0 otherwise
- * @see keyIsUser(), keySetName(), keyName()
- * @ingroup keytest
- *
- */
-int keyIsSystem (const Key * key)
-{
-	return keyGetNamespace (key) == KEY_NS_SYSTEM;
-}
-
-
-/**
- * @internal
- *
- * Check whether a key is under the @p user namespace or not.
- *
- * @param key the key object to work with
- * @retval 1 if key name begins with @p user, 0 otherwise
- * @see keyIsSystem(), keySetName(), keyName()
- * @ingroup keytest
- *
- */
-int keyIsUser (const Key * key)
-{
-	return keyGetNamespace (key) == KEY_NS_USER;
-}
 
 /**
  * Check if the Key @p check is below the Key @p key or not.

@@ -11,7 +11,8 @@
 #include <elektra/type/types.h>
 
 #include <internal/config.h>
-#include <internal/utility/old_helper.h>
+#include <internal/utility/alloc.h>
+#include <internal/utility/format.h>
 #include <internal/utility/string.h>
 
 #include <errno.h>

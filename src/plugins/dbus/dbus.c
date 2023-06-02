@@ -13,8 +13,7 @@
 
 #include <elektra/changetracking.h>
 
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/alloc.h>
 int elektraDbusOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
 	ElektraDbusPluginData * data = elektraPluginGetData (handle);

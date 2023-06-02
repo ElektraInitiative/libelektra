@@ -6,7 +6,6 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <internal/kdbprivate.h>
 #include <tests_internal.h>
 
 static void keyNew_should_only_set_keyName (void)

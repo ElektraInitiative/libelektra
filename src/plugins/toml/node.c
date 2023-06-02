@@ -11,8 +11,9 @@
 #include "./node.h"
 #include "./utility.h"
 #include <elektra/ease/meta.h>
+#include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>
-#include <internal/utility/old_helper.h>
+#include <internal/utility/string.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>

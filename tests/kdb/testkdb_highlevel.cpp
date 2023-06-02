@@ -10,7 +10,8 @@
 #include <elektra/type/conversion.h>
 
 #include <gtest/gtest-elektra.h>
-#include <internal/utility/old_helper.h>
+
+#include <internal/utility/array.h>
 
 #define EXPECT_KEYVALUE(Key, Value) EXPECT_PRED2 (keyHasValue, Key, Value)
 #define EXPECT_KEYMETA(Key, Meta, Value) EXPECT_PRED3 (keyHasMetaValue, Key, Meta, Value)

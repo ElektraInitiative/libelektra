@@ -7,10 +7,11 @@
  */
 
 #include <internal/core/opmphmpredictor.h>
-#include <internal/kdbprivate.h>
+#include <internal/macros/bitfields.h>
+#include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
-#include <internal/utility/old_helper.h>
+
 #include <stdlib.h>
 #include <string.h>
 

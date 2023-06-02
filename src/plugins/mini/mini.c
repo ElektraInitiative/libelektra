@@ -19,10 +19,13 @@
 #include <elektra/ease/name.h>
 #include <internal/macros/attributes.h>
 #include <internal/macros/plugin_errors.h>
+#include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>
+#include <internal/utility/compare.h>
 #include <internal/utility/logger.h>
-#include <internal/utility/old_helper.h>
 #include <internal/utility/string.h>
+
+#include <stdbool.h>
 
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
 

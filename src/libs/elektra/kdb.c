@@ -8,8 +8,6 @@
 
 #include <stdio.h>
 
-#include <internal/utility/old_helper.h>
-
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
 #endif
@@ -48,9 +46,21 @@
 #include <elektra/plugin/plugin.h>
 
 #include <internal/config.h>
-#include <internal/kdbprivate.h>
+#include <internal/core/key.h>
+#include <internal/core/keyset.h>
+#include <internal/kdb/struct.h>
+#include <internal/macros/bitfields.h>
+#include <internal/plugin/functions.h>
+#include <internal/plugin/load.h>
+#include <internal/plugin/struct.h>
 #include <internal/pluginload/module.h>
+#include <internal/utility/alloc.h>
+#include <internal/utility/assert.h>
+#include <internal/utility/compare.h>
 #include <internal/utility/logger.h>
+
+#include "./backends.h"
+#include "./hooks.h"
 
 #define KDB_GET_PHASE_POST_STORAGE_SPEC (KDB_GET_PHASE_POST_STORAGE "/spec")
 #define KDB_GET_PHASE_POST_STORAGE_NONSPEC (KDB_GET_PHASE_POST_STORAGE "/nonspec")

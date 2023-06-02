@@ -8,9 +8,9 @@
 
 #include "./zeromqrecv.h"
 
+#include <internal/utility/alloc.h>
 #include <internal/utility/logger.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/string.h>
 static int setupNotificationCallback (Plugin * handle)
 {
 	ELEKTRA_NOT_NULL (handle);

@@ -18,8 +18,7 @@
 
 #include <elektra/core/errors.h>
 #include <internal/macros/attributes.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/compare.h>
 using namespace ckdb;
 using namespace xerces;
 

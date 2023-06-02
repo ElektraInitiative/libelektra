@@ -4,7 +4,11 @@
 #include "./backendprivate.h"
 
 #include <elektra/core/errors.h>
-#include <internal/kdbprivate.h>
+
+#include <internal/core/keyset/api.h>
+#include <internal/plugin/struct.h>
+#include <internal/utility/alloc.h>
+#include <internal/utility/compare.h>
 #include <internal/utility/logger.h>
 
 int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * plugin, Key * errorKey ELEKTRA_UNUSED)

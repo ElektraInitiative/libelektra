@@ -9,11 +9,11 @@
 
 #include <internal/config.h>
 #include <internal/core/opmphm.h>
-#include <internal/kdbprivate.h>
 #include <internal/macros/attributes.h>
+#include <internal/macros/bitfields.h>
+#include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
-#include <internal/utility/old_helper.h>
 #include <internal/utility/rand.h>
 
 #include <string.h>

@@ -35,8 +35,8 @@
 #include <stdio.h>
 #endif
 
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/alloc.h>
+#include <internal/utility/format.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>

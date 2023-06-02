@@ -25,7 +25,8 @@
 
 #include <elektra/core/key.h>
 #include <elektra/type/types.h>
-#include <internal/kdbprivate.h>
+
+#include <internal/core/key.h>
 
 /**
  * @internal

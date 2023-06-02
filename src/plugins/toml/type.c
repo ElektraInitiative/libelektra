@@ -10,8 +10,8 @@
 
 #include "./type.h"
 
+#include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>
-#include <internal/utility/old_helper.h>
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>

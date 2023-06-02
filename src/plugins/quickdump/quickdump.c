@@ -13,9 +13,10 @@
 #include <elektra/type/types.h>
 #include <internal/macros/attributes.h>
 #include <internal/macros/plugin_errors.h>
+#include <internal/utility/alloc.h>
+#include <internal/utility/compare.h>
 #include <internal/utility/endian.h>
-#include <internal/utility/old_helper.h>
-
+#include <stdbool.h>
 #include <stdio.h>
 
 #define MAGIC_NUMBER_BASE (0x454b444200000000UL) // EKDB (in ASCII) + Version placeholder

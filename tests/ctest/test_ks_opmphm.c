@@ -9,6 +9,8 @@
 #include <opmphm.c>
 #include <tests_internal.h>
 
+#include <internal/core/lookup.h>
+
 ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from);
 
 void test_keyNotFound (void)

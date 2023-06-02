@@ -7,7 +7,10 @@
  */
 
 #include "../../src/libs/elektra/hooks.c"
+
 #include <tests.h>
+
+#include <elektra/notifications.h>
 
 static void test_getPluginConfigFromContract_withConfigInContract (void)
 {

@@ -13,9 +13,8 @@
 
 #include "./dbusrecv.h"
 
+#include <internal/utility/alloc.h>
 #include <internal/utility/logger.h>
-#include <internal/utility/old_helper.h>
-
 #include <stdio.h>
 
 static int setupNotificationCallback (Plugin * handle)

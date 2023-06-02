@@ -13,8 +13,7 @@
 
 #include "./lua.hpp"
 #include <internal/macros/attributes.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/alloc.h>
 #include <key.hpp>
 #include <keyset.hpp>
 #include <libgen.h>

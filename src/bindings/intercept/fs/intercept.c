@@ -20,9 +20,11 @@
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 #include <elektra/kdb/kdb.h>
-#include <internal/kdbprivate.h>
 #include <internal/macros/os.h>
+#include <internal/plugin/load.h>
+#include <internal/plugin/struct.h>
 #include <internal/pluginload/module.h>
+#include <internal/utility/alloc.h>
 
 #define PRELOAD_PATH "/elektra/intercept/open"
 #define TV_MAX_DIGITS 26

@@ -30,10 +30,10 @@
 #include <unordered_map>
 #include <vector>
 
-#include <internal/utility/old_helper.h> // for elektraLookupOptions
 #include <keyset.hpp>
 
-// #include <kdbprivate.h> // for debugging (to see values of internal structures)
+#include <internal/core/lookup.h>
+#include <internal/macros/attributes.h>
 
 namespace kdb
 {

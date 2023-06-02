@@ -14,7 +14,6 @@
 
 #include <elektra/plugin/plugin.h>
 #include <helper/keyhelper.hpp>
-#include <internal/kdbprivate.h>
 #include <internal/pluginload/module.h>
 
 #include <elektra/ease/array.h> // for ckdb::elektraArrayIncName

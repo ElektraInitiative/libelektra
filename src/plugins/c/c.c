@@ -11,11 +11,11 @@
 
 #include <elektra/core/errors.h>
 
+#include <ctype.h>
 #include <internal/macros/attributes.h>
 #include <internal/macros/plugin_errors.h>
-#include <internal/utility/old_helper.h>
-
-#include <ctype.h>
+#include <internal/utility/alloc.h>
+#include <internal/utility/compare.h>
 #include <stdio.h>
 
 static const char * const toEscape = "\"'\\?\n\r\t";

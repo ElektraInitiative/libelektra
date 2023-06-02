@@ -6,16 +6,24 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include "./hooks.h"
+
 #include <elektra/core/errors.h>
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 #include <elektra/ease/meta.h>
 #include <elektra/kdb/kdb.h>
 #include <elektra/plugin/plugin.h>
+
 #include <internal/config.h>
-#include <internal/kdbprivate.h>
+#include <internal/core/keyset/api.h>
+#include <internal/kdb/struct.h>
+#include <internal/plugin/load.h>
+#include <internal/plugin/struct.h>
 #include <internal/pluginload/module.h>
+#include <internal/utility/alloc.h>
 #include <internal/utility/logger.h>
+
 static Plugin * loadPlugin (const char * pluginName, KeySet * global, KeySet * modules, const KeySet * contract, Key * errorKey);
 
 /**

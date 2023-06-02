@@ -8,7 +8,10 @@
  */
 
 #include <elektra/core/errors.h>
-#include <internal/utility/old_helper.h>
+#include <internal/utility/alloc.h>
+#include <internal/utility/array.h>
+#include <internal/utility/compare.h>
+#include <internal/utility/format.h>
 #include <stdio.h>
 
 #include "./blacklist.h"

@@ -22,9 +22,9 @@
 #include <elektra/io/api.h> // I/O binding functions (elektraIo*)
 #include <elektra/io/uv.h>  // I/O binding constructor for uv (elektraIoUvNew)
 #include <elektra/kdb/kdb.h>
-#include <elektra/notifications.h>	 // notification functions
-#include <internal/utility/old_helper.h> // elektraFree
-
+#include <elektra/notifications.h> // notification functions
+#include <internal/utility/alloc.h>
+#include <internal/utility/compare.h>
 #include <uv.h> // uv functions
 
 #include <signal.h> // signal()

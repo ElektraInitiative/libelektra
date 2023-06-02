@@ -8,8 +8,7 @@
  */
 
 #include "./keylist.h"
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/alloc.h>
 /**
  * @brief initializes the internal key list
  * @param list the list

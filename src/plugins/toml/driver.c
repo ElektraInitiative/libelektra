@@ -21,8 +21,10 @@
 #include <elektra/core/keyset.h>
 
 #include <internal/macros/attributes.h>
+#include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>
-#include <internal/utility/old_helper.h>
+#include <internal/utility/compare.h>
+#include <internal/utility/format.h>
 #include <internal/utility/string.h>
 
 #include "./driver.h"

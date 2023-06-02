@@ -11,8 +11,12 @@
 
 #include <elektra/core/errors.h>
 #include <elektra/plugin/invoke.h>
-#include <internal/kdbprivate.h>
-#include <internal/utility/old_helper.h>
+
+#include <internal/core/keyset/api.h>
+#include <internal/utility/alloc.h>
+#include <internal/utility/array.h>
+#include <internal/utility/compare.h>
+#include <internal/utility/format.h>
 
 #include <signal.h>
 #include <stdio.h>

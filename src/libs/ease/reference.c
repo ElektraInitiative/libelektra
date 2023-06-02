@@ -7,8 +7,8 @@
  */
 
 #include <elektra/ease/reference.h>
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/alloc.h>
+#include <internal/utility/compare.h>
 #include <string.h>
 
 

@@ -12,6 +12,7 @@
 #include <unistd.h>
 
 #include <internal/config.h>
+#include <internal/utility/format.h>
 
 #include <tests_plugin.h>
 

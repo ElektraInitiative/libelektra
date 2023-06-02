@@ -12,8 +12,7 @@
 #include <internal/config.h>
 #endif
 
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/alloc.h>
 #include <stdlib.h>
 #include <string.h>
 

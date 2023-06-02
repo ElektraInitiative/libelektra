@@ -9,9 +9,7 @@
 
 #include "./iterate.h"
 
-#include <internal/utility/old_helper.h>
-
-
+#include <internal/utility/compare.h>
 int elektraIterateOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 	// plugin initialization logic

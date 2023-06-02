@@ -2,7 +2,8 @@
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 #include <elektra/ease/array.h>
-#include <internal/utility/old_helper.h>
+#include <internal/utility/alloc.h>
+#include <internal/utility/array.h>
 #include <stdlib.h>
 
 struct _RefGraph

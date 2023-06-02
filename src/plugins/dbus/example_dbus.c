@@ -12,8 +12,7 @@
 #include <internal/config.h>
 #endif
 
-#include <internal/utility/old_helper.h>
-
+#include <internal/utility/alloc.h>
 #include <stdio.h>
 
 void print_message (DBusMessage * message, dbus_bool_t literal);

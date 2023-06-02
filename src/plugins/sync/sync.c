@@ -10,11 +10,10 @@
 
 #include <elektra/core/errors.h>
 
-#include <internal/config.h>
-#include <internal/utility/old_helper.h>
-
 #include <errno.h>
 #include <fcntl.h>
+#include <internal/config.h>
+#include <internal/utility/compare.h>
 #include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>

@@ -6,9 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <internal/utility/old_helper.h>
-
 #include "./timeofday.h"
+#include <internal/utility/alloc.h>
 
 #include <string.h>
 

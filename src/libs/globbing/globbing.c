@@ -6,14 +6,14 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include <ctype.h>
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 #include <elektra/ease/array.h>
 #include <elektra/ease/globbing.h>
-#include <internal/utility/old_helper.h>
-
-#include <ctype.h>
 #include <fnmatch.h>
+#include <internal/utility/alloc.h>
+#include <internal/utility/compare.h>
 #include <stdlib.h>
 #include <string.h>
 

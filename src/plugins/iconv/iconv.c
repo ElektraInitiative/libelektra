@@ -8,7 +8,7 @@
 
 #include "./conv.h"
 
-#include <internal/utility/old_helper.h>
+#include <internal/utility/alloc.h>
 
 static inline const char * getFrom (Plugin * handle)
 {

@@ -7,7 +7,8 @@
 #include <elektra/kdb/kdb.h>
 
 #include <internal/macros/attributes.h>
-#include <internal/utility/old_helper.h>
+#include <internal/utility/array.h>
+#include <internal/utility/compare.h>
 
 #include <sys/mman.h>
 

@@ -3,6 +3,7 @@
 
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
+#include <elektra/type/types.h>
 
 #ifdef __cplusplus
 namespace ckdb
@@ -20,6 +21,8 @@ int elektraArrayValidateBaseNameString (const char * baseName);
 
 KeySet * elektraArrayGet (const Key * arrayParent, KeySet * keys);
 Key * elektraArrayGetNextKey (KeySet * arrayKeys);
+
+int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex);
 
 #ifdef __cplusplus
 }

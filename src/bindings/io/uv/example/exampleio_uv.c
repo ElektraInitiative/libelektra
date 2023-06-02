@@ -23,12 +23,11 @@
 #include <string.h> // memset & memcpy
 #include <unistd.h> // file descriptor numbers (STDIN_FILENO)
 
-#include <elektra/io/api.h>		 // I/O binding functions (elektraIo*)
-#include <elektra/io/uv.h>		 // I/O binding constructor for uv (elektraIoUvNew)
-#include <internal/utility/assert.h>	 // assertions (ELEKTRA_NOT_NULL)
-#include <internal/utility/old_helper.h> // malloc & free
-
-#include <uv.h> // uv functions
+#include <elektra/io/api.h> // I/O binding functions (elektraIo*)
+#include <elektra/io/uv.h>  // I/O binding constructor for uv (elektraIoUvNew)
+#include <internal/utility/alloc.h>
+#include <internal/utility/assert.h> // assertions (ELEKTRA_NOT_NULL)
+#include <uv.h>			     // uv functions
 
 #define BUFFER_LENGTH 255
 #define ONE_SECOND 1000

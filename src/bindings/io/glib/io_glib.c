@@ -11,10 +11,9 @@
 #include <glib.h>
 
 #include <elektra/io/api.h>
+#include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
-#include <internal/utility/old_helper.h>
-
 typedef struct _GlibBindingData GlibBindingData;
 
 /**

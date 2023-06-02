@@ -18,7 +18,6 @@
 
 #include <elektra/plugin/plugin.h>
 #include <helper/keyhelper.hpp>
-#include <internal/kdbprivate.h>
 #include <internal/pluginload/module.h>
 
 #include <algorithm>
