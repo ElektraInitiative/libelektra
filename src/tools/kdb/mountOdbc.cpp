@@ -12,8 +12,7 @@
 #include <cmdline.hpp>
 #include <iostream>
 #include <kdbassert.h>
-#include <modules.hpp>
-
+#include <plugindatabase.hpp>
 
 MountOdbcCommand::MountOdbcCommand () : kdb (root)
 {
@@ -39,6 +38,29 @@ void replaceSubstrings (std::string & str, std::string oldSubStr, std::string ne
 
 int MountOdbcCommand::execute (Cmdline const & cl)
 {
+	/* Check if the backend_odbc plugin is available */
+	kdb::tools::ModulesPluginDatabase pd;
+	std::vector<std::string> allPlugins = pd.listAllPlugins();
+
+	bool odbcPluginFound = false;
+	for (std::string const & curPlugin : allPlugins)
+	{
+		if (curPlugin == "backend_odbc")
+		{
+			odbcPluginFound = true;
+			break;
+		}
+	}
+
+	if (!odbcPluginFound)
+	{
+		std::cerr << "I could not find the 'backend_odbc' plugin." << std::endl
+			  << "Please make sure that you have included the plugin at build-time." << std::endl
+			  << "The ODBC backend is currently in the category 'EXPERIMENTAL' and therefore not built by default." << std::endl
+			  << "See /doc/COMPILE.md for more information." << std::endl << std::endl;
+		return EXIT_FAILURE;
+	}
+
 	checkArguments (cl);
 	printWarnings (std::cerr, root, cl.verbose, cl.debug);
 
@@ -133,12 +155,12 @@ int MountOdbcCommand::execute (Cmdline const & cl)
 	ksReturned.append (ksOdbcConfig);
 	if (kdb.set (ksReturned, "system:/elektra/mountpoints") == 1)
 	{
+		kdb.close ();
+
 		/* Check if the backend_odbc plugin works with the mountpoint (this e.g. verifies that the given table- and column names are
 		 * correct) */
 		kdb::KeySet keys;
 		kdb::Key parentKey (mpOriginal, KEY_END);
-
-		kdb.close ();
 
 		kdb::Key errorKey;
 		kdb.open (errorKey);
@@ -176,6 +198,11 @@ int MountOdbcCommand::execute (Cmdline const & cl)
 			kdb::printError (std::cerr, parentKey, cl.verbose, cl.debug);
 			kdb::printWarnings (std::cerr, parentKey, cl.verbose, cl.debug);
 			kdb.close ();
+			return EXIT_FAILURE;
+		}
+		catch (std::exception & ex)
+		{
+			std::cout << "General exception caught!" << std::endl;
 			return EXIT_FAILURE;
 		}
 	}
