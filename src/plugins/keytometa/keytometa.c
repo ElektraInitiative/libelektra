@@ -99,7 +99,7 @@ int elektraKeyAppendMetaLine (Key * target, const char * metaName, const char * 
 
 	keyGetString (existingMeta, buffer, keyGetValueSize (existingMeta));
 	strcat (buffer, "\n");
-	strncat (buffer, line, elektraStrLen (line));
+	strcat (buffer, line);
 
 	keySetMeta (target, metaName, buffer);
 	elektraFree (buffer);

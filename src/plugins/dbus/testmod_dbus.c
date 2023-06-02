@@ -225,8 +225,8 @@ static void test_keyAdded (void)
 
 	succeed_if_same_string (keyName (toAdd), context->receivedKeyName);
 
-	elektraFree (context);
 	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *) context);
+	elektraFree (context);
 	dbus_connection_unref (connection);
 	ksDel (ks);
 	keyDel (parentKey);
@@ -273,8 +273,8 @@ static void test_keyChanged (void)
 
 	succeed_if_same_string (keyName (toChange), context->receivedKeyName);
 
-	elektraFree (context);
 	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *) context);
+	elektraFree (context);
 	dbus_connection_unref (connection);
 	ksDel (ks);
 	keyDel (parentKey);
@@ -318,8 +318,8 @@ static void test_keyDeleted (void)
 
 	succeed_if_same_string (keyName (toDelete), context->receivedKeyName);
 
-	elektraFree (context);
 	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *) context);
+	elektraFree (context);
 	dbus_connection_unref (connection);
 	keyDel (toDelete);
 	ksDel (ks);
@@ -374,8 +374,8 @@ static void test_announceOnce (void)
 
 	succeed_if_same_string (keyName (parentKey), context->receivedKeyName);
 
-	elektraFree (context);
 	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *) context);
+	elektraFree (context);
 	dbus_connection_unref (connection);
 	ksDel (ks);
 	keyDel (parentKey);
@@ -420,8 +420,8 @@ static void test_cascadedChangeNotification (void)
 
 	succeed_if_same_string (keyName (toAdd), context->receivedKeyName);
 
-	elektraFree (context);
 	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *) context);
+	elektraFree (context);
 	dbus_connection_unref (connection);
 	ksDel (ks);
 	keyDel (parentKey);
@@ -466,8 +466,8 @@ static void test_cascadedAnnounceOnce (void)
 
 	succeed_if_same_string (keyName (completeParentKey), context->receivedKeyName);
 
-	elektraFree (context);
 	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *) context);
+	elektraFree (context);
 	dbus_connection_unref (connection);
 	ksDel (ks);
 	keyDel (parentKey);

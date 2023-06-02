@@ -209,7 +209,7 @@ int elektraXfconfSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 		}
 		char * xfconfKeyName = elektraMalloc ((elektraStrLen (currentKeyName) + 2) * sizeof (char *));
 		xfconfKeyName[0] = '/';
-		strncpy (&xfconfKeyName[1], currentKeyName, elektraStrLen (currentKeyName));
+		strcpy (&xfconfKeyName[1], currentKeyName);
 		ELEKTRA_LOG_DEBUG ("setting key %s to %s\n", xfconfKeyName, keyString (cur));
 		if (keyGetMeta (cur, "array") != NULL)
 		{

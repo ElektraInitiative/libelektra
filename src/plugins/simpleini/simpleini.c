@@ -112,7 +112,11 @@ static struct lineFormat getFormat (Plugin * handle)
 				ret.format[j] = c;
 			}
 		}
-		--j; // discard null byte that is already there
+		if (userFormatSize > 0)
+		{
+			// discard null byte that is already there
+			--j;
+		}
 		ELEKTRA_ASSERT (ret.format[j] == '\0', "should be null byte at end of string but was %c", ret.format[j]);
 		ret.format[j++] = '\n';
 		ret.format[j] = '\0';

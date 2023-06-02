@@ -1987,15 +1987,15 @@ char * generateUsageLine (const char * progname, Key * command, const Key * comm
 	KeySet * args = elektraMetaArrayToKS (command, "args");
 
 	char * indexedArgs;
-
-	if (ksGetSize (args) <= 0)
+	ssize_t argsSize = ksGetSize (args);
+	if (argsSize <= 0)
 	{
 		indexedArgs = elektraStrDup ("");
 	}
 	else
 	{
 		size_t argsTotalSize = 0;
-		for (elektraCursor i = 1; i < ksGetSize (args); ++i) // start at one to skip size
+		for (elektraCursor i = 1; i < argsSize; ++i) // start at one to skip size
 		{
 			argsTotalSize += strlen (keyString (ksAtCursor (args, i))) + 3; // + 3 for space and []
 		}
@@ -2003,14 +2003,22 @@ char * generateUsageLine (const char * progname, Key * command, const Key * comm
 		indexedArgs = elektraMalloc (argsTotalSize + 1);
 		char * pos = indexedArgs;
 		size_t size = argsTotalSize + 1;
-		for (elektraCursor i = 1; i < ksGetSize (args); i++) // start at one to skip size
+		for (elektraCursor i = 1; i < argsSize; i++) // start at one to skip size
 		{
 			*pos++ = '<';
 			pos = memccpy (pos, keyString (ksAtCursor (args, i)), '\0', size);
 			*(pos - 1) = '>';
 			*pos++ = ' ';
 		}
-		*(pos - 1) = '\0';
+
+		if (argsSize > 1)
+		{
+			*(pos - 1) = '\0';
+		}
+		else
+		{
+			*pos = '\0';
+		}
 	}
 
 	bool hasSubCommands = keyGetMeta (command, "hassubcommands") != NULL;
