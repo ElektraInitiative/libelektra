@@ -57,6 +57,16 @@ set (
 	CACHE STRING ${BINDINGS_DOC} FORCE)
 
 #
+# set LIBRARIES cache variable
+#
+
+set (ADDED_LIBRARIES_DOC "List of plugins already added, only for informational purposes. We always build all libraries.")
+set (
+	ADDED_LIBRARIES
+	""
+	CACHE STRING ${ADDED_LIBRARIES_DOC} FORCE)
+
+#
 # set TOOLS cache variable
 #
 
@@ -465,6 +475,7 @@ mark_as_advanced (
 	REMOVED_PLUGINS
 	REMOVED_TOOLS
 	ADDED_BINDINGS
+	ADDED_LIBRARIES
 	LIBGCRYPTCONFIG_EXECUTABLE
 	jna
 	Qt5Core_DIR

@@ -37,10 +37,6 @@ else ()
 
 	file (GLOB qt-gui_HDRS "src/markdownconverter/*.h" "src/markdownconverter/template/*.h")
 
-	add_headers (qt-gui_HDRS)
-	add_cppheaders (qt-gui_HDRS)
-	add_toolheaders (qt-gui_HDRS)
-
 	file (GLOB qt-gui_SRCS "src/*.cpp" "src/markdownconverter/*.cpp" "src/markdownconverter/template/*.cpp")
 
 	set (qt-gui_RSCS resources.qrc)

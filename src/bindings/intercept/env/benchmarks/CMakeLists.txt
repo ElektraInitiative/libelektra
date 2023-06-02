@@ -1,8 +1,5 @@
 include (LibAddMacros)
 
-add_headers (HDR_FILES)
-add_cppheaders (HDR_FILES)
-
 set_source_files_properties (benchmark_getenv.cpp PROPERTIES COMPILE_FLAGS "-Wno-unused-result")
 
 macro (do_benchmark source)

@@ -1,7 +1,5 @@
 include (LibAddMacros)
 
-add_headers (HDR_FILES)
-
 include (LibAddTest)
 
 file (GLOB TESTS test_*.cpp)

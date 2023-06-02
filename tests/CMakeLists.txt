@@ -40,13 +40,8 @@ if (ENABLE_TESTING)
 	set_property (TARGET gtest_main PROPERTY COMPILE_FLAGS "-Wno-undef")
 endif (ENABLE_TESTING)
 
-# don't call add_headers in a loop
-add_headers (HDR_FILES)
-
 macro (do_test source)
 	set (SOURCES ${HDR_FILES} ${source}.c $<TARGET_OBJECTS:cframework>)
-	add_headers (SOURCES)
-	add_testheaders (SOURCES)
 	add_executable (${source} ${SOURCES})
 	target_include_directories (${source} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 

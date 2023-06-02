@@ -13,9 +13,6 @@ else ()
 
 	add_binding (lua)
 
-	add_headers (HDR_FILES)
-	add_cppheaders (HDR_FILES)
-
 	include_directories (SYSTEM ${LUA_INCLUDE_DIR})
 	include_directories ("${CMAKE_SOURCE_DIR}/src/bindings/cpp/include")
 

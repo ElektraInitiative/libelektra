@@ -1,9 +1,5 @@
 find_package (Threads QUIET)
 
-add_headers (HDR_FILES)
-add_cppheaders (HDR_FILES)
-add_toolheaders (HDR_FILES)
-
 include (LibAddTest)
 
 # This function checks information about the currently selected version of Xcode.

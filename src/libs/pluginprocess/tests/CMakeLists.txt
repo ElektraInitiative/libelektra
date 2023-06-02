@@ -1,9 +1,6 @@
 include (LibAddMacros)
 
 if (BUILD_TESTING)
-
-	add_headers (HDR_FILES)
-
 	set (TESTS testlib_pluginprocess.c)
 
 	foreach (file ${TESTS})

@@ -1,9 +1,6 @@
 include (LibAddMacros)
 include (LibAddBinding)
 
-# don't call add_headers in a loop
-add_headers (HDR_FILES)
-
 macro (do_example source)
 	set (SOURCES ${HDR_FILES} ${source}.c)
 	add_executable (${source} ${SOURCES})

@@ -15,7 +15,6 @@ else ()
 
 	set (IO_VARIANT_SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/io_glib.c")
 
-	add_headers (ELEKTRA_HEADERS)
 	set (SOURCES ${IO_VARIANT_SRC_FILES} ${ELEKTRA_HEADERS})
 	add_compile_options ("-Wno-pedantic")
 
@@ -47,7 +46,6 @@ else ()
 		set (testexename testio_${BINDING_VARIANT})
 
 		set (TEST_SOURCES $<TARGET_OBJECTS:cframework>)
-		add_headers (TEST_SOURCES)
 		file (GLOB IO_TEST_SRC_FILES "${CMAKE_SOURCE_DIR}/src/bindings/io/test/test*.c")
 		list (APPEND TEST_SOURCES ${IO_TEST_SRC_FILES})
 		list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testio_${BINDING_VARIANT}.c")

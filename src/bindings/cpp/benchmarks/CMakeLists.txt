@@ -1,8 +1,5 @@
 include (LibAddMacros)
 
-add_headers (HDR_FILES)
-add_cppheaders (HDR_FILES)
-
 macro (do_benchmark source)
 	set (SOURCES ${HDR_FILES} ${source}.cpp)
 	add_executable (${source} ${SOURCES})

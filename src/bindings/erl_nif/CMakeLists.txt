@@ -11,7 +11,6 @@ else ()
 	set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/elixir/priv")
 
 	file (GLOB ERL_NIF_SRC_FILES lib/*.c)
-	add_headers (ELEKTRA_HEADERS)
 	set (SOURCES ${ERL_NIF_SRC_FILES} ${ELEKTRA_HEADERS})
 
 	add_library (nif_kdb SHARED ${SOURCES})

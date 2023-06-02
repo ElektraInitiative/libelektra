@@ -1,7 +1,5 @@
 include (LibAddMacros)
 
-add_headers (HDR_FILES)
-
 macro (do_benchmark source)
 	set (SOURCES ${HDR_FILES} ${ADDITIONAL_SOURCES} benchmarks.c benchmarks.h ${source}.c)
 	add_executable (benchmark_${source} ${SOURCES})

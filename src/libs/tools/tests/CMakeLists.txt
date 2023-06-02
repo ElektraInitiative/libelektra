@@ -2,10 +2,6 @@ include (LibAddMacros)
 
 include_directories ("${CMAKE_SOURCE_DIR}/src/bindings/cpp/include" "${CMAKE_CURRENT_SOURCE_DIR}/../include")
 
-add_headers (HDR_FILES)
-add_cppheaders (HDR_FILES)
-add_toolheaders (HDR_FILES)
-
 include (LibAddTest)
 
 list (FIND REMOVED_PLUGINS error error_index)

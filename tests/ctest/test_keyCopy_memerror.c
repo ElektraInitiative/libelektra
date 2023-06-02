@@ -6,6 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#define ksDup ksDupFailing
+
 #include "../../src/libs/core/cow.c"
 #include "../../src/libs/core/key.c"
 #include "../../src/libs/core/keyhelpers.c"
@@ -16,7 +18,7 @@
 
 #include <tests_internal.h>
 
-KeySet * ksDup (const KeySet * source ELEKTRA_UNUSED)
+KeySet * ksDupFailing (const KeySet * source ELEKTRA_UNUSED)
 {
 	// We override ksDup here to return NULL
 	// This should cause keyCopy to fail

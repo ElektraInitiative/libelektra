@@ -1,7 +1,7 @@
 include (LibAddLib)
 
 set (
-	SUBDIRS
+	LIBRARIES
 	core
 	kdb
 	type
@@ -19,15 +19,9 @@ set (
 	opts)
 
 set (SYM_MAPS "")
-foreach (subdir ${SUBDIRS})
-	list (APPEND SYM_MAPS "${subdir}/symbols.map")
-endforeach (subdir)
-
-# tools has special symbol handling
-list (INSERT SUBDIRS 0 tools)
-
-# object libraries -> don't have symbol.map
-list (INSERT SUBDIRS 0 base pluginload)
+foreach (lib ${LIBRARIES})
+	list (APPEND SYM_MAPS "${lib}/symbols.map")
+endforeach (lib)
 
 add_custom_command (
 	OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/symbols.map"
@@ -38,9 +32,16 @@ add_custom_command (
 	VERBATIM)
 add_custom_target (generate_version_script DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/symbols.map")
 
-foreach (subdir ${SUBDIRS})
-	add_subdirectory ("${subdir}")
-endforeach (subdir)
+# object libraries don't have symbol.map
+add_subdirectory (base)
+add_subdirectory (pluginload)
+
+# tools has special symbol handling
+add_subdirectory (tools)
+
+foreach (lib ${LIBRARIES})
+	add_subdirectory ("${lib}")
+endforeach (lib)
 
 generate_man_page (
 	elektra-libs
@@ -51,112 +52,110 @@ generate_man_page (
 	COMPONENT
 	elektra-doc)
 
-# ##########################################################################################################################################
-# Handling of BUILD_FULL AND BUILD_STATIC #
-# ##########################################################################################################################################
-
-# do not include plugins configured with SHARED_ONLY in the exported symbols as those are only used for the FULL and STATIC builds
-get_property (SHARED_ONLY_PLUGINS GLOBAL PROPERTY SHARED_ONLY_PLUGINS)
-set (ADDED_PLUGINS_WITHOUT_ONLY_SHARED ${ADDED_PLUGINS})
-if (SHARED_ONLY_PLUGINS)
-	list (REMOVE_ITEM ADDED_PLUGINS_WITHOUT_ONLY_SHARED ${SHARED_ONLY_PLUGINS})
-endif (SHARED_ONLY_PLUGINS)
-
-include (ExportPluginSymbols)
-elektra_export_plugin_symbols (
-	SOURCE
-	"${CMAKE_BINARY_DIR}/src/exported_symbols.c"
-	HEADER
-	"${CMAKE_BINARY_DIR}/src/include/internal/exported_symbols.h"
-	RESOLVER
-	${KDB_DEFAULT_RESOLVER}
-	STORAGE
-	${KDB_DEFAULT_STORAGE}
-	PLUGINS
-	${ADDED_PLUGINS_WITHOUT_ONLY_SHARED})
-
-# collect all the source files
-get_property (elektra_SRCS GLOBAL PROPERTY elektra_SRCS)
-
-set (SOURCES ${elektra_SRCS} ${HDR_FILES})
-list (APPEND SOURCES "${CMAKE_BINARY_DIR}/src/include/internal/exported_symbols.h")
-
-# the targets built to export
 set (targets_built)
-
-set (__symbols_file "${CMAKE_BINARY_DIR}/src/libs/symbols.map")
-
 if (BUILD_FULL OR BUILD_STATIC)
-	# for the next two builds, append some more sources
-	get_property (elektra-full_SRCS GLOBAL PROPERTY elektra-full_SRCS)
-	list (APPEND SOURCES "${CMAKE_BINARY_DIR}/src/exported_symbols.c")
+	get_property (SHARED_ONLY_PLUGINS GLOBAL PROPERTY SHARED_ONLY_PLUGINS)
+	get_property (EXTERNAL_LIBRARIES GLOBAL PROPERTY ELEKTRA_LINK_LIBRARIES)
 
-	# and get all libraries to link against
-	get_property (elektra-full_LIBRARIES GLOBAL PROPERTY elektra-full_LIBRARIES)
+	# do not include plugins configured with SHARED_ONLY in the exported symbols as those are only used for the FULL and STATIC builds
+	set (ADDED_PLUGINS_WITHOUT_ONLY_SHARED ${ADDED_PLUGINS})
+	if (SHARED_ONLY_PLUGINS)
+		list (REMOVE_ITEM ADDED_PLUGINS_WITHOUT_ONLY_SHARED ${SHARED_ONLY_PLUGINS})
+	endif (SHARED_ONLY_PLUGINS)
 
-	# include the directories of all libraries for the static or full-shared build
-	get_property (elektra-full_INCLUDES GLOBAL PROPERTY elektra-full_INCLUDES)
+	include (ExportPluginSymbols)
+	elektra_export_plugin_symbols (
+		SOURCE
+		"${CMAKE_BINARY_DIR}/src/exported_symbols.c"
+		HEADER
+		"${CMAKE_BINARY_DIR}/src/include/internal/exported_symbols.h"
+		RESOLVER
+		${KDB_DEFAULT_RESOLVER}
+		STORAGE
+		${KDB_DEFAULT_STORAGE}
+		PLUGINS
+		${ADDED_PLUGINS_WITHOUT_ONLY_SHARED})
+
+	set (__symbols_file "${CMAKE_BINARY_DIR}/src/libs/symbols.map")
+
+	set (OBJ_TARGETS $<TARGET_OBJECTS:elektra-base> $<TARGET_OBJECTS:elektra-pluginload-static>)
+	foreach (lib ${ADDED_LIBRARIES})
+		list (APPEND OBJ_TARGETS "$<TARGET_OBJECTS:elektra-${lib}-objects>")
+	endforeach (lib)
+	foreach (plugin ${ADDED_PLUGINS_WITHOUT_ONLY_SHARED})
+		list (APPEND OBJ_TARGETS "$<TARGET_OBJECTS:elektra-${plugin}-objects>")
+	endforeach (plugin)
+	if (TARGET io-adapter-dbus)
+		list (APPEND OBJ_TARGETS "$<TARGET_OBJECTS:io-adapter-dbus>")
+	endif ()
+	if (TARGET io-adapter-zeromq)
+		list (APPEND OBJ_TARGETS "$<TARGET_OBJECTS:io-adapter-zeromq>")
+	endif ()
+
+	if (BUILD_FULL)
+		add_library (elektra-full SHARED "${CMAKE_BINARY_DIR}/src/exported_symbols.c" ${OBJ_TARGETS})
+		add_dependencies (elektra-full generate_version_script)
+
+		target_link_libraries (elektra-full ${EXTERNAL_LIBRARIES})
+
+		set_target_properties (
+			elektra-full
+			PROPERTIES COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_STATIC"
+				   VERSION ${KDB_VERSION}
+				   SOVERSION ${SO_VERSION}
+				   CLEAN_DIRECT_OUTPUT 1
+				   LINKER_LANGUAGE C
+				   LINK_DEPENDS "${__symbols_file}")
+		if (${LD_ACCEPTS_VERSION_SCRIPT})
+			set_target_properties (elektra-full PROPERTIES LINK_FLAGS "-Wl,--version-script='${__symbols_file}'")
+		endif ()
+
+		install (
+			TARGETS elektra-full
+			DESTINATION lib${LIB_SUFFIX}
+			EXPORT ElektraTargetsLibelektra
+			COMPONENT libelektra${SO_VERSION}-full)
+
+		list (APPEND targets_built elektra-full)
+	endif (BUILD_FULL)
+
+	if (BUILD_STATIC)
+		add_library (elektra-static STATIC "${CMAKE_BINARY_DIR}/src/exported_symbols.c" ${OBJ_TARGETS})
+		add_dependencies (elektra-static generate_version_script)
+
+		target_link_libraries (elektra-static ${EXTERNAL_LIBRARIES})
+
+		set_target_properties (
+			elektra-static
+			PROPERTIES COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_STATIC"
+				   VERSION ${KDB_VERSION}
+				   SOVERSION ${SO_VERSION}
+				   CLEAN_DIRECT_OUTPUT 1
+				   LINKER_LANGUAGE C
+				   LINK_DEPENDS "${__symbols_file}")
+		if (${LD_ACCEPTS_VERSION_SCRIPT})
+			set_target_properties (elektra-static PROPERTIES LINK_FLAGS "-Wl,--version-script='${__symbols_file}'")
+		endif ()
+
+		install (
+			TARGETS elektra-static
+			DESTINATION lib${LIB_SUFFIX}
+			EXPORT ElektraTargetsLibelektra
+			COMPONENT libelektra${SO_VERSION})
+
+		list (APPEND targets_built elektra-static)
+	endif (BUILD_STATIC)
+
 endif (BUILD_FULL OR BUILD_STATIC)
 
-if (BUILD_FULL)
-	set_source_files_properties (${PROJECT_BINARY_DIR}/src/error/elektra_errors.c PROPERTIES GENERATED ON)
-	add_library (elektra-full SHARED ${SOURCES})
-	add_dependencies (elektra-full generate_version_script)
+if (BUILD_SHARED)
+	foreach (lib ${ADDED_LIBRARIES})
+		list (APPEND targets_built "elektra-${lib}")
 
-	target_link_libraries (elektra-full ${elektra-full_LIBRARIES})
-	# include the current binary directory to get exported_symbols.h
-	target_include_directories (elektra-full PRIVATE ${elektra-full_INCLUDES} "${CMAKE_CURRENT_BINARY_DIR}")
-
-	set_target_properties (
-		elektra-full
-		PROPERTIES COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_STATIC"
-			   VERSION ${KDB_VERSION}
-			   SOVERSION ${SO_VERSION}
-			   CLEAN_DIRECT_OUTPUT 1
-			   LINKER_LANGUAGE CXX
-			   LINK_DEPENDS "${__symbols_file}")
-	if (${LD_ACCEPTS_VERSION_SCRIPT})
-		set_target_properties (elektra-full PROPERTIES LINK_FLAGS "-Wl,--version-script='${__symbols_file}'")
-	endif ()
-
-	install (
-		TARGETS elektra-full
-		DESTINATION lib${LIB_SUFFIX}
-		EXPORT ElektraTargetsLibelektra
-		COMPONENT libelektra${SO_VERSION}-full)
-
-	list (APPEND targets_built elektra-full)
-endif (BUILD_FULL)
-
-if (BUILD_STATIC)
-	set_source_files_properties (${PROJECT_BINARY_DIR}/src/error/elektra_errors.c PROPERTIES GENERATED ON)
-	add_library (elektra-static STATIC ${SOURCES})
-	add_dependencies (elektra-static generate_version_script)
-
-	target_link_libraries (elektra-static ${elektra-full_LIBRARIES})
-	# include the current binary directory to get exported_symbols.h
-	target_include_directories (elektra-static PRIVATE ${elektra-full_INCLUDES} "${CMAKE_CURRENT_BINARY_DIR}")
-
-	set_target_properties (
-		elektra-static
-		PROPERTIES COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_STATIC"
-			   VERSION ${KDB_VERSION}
-			   SOVERSION ${SO_VERSION}
-			   CLEAN_DIRECT_OUTPUT 1
-			   LINKER_LANGUAGE CXX
-			   LINK_DEPENDS "${__symbols_file}")
-	if (${LD_ACCEPTS_VERSION_SCRIPT})
-		set_target_properties (elektra-static PROPERTIES LINK_FLAGS "-Wl,--version-script='${__symbols_file}'")
-	endif ()
-
-	install (
-		TARGETS elektra-static
-		DESTINATION lib${LIB_SUFFIX}
-		EXPORT ElektraTargetsLibelektra
-		COMPONENT libelektra${SO_VERSION})
-
-	list (APPEND targets_built elektra-static)
-endif (BUILD_STATIC)
+		# TODO: should only be required for libs that load plugin (i.e. kdb and plugin)
+		set_target_properties (elektra-${lib} PROPERTIES INSTALL_RPATH "${ELEKTRA_RPATH}")
+	endforeach (lib)
+endif (BUILD_SHARED)
 
 export (TARGETS ${targets_built} FILE "${CMAKE_CURRENT_BINARY_DIR}/ElektraTargetsLibelektra.cmake")
 install (

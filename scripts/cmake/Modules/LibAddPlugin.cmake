@@ -140,9 +140,6 @@ function (add_plugintest testname)
 			endif ()
 		endforeach ()
 
-		add_headers (TEST_SOURCES)
-		add_testheaders (TEST_SOURCES)
-
 		if (ARG_CPP)
 			list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testmod_${testname}.cpp")
 		else (ARG_CPP)
@@ -593,11 +590,6 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	endif (ARG_ONLY_SHARED)
 	message (STATUS "${STATUS_MESSAGE}")
 
-	add_headers (ARG_SOURCES)
-	if (ARG_CPP)
-		add_cppheaders (ARG_SOURCES)
-	endif (ARG_CPP)
-
 	add_library (${PLUGIN_OBJS} OBJECT ${ARG_SOURCES})
 
 	if (ARG_DEPENDS)
@@ -697,11 +689,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	endif ()
 
 	if (NOT ARG_ONLY_SHARED)
-
-		# message (STATUS "added ${PLUGIN_TARGET_OBJS}")
-		set_property (GLOBAL APPEND PROPERTY "elektra-full_SRCS" ${PLUGIN_TARGET_OBJS} ${ARG_OBJECT_SOURCES})
-
-		set_property (GLOBAL APPEND PROPERTY "elektra-full_LIBRARIES" "${ARG_LINK_LIBRARIES}")
+		set_property (GLOBAL APPEND PROPERTY "ELEKTRA_LINK_LIBRARIES" "${ARG_LINK_LIBRARIES}")
 	endif (NOT ARG_ONLY_SHARED)
 
 	# cleanup

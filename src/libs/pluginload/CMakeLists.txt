@@ -1,7 +1,8 @@
 include (LibAddMacros)
 
 if (BUILD_FULL OR BUILD_STATIC)
-	add_sources (elektra-full "static.c")
+	add_library (elektra-pluginload-static OBJECT static.c)
+	set_property (TARGET elektra-pluginload-static PROPERTY POSITION_INDEPENDENT_CODE ON)
 endif (BUILD_FULL OR BUILD_STATIC)
 
 if (BUILD_SHARED)
@@ -23,11 +24,10 @@ if (BUILD_SHARED)
 
 		set (CMAKE_DL_LIBS "${CMAKE_CURRENT_BINARY_DIR}/dlfcn-win32/lib/libdl.dll.a")
 
-		add_library (elektra-pluginload OBJECT ${CMAKE_DL_LIBS})
-		target_include_directories (elektra-pluginload SYSTEM PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/dlfcn-win32/include")
+		add_library (elektra-pluginload-dl OBJECT ${CMAKE_DL_LIBS})
+		target_include_directories (elektra-pluginload-dl SYSTEM PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/dlfcn-win32/include")
 	else ()
-		add_library (elektra-pluginload OBJECT dl.c)
+		add_library (elektra-pluginload-dl OBJECT dl.c)
 	endif ()
-
-	set_property (TARGET elektra-pluginload PROPERTY POSITION_INDEPENDENT_CODE ON)
+	set_property (TARGET elektra-pluginload-dl PROPERTY POSITION_INDEPENDENT_CODE ON)
 endif (BUILD_SHARED)

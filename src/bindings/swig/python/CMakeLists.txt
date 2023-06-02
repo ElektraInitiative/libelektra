@@ -37,8 +37,6 @@ else ()
 		message (WARNING "Python bindings might crash if generated with SWIG 2." " Please upgrade to SWIG 3 or later.")
 	endif ()
 
-	add_headers (HDR_FILES)
-
 	include_directories (SYSTEM ${PYTHON_INCLUDE_DIRS})
 	include_directories ("${CMAKE_SOURCE_DIR}/src/bindings/cpp/include" "${CMAKE_SOURCE_DIR}/src/libs/tools/include")
 
@@ -83,7 +81,6 @@ else ()
 	endmacro ()
 
 	# kdb module
-	add_cppheaders (HDR_FILES)
 	add_python_binding (kdb kdb.i elektra-kdb)
 	add_custom_command (
 		TARGET _swig-python-kdb
@@ -96,7 +93,6 @@ else ()
 	if (${SWIG_VERSION} VERSION_LESS "4.0.0")
 		message (WARNING "Python bindings for elektra tools require SWIG 4 or later. Not building.")
 	else (${SWIG_VERSION} VERSION_LESS "4.0.0")
-		add_toolheaders (HDR_FILES)
 		add_python_binding (tools tools.i elektratools)
 	endif (${SWIG_VERSION} VERSION_LESS "4.0.0")
 

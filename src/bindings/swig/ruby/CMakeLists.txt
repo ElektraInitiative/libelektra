@@ -29,10 +29,6 @@ else ()
 
 	add_binding (ruby)
 
-	add_headers (HDR_FILES)
-	add_cppheaders (HDR_FILES)
-	add_toolheaders (HDR_FILES)
-
 	include_directories ("${CMAKE_SOURCE_DIR}/src/bindings/cpp/include" "${CMAKE_SOURCE_DIR}/src/libs/tools/include")
 
 	# minimal replacement for Ruby's mkmf.create_makefile

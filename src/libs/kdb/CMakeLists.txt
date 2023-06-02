@@ -10,5 +10,5 @@ set (
 
 add_lib (kdb SOURCES ${SOURCES} COMPONENT libelektra${SO_VERSION})
 if (BUILD_SHARED)
-	target_link_libraries (elektra-kdb $<TARGET_OBJECTS:elektra-pluginload>)
+	target_link_libraries (elektra-kdb $<TARGET_OBJECTS:elektra-pluginload-dl>)
 endif (BUILD_SHARED)
