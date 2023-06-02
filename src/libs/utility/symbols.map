@@ -4,3 +4,23 @@ libelektra_0.8 {
 	elektraRstrip;
 	elektraStrip;
 };
+
+libelektra_1.0 {
+	elektraAbort;
+	elektraLog;
+	elektraCalloc;
+	elektraFormat;
+	elektraFree;
+	elektraMalloc;
+	elektraMemCaseCmp;
+	elektraMemDup;
+	elektraRealloc;
+	elektraStrCaseCmp;
+	elektraStrCmp;
+	elektraStrDup;
+	elektraStrLen;
+	elektraStrNCaseCmp;
+	elektraStrNCmp;
+	elektraVFormat;
+	elektraWriteArrayNumber;
+};

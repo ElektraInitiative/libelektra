@@ -1,2 +1,1 @@
-file (GLOB SOURCES *.c)
-add_lib (utility SOURCES ${SOURCES} COMPONENT libelektra${SO_VERSION})
+add_lib (utility SOURCES text.c alloc.c COMPONENT libelektra${SO_VERSION})

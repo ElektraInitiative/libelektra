@@ -1,23 +1,4 @@
 libelektra_0.8 {
-	# TODO: should not be exported here
-	elektraAbort;
-	elektraLog;
-	elektraCalloc;
-	elektraFormat;
-	elektraFree;
-	elektraMalloc;
-	elektraMemCaseCmp;
-	elektraMemDup;
-	elektraRealloc;
-	elektraStrCaseCmp;
-	elektraStrCmp;
-	elektraStrDup;
-	elektraStrLen;
-	elektraStrNCaseCmp;
-	elektraStrNCmp;
-	elektraVFormat;
-	elektraWriteArrayNumber;
-
 	keyAddBaseName;
 	keyAddName;
 	keyBaseName;
