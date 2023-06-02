@@ -6,7 +6,8 @@
  * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  */
 
-#include <opmphm.c>
+#include "../../src/libs/elektra/opmphm.c"
+
 #include <tests_internal.h>
 
 #include <internal/core/lookup.h>

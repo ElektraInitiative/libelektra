@@ -16,7 +16,7 @@ if (BUILD_TESTING AND NOT ENABLE_ASAN)
 
 		add_executable (${name} ${TEST_SOURCES})
 
-		target_include_directories (${name} PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework")
+		target_include_directories (${name} PRIVATE "${CMAKE_SOURCE_DIR}/tests/cframework")
 
 		target_link_elektra (${name} elektra-kdb elektra-notification)
 

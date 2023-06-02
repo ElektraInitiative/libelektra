@@ -66,7 +66,7 @@ else ()
 
 		add_executable (${TESTEXENAME} ${TEST_SOURCES})
 
-		target_include_directories (${TESTEXENAME} PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework" "${libuv_INCLUDE_DIRS}")
+		target_include_directories (${TESTEXENAME} PRIVATE "${CMAKE_SOURCE_DIR}/tests/cframework" "${libuv_INCLUDE_DIRS}")
 
 		target_link_elektra (${TESTEXENAME} elektra-kdb elektra-plugin elektra-io ${IO_UV_LIBRARY} m)
 		if (BUILD_FULL OR BUILD_STATIC)

@@ -31,6 +31,7 @@ function (add_lib name)
 
 	add_library (elektra-${name}-objects OBJECT ${ARG_SOURCES})
 	add_dependencies (elektra-${name}-objects generate_version_script)
+	# TODO: should probably done on a per library basis to allow decision between PRIVATE/PUBLIC/INTERFACE
 	target_include_directories (elektra-${name}-objects PUBLIC ${ARG_INCLUDE_DIRECTORIES})
 	target_include_directories (elektra-${name}-objects SYSTEM PUBLIC ${ARG_INCLUDE_SYSTEM_DIRECTORIES})
 

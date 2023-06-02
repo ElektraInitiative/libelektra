@@ -35,19 +35,6 @@ else ()
 		add_definitions (-DHAVE_DBUS=1)
 	endif ()
 
-	include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
-
-	include_directories (
-		SYSTEM
-		${Qt5Quick_INCLUDE_DIRS}
-		${Qt5Gui_INCLUDE_DIRS}
-		${Qt5Core_INCLUDE_DIRS}
-		${Qt5Qml_INCLUDE_DIRS}
-		${Qt5Widgets_INCLUDE_DIRS}
-		${Qt5Test_INCLUDE_DIRS}
-		${Qt5Svg_INCLUDE_DIRS}
-		src/markdownconverter)
-
 	file (GLOB qt-gui_HDRS "src/markdownconverter/*.h" "src/markdownconverter/template/*.h")
 
 	add_headers (qt-gui_HDRS)
@@ -63,9 +50,27 @@ else ()
 
 	add_executable (qt-gui ${qt-gui_SRCS} ${qt-gui_HDRS} ${UIS} ${RSCS} ${TRS})
 
+	target_include_directories (
+		qt-gui
+		PRIVATE ${CMAKE_SOURCE_DIR}
+		PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
+		PRIVATE "${CMAKE_SOURCE_DIR}/src/bindings/cpp/include"
+		PRIVATE "${CMAKE_SOURCE_DIR}/src/libs/tools/include")
+
+	target_include_directories (
+		qt-gui SYSTEM
+		PRIVATE ${Qt5Quick_INCLUDE_DIRS}
+			${Qt5Gui_INCLUDE_DIRS}
+			${Qt5Core_INCLUDE_DIRS}
+			${Qt5Qml_INCLUDE_DIRS}
+			${Qt5Widgets_INCLUDE_DIRS}
+			${Qt5Test_INCLUDE_DIRS}
+			${Qt5Svg_INCLUDE_DIRS}
+			src/markdownconverter)
+
 	target_link_libraries (qt-gui Qt5::Quick Qt5::Gui Qt5::Core Qt5::Qml Qt5::Widgets)
 
-	include_directories (${DISCOUNT_INCLUDES})
+	target_include_directories (qt-gui PRIVATE ${DISCOUNT_INCLUDES})
 	target_link_libraries (qt-gui ${DISCOUNT_LIBRARIES})
 
 	target_link_libraries (

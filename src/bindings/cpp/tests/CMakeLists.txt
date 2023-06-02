@@ -1,6 +1,7 @@
 include (LibAddTest)
 
-include_directories (${CMAKE_CURRENT_SOURCE_DIR})
+include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/../include")
+
 add_headers (HDR_FILES)
 add_cppheaders (HDR_FILES)
 

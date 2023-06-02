@@ -97,7 +97,7 @@ kdb::KeySet getAll ()
 {
 	using namespace ckdb;
 	return
-#include <data_allns.c>
+#include "../data/data_allns.c"
 }
 
 

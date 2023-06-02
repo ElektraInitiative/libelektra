@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include "./tests.h"
 #include <string.h>
-#include <tests.h>
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>

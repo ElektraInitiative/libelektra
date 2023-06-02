@@ -42,6 +42,7 @@ if (gopts_source)
 
 		add_executable (elektra-gopts-testapp "${CMAKE_CURRENT_SOURCE_DIR}/testapp.c" ${TEST_SOURCES})
 		target_link_elektra (elektra-gopts-testapp elektra-core elektra-invoke elektra-opts)
+		target_include_directories (elektra-gopts-testapp PRIVATE "${CMAKE_SOURCE_DIR}/tests/cframework")
 
 		set (TESTAPP_NAME "elektra-gopts-testapp")
 		configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/config.c.in" "${CMAKE_CURRENT_BINARY_DIR}/config.c" @ONLY)

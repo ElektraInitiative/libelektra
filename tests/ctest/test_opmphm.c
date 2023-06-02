@@ -7,7 +7,8 @@
  */
 
 #define OPMPHM_TEST
-#include <opmphm.c>
+#include "../../src/libs/elektra/opmphm.c"
+
 #include <tests_internal.h>
 
 // dummy for testing

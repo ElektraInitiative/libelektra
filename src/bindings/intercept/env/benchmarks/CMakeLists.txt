@@ -6,9 +6,9 @@ add_cppheaders (HDR_FILES)
 set_source_files_properties (benchmark_getenv.cpp PROPERTIES COMPILE_FLAGS "-Wno-unused-result")
 
 macro (do_benchmark source)
-	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
 	set (SOURCES ${HDR_FILES} ${source}.cpp)
 	add_executable (${source} ${SOURCES})
+	target_include_directories (${source} PRIVATE "${CMAKE_SOURCE_DIR}/src/bindings/cpp/include")
 
 	target_link_elektra (${source})
 

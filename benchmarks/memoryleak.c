@@ -7,12 +7,13 @@
  */
 
 #include <stdio.h>
+#include <unistd.h>
 
-#include <benchmarks.h>
+#include "./benchmarks.h"
+
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 #include <elektra/kdb/kdb.h>
-#include <unistd.h>
 
 #define NUM_RUNS 30
 

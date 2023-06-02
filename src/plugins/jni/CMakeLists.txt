@@ -48,7 +48,7 @@ if (ADDTESTING_PHASE)
 	    AND NOT ENABLE_ASAN)
 		# do not install test, because it depends on build folder JNA fat jar
 		add_plugintest (jni MEMLEAK USE_LINK_RPATH NO_INSTALL)
-		include_directories (${CMAKE_CURRENT_BINARY_DIR})
+		target_include_directories (testmod_jni PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 
 		# Generate header file
 		set (libelektra_jar_all ${CMAKE_BINARY_DIR}/src/bindings/jna/libelektra/build/libs/libelektra-${KDB_VERSION}-all.jar)

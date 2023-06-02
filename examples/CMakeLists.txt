@@ -5,9 +5,9 @@ include (LibAddBinding)
 add_headers (HDR_FILES)
 
 macro (do_example source)
-	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
 	set (SOURCES ${HDR_FILES} ${source}.c)
 	add_executable (${source} ${SOURCES})
+	target_include_directories (${source} PRIVATE "${CMAKE_SOURCE_DIR}/src/include" "${CMAKE_BINARY_DIR}/src/include")
 
 	target_link_elektra (${source} elektra-kdb)
 
@@ -50,6 +50,7 @@ if (FOUND_NAME GREATER -1)
 	set (SOURCES ${SRC_FILES} ${HDR_FILES})
 
 	add_executable (${EXAMPLE} ${SOURCES})
+	target_include_directories (${EXAMPLE} PRIVATE "${CMAKE_SOURCE_DIR}/src/include" "${CMAKE_BINARY_DIR}/src/include")
 
 	target_link_elektra (${EXAMPLE} elektra-kdb elektra-notification)
 
@@ -67,6 +68,7 @@ if (FOUND_NAME GREATER -1)
 		endif ()
 
 		add_executable (${EXAMPLE} ${SOURCES})
+		target_include_directories (${EXAMPLE} PRIVATE "${CMAKE_SOURCE_DIR}/src/include" "${CMAKE_BINARY_DIR}/src/include")
 
 		target_link_elektra (${EXAMPLE} elektra-kdb elektra-notification elektra-io elektra-io-uv)
 		if (BUILD_FULL OR BUILD_STATIC)
@@ -94,11 +96,10 @@ if (FOUND_NAME GREATER -1)
 		set_source_files_properties (${SRC_FILES} PROPERTIES COMPILE_FLAGS "-Wno-pedantic")
 
 		find_package (GLib QUIET)
-		include_directories (${GLib_INCLUDE_DIRS})
-
 		list (APPEND SOURCES $<TARGET_OBJECTS:elektra-io-glib-objects>)
-
 		add_executable (${EXAMPLE} ${SOURCES})
+		target_include_directories (${EXAMPLE} PRIVATE ${GLib_INCLUDE_DIRS})
+		target_include_directories (${EXAMPLE} PRIVATE "${CMAKE_SOURCE_DIR}/src/include" "${CMAKE_BINARY_DIR}/src/include")
 
 		target_link_elektra (${EXAMPLE} elektra-kdb elektra-notification elektra-io elektra-io-glib)
 		if (BUILD_FULL OR BUILD_STATIC)

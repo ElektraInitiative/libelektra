@@ -9,8 +9,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <benchmarks.h>
+#include "./benchmarks.h"
+
 #include <internal/plugin/load.h>
+
 #include <tests.h>
 
 #define CSV_STR_FMT "%s;%s;%d\n"

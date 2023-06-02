@@ -142,11 +142,9 @@ function (add_plugintest testname)
 
 		add_headers (TEST_SOURCES)
 		add_testheaders (TEST_SOURCES)
-		include_directories ("${CMAKE_SOURCE_DIR}/tests/cframework")
 
 		if (ARG_CPP)
 			list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testmod_${testname}.cpp")
-			include_directories (${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests ${CMAKE_SOURCE_DIR}/src/bindings/cpp/include)
 		else (ARG_CPP)
 			list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testmod_${testname}.c")
 		endif (ARG_CPP)
@@ -164,6 +162,14 @@ function (add_plugintest testname)
 
 		set (testexename testmod_${testname})
 		add_executable (${testexename} ${TEST_SOURCES})
+
+		if (ARG_CPP)
+			target_include_directories (
+				${testexename}
+				PRIVATE ${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests
+				PRIVATE ${CMAKE_SOURCE_DIR}/src/bindings/cpp/include)
+		endif (ARG_CPP)
+		target_include_directories (${testexename} PRIVATE "${CMAKE_SOURCE_DIR}/tests/cframework")
 
 		if (BUILD_SHARED)
 			if (ARG_LINK_PLUGIN)
@@ -612,11 +618,14 @@ function (add_plugin PLUGIN_SHORT_NAME)
 			 "PLUGIN_SHORT_NAME=${PLUGIN_SHORT_NAME}"
 			 "README=readme_${PLUGIN_SHORT_NAME}.c")
 
+	if (ARG_CPP)
+		target_include_directories (${PLUGIN_OBJS} PUBLIC "${CMAKE_SOURCE_DIR}/src/bindings/cpp/include")
+	endif (ARG_CPP)
+	target_include_directories (${PLUGIN_OBJS} PUBLIC "${CMAKE_CURRENT_BINARY_DIR}") # for readme
 	set_property (
 		TARGET ${PLUGIN_OBJS}
 		APPEND
-		PROPERTY INCLUDE_DIRECTORIES ${ARG_INCLUDE_DIRECTORIES} ${CMAKE_CURRENT_BINARY_DIR} # for readme
-	)
+		PROPERTY INCLUDE_DIRECTORIES ${ARG_INCLUDE_DIRECTORIES})
 
 	set_property (
 		TARGET ${PLUGIN_OBJS}
@@ -636,10 +645,14 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	set_property (TARGET ${PLUGIN_OBJS} PROPERTY CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 	if (BUILD_SHARED)
+		# TODO: why is this not built upon ${PLUGIN_OBJS}
 		add_library (${PLUGIN_NAME} MODULE ${ARG_SOURCES} ${ARG_OBJECT_SOURCES})
 		# TODO: switch to -plugin- in CMake targets
 		set_target_properties (${PLUGIN_NAME} PROPERTIES OUTPUT_NAME "elektra-plugin-${PLUGIN_SHORT_NAME}")
 
+		if (ARG_CPP)
+			target_include_directories (${PLUGIN_NAME} PUBLIC "${CMAKE_SOURCE_DIR}/src/bindings/cpp/include")
+		endif (ARG_CPP)
 		if (ARG_DEPENDS)
 			add_dependencies (${PLUGIN_NAME} ${ARG_DEPENDS})
 		endif ()
@@ -658,11 +671,11 @@ function (add_plugin PLUGIN_SHORT_NAME)
 			APPEND
 			PROPERTY COMPILE_DEFINITIONS ${ARG_COMPILE_DEFINITIONS} ${ADDITIONAL_COMPILE_DEFINITIONS} "HAVE_KDBCONFIG_H"
 				 "PLUGIN_SHORT_NAME=${PLUGIN_SHORT_NAME}" "README=readme_${PLUGIN_SHORT_NAME}.c")
+		target_include_directories (${PLUGIN_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}") # for readme
 		set_property (
 			TARGET ${PLUGIN_NAME}
 			APPEND
-			PROPERTY INCLUDE_DIRECTORIES ${ARG_INCLUDE_DIRECTORIES} ${CMAKE_CURRENT_BINARY_DIR} # for readme
-		)
+			PROPERTY INCLUDE_DIRECTORIES ${ARG_INCLUDE_DIRECTORIES})
 		# do not strip rpath during install
 		if (ARG_USE_LINK_RPATH)
 			set_target_properties (${PLUGIN_NAME} PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)

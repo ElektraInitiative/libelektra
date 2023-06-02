@@ -10,6 +10,8 @@
 
 include (LibAddMacros)
 
+include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/cframework" "${CMAKE_SOURCE_DIR}/src/include" "${CMAKE_BINARY_DIR}/src/include")
+
 if (ENABLE_TESTING)
 
 	include (FindGTest)
@@ -42,11 +44,11 @@ endif (ENABLE_TESTING)
 add_headers (HDR_FILES)
 
 macro (do_test source)
-	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
 	set (SOURCES ${HDR_FILES} ${source}.c $<TARGET_OBJECTS:cframework>)
 	add_headers (SOURCES)
 	add_testheaders (SOURCES)
 	add_executable (${source} ${SOURCES})
+	target_include_directories (${source} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 
 	if (INSTALL_TESTING)
 		install (
@@ -92,8 +94,6 @@ add_custom_target (
 	run_memcheck
 	COMMAND "${CMAKE_BINARY_DIR}/scripts/dev/run_memcheck" "$<CONFIGURATION>"
 	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
-
-include_directories (data)
 
 add_subdirectory (cframework)
 add_subdirectory (shell)

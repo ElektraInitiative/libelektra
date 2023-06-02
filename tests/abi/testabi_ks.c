@@ -1466,11 +1466,11 @@ static void test_ksAppend (void)
 	keyDel (key);
 
 	KeySet * returned =
-#include "data_keyset.c"
+#include "../data/data_keyset.c"
 		KeySet * testDirectBelow =
-#include "data_dbelow.c"
+#include "../data/data_dbelow.c"
 			KeySet * testReturned =
-#include "data_others.c"
+#include "../data/data_others.c"
 				Key * parentKey[2];
 	parentKey[0] = keyNew ("user:/test/keyset", KEY_END);
 	parentKey[1] = keyNew ("user:/test/keyset/dir1", KEY_END);
@@ -2214,7 +2214,7 @@ static void test_below (void)
 
 	KeySet * cmp_orig[16];
 	KeySet * cmp_result[16];
-#include "data_cut.c"
+#include "../data/data_cut.c"
 
 	for (int i = 0; i < 16; ++i)
 	{
@@ -2284,7 +2284,7 @@ static void test_cut (void)
 
 	KeySet * cmp_orig[16];
 	KeySet * cmp_result[16];
-#include "data_cut.c"
+#include "../data/data_cut.c"
 
 	for (int i = 0; i < 16; ++i)
 	{
@@ -2350,7 +2350,7 @@ static void test_cascadingCutpoint (void)
 
 	Key * cutpoint = keyNew ("/a/b/c", KEY_END);
 	KeySet * orig =
-#include <data_nscut.c>
+#include "../data/data_nscut.c"
 		ksRewind (orig);
 	ksNext (orig);
 	succeed_if_same_string (keyName (ksCurrent (orig)), "spec:/a");
@@ -2403,7 +2403,7 @@ static void test_cascadingRootCutpoint (void)
 
 	Key * cutpoint = keyNew ("/", KEY_END);
 	KeySet * orig =
-#include <data_nscut.c>
+#include "../data/data_nscut.c"
 		ksRewind (orig);
 	ksNext (orig);
 	succeed_if_same_string (keyName (ksCurrent (orig)), "spec:/a");
@@ -2417,7 +2417,7 @@ static void test_cascadingRootCutpoint (void)
 	ksDel (orig);
 
 	KeySet * cmp_part =
-#include <data_nscut.c>
+#include "../data/data_nscut.c"
 		compare_keyset (part, cmp_part);
 	// output_keyset(part);
 	ksDel (part);
@@ -2818,7 +2818,7 @@ static void test_nsLookup (void)
 	printf ("Test lookup in all namespaces\n");
 
 	KeySet * ks =
-#include <data_ns.c>
+#include "../data/data_ns.c"
 
 		for (int i = 0; i < NUMBER_OF_NAMESPACES; ++i)
 	{

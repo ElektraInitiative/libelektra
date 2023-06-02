@@ -1,4 +1,5 @@
-#include <benchmarks.h>
+#include "./benchmarks.h"
+
 #include <elektra/core.h>
 #include <elektra/diff.h>
 

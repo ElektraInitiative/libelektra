@@ -15,7 +15,7 @@ set (SOURCES ${IO_VARIANT_SRC_FILES} ${IO_VARIANT_HDR_FILES} ${ELEKTRA_HEADERS})
 set (IO_VARIANT_LIBRARY elektra-io-${BINDING_VARIANT})
 
 add_library (${IO_VARIANT_LIBRARY} SHARED ${SOURCES})
-target_include_directories (${IO_VARIANT_LIBRARY} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories (${IO_VARIANT_LIBRARY} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 # ~~~
 # If needed add a library (e.g. found with pkg_check_modules)
@@ -46,7 +46,7 @@ if (BUILD_TESTING)
 
 	add_executable (${testexename} ${TEST_SOURCES})
 
-	target_include_directories (${testexename} PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework")
+	target_include_directories (${testexename} PRIVATE "${CMAKE_SOURCE_DIR}/tests/cframework")
 
 	target_link_elektra (${testexename} elektra-kdb elektra-plugin elektra-io ${IO_VARIANT_LIBRARY} ${ADDITIONAL_TEST_LIBRARIES})
 

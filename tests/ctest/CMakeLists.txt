@@ -9,8 +9,6 @@ foreach (file ${TESTS})
 	endif (ENABLE_OPTIMIZATIONS OR NOT ${name} MATCHES "opmphm")
 endforeach (file ${TESTS})
 
-include_directories ("${CMAKE_SOURCE_DIR}/src/libs/elektra")
-
 target_link_elektra (test_array elektra-ease)
 target_link_elektra (test_conversion elektra-ease)
 target_link_elektra (test_keyname elektra-ease)

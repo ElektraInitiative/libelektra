@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <benchmarks.h>
+#include "./benchmarks.h"
 
 KDB * kdb;
 Key * key;

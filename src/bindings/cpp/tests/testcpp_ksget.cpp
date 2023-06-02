@@ -8,7 +8,7 @@
 
 #include <keysetget.hpp>
 
-#include <tests.hpp>
+#include "./tests.hpp"
 
 TEST (ks, get)
 {

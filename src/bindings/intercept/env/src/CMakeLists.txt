@@ -11,6 +11,7 @@ add_library (elektraintercept-env SHARED ${SOURCES})
 
 target_link_libraries (elektraintercept-env ${CMAKE_DL_LIBS})
 target_link_libraries (elektraintercept-env elektra-kdb elektra-meta) # must be shared!
+target_include_directories (elektraintercept-env PRIVATE "${CMAKE_SOURCE_DIR}/src/bindings/cpp/include")
 
 set_target_properties (
 	elektraintercept-env

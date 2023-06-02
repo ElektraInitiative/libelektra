@@ -15,7 +15,7 @@ set (EXAMPLE exampleio_uv)
 
 add_executable (${EXAMPLE} ${SOURCES})
 
-target_include_directories (${EXAMPLE} SYSTEM PUBLIC ${libuv_INCLUDE_DIRS})
+target_include_directories (${EXAMPLE} SYSTEM PRIVATE ${libuv_INCLUDE_DIRS})
 
 target_link_elektra (${EXAMPLE} elektra-kdb elektra-io elektra-io-uv)
 if (BUILD_FULL OR BUILD_STATIC)

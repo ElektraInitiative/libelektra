@@ -20,7 +20,7 @@
 #endif
 
 // ==== INCLUDE SECTION ====
-#include "benchmarks.h"
+#include "./benchmarks.h"
 #ifdef HAVE_HSEARCHR
 #include <search.h>
 #endif

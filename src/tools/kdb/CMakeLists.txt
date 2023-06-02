@@ -4,7 +4,8 @@ file (GLOB HDR_FILES *.hpp gen/*.hpp gen/*/*.hpp)
 add_headers (HDR_FILES)
 add_cppheaders (HDR_FILES)
 add_toolheaders (HDR_FILES)
-include_directories (${CMAKE_CURRENT_SOURCE_DIR})
+include_directories (${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_SOURCE_DIR}/src/bindings/cpp/include"
+		     "${CMAKE_SOURCE_DIR}/src/libs/tools/include")
 
 file (GLOB SRC_FILES *.cpp gen/*.cpp gen/*/*.cpp)
 list (REMOVE_ITEM SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/gen/templates/collect.cpp")

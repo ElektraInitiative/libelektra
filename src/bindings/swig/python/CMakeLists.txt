@@ -39,7 +39,8 @@ else ()
 
 	add_headers (HDR_FILES)
 
-	include_directories (${PYTHON_INCLUDE_DIRS})
+	include_directories (SYSTEM ${PYTHON_INCLUDE_DIRS})
+	include_directories ("${CMAKE_SOURCE_DIR}/src/bindings/cpp/include" "${CMAKE_SOURCE_DIR}/src/libs/tools/include")
 
 	set (CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}/kdb")
 	set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SWIG_OUTDIR}")

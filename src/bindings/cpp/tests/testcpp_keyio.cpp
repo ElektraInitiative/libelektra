@@ -8,7 +8,7 @@
 
 #include <keyio.hpp>
 
-#include <tests.hpp>
+#include "./tests.hpp"
 
 #include <memory>
 #include <stdexcept>

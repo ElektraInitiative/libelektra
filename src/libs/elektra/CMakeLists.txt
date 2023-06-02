@@ -128,8 +128,6 @@ if (BUILD_FULL OR BUILD_STATIC)
 
 	# include the directories of all libraries for the static or full-shared build
 	get_property (elektra-full_INCLUDES GLOBAL PROPERTY elektra-full_INCLUDES)
-
-	include_directories (${elektra-full_INCLUDES})
 endif (BUILD_FULL OR BUILD_STATIC)
 
 if (BUILD_FULL)
@@ -168,6 +166,8 @@ if (BUILD_STATIC)
 	add_dependencies (elektra-static generate_version_script)
 
 	target_link_libraries (elektra-static ${elektra-full_LIBRARIES})
+	# include the current binary directory to get exported_symbols.h
+	target_include_directories (elektra-static PRIVATE ${elektra-full_INCLUDES} "${CMAKE_CURRENT_BINARY_DIR}")
 
 	set_target_properties (
 		elektra-static

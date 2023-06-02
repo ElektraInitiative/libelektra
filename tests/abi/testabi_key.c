@@ -2440,27 +2440,27 @@ static void test_keyEscape (void)
 		succeed_if_same_string (buffer, A);                                                                                        \
 	} while (0)
 
-#include <data_escape.c>
+#include "../data/data_escape.c"
 
 	keySetName (k, "spec:/valid");
 
-#include <data_escape.c>
+#include "../data/data_escape.c"
 
 	keySetName (k, "proc:/valid");
 
-#include <data_escape.c>
+#include "../data/data_escape.c"
 
 	keySetName (k, "dir:/valid");
 
-#include <data_escape.c>
+#include "../data/data_escape.c"
 
 	keySetName (k, "user:/valid");
 
-#include <data_escape.c>
+#include "../data/data_escape.c"
 
 	keySetName (k, "system:/valid");
 
-#include <data_escape.c>
+#include "../data/data_escape.c"
 
 #undef TEST_ESCAPE_PART
 #define TEST_ESCAPE_PART(A, S)                                                                                                             \
@@ -2476,7 +2476,7 @@ static void test_keyEscape (void)
 	{
 		keySetName (k, namespaces[i]);
 
-#include <data_escape.c>
+#include "../data/data_escape.c"
 	}
 
 	keySetName (k, "/");
@@ -2500,7 +2500,7 @@ static void test_keyEscape (void)
 	{
 		keySetName (k, namespaces[i]);
 
-#include <data_escape.c>
+#include "../data/data_escape.c"
 	}
 
 	keyDel (k);

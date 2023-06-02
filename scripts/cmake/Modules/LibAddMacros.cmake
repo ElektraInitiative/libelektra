@@ -129,7 +129,6 @@ macro (mkdir dir)
 endmacro (mkdir)
 
 macro (add_testheaders HDR_FILES)
-	include_directories ("${PROJECT_SOURCE_DIR}/tests/cframework")
 	file (GLOB BIN_HDR_FILES "${PROJECT_SOURCE_DIR}/tests/cframework/*.h")
 	list (APPEND ${HDR_FILES} ${BIN_HDR_FILES})
 endmacro (add_testheaders HDR_FILES)
@@ -284,11 +283,9 @@ macro (add_headers HDR_FILES)
 	set (BINARY_INCLUDE_DIR "${PROJECT_BINARY_DIR}/src/include")
 	set (SOURCE_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/src/include")
 
-	include_directories (BEFORE "${BINARY_INCLUDE_DIR}")
 	file (GLOB BIN_HDR_FILES ${BINARY_INCLUDE_DIR}/*.h)
 	list (APPEND ${HDR_FILES} ${BIN_HDR_FILES})
 
-	include_directories (AFTER ${SOURCE_INCLUDE_DIR})
 	file (GLOB SRC_HDR_FILES ${SOURCE_INCLUDE_DIR}/*.h)
 	list (APPEND ${HDR_FILES} ${SRC_HDR_FILES})
 
@@ -301,21 +298,17 @@ endmacro (add_headers)
 # Add all headers needed for cpp bindings
 # ~~~
 macro (add_cppheaders HDR_FILES)
-	include_directories ("${PROJECT_BINARY_DIR}/src/bindings/cpp/include")
 	file (GLOB BIN_HDR_FILES ${PROJECT_BINARY_DIR}/src/bindings/cpp/include/*.hpp)
 	list (APPEND ${HDR_FILES} ${BIN_HDR_FILES})
 
-	include_directories ("${PROJECT_SOURCE_DIR}/src/bindings/cpp/include")
 	file (GLOB SRC_HDR_FILES ${PROJECT_SOURCE_DIR}/src/bindings/cpp/include/*.hpp)
 	list (APPEND ${HDR_FILES} ${SRC_HDR_FILES})
 endmacro (add_cppheaders)
 
 macro (add_toolheaders HDR_FILES)
-	include_directories ("${PROJECT_BINARY_DIR}/src/libs/tools/include")
 	file (GLOB_RECURSE BIN_HDR_FILES ${PROJECT_BINARY_DIR}/src/libtools/include/*)
 	list (APPEND ${HDR_FILES} ${BIN_HDR_FILES})
 
-	include_directories ("${PROJECT_SOURCE_DIR}/src/libs/tools/include")
 	file (GLOB_RECURSE SRC_HDR_FILES ${PROJECT_SOURCE_DIR}/src/libs/tools/include/*)
 	list (APPEND ${HDR_FILES} ${SRC_HDR_FILES})
 endmacro (add_toolheaders)
