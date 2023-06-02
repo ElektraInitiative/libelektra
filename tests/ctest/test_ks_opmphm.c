@@ -6,7 +6,7 @@
  * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  */
 
-#include "../../src/libs/elektra/opmphm.c"
+#include "../../src/libs/core/opmphm.c"
 
 #include <tests_internal.h>
 

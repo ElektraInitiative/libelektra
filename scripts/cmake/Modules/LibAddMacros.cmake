@@ -288,10 +288,6 @@ macro (add_headers HDR_FILES)
 
 	file (GLOB SRC_HDR_FILES ${SOURCE_INCLUDE_DIR}/*.h)
 	list (APPEND ${HDR_FILES} ${SRC_HDR_FILES})
-
-	set_source_files_properties (${BINARY_INCLUDE_DIR}/kdberrors.h PROPERTIES GENERATED ON SKIP_AUTOMOC ON)
-	set_source_files_properties (${BINARY_INCLUDE_DIR}/elektra/errors.h PROPERTIES GENERATED ON SKIP_AUTOMOC ON)
-	list (APPEND ${HDR_FILES} "${BINARY_INCLUDE_DIR}/kdberrors.h")
 endmacro (add_headers)
 
 # ~~~

@@ -31,7 +31,6 @@ function (add_lib name)
 
 	add_library (elektra-${name}-objects OBJECT ${ARG_SOURCES})
 	add_dependencies (elektra-${name}-objects generate_version_script)
-	# TODO: should probably done on a per library basis to allow decision between PRIVATE/PUBLIC/INTERFACE
 	target_include_directories (elektra-${name}-objects PUBLIC ${ARG_INCLUDE_DIRECTORIES})
 	target_include_directories (elektra-${name}-objects SYSTEM PUBLIC ${ARG_INCLUDE_SYSTEM_DIRECTORIES})
 
@@ -47,7 +46,10 @@ function (add_lib name)
 	if (BUILD_SHARED)
 		add_library (elektra-${name} SHARED $<TARGET_OBJECTS:elektra-${name}-objects>)
 
-		target_link_libraries (elektra-${name} elektra-core ${ARG_LINK_ELEKTRA})
+		target_link_libraries (elektra-${name} ${ARG_LINK_ELEKTRA})
+		if (NOT ${name} STREQUAL "core")
+			target_link_libraries (elektra-${name} elektra-core)
+		endif ()
 	endif (BUILD_SHARED)
 
 	set_property (GLOBAL APPEND PROPERTY "elektra-full_SRCS" "$<TARGET_OBJECTS:elektra-${name}-objects>")

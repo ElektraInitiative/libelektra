@@ -6,36 +6,6 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <stdio.h>
-
-#ifdef HAVE_LOCALE_H
-#include <locale.h>
-#endif
-
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-#ifdef HAVE_STDARG_H
-#include <stdarg.h>
-#endif
-
-#ifdef HAVE_CTYPE_H
-#include <ctype.h>
-#endif
-
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
-
-#ifdef HAVE_STDIO_H
-#include <stdio.h>
-#endif
-
-#ifdef HAVE_ERRNO_H
-#include <errno.h>
-#endif
-
 #include <elektra/changetracking.h>
 #include <elektra/core/errors.h>
 #include <elektra/core/key.h>
@@ -58,6 +28,14 @@
 #include <internal/utility/assert.h>
 #include <internal/utility/compare.h>
 #include <internal/utility/logger.h>
+
+#include <ctype.h>
+#include <errno.h>
+#include <locale.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "./backends.h"
 #include "./hooks.h"
@@ -1320,9 +1298,9 @@ static const char * phaseName (ElektraKdbPhase phase)
 		return "RESOLVER";
 	case ELEKTRA_KDB_GET_PHASE_CACHECHECK:
 		return "CACHECHECK";
-	case ELEKTRA_KDB_GET_PHASE_PRE_STORAGE: // ELEKTRA_KDB_SET_PHASE_PRE_STORAGE
+	case ELEKTRA_KDB_GET_PHASE_PRE_STORAGE:	 // ELEKTRA_KDB_SET_PHASE_PRE_STORAGE
 		return "PRE_STORAGE";
-	case ELEKTRA_KDB_GET_PHASE_STORAGE: // ELEKTRA_KDB_SET_PHASE_STORAGE
+	case ELEKTRA_KDB_GET_PHASE_STORAGE:	 // ELEKTRA_KDB_SET_PHASE_STORAGE
 		return "STORAGE";
 	case ELEKTRA_KDB_GET_PHASE_POST_STORAGE: // ELEKTRA_KDB_SET_PHASE_POST_STORAGE
 		return "POST_STORAGE";

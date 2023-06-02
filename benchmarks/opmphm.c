@@ -29,9 +29,9 @@
 #include <omp.h>
 #endif
 
-#include "../src/libs/elektra/opmphm.c"
-#include "../src/libs/elektra/opmphmpredictor.c"
-#include "../src/libs/elektra/rand.c"
+#include "../src/libs/core/opmphm.c"
+#include "../src/libs/core/opmphmpredictor.c"
+#include "../src/libs/core/rand.c"
 #include <sys/time.h>
 
 #include <internal/core/keyset.h>

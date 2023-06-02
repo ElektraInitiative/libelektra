@@ -1,4 +1,5 @@
-#include "../../src/libs/elektra/diff.c"
+#include "../../src/libs/kdb/diff.c"
+
 #include <tests_internal.h>
 
 static void test_keyValueDifferent_bothNull_shouldReturnFalse (void)

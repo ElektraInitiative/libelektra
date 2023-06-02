@@ -6,45 +6,13 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <elektra/core/key.h>
-#include <elektra/core/namespace.h>
-#ifdef HAVE_KDBCONFIG_H
-#include <internal/config.h>
-#endif
-
-#ifdef HAVE_STDIO_H
-#include <stdio.h>
-#endif
-
-#ifdef HAVE_STDARG_H
-#include <stdarg.h>
-#endif
-
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
-
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-#ifdef HAVE_ERRNO_H
-#include <errno.h>
-#endif
-
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
-
-#ifdef HAVE_CTYPE_H
-#include <ctype.h>
-#endif
 
 #include <elektra/core/errors.h>
 #include <elektra/core/key.h>
 #include <elektra/core/namespace.h>
 #include <elektra/ease/meta.h>
 #include <elektra/plugin/plugin.h>
+
 #include <internal/config.h>
 #include <internal/macros/os.h>
 #include <internal/pluginload/module.h>
@@ -53,6 +21,13 @@
 #include <internal/utility/format.h>
 #include <internal/utility/logger.h>
 #include <internal/utility/string.h>
+
+#include <ctype.h>
+#include <errno.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 /**
  * @brief Internal Methods for Elektra
