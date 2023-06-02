@@ -333,9 +333,9 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- Started implementing the decisions [Header File Structure](/doc/decisions/5_partially_implemented/header_file_structure.md), [Including Headers](/doc/decisions/5_partially_implemented/header_include.md), [Library Directory Structure](/doc/decisions/5_partially_implemented/library_directory_structure.md) and [Library Split](/doc/decisions/5_partially_implemented/library_split.md). _(@kodebach)_
+- Started implementing the decisions [Header File Structure](/doc/decisions/6_implemented/header_file_structure.md), [Including Headers](/doc/decisions/6_implemented/header_include.md), [Library Directory Structure](/doc/decisions/6_implemented/library_directory_structure.md) and [Library Split](/doc/decisions/6_implemented/library_split.md). _(@kodebach)_
 - <<TODO>>
-- Continued implementing the decisions [Header File Structure](/doc/decisions/5_partially_implemented/header_file_structure.md), [Including Headers](/doc/decisions/5_partially_implemented/header_include.md), [Library Directory Structure](/doc/decisions/5_partially_implemented/library_directory_structure.md) and [Library Split](/doc/decisions/5_partially_implemented/library_split.md). _(@kodebach)_
+- Continued implementing the decisions [Header File Structure](/doc/decisions/6_implemented/header_file_structure.md), [Including Headers](/doc/decisions/6_implemented/header_include.md), [Library Directory Structure](/doc/decisions/6_implemented/library_directory_structure.md) and [Library Split](/doc/decisions/6_implemented/library_split.md). _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
