@@ -13,6 +13,7 @@
 #endif
 #include <sys/time.h>
 
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
 
 struct timeval start;

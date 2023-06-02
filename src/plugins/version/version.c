@@ -10,6 +10,7 @@
 #include "./version.h"
 
 #include <internal/core/key/api.h>
+#include <internal/macros/attributes.h>
 #include <internal/utility/compare.h>
 
 int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * handle ELEKTRA_UNUSED, KeySet * definition ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)

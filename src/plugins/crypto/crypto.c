@@ -20,6 +20,7 @@
 #include <elektra/core/keyset.h>
 #include <elektra/core/namespace.h>
 #include <elektra/type/types.h>
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
 #include <pthread.h>
 #include <stdlib.h>

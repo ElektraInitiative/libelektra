@@ -10,6 +10,8 @@
 #ifndef ELEKTRA_GOPTS_SYSCTL_H
 #define ELEKTRA_GOPTS_SYSCTL_H
 
+#include <internal/macros/attributes.h>
+
 #include <crt_externs.h>
 #include <string.h>
 

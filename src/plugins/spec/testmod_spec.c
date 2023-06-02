@@ -9,9 +9,9 @@
 #include "./spec.h"
 
 #include <elektra/kdb.h>
+#include <elektra/utility/format.h>
 
 #include <internal/utility/compare.h>
-#include <internal/utility/format.h>
 
 #include <tests_plugin.h>
 

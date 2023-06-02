@@ -8,8 +8,9 @@
 
 #include <ctype.h>
 #include <elektra/type/conversion.h>
+#include <elektra/utility/format.h>
 #include <errno.h>
-#include <internal/utility/format.h>
+#include <internal/macros/attributes.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>

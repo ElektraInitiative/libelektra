@@ -36,6 +36,7 @@
 
 #include <internal/core/keyset.h>
 #include <internal/core/lookup.h>
+#include <internal/macros/attributes.h>
 
 int32_t elektraRandBenchmarkInitSeed;
 

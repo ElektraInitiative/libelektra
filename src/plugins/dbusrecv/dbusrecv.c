@@ -13,6 +13,7 @@
 
 #include "./dbusrecv.h"
 
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/logger.h>
 #include <stdio.h>

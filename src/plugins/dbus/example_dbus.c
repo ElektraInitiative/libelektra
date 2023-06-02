@@ -12,6 +12,7 @@
 #include <internal/config.h>
 #endif
 
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
 #include <stdio.h>
 

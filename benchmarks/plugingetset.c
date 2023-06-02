@@ -12,12 +12,12 @@
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
 
+#include <elektra/utility/format.h>
 #include <internal/plugin/load.h>
 #include <internal/plugin/struct.h>
 #include <internal/pluginload/module.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/compare.h>
-#include <internal/utility/format.h>
 
 int main (int argc, char ** argv)
 {

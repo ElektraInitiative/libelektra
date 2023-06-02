@@ -22,8 +22,10 @@
 #include <stdlib.h>
 
 #include <internal/config.h>
+#include <internal/macros/attributes.h>
 #include <internal/macros/plugin_errors.h>
 #include <internal/utility/alloc.h>
+
 //! [global data]
 typedef struct
 {

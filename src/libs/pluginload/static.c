@@ -19,7 +19,6 @@
 #include <internal/macros/attributes.h>
 #include <internal/pluginload/module.h>
 
-
 int elektraModulesInit (KeySet * modules, Key * error ELEKTRA_UNUSED)
 {
 	ksAppendKey (modules, keyNew ("system:/elektra/modules", KEY_END));

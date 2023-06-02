@@ -9,6 +9,7 @@
 
 #include "./mozprefs.h"
 
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/compare.h>
 #include <internal/utility/string.h>

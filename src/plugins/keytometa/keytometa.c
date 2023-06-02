@@ -13,8 +13,10 @@
 
 #include <errno.h>
 #include <internal/config.h>
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/string.h>
+
 #include <stdbool.h>
 #include <stdlib.h>
 

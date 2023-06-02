@@ -18,6 +18,8 @@
 
 #include <tests_internal.h>
 
+#include <internal/macros/attributes.h>
+
 KeySet * ksDupFailing (const KeySet * source ELEKTRA_UNUSED)
 {
 	// We override ksDup here to return NULL

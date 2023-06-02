@@ -18,6 +18,8 @@
 
 #include <ctype.h> // isspace()
 #include <errno.h> // errno
+
+#include <internal/macros/attributes.h>
 #include <internal/notifications.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>

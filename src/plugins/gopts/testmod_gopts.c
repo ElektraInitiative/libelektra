@@ -11,8 +11,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <elektra/utility/format.h>
 #include <internal/config.h>
-#include <internal/utility/format.h>
 
 #include <tests_plugin.h>
 

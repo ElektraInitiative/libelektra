@@ -11,7 +11,7 @@
 
 #include <gtest/gtest-elektra.h>
 
-#include <internal/utility/array.h>
+#include <elektra/utility/array.h>
 
 #define EXPECT_KEYVALUE(Key, Value) EXPECT_PRED2 (keyHasValue, Key, Value)
 #define EXPECT_KEYMETA(Key, Meta, Value) EXPECT_PRED3 (keyHasMetaValue, Key, Meta, Value)

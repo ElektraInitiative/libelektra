@@ -11,6 +11,9 @@
 #include "./cpptemplate_delegate.hpp"
 
 #include <elektra/core/errors.h>
+
+#include <internal/macros/attributes.h>
+
 using ckdb::keyNew;
 using std::exception;
 

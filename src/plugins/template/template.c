@@ -9,7 +9,9 @@
 
 #include "./template.h"
 
+#include <internal/macros/attributes.h>
 #include <internal/utility/compare.h>
+
 int elektraTemplateOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 	// plugin initialization logic

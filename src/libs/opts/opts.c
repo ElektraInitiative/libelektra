@@ -15,13 +15,14 @@
 #include <elektra/ease/array.h>
 #include <elektra/ease/meta.h>
 #include <elektra/type/conversion.h>
+#include <elektra/utility/array.h>
+#include <elektra/utility/format.h>
 #include <internal/utility/alloc.h>
-#include <internal/utility/array.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/compare.h>
-#include <internal/utility/format.h>
 
 #include <internal/core/lookup.h>
+#include <internal/macros/attributes.h>
 
 #ifdef _WIN32
 static const char SEP_ENV_VALUE = ';';

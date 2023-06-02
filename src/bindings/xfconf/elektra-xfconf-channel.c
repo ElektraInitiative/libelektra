@@ -5,9 +5,9 @@
 
 #include <elektra/core.h>
 #include <elektra/kdb/kdb.h>
+#include <elektra/utility/array.h>
 
 #include <internal/macros/attributes.h>
-#include <internal/utility/array.h>
 #include <internal/utility/compare.h>
 
 #include <sys/mman.h>

@@ -25,6 +25,7 @@
 
 #include <elektra/io/api.h> // I/O binding functions (elektraIo*)
 #include <elektra/io/uv.h>  // I/O binding constructor for uv (elektraIoUvNew)
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/assert.h> // assertions (ELEKTRA_NOT_NULL)
 #include <uv.h>			     // uv functions

@@ -14,8 +14,9 @@
 #include <elektra/core/keyset.h>
 #include <elektra/ease/array.h>
 #include <elektra/ease/name.h>
+#include <elektra/utility/array.h>
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
-#include <internal/utility/array.h>
 #include <internal/utility/compare.h>
 #include <internal/utility/logger.h>
 #include <internal/utility/string.h>

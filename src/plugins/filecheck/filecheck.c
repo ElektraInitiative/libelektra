@@ -16,6 +16,7 @@
 #include <elektra/core/errors.h>
 #include <errno.h>
 #include <iconv.h>
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/string.h>
 #include <stdio.h>

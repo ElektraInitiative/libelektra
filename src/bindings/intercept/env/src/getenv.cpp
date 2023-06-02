@@ -22,6 +22,7 @@
 #include <kdbcontext.hpp>
 
 #include <dlfcn.h>
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
 #include <libgen.h>
 #include <signal.h>

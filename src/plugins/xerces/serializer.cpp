@@ -15,6 +15,7 @@
 #include <map>
 
 #include <elektra/ease/array.h>
+#include <internal/macros/attributes.h>
 #include <internal/utility/logger.h>
 #include <key.hpp>
 

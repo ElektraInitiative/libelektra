@@ -19,12 +19,12 @@
 #include <elektra/core/errors.h>
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
+#include <elektra/utility/format.h>
 
 #include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/compare.h>
-#include <internal/utility/format.h>
 #include <internal/utility/string.h>
 
 #include "./driver.h"

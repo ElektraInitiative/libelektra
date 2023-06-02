@@ -23,6 +23,7 @@
 #include <elektra/io/uv.h>  // I/O binding constructor for uv (elektraIoUvNew)
 #include <elektra/kdb/kdb.h>
 #include <elektra/notifications.h> // notification functions
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/compare.h>
 #include <uv.h> // uv functions

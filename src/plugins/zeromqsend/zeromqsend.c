@@ -16,6 +16,7 @@
 #include "./zeromqsend.h"
 
 #include <errno.h> // errno
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/logger.h>
 #include <stdlib.h> // strtol()

@@ -21,6 +21,9 @@
 
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
+
+#include <internal/macros/attributes.h>
+
 #define BUFFER_LENGTH 4096
 #define ELEKTRA_TEST_ROOT "/tests/ckdb/"
 

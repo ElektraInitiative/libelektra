@@ -15,10 +15,12 @@
 #include <elektra/ease/array.h>
 #include <elektra/type/conversion.h>
 #include <elektra/type/types.h>
+#include <elektra/utility/array.h>
 
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
-#include <internal/utility/array.h>
 #include <internal/utility/compare.h>
+
 struct _Type
 {
 	const char * name;

@@ -13,6 +13,7 @@
 #include <elektra/io/plugin.h>
 #include <elektra/io/uv.h>
 
+#include <internal/macros/attributes.h>
 #include <internal/plugin/load.h>
 
 #include <uv.h>

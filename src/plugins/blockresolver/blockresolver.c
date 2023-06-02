@@ -18,6 +18,7 @@
 #include <internal/resolver/shared.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/compare.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

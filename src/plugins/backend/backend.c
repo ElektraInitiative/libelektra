@@ -6,6 +6,7 @@
 #include <elektra/core/errors.h>
 
 #include <internal/core/keyset/api.h>
+#include <internal/macros/attributes.h>
 #include <internal/plugin/struct.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/compare.h>

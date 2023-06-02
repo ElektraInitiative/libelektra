@@ -6,6 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include <internal/macros/attributes.h>
 #include <internal/utility/logger.h>
 
 #include <stdarg.h>

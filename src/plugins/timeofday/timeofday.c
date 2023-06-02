@@ -7,6 +7,7 @@
  */
 
 #include "./timeofday.h"
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
 
 #include <string.h>

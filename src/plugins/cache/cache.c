@@ -16,6 +16,7 @@
 #include <fcntl.h> // access()
 #include <ftw.h>   // nftw()
 #include <internal/config.h>
+#include <internal/macros/attributes.h>
 #include <internal/pluginload/module.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>

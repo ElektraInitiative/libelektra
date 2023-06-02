@@ -7,6 +7,7 @@
  */
 
 #include <internal/core/keyset/api.h>
+#include <internal/macros/attributes.h>
 #include <tests.h>
 
 #define NUMBER_OF_NAMESPACES 5

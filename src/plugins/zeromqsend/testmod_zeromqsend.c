@@ -18,7 +18,7 @@
 #include <tests.h>
 #include <tests_plugin.h>
 
-#include <internal/utility/format.h>
+#include <elektra/utility/format.h>
 #include <internal/utility/string.h>
 
 #include <pthread.h>

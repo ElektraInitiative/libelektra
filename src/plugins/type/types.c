@@ -17,11 +17,11 @@
 
 #include <elektra/core/errors.h>
 #include <elektra/type/conversion.h>
-
+#include <elektra/utility/array.h>
+#include <elektra/utility/format.h>
 #include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
-#include <internal/utility/array.h>
-#include <internal/utility/format.h>
+
 #define CHECK_TYPE(key, var, toValue)                                                                                                      \
 	{                                                                                                                                  \
 		if (strlen (keyString (key)) == 0 || toValue (key, &var) != 1)                                                             \

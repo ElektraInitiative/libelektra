@@ -18,6 +18,7 @@
 #include "./test.h"
 #include <elektra/io/api.h>
 #include <internal/io/test.h>
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
 
 #define MIX_TIMER_INTERVAL 100
