@@ -15,30 +15,57 @@ It was tested with unixODBC on Linux, but should also work with iODBC and Micros
 
 > If you want to use it with one of the latter two ODBC implementations, feel free to update this documentation with your experiences!
 
+## Required database scheme
+
 The minimum requirement is a table with at least two columns:
 
-- Key names (string, primary key)
+- Key names (string, primary key (PK))
 - Key values (strings)
 
-If you want to support metadata, a second table with at least three columns is required.
+Additionally, a second table with at least three columns is required.
 
-- Key name (string, FK to the first table)
+- Key name (string, foreign key (FK) to the first table)
 - Metakey name (string)
 - Metakey value (string)
 
+The PK of this table consists of two columns: the **key-name** and the **metakey-name**.
+In the language of ER-modelling, the metatable can therefore by considered a **weak-entity**.
+
+> Currently, only data sources with tables for metadata are supported!
+> So you have to define a meta-table.
+> Data sources without a table for metadata are will probably be supported in the future.
+> If you want to use metadata, the ODBC driver for you data source has to support **outer joins**.
+> This implies that currently, only ODBC drivers with support for outer joins are supported by the ODBC backend.
+
 The tables may also contain other columns, but they are not processed by this plugin.
+
+<!-- TODO: After implementing write-functionality (kdb set), mention that additional column must support NULL-
+values if you want to add new keys or metadata to the respective table -->
 
 The following properties are available:
 
 - DataSourceName: The name of the ODBC data source (as in the ODBC driver manager)
 - UserName: Name of the user that should be used to connect to the data source
+  - pass NULL if no username is required or if the value should be read from the odbc.ini file
 - Password: Password for the user who wants to connect
-- TableName: Name of the table where the data is stored (default: "elektraKeys")
-- KeyNameColumnName: The name of the column where the keynames are stored (by default the first column in the table is used)
-- KeyStringColumnName: The name of the column where the key-values (strings) are stored (by default the second column in the table is used)
-- MetaTableName: The name of the table where the metadata is stored (default: metaKeys)
-- MetaTableKeyColName: The name of the column in the MetaTable where the FK to the table with the keys is stored.
+  - pass NULL if no password is required or if the value should be read from the odbc.ini file
+- TableName: Name of the table where the data is stored
+- KeyNameColumnName: The name of the column where the keynames are stored
+- KeyStringColumnName: The name of the column where the key-values (strings) are stored
+- MetaTableName: The name of the table where the metadata is stored
+- MetaTableKeyColName: The name of the column in the MetaTable where the FK to the table with the keys is stored
 - MetaTableMetaKeyColName: The name of the column where the name of the metakeys is stored
 - MetaTableMetaValColName: The name of the column where the value of the metakeys is stored
 
-<!-- TODO [new_backend]: finish README -->
+## Mounting
+
+There is a new command for the kdb-tool: `kdb mountOdbc`.
+Please be aware that this command, in contrast to the classic `kdb mount` for the file-backend,
+currently does not support adding other plugins to the mountpoint.
+This should change when the new tooling and mounting library are finished.
+
+For unmounting, there is no new command necessary.
+Just use the well-knows `kdb umount <mountpoint>`, exactly like for the file-based backend.
+
+For more information about the ODBC backend, there is a tutorial available at
+[/doc/tutorials/odbc-backend.md](/doc/tutorials/odbc-backend.md).

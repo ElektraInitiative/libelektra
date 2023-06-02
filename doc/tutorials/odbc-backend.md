@@ -6,6 +6,8 @@ configuration data from an _SQLite_ or _PostgreSQL_ database.
 > Currently, the _backend_odbc_ plugin is marked as EXPERIMENTAL and only supports reading
 > data from data sources.
 > Writing data (e.g. with `kdb set`) should be supported soon.
+> Also, currently only data sources that define a table for _metadata_ are supported.
+> In the future, we plan to also support data sources without metadata tables.
 
 > The ODBC backend plugin was tested with unixODBC, but should also work with iODBC
 > and Microsoft ODBC (on Windows).
@@ -39,9 +41,11 @@ Usually, the SQL data type `TEXT` is used for that purpose.
 One column is used for storing the **names** of the keys, the other one for storing their **values**.
 The column where the key-names are stored should be defined as the _primary key_ (PK) for that table.
 
+<!-- /* TODO: uncomment when support for data sources without a metadata table is implemented */
 It is _highly_ recommended, that you also define a table for storing _metadata_.
-Otherwise, lots of Elektra's features are not supported.
+Otherwise, lots of Elektra's features are not supported.-->
 
+Next, we have to create a table for storing metadata.
 The table for the metadata needs at least three columns:
 
 - A column with the _key-name_ which must be defined as a _foreign key_ (FK) to the PK of the table where the keys are stored.
@@ -60,7 +64,7 @@ Currently, as only read support is implemented, columns that don't support NULL 
 
 The following ER-diagram shows the described scheme:
 
-![ER-digramm](/doc/images/unixODBC.png "The ER-diagramm for the described database scheme")
+![ER-diagram](/doc/images/unixODBC.png "The ER-diagram for the described database scheme")
 
 ## 2. Setting up the Databases for Configuration Data
 
@@ -75,7 +79,7 @@ databases and store some configuration data in them.
 > - https://www.sqlite.org
 > - https://www.postgresql.org
 >
-> Usually, both data base management systems (DBMS) can be installed by the package manager
+> Usually, both database management systems (DBMS) can be installed by the package manager
 > of your operating system.
 
 > A pre-configured example SQLite database and the SQL-script that was used
@@ -85,7 +89,7 @@ databases and store some configuration data in them.
 ### Preparing the SQLite database
 
 As SQLite as a file-based DBMS, we first create a file for the new database.
-Afterwards, we execute the SQL-statements to create the tables and insert some tuples.
+Afterward, we execute the SQL-statements to create the tables and insert some tuples.
 Please note that the command `sqlite3` may is named differently on your system, especially
 if you use another version of SQLite.
 
@@ -295,7 +299,7 @@ The situation is not ideal and may change in the future.
 One option is to provide a general mounting command for all types of backends.
 
 However, for now we use the `kdb mountOdbc` command.
-If you just type the command without additonal arguments, you get some information about how the command works
+If you just type the command without additional arguments, you get some information about how the command works
 and which arguments are expected.
 
 To fully define a mountpoint for an ODBC data source, we need 11 arguments, 10 for defining the data source, and
@@ -315,7 +319,7 @@ Nevertheless, here is a listing that describes the different arguments:
 
 - **\<data source name\>:** The name of the data source as defined in `/etc/unixODBC/odbc.ini`.
 - **\<user name\>:** The name of the user that should be used for connecting to the data source.
-  - If your data source doesn't need a username or you have defined a username in the `odbc.ini` file, you can just pass an empty string `""` here.
+  - If your data source doesn't need a username, or you have defined a username in the `odbc.ini` file, you can just pass an empty string `""` here.
 - **\<password\>:** The password that should be used to connect to the data source.
   - As with the username, you can pass `""` if no password is needed or the password is already set in the `odbc.ini` file.
 - **\<table name\>:** The name of the table where the key-names and -values are stored.
@@ -329,7 +333,7 @@ Nevertheless, here is a listing that describes the different arguments:
 - **\<mt metaval column name\>:** The name of the column in the meta-table where the values of the metakeys are stored.
 - **\<mountpoint\>:** The place in the KDB where the new mountpoint should be created (e.g. `user:/odbcData`).
 
-Finally we can create the mountpoint for our SQLite database:
+Finally, we can create the mountpoint for our SQLite database:
 
 ```sh
 kdb mountOdbc Selektra "" "" elektraKeys keyName keyValue metaKeys keyName metaKeyName metaKeyValue user:/odbcSqlite
