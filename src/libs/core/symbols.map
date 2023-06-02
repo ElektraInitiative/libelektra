@@ -77,8 +77,6 @@ libelektra_1.0 {
 	ksDecRef;
 	ksGetRef;
 
-	elektraReadNamespace;
-
 	# FIXME: should be separate lib
 	ELEKTRA_ERROR_CONFLICTING_STATE;
 	ELEKTRA_ERROR_INSTALLATION;
