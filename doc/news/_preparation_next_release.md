@@ -80,12 +80,12 @@ Applications should already handle this case gracefully, and just retry writing 
 ### <<HIGHLIGHT>>
 ### ODBC Backend
 
-Based on the new and more versatile concept for [backends](https://www.libelektra.org/devdocu/backend-plugins),
+Based on the new and more versatile concept for [backends](/doc/dev/backend-plugins.md),
 where backends are implemented as plugins, a new backend-plugin that uses ODBC data sources for storing keys was developed.
 It was tested on Gentoo Linux with [unixODBC](https://www.unixodbc.org) using [SQLite](https://www.sqlite.org) and [PostgreSQL](https://www.postgresql.org) data sources.
 The ODBC backend-plugin can only be built if the ODBC library is available on the build system. This can be accomplished by installing e.g. unixODBC.
 [iODBC](https://www.iodbc.org) and Microsoft ODBC (on MS Windows) should also be supported, but were not tested yet.
-If you use the plugin with another ODBC implemetation as unixODBC, you are very welcome to update the documentation with your experiences!
+If you use the plugin with another ODBC implementation as unixODBC, you are very welcome to update the documentation with your experiences!
 
 TODO: Extend and finish summary _(Florian Lindner @flo91)_
 

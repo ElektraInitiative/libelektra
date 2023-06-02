@@ -276,7 +276,7 @@ If you want to build all plugins, you can just use
 cmake -DPLUGINS="ALL" <path to elektra root dir>
 ```
 
-If you want the default behaviour and just additionally include the ODBC backend plugin,
+If you want the default behavior and just additionally include the ODBC backend plugin,
 you can use the following command:
 
 ```sh
