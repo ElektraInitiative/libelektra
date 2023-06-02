@@ -66,7 +66,7 @@ Please look at `src/include/elektra` to find the headers containing the symbols 
 Importantly, it is no longer required to set additional include paths.
 Only the standard include paths (`/usr/include`, or `/usr/local/include` when you install from source) are required.
 
-The new `src/include/elektra` folder includes all headers that Elektra installs (*), it is copied directly to `/usr/include` on install.
+The new `src/include/elektra` folder includes all headers that Elektra installs (\*), it is copied directly to `/usr/include` on install.
 The layout of `src/include/elektra` (and consequently the layout of installed headers), follows a fixed pattern:
 
 ```c
@@ -79,9 +79,8 @@ The layout of `src/include/elektra` (and consequently the layout of installed he
 #include <elektra/[LIB]/foo.h>
 ```
 
-
-(*) For now, some bindings (e.g., the C++ binding) still install additional headers located in other places.
-    These will also be moved to `src/include/elektra` in the future.
+(\*) For now, some bindings (e.g., the C++ binding) still install additional headers located in other places.
+These will also be moved to `src/include/elektra` in the future.
 
 #### Changed libraries
 
