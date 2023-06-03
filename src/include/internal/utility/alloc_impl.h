@@ -49,22 +49,16 @@ if (elektraRealloc ((void **) & buffer, new_length) < 0) {
 int elektraRealloc (void ** buffer, size_t size)
 {
 	ELEKTRA_ASSERT (size, "Size to allocate is zero (implementation defined behavior)");
-	void * ptr;
-	void * svr = *buffer;
 
-	ptr = realloc (*buffer, size);
+	void * ptr = realloc (*buffer, size);
 	ELEKTRA_ASSERT (ptr, "Memory (re)allocation failed with size %zu", size);
 	if (ptr == NULL)
 	{
-		// TODO: is this safe? couldn't the old buffer already be destroyed?
-		*buffer = svr; /* restore old buffer*/
 		return -1;
 	}
-	else
-	{
-		*buffer = ptr;
-		return 0;
-	}
+
+	*buffer = ptr;
+	return 0;
 }
 
 /**Free memory of Elektra or its backends.
