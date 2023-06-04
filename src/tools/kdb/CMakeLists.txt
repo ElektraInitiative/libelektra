@@ -19,7 +19,6 @@ endif (BUILD_SHARED OR BUILD_FULL)
 if (BUILD_SHARED)
 	add_executable (kdb $<TARGET_OBJECTS:kdb-objects>)
 	add_dependencies (kdb kdb_gen_templates_generated)
-	set_target_properties (kdb PROPERTIES INSTALL_RPATH "${ELEKTRA_RPATH}")
 
 	find_package (Threads)
 	target_link_libraries (
