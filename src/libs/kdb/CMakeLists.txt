@@ -13,3 +13,4 @@ add_lib (
 if (BUILD_SHARED)
 	target_sources (elektra-kdb PRIVATE $<TARGET_OBJECTS:elektra-pluginload-dl>)
 endif (BUILD_SHARED)
+target_link_libraries (elektra-kdb ${CMAKE_DL_LIBS})
