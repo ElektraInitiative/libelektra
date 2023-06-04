@@ -1,4 +1,5 @@
-set (
+add_lib (
+	kdb
 	SOURCES
 	backends.c
 	contracts.c
@@ -6,9 +7,9 @@ set (
 	kdb.c
 	plugin.c
 	changetracking.c
-	diff.c)
-
-add_lib (kdb SOURCES ${SOURCES} COMPONENT libelektra${SO_VERSION})
+	diff.c
+	COMPONENT
+	libelektra${SO_VERSION})
 if (BUILD_SHARED)
-	target_link_libraries (elektra-kdb $<TARGET_OBJECTS:elektra-pluginload-dl>)
+	target_sources (elektra-kdb PRIVATE $<TARGET_OBJECTS:elektra-pluginload-dl>)
 endif (BUILD_SHARED)

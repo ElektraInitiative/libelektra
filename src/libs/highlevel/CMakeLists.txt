@@ -15,7 +15,7 @@ if (BUILD_SHARED)
 	set (LIBRARIES "-lelektra-types -lelektra-highlevel -lelektra-kdb -lelektra-ease -lelektra-core")
 	set (
 		CODEGEN_LIBRARIES
-		"-lelektra-types -lelektra-opts -lelektra-invoke -lelektra-highlevel -lelektra-kdb -lelektra-ease -lelektra-core -lelektra-meta  -lelektra-utility"
+		"-lelektra-types -lelektra-opts -lelektra-invoke -lelektra-highlevel -lelektra-kdb -lelektra-ease -lelektra-core -lelektra-meta -lelektra-utility"
 	)
 elseif (BUILD_FULL)
 	set (LIBRARIES "-lelektra-full")
