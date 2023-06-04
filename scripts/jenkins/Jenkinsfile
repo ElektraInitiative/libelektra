@@ -786,8 +786,7 @@ def generateFullBuildStages() {
   )
 
   // We need the webui_base image to build webui images later
-  // TODO: re-enable when go binding fixed
-  // tasks << dockerUtils.buildImageStage(DOCKER_IMAGES.webui_base)
+  tasks << dockerUtils.buildImageStage(DOCKER_IMAGES.webui_base)
 
   return tasks
 }
@@ -1224,8 +1223,7 @@ def generateArtifactStages() {
   // tasks << buildOpenwrtPackage(DOCKER_IMAGES.openwrt_sdk)
 
   tasks << buildWebsite()
-  // TODO: re-enable when go binding fixed
-  //tasks << buildWebUI()
+  tasks << buildWebUI()
 
   return tasks
 }
