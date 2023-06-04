@@ -20,5 +20,5 @@ endif (ENABLE_OPTIMIZATIONS)
 
 add_lib (core SOURCES ${SOURCES} COMPONENT libelektra${SO_VERSION})
 if (BUILD_SHARED)
-	target_link_libraries (elektra-core $<TARGET_OBJECTS:elektra-base>)
+	target_sources (elektra-core PRIVATE $<TARGET_OBJECTS:elektra-base>)
 endif (BUILD_SHARED)
