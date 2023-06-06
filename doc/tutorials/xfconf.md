@@ -29,9 +29,9 @@ For example, the following command can be used to use single clicks instead of d
 # Setting the value to `false` beforehand
 xfconf-query -c thunar -p /misc-single-click -s false -t bool -n
 
-kdb set /sw/xfce4/thunar/misc-single-click TRUE
+kdb set system:/sw/xfce4/thunar/misc-single-click TRUE
 #> Set string to "TRUE"
-#> Using name dir:/sw/xfce4/thunar/misc-single-click
+#> Using name system:/sw/xfce4/thunar/misc-single-click
 ```
 
 The result can then be verified using both Elektra and `xfconf-query`.
