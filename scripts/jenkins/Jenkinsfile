@@ -678,7 +678,7 @@ def generateFullBuildStages() {
     "ubuntu-kinetic",
     DOCKER_IMAGES.kinetic,
     CMAKE_FLAGS_BUILD_ALL,
-    [TEST.ALL]
+    [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
   )
 
   // Build Elektra on a minimal Debian buster Docker image
