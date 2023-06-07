@@ -78,6 +78,7 @@ Applications should already handle this case gracefully, and just retry writing 
 ### New Changetracking API
 
 ### <<HIGHLIGHT>>
+
 ### ODBC Backend
 
 Based on the new and more versatile concept for [backends](/doc/dev/backend-plugins.md),
