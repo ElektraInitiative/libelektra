@@ -232,6 +232,7 @@ is_not_rw_storage() {
 		-o "x$PLUGIN" = "xyamlcpp" \
 		-o "x$PLUGIN" = "xkconfig" \
 		-o "x$PLUGIN" = "xtoml" \
+		-o "x$PLUGIN" = "xansible" \
 		-o "x$PLUGIN" = "xxfconf"
 }
 
@@ -388,7 +389,6 @@ export_check() {
 }
 
 ### END OF INCLUDE FILE ###
-#
 #
 #
 #

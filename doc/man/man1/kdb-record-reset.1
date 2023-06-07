@@ -1,0 +1,52 @@
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre3
+.TH "KDB\-RECORD\-RESET" "1" "May 2023" ""
+.SH "NAME"
+\fBkdb\-record\-reset\fR \- Reset the recording session
+.SH "SYNOPSIS"
+\fBkdb record\-reset\fR
+.br
+.SH "DESCRIPTION"
+This command removes all the recorded changes in the KDB\. It will NOT undo the changes themselves\. This command can be executed while recording is active and when it is not active\.
+.SH "OPTIONS"
+.TP
+\fB\-H\fR, \fB\-\-help\fR
+Show the man page\.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Print version info\.
+.TP
+\fB\-p\fR, \fB\-\-profile <profile>\fR
+Use a different kdb profile\.
+.TP
+\fB\-C\fR, \fB\-\-color <when>\fR
+Print never/auto(default)/always colored output\.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Explain what is happening\. Prints additional information in case of errors/warnings\.
+.TP
+\fB\-d\fR, \fB\-\-debug\fR
+Give debug information\. Prints additional debug information in case of errors/warnings\.
+.SH "RETURN VALUE"
+.TP
+0
+Successful\.
+.TP
+1\-10
+standard exit codes, see kdb(1) \fIkdb\.md\fR\.
+.TP
+11
+An error occurred during reset\.
+.SH "SEE ALSO"
+.IP "\(bu" 4
+kdb\-record\-start(1) \fIkdb\-record\-start\.md\fR on how to start the recording session
+.IP "\(bu" 4
+kdb\-record\-stop(1) \fIkdb\-record\-stop\.md\fR on how to stop the recording session
+.IP "\(bu" 4
+kdb\-record\-state(1) \fIkdb\-record\-state\.md\fR on how to get information about the current recording session
+.IP "\(bu" 4
+kdb\-record\-undo(1) \fIkdb\-record\-undo\.md\fR on how to undo changes that have been recorded
+.IP "\(bu" 4
+kdb\-record\-rm(1) \fIkdb\-record\-rm\.md\fR on how to remove a single key from the recording session
+.IP "" 0
+

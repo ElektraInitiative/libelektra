@@ -1,0 +1,61 @@
+Mountpoint: user:/test
+
+< kdb set user:/test/greeting hello
+< kdb set user:/test/age 25
+< kdb meta-set user:/test/age meta:/visible false
+< kdb set user:/test/name Franz
+< kdb set user:/test/poweruser true
+
+STDOUT: Recording is not enabled
+RET: 0
+< kdb record-state
+
+RET: 0
+< kdb record-start
+
+< kdb rm user:/test/greeting
+< kdb set user:/test/name Hans
+< kdb set user:/test/gender male
+< kdb meta-set user:/test/age meta:/visible true
+
+RET: 0
+STDOUT: Recording is active for /⏎⏎Added 1 key(s)⏎Modified 2 key(s)⏎Removed 1 key(s)⏎⏎Added key user:/test/gender⏎Modified key user:/test/age⏎Modified key user:/test/name⏎Removed key user:/test/greeting
+< kdb record-state
+
+RET: 0
+< kdb record-rm user:/test/name
+
+RET: 0
+STDOUT: Recording is active for /⏎⏎Added 1 key(s)⏎Modified 1 key(s)⏎Removed 1 key(s)⏎⏎Added key user:/test/gender⏎Modified key user:/test/age⏎Removed key user:/test/greeting
+< kdb record-state
+
+RET: 0
+< kdb record-reset
+
+RET: 0
+STDOUT: Recording is active for /⏎⏎Added 0 key(s)⏎Modified 0 key(s)⏎Removed 0 key(s)
+< kdb record-state
+
+RET: 0
+< kdb record-stop
+
+STDOUT: Recording is not enabled
+RET: 0
+< kdb record-state
+
+#
+# Test recording of only a subset of the KDB
+#
+
+RET: 0
+< kdb record-start user:/test/sub
+
+< kdb set user:/test/bla blub
+< kdb set user:/test/sub/shouldberecorded 123
+
+RET: 0
+STDOUT: Recording is active for user:/test/sub⏎⏎Added 1 key(s)⏎Modified 0 key(s)⏎Removed 0 key(s)⏎⏎Added key user:/test/sub/shouldberecorded
+< kdb record-state
+
+< kdb record-reset
+< kdb record-stop

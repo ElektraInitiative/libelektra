@@ -224,7 +224,7 @@ static void test_intUpdateWithCascadingKey (void)
 	Key * valueKey = keyNew ("user:/test/internalnotification/value", KEY_VALUE, "42", KEY_END);
 	KeySet * ks = ksNew (1, valueKey, KS_END);
 
-	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL);
+	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL, NULL);
 	ksIncRef (ks);
 	elektraInternalnotificationNotifyChangedKeys (plugin, diff);
 	elektraDiffDel (diff);
@@ -254,7 +254,7 @@ static void test_intNoUpdateWithInvalidValue (void)
 
 	keySetString (valueKey, "42abcd");
 
-	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL);
+	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL, NULL);
 	ksIncRef (ks);
 	elektraInternalnotificationNotifyChangedKeys (plugin, diff);
 	elektraDiffDel (diff); // elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
@@ -288,7 +288,7 @@ static void test_conversionError (void)
 	callback_called = 0;
 	callback_keyName = NULL;
 	callback_keyValue = NULL;
-	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL);
+	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL, NULL);
 	ksIncRef (ks);
 	elektraInternalnotificationNotifyChangedKeys (plugin, diff);
 	elektraDiffDel (diff);
@@ -321,7 +321,7 @@ static void test_intUpdateWithValueNotYetExceedingIntMax (void)
 	char * stringValue = convertLongLongToString ((long long) exceedsInt);
 	keySetString (valueKey, stringValue);
 
-	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL);
+	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL, NULL);
 	ksIncRef (ks);
 	elektraInternalnotificationNotifyChangedKeys (plugin, diff);
 	elektraDiffDel (diff);
@@ -353,7 +353,7 @@ static void test_intNoUpdateWithValueExceedingIntMax (void)
 	char * stringValue = convertLongLongToString (exceedsInt);
 	keySetString (valueKey, stringValue);
 
-	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL);
+	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL, NULL);
 	ksIncRef (ks);
 	elektraInternalnotificationNotifyChangedKeys (plugin, diff);
 	elektraDiffDel (diff);
@@ -386,7 +386,7 @@ static void test_intUpdateWithValueNotYetExceedingIntMin (void)
 	char * stringValue = convertLongLongToString ((long long) exceedsInt);
 	keySetString (valueKey, stringValue);
 
-	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL);
+	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL, NULL);
 	ksIncRef (ks);
 	elektraInternalnotificationNotifyChangedKeys (plugin, diff);
 	elektraDiffDel (diff);
@@ -418,7 +418,7 @@ static void test_intNoUpdateWithValueExceedingIntMin (void)
 	char * stringValue = convertLongLongToString (exceedsInt);
 	keySetString (valueKey, stringValue);
 
-	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL);
+	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL, NULL);
 	ksIncRef (ks);
 	elektraInternalnotificationNotifyChangedKeys (plugin, diff);
 	elektraDiffDel (diff);
@@ -446,7 +446,7 @@ static void test_callbackCalledWithKey (void)
 	succeed_if (internalnotificationRegisterCallback (plugin, valueKey, test_callback, CALLBACK_CONTEXT_MAGIC_NUMBER) == 1,
 		    "call to elektraInternalnotificationRegisterCallback was not successful");
 
-	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL);
+	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL, NULL);
 	ksIncRef (ks);
 	elektraInternalnotificationNotifyChangedKeys (plugin, diff);
 	elektraDiffDel (diff);
@@ -477,7 +477,7 @@ static void test_callbackCalledWithChangeDetection (void)
 		    "call to elektraInternalnotificationRegisterCallback was not successful");
 
 	ksIncRef (ks);
-	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL);
+	ElektraDiff * diff = elektraDiffNew (NULL, NULL, ks, NULL, NULL);
 	elektraInternalnotificationNotifyChangedKeys (plugin, diff);
 	elektraDiffDel (diff);
 
@@ -487,7 +487,7 @@ static void test_callbackCalledWithChangeDetection (void)
 
 	callback_called = 0;
 
-	diff = elektraDiffNew (NULL, NULL, ksNew (0, KS_END), NULL);
+	diff = elektraDiffNew (NULL, NULL, ksNew (0, KS_END), NULL, NULL);
 	elektraInternalnotificationNotifyChangedKeys (plugin, diff);
 	elektraDiffDel (diff);
 

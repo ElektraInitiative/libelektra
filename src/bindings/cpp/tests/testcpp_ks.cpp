@@ -48,11 +48,11 @@ TEST (ks, new)
 	Key k4 ("user:/key5/1", KEY_END);
 	Key k5 ("user:/key5/2", KEY_END);
 	Key k6 ("user:/key5/3", KEY_VALUE, "value", KEY_END);
-	KeySet ks5 (5, k4.dup (), k5.dup (), k6.dup (), KS_END);
+	KeySet ks5 (5, k4.dup ().release (), k5.dup ().release (), k6.dup ().release (), KS_END);
 	// ks5.toStream(stdout, 0);
 	// k4, k5, k6 can still be used
 
-	KeySet ks6 = fun (5, k4.dup (), k5.dup (), k6.dup (), KS_END);
+	KeySet ks6 = fun (5, k4.dup ().release (), k5.dup ().release (), k6.dup ().release (), KS_END);
 }
 
 

@@ -95,6 +95,58 @@ int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex)
 	return 0;
 }
 
+/**
+ * Get the base name of the passed array.
+ * The returned value must be freed (if not null)
+ *
+ * e.g. user:/abc/\#9/foo\#1 wil return
+ *      user:/abc
+ * @param key
+ * @retval @p NULL if key is not array
+ * @retval new allocated memory (free with elektraFree)
+ */
+char * elektraArrayGetPrefix (Key * key)
+{
+	if (key == NULL)
+	{
+		return NULL;
+	}
+
+	if (elektraArrayValidateName (key) != 1)
+	{
+		return NULL;
+	}
+
+	Key * k = keyNew ("/", KEY_END);
+
+	const char * un = keyUnescapedName (key);
+	ssize_t unsize = keyGetUnescapedNameSize (key);
+
+	keySetNamespace (k, (elektraNamespace) un[0]);
+
+	ssize_t index = 2;
+	while (index < unsize)
+	{
+		const char * t = un + index;
+		size_t partLen = strlen (t);
+		if (elektraIsArrayPart (t) != 0)
+		{
+			break;
+		}
+
+		keyAddBaseName (k, t);
+		index += partLen + 1;
+	}
+
+	const char * newKeyName = keyName (k);
+
+	size_t newKeyLen = strlen (newKeyName);
+	char * prefix = elektraCalloc (sizeof (char) * (newKeyLen + 1));
+	memcpy (prefix, newKeyName, newKeyLen);
+	keyDel (k);
+
+	return prefix;
+}
 
 /**
  * @brief Increment the name of the key by one

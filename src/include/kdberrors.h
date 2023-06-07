@@ -290,6 +290,10 @@ KeySet * elektraErrorSpecification (void);
 void elektraTriggerWarnings (const char * nr, Key * parentKey, const char * message);
 void elektraTriggerError (const char * nr, Key * parentKey, const char * message);
 
+void elektraCopyError (Key * target, Key * source);
+void elektraCopyWarnings (Key * target, Key * source);
+void elektraCopyErrorAndWarnings (Key * target, Key * source);
+
 #ifdef __cplusplus
 }
 #endif

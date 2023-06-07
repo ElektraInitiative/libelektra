@@ -293,8 +293,9 @@ class KdbKeyTestCases < Test::Unit::TestCase
       assert k2.is_valid?
       assert k3.is_valid?
 
-      assert k2.is_below? k1
-      assert k2.is_direct_below? k1
+      assert k2.is_below k1
+      assert k2.is_direct_below k1
+      assert k2.is_below_or_same k1
 
     end
   end

@@ -55,6 +55,13 @@
 /** All keys below this are used for cache metadata in the global keyset */
 #define KDB_CACHE_PREFIX "system:/elektra/cache"
 
+#define ELEKTRA_RECORD_CONFIG_KEY "/elektra/record/config"
+#define ELEKTRA_RECORD_CONFIG_ACTIVE_KEY "/elektra/record/config/active"
+#define ELEKTRA_RECORD_SESSION_KEY "/elektra/record/session"
+#define ELEKTRA_RECORD_SESSION_DIFF_ADDED_KEY "/elektra/record/session/diff/added"
+#define ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_OLD_KEY "/elektra/record/session/diff/modified/old"
+#define ELEKTRA_RECORD_SESSION_DIFF_MODIFIED_NEW_KEY "/elektra/record/session/diff/modified/new"
+#define ELEKTRA_RECORD_SESSION_DIFF_REMOVED_KEY "/elektra/record/session/diff/removed"
 
 #ifdef __cplusplus
 namespace ckdb
@@ -97,6 +104,10 @@ typedef int (*kdbHookSpecRemovePtr) (Plugin * handle, KeySet * returned, Key * p
 
 typedef int (*kdbHookSendNotificationGetPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 typedef int (*kdbHookSendNotificationSetPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
+
+typedef int (*kdbHookRecordLockPtr) (Plugin * handle, Key * parentKey);
+typedef int (*kdbHookRecordUnlockPtr) (Plugin * handle, Key * parentKey);
+typedef int (*kdbHookRecordPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 
 typedef Plugin * (*OpenMapper) (const char *, const char *, KeySet *);
 typedef int (*CloseMapper) (Plugin *);
@@ -431,10 +442,18 @@ struct _ElektraDiff
 	KeySet * modifiedKeys;
 	KeySet * removedKeys;
 
+	/**
+	 * optional; stores the new version of modified keys
+	 */
+	KeySet * modifiedNewKeys;
+
 	uint16_t refs;
 };
 
-struct _ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKey, Key * parentKey);
+struct _ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKeys, KeySet * modifiedNewKeys,
+				      Key * parentKey);
+void elektraDiffAppend (struct _ElektraDiff * target, const struct _ElektraDiff * source, Key * parentKey);
+KeySet * elektraDiffGetModifiedNewKeys (const struct _ElektraDiff * ksd);
 
 struct _ChangeTrackingContext
 {
@@ -488,6 +507,14 @@ struct _KDB
 		} spec;
 
 		struct _SendNotificationHook * sendNotification;
+
+		struct
+		{
+			struct _Plugin * plugin;
+			kdbHookRecordLockPtr lock;
+			kdbHookRecordUnlockPtr unlock;
+			kdbHookRecordPtr record;
+		} record;
 	} hooks;
 
 	KeySet * allKeys;
@@ -619,6 +646,8 @@ ssize_t ksRename (KeySet * ks, const Key * root, const Key * newRoot);
 elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCursor * end);
 KeySet * ksBelow (const KeySet * ks, const Key * root);
 
+ssize_t ksSubtract (KeySet * total, const KeySet * sub);
+
 /*Used for internal memcpy/memmove*/
 ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size);
 ssize_t elektraMemmove (Key ** array1, Key ** array2, size_t size);
@@ -644,6 +673,7 @@ size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart);
 // TODO (kodebaach) [Q]: make public?
 int elektraIsArrayPart (const char * namePart);
 
+int elektraBootstrapPathContract (KeySet * contract, const char * prefix);
 #ifdef __cplusplus
 }
 }

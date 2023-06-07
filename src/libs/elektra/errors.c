@@ -7,7 +7,9 @@
  */
 
 #include <kdberrors.h>
+#include <kdbprivate.h>
 
+#include <stdio.h>
 #include <string.h>
 
 #ifdef __cplusplus
@@ -84,6 +86,15 @@ static void addWarning (Key * key, const char * code, const char * name, const c
 	char * reason = elektraVFormat (reasonFmt, va);
 	keySetMeta (key, buffer, reason);
 	elektraFree (reason);
+}
+
+static void addWarningF (Key * key, const char * code, const char * name, const char * file, const char * line, const char * module,
+			 const char * reasonFmt, ...)
+{
+	va_list va;
+	va_start (va, reasonFmt);
+	addWarning (key, code, name, file, line, module, reasonFmt, va);
+	va_end (va);
 }
 
 static void setError (Key * key, const char * code, const char * name, const char * file, const char * line, const char * module,
@@ -225,4 +236,137 @@ void elektraTriggerError (const char * nr, Key * parentKey, const char * message
 	MAYBE_TRIGGER_ERROR (VALIDATION_SYNTACTIC, nr, parentKey, message);
 	MAYBE_TRIGGER_ERROR (VALIDATION_SEMANTIC, nr, parentKey, message);
 	ELEKTRA_SET_INTERNAL_ERRORF (parentKey, "Unkown error code %s", nr);
+}
+
+/**
+ * Copy the error from the source key to target key
+ * @param target append error to this key
+ * @param source copy error from this key
+ */
+void elektraCopyError (Key * target, Key * source)
+{
+	if (target == NULL || source == NULL)
+	{
+		return;
+	}
+
+	KeySet * targetMeta = keyMeta (target);
+	if (targetMeta == NULL)
+	{
+		return;
+	}
+
+	KeySet * sourceMeta = keyMeta (source);
+	if (sourceMeta == NULL)
+	{
+		return;
+	}
+
+	Key * errorRoot = keyNew ("meta:/error", KEY_END);
+	KeySet * sourceError = ksBelow (sourceMeta, errorRoot);
+
+	ksAppend (targetMeta, sourceError);
+
+	ksDel (sourceError);
+	keyDel (errorRoot);
+}
+
+/**
+ * Copy the warnings from the source key to target key.
+ * Note that only 100 warnings can be had.
+ * If we exceed that, we'll override the existing warnings in the target key.
+ *
+ * @param target append warnings to this key
+ * @param source copy warnings from this key
+ */
+void elektraCopyWarnings (Key * target, Key * source)
+{
+	if (target == NULL || source == NULL)
+	{
+		return;
+	}
+
+	KeySet * targetMeta = keyMeta (target);
+	if (targetMeta == NULL)
+	{
+		return;
+	}
+
+	KeySet * sourceMeta = keyMeta (source);
+	if (sourceMeta == NULL)
+	{
+		return;
+	}
+
+	Key * warningsRoot = keyNew ("meta:/warnings", KEY_END);
+	KeySet * sourceWarnings = ksBelow (sourceMeta, warningsRoot);
+
+	if (ksGetSize (sourceWarnings) == 0)
+	{
+		return;
+	}
+
+	int i = 0;
+	Key * tempKey = keyNew ("/", KEY_END);
+
+	while (true)
+	{
+		// In addWarning we use 64, so 128 should be plenty enough
+		char kn[128] = "";
+		snprintf (kn, 127, "meta:/warnings/#%d/number", i);
+		Key * numberKey = ksLookupByName (sourceWarnings, kn, 0);
+		if (numberKey == NULL)
+		{
+			break;
+		}
+
+		snprintf (kn, 127, "meta:/warnings/#%d/description", i);
+		Key * descriptionKey = ksLookupByName (sourceWarnings, kn, 0);
+		snprintf (kn, 127, "meta:/warnings/#%d/module", i);
+		Key * moduleKey = ksLookupByName (sourceWarnings, kn, 0);
+		snprintf (kn, 127, "meta:/warnings/#%d/file", i);
+		Key * fileKey = ksLookupByName (sourceWarnings, kn, 0);
+		snprintf (kn, 127, "meta:/warnings/#%d/line", i);
+		Key * lineKey = ksLookupByName (sourceWarnings, kn, 0);
+		snprintf (kn, 127, "meta:/warnings/#%d/mountpoint", i);
+		Key * mountpointKey = ksLookupByName (sourceWarnings, kn, 0);
+		snprintf (kn, 127, "meta:/warnings/#%d/configfile", i);
+		Key * configfileKey = ksLookupByName (sourceWarnings, kn, 0);
+		snprintf (kn, 127, "meta:/warnings/#%d/reason", i);
+		Key * reasonKey = ksLookupByName (sourceWarnings, kn, 0);
+
+		// We need to use a temporary key here, because addWarnings takes the value for mountpoint and configfile from the passed
+		// key
+		ksClear (keyMeta (tempKey));
+		// Add the current number of warnings to the temp key
+		ksAppendKey (keyMeta (tempKey), ksLookupByName (keyMeta (target), "meta:/warnings", 0));
+		keySetName (tempKey, keyString (mountpointKey));
+		keySetString (tempKey, keyString (configfileKey));
+
+		addWarningF (tempKey, keyString (numberKey), keyString (descriptionKey), keyString (fileKey), keyString (lineKey),
+			     keyString (moduleKey), "%s", keyString (reasonKey));
+
+		// Append all meta from the temp key to target
+		ksAppend (keyMeta (target), keyMeta (tempKey));
+
+		i++;
+	}
+
+	keyDel (tempKey);
+	keyDel (warningsRoot);
+	ksDel (sourceWarnings);
+}
+
+/**
+ * Copies the error and warnings from the source key to the target key.
+ * Note that only 100 warnings can be had.
+ * If we exceed that, we'll override the existing warnings in the target key
+ *
+ * @param target copy error and warnings to this key
+ * @param source copy error and warnings from this key
+ */
+void elektraCopyErrorAndWarnings (Key * target, Key * source)
+{
+	elektraCopyError (target, source);
+	elektraCopyWarnings (target, source);
 }

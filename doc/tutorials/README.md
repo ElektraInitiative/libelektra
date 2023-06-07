@@ -53,6 +53,7 @@ already somehow integrated with Elektra.
 - [Encrypt Configuration](crypto.md)
 - [Install Configuration Files](install-config-files.md)
 - [Write a specification for dockerd](dockerd-specification.md)
+- [Recording Changes](recording.md)
 
 ## Elektra Developers
 

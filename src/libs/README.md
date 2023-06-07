@@ -163,3 +163,11 @@ The supported syntax is a superset of the syntax used by `glob(7)`. The followin
 - if the pattern ends with `/__`, matching key names may contain arbitrary suffixes
 
 For more info take a look a the documentation of `elektraKeyGlob()` and `elektraKsGlob()`.
+
+### Record
+
+```
+libelektra-record
+```
+
+**[record](record/)** implements management functionality for session recording.

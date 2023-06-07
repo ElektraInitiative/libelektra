@@ -50,6 +50,31 @@ docker run -it elektra/elektra
 
 ### <<HIGHLIGHT>>
 
+- Session Recording
+- New Changetracking API
+- New spec plugin
+- <<HIGHLIGHT>>
+
+### Session Recording
+
+Elektra now comes with a powerful new feature that allows users to record and export changes made to the KDB: session recording.
+This feature enables you to easily track changes made to the configuration database over time, which helps troubleshoot issues, diagnose errors, and improve system performance.
+It even lets you undo the changes you've performed!
+
+You can also export the changes as Ansible playbooks using the new Ansible storage plugin!
+This makes it easy to automate and reproduce system configurations.
+We think that this feature offers significant time savings and improved accuracy when managing complex systems.
+
+Whether you're a system administrator, developer, or DevOps engineer, we believe that the session recording feature in Elektra will become an essential tool for managing and maintaining system configurations.
+[Try it today](../tutorials/recording.md) and experience the benefits of streamlined configuration management.
+
+**Note:** when you activate session recording, concurrency of Elektra will be somewhat limited.
+As long as it is active, a global lock will be created to ensure no two processes will write data simultaneously.
+This behavior is similar as to when multiple processes will write to the same configuration file.
+Applications should already handle this case gracefully, and just retry writing their configuration.
+
+### New Changetracking API
+
 ### <<HIGHLIGHT>>
 
 ### <<HIGHLIGHT>>
@@ -60,7 +85,19 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 
 ### <<Plugin>>
 
+### General
+
+- Updated target name of shared object files according to [#3486](https://issues.libelektra.org/3486)
+
+### spec
+
+- Rewrite spec plugin, fix bugs and use correct error handling _(Tomislav Makar @tmakar)_
+- Remove info metakey from spec plugin _(Tomislav Makar @tmakar)_
 - <<TODO>>
+
+### recorder
+
+- Add recorder plugin. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 
@@ -77,6 +114,14 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 
 ### <<Plugin>>
+
+### ansible
+
+- Add `ansible` plugin for exporting keysets as [ansible-libelektra](https://galaxy.ansible.com/elektra_initiative/libelektra) playbooks. _(Maximilian Irlinger @atmaxinger)_
+- <<TODO>>
+- <<TODO>>
+
+### logchange
 
 - <<TODO>>
 - <<TODO>>
@@ -126,6 +171,21 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+
+### loader
+
+- Adapt target rename with `-plugin-` in `dl.c` _(Tomislav Makar @tmakar)_
+
+### record
+
+- Add record library used for session recording. _(Maximilian Irlinger @atmaxinger)_
+- <<TODO>>
+- <<TODO>>
+
+### ease
+
+- Add `elektraArrayGetPrefix` function. _(Maximilian Irlinger @atmaxinger)_
+- <<TODO>>
 - <<TODO>>
 
 ### <<Library>>
@@ -138,12 +198,13 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
-
-### <<Library>>
-
-- <<TODO>>
-- <<TODO>>
+- Add new changetracking API _(Maximilian Irlinger @atmaxinger)_
+- Fix unwanted removal of subkeys when using mv _(Hannes Laimer @hannes99)_
+- Fix inconsistent return values in code, tests and man pages _(Hannes Laimer @hannes99)_
+- Remove `smount` alias _(Hannes Laimer @hannes99)_
+- Add `elektraCopyError` function to copy error from one key to another _(Maximilian Irlinger @atmaxinger)_
+- Add `elektraCopyWarnings` function to copy warnings from one key to another _(Maximilian Irlinger @atmaxinger)_
+- Add `elektraCopyErrorAndWarnings` function to copy error and warnings from one key to another _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 
 ### <<Library>>
@@ -168,6 +229,30 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- <<TODO>>
+
+### C++
+
+- Provide getter for the underlying C object of KDB _(Maximilian Irlinger @atmaxinger)_
+- Add `ElektraDiff` binding for C++ _(Maximilian Irlinger @atmaxinger)_
+- The `dup` method of `KeySet` now returns a wrapped object _(Maximilian Irlinger @atmaxinger)_
+- Add an overload for `KeySet::cut` that accepts a string for the keyname _(Maximilian Irlinger)_
+- The `dup` method of `Key` now returns a wrapped object _(Maximilian Irlinger @atmaxinger)_
+- Add overloads for `Key::isBelow`, `Key::isBelowOrSame` and `Key::isDirectBelow` that accept a string as the key name _(Maximilian Irlinger @atmaxinger)_
+
+### <<Binding>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Python
+
+- Add `ElektraDiff` binding _(Maximilian Irlinger @atmaxinger)_
+- The `__meta__` attribute on a key now returns a proper keyset _(Maximilian Irlinger @atmaxinger)_
+- Add new module `kdb.errors` to simplify extracting errors and warnings from keys _(Maximilian Irlinger @atmaxinger)_
+- Add new module `kdb.record` for interfacing with the session recording capabilities of Elektra _(Maximilian Irlinger @atmaxinger)_
+- Add `getConflictingKeys` method to `kdb.merge.MergeResult`. _(Maximilian Irlinger @atmaxinger)_
 
 ### <<Binding>>
 
@@ -205,7 +290,14 @@ This section keeps you up-to-date with the multi-language support provided by El
 ### <<Tool>>
 
 - <<TODO>>
+- Implemented new request to add multiple metakeys for one key _(Tomislav Makar @tmakar)_
+- Adding bulk creation request for configuration keys _(Tomislav Makar @tmakar)_
+
+### kdb
+
+- Add commands for session recording. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
+- The `kdb mount` command will now automatically detect whether the given path is an absolute path. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 
 ### <<Tool>>
@@ -353,7 +445,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Add macro `succeed_if_keyset_contains_key_with_string` to assert that a certain key with a certain value must exist. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

@@ -452,7 +452,7 @@ void BackendBuilder::addPlugin (PluginSpec const & plugin)
 		ckdb::Key * errorKey = ckdb::keyNew ("/", KEY_END);
 
 		// merge plugin config and backend config together
-		ckdb::KeySet * pluginConfig = newPlugin.getConfig ().dup ();
+		ckdb::KeySet * pluginConfig = newPlugin.getConfig ().dup ().release ();
 		ckdb::ksAppend (pluginConfig, backendConf.getKeySet ());
 
 		// call the plugin's checkconf function

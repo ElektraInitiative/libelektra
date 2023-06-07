@@ -322,7 +322,7 @@ static void addMountpoint (KeySet * backends, Key * mountpoint, Plugin * backend
 	ksAppendKey (backends, mountpoint);
 }
 
-static bool addElektraMountpoint (KeySet * backends, KeySet * modules, KeySet * global, Key * errorKey)
+static bool addElektraMountpoint (KeySet * backends, const char * path, KeySet * modules, KeySet * global, Key * errorKey)
 {
 	// TODO [new_backend]: implement user:/elektra and dir:/elektra
 	// TODO [new_backend]: replace KDB_DEFAULT_STORAGE with separate KDB_BOOTSTRAP_STORAGE
@@ -364,7 +364,7 @@ static bool addElektraMountpoint (KeySet * backends, KeySet * modules, KeySet * 
 		KS_END);
 	KeySet * definition =
 		ksNew (3,
-			keyNew ("system:/path", KEY_VALUE, KDB_DB_INIT, KEY_END),
+			keyNew ("system:/path", KEY_VALUE, path, KEY_END),
 			keyNew ("system:/positions/get/resolver", KEY_VALUE, "#0", KEY_END),
 			keyNew ("system:/positions/get/storage", KEY_VALUE, "#1", KEY_END),
 			keyNew ("system:/positions/set/resolver", KEY_VALUE, "#0", KEY_END),
@@ -562,7 +562,6 @@ static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySe
 		keyDel (elektraRoot);
 		return false;
 	}
-
 	keyDel (elektraRoot);
 	elektraRoot = NULL;
 
@@ -731,10 +730,8 @@ KeySet * elektraMountpointsParse (KeySet * elektraKs, KeySet * modules, KeySet *
 	return mountpoints;
 }
 
-static bool addRootMountpoint (KeySet * backends, elektraNamespace ns, KeySet * modules, KeySet * global, Key * errorKey)
+static bool addBasicMountpoint (KeySet * backends, Key * rootKey, const char * path, KeySet * modules, KeySet * global, Key * errorKey)
 {
-	Key * rootKey = keyNew ("/", KEY_END);
-	keySetNamespace (rootKey, ns);
 	if (ksLookup (backends, rootKey, 0) != NULL)
 	{
 		// already present
@@ -768,7 +765,7 @@ static bool addRootMountpoint (KeySet * backends, elektraNamespace ns, KeySet * 
 
 	KeySet * rootDefinition =
 		ksNew (7,
-			keyNew ("system:/path", KEY_VALUE, KDB_DB_FILE, KEY_END),
+			keyNew ("system:/path", KEY_VALUE, path, KEY_END),
 			keyNew ("system:/positions/get/resolver", KEY_VALUE, "resolver", KEY_END),
 			keyNew ("system:/positions/get/storage", KEY_VALUE, "storage", KEY_END),
 			keyNew ("system:/positions/set/resolver", KEY_VALUE, "resolver", KEY_END),
@@ -793,6 +790,26 @@ static bool addRootMountpoint (KeySet * backends, elektraNamespace ns, KeySet * 
 
 	addMountpoint (backends, rootKey, root, rootPlugins, rootDefinition);
 	return true;
+}
+
+static bool addRootMountpoint (KeySet * backends, elektraNamespace ns, KeySet * modules, KeySet * global, Key * errorKey)
+{
+	Key * rootKey = keyNew ("/", KEY_END);
+	keySetNamespace (rootKey, ns);
+
+	bool ret = addBasicMountpoint (backends, rootKey, KDB_DB_FILE, modules, global, errorKey);
+
+	return ret;
+}
+
+static bool addRecordingMountpoint (KeySet * backends, elektraNamespace ns, KeySet * modules, KeySet * global, Key * errorKey)
+{
+	Key * rootKey = keyNew (ELEKTRA_RECORD_SESSION_KEY, KEY_END);
+	keySetNamespace (rootKey, ns);
+
+	bool ret = addBasicMountpoint (backends, rootKey, "record-session.cfg", modules, global, errorKey);
+
+	return ret;
 }
 
 static bool addModulesMountpoint (KDB * handle, Key * mountpoint, Key * errorKey)
@@ -824,7 +841,7 @@ static bool addModulesMountpoint (KDB * handle, Key * mountpoint, Key * errorKey
 
 static bool addHardcodedMountpoints (KDB * handle, Key * errorKey)
 {
-	if (!addElektraMountpoint (handle->backends, handle->modules, handle->global, errorKey))
+	if (!addElektraMountpoint (handle->backends, KDB_DB_INIT, handle->modules, handle->global, errorKey))
 	{
 		return false;
 	}
@@ -846,6 +863,23 @@ static bool addHardcodedMountpoints (KDB * handle, Key * errorKey)
 		return false;
 	}
 	if (!addRootMountpoint (handle->backends, KEY_NS_PROC, handle->modules, handle->global, errorKey))
+	{
+		return false;
+	}
+
+	if (!addRecordingMountpoint (handle->backends, KEY_NS_SPEC, handle->modules, handle->global, errorKey))
+	{
+		return false;
+	}
+	if (!addRecordingMountpoint (handle->backends, KEY_NS_SYSTEM, handle->modules, handle->global, errorKey))
+	{
+		return false;
+	}
+	if (!addRecordingMountpoint (handle->backends, KEY_NS_USER, handle->modules, handle->global, errorKey))
+	{
+		return false;
+	}
+	if (!addRecordingMountpoint (handle->backends, KEY_NS_DIR, handle->modules, handle->global, errorKey))
 	{
 		return false;
 	}
@@ -951,7 +985,18 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 	}
 
 	// Step 2: configure for bootstrap
-	if (!addElektraMountpoint (handle->backends, handle->modules, handle->global, errorKey))
+	const char * bootstrapPath = KDB_DB_INIT;
+	if (contract != NULL)
+	{
+		Key * bootstrapPathKey = ksLookupByName ((KeySet *) contract, "system:/elektra/contract/bootstrap/path", 0);
+
+		if (bootstrapPathKey)
+		{
+			bootstrapPath = keyString (bootstrapPathKey);
+		}
+	}
+
+	if (!addElektraMountpoint (handle->backends, bootstrapPath, handle->modules, handle->global, errorKey))
 	{
 		goto error;
 	}
@@ -978,6 +1023,8 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 		ksDel (elektraKs);
 		goto error;
 	}
+
+	ksAppendKey (handle->global, ksLookupByName (elektraKs, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, 0));
 
 	// Step 5: parse mountpoints
 	KeySet * backends = elektraMountpointsParse (elektraKs, handle->modules, handle->global, errorKey);
@@ -2451,6 +2498,17 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 
 		ElektraDiff * diff = elektraDiffCalculate (backendData->keys, handle->allKeys, backendKey);
 
+		// As backends can be nested, we need to remove all backends from the diff that are mounted below the current backend
+		elektraCursor hierarchyEnd = 0;
+		for (elektraCursor it = ksFindHierarchy (backends, backendKey, &hierarchyEnd); it < hierarchyEnd; ++it)
+		{
+			Key * otherBackend = ksAtCursor (backends, it);
+			if (keyCmp (backendKey, otherBackend) != 0)
+			{
+				elektraDiffRemoveSameOrBelow (diff, otherBackend);
+			}
+		}
+
 		bool readOnly = keyGetMeta (backendKey, "meta:/internal/kdbreadonly") != NULL;
 		bool changed = !elektraDiffIsEmpty (diff) || backendData->getSize != (size_t) ksGetSize (backendData->keys);
 
@@ -2527,6 +2585,17 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto rollback;
 	}
 
+	if (handle->hooks.record.lock != NULL)
+	{
+		// We need to use initialParent here, because it contains the original parent key
+		int lockRes = handle->hooks.record.lock (handle->hooks.record.plugin, initialParent);
+		if (lockRes == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			elektraCopyErrorAndWarnings (parentKey, initialParent);
+			goto rollback;
+		}
+	}
+
 	// Step 11a: run storage phase
 	if (!runSetPhase (backends, parentKey, ELEKTRA_KDB_SET_PHASE_STORAGE, false, KDB_SET_FN_SET))
 	{
@@ -2566,6 +2635,16 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		sendNotificationHook = sendNotificationHook->next;
 	}
 
+	if (handle->hooks.record.record != NULL)
+	{
+		handle->hooks.record.record (handle->hooks.record.plugin, setKs, parentKey);
+	}
+
+	if (handle->hooks.record.unlock != NULL)
+	{
+		handle->hooks.record.unlock (handle->hooks.record.plugin, initialParent);
+	}
+
 	keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 	keyDel (initialParent);
 	ksDel (setKs);
@@ -2592,6 +2671,11 @@ rollback:
 	runSetPhase (backends, parentKey, ELEKTRA_KDB_SET_PHASE_POST_ROLLBACK, true, KDB_SET_FN_ERROR);
 
 error:
+	if (handle->hooks.record.unlock != NULL)
+	{
+		handle->hooks.record.unlock (handle->hooks.record.plugin, initialParent);
+	}
+
 	keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 	keyDel (initialParent);
 	ksDel (setKs);

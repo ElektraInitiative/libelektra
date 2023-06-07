@@ -154,6 +154,7 @@ libelektra_1.0 {
 	elektraDiffIsEmpty;
 	elektraDiffGetParentKey;
 	elektraDiffDel;
+	elektraDiffDup;
 	elektraDiffIncRef;
 	elektraDiffDecRef;
 	elektraDiffGetRef;
@@ -165,8 +166,11 @@ libelektra_1.0 {
 	elektraDiffGetAddedMetaKeys;
 	elektraDiffGetRemovedMetaKeys;
 	elektraDiffGetModifiedMetaKeys;
-
-
+	elektraDiffRemoveSameOrBelow;
+	elektraDiffRemoveOther;
+	elektraDiffRemoveKey;
+	elektraDiffCut;
+	elektraDiffUndo;
 };
 
 libelektraprivate_1.0 {
@@ -199,14 +203,21 @@ libelektraprivate_1.0 {
 
 	ksBelow;
 
+	ksSubtract;
+
 	elektraIsArrayPart;
 
 	# TODO [new_backend]: should be removed, tests should depend differently on this
 	backendsDivide;
 
 	elektraDiffNew;
+	elektraDiffAppend;
+	elektraDiffGetModifiedNewKeys;
+
 	elektraChangeTrackingCreateContextForTesting;
 	elektraChangeTrackingContextDel;
+
+	elektraBootstrapPathContract;
 
 	# kdblogger.h
 	elektraLog;
@@ -239,4 +250,8 @@ libelektraprivate_1.0 {
 	elektraErrorSpecification;
 	elektraTriggerError;
 	elektraTriggerWarnings;
+
+	elektraCopyError;
+	elektraCopyWarnings;
+	elektraCopyErrorAndWarnings;
 };

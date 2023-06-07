@@ -1,0 +1,12 @@
+libelektra_0.9 {
+	# kdbrecord.h
+	elektraRecordEnableRecording;
+	elektraRecordDisableRecording;
+	elektraRecordResetSession;
+	elektraRecordExportSession;
+	elektraRecordRecord;
+	elektraRecordUndo;
+	elektraRecordRemoveKeys;
+	elektraRecordGetDiff;
+	elektraRecordIsActive;
+};

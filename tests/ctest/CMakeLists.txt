@@ -42,6 +42,9 @@ target_link_elektra (test_changetracking elektra-kdb)
 target_link_elektra (test_diff elektra-kdb)
 target_link_elektra (test_diffprivate elektra-kdb)
 
+target_link_elektra (test_error elektra-kdb)
+target_link_elektra (test_record elektra-kdb elektra-record)
+
 if (TARGET elektra-notification
     AND TARGET elektra-dbus
     AND TARGET elektra-internalnotification
@@ -56,3 +59,6 @@ target_link_elektra (test_merge elektra-merge)
 
 # LibGit leaks memory
 set_property (TEST test_cmerge PROPERTY LABELS memleak)
+
+# test_record reads and writes from kdb some test stages don't allow that and exclude all with the label "kdbtests"
+set_property (TEST test_record PROPERTY LABELS kdbtests)

@@ -134,7 +134,7 @@ public:
 	inline ckdb::Key * operator* () const;
 
 	inline ckdb::Key * release ();
-	inline ckdb::Key * dup (elektraCopyFlags flags = KEY_CP_ALL) const;
+	inline Key dup (elektraCopyFlags flags = KEY_CP_ALL) const;
 	inline ~Key ();
 
 
@@ -244,8 +244,13 @@ public:
 	inline bool isString () const;
 	inline bool isBinary () const;
 
+	inline bool isBelow (std::string const & name) const;
 	inline bool isBelow (const Key & k) const;
+
+	inline bool isBelowOrSame (std::string const & name) const;
 	inline bool isBelowOrSame (const Key & k) const;
+
+	inline bool isDirectBelow (std::string const & name) const;
 	inline bool isDirectBelow (const Key & k) const;
 
 	inline bool isNameLocked () const;
@@ -836,9 +841,9 @@ ckdb::Key * Key::release ()
 /**
  * @copydoc keyDup
  */
-ckdb::Key * Key::dup (elektraCopyFlags flags) const
+inline Key Key::dup (elektraCopyFlags flags) const
 {
-	return ckdb::keyDup (getKey (), flags);
+	return { ckdb::keyDup (getKey (), flags) };
 }
 
 /**
@@ -1559,6 +1564,18 @@ inline bool Key::isBinary () const
 }
 
 /**
+ * @param name the name of the other key
+ * @return true if our key is below k
+ *
+ * @copydoc keyIsBelow
+ */
+inline bool Key::isBelow (std::string const & name) const
+{
+	Key k (name, KEY_END);
+	return isBelow (k);
+}
+
+/**
  * @param k the other key
  * @return true if our key is below k
  *
@@ -1572,6 +1589,18 @@ inline bool Key::isBelow (const Key & k) const
 }
 
 /**
+ * @param name the name of the other key
+ * @return true if our key is below k or the same as k
+ *
+ * @copydoc keyIsBelowOrSame
+ */
+inline bool Key::isBelowOrSame (std::string const & name) const
+{
+	Key k (name, KEY_END);
+	return isBelowOrSame (k);
+}
+
+/**
  * @param k the other key
  * @return true if our key is below k or the same as k
  *
@@ -1582,6 +1611,18 @@ inline bool Key::isBelowOrSame (const Key & k) const
 	int ret = ckdb::keyIsBelowOrSame (k.getKey (), key);
 	if (ret == -1) return false;
 	return ret;
+}
+
+/**
+ * @param name the name of the other key
+ * @return true if our key is direct below k
+ *
+ * @copydoc keyIsDirectlyBelow
+ */
+inline bool Key::isDirectBelow (std::string const & name) const
+{
+	Key k (name, KEY_END);
+	return isDirectBelow (k);
 }
 
 /**

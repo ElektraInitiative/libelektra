@@ -54,6 +54,20 @@ class KDB(unittest.TestCase):
 			db.get(ks, TEST_NS)
 			self.assertEqual(ks[TEST_NS + "/mykey"].value, "new_value")
 
+	def test_diff(self):
+		with kdb.KDB() as db:
+			ks = kdb.KeySet(100)
+			db.get(ks, TEST_NS)
+
+			key = kdb.Key(TEST_NS + "/diffkey")
+			key.value = "new_value"
+			ks.append(key)
+
+			diff: kdb.ElektraDiff = db.calculateChanges(ks, TEST_NS)
+
+			self.assertFalse(diff.isEmpty())
+			self.assertEqual(diff.getAddedKeys()[TEST_NS+"/diffkey"].value, "new_value")
+
 	@classmethod
 	def tearDownClass(cls):
 		# cleanup

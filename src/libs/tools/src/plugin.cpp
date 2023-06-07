@@ -36,7 +36,7 @@ namespace tools
 Plugin::Plugin (PluginSpec const & spec_, KeySet & modules) : spec (spec_), firstRef (true)
 {
 	Key errorKey;
-	plugin = ckdb::elektraPluginOpen (spec.getName ().c_str (), modules.getKeySet (), spec.getConfig ().dup (), *errorKey);
+	plugin = ckdb::elektraPluginOpen (spec.getName ().c_str (), modules.getKeySet (), spec.getConfig ().dup ().release (), *errorKey);
 
 	if (!plugin)
 	{

@@ -415,6 +415,12 @@ void Backend::serialize (kdb::KeySet & ret)
 	ret.append (Key (Backends::getBasePath (mp) + "/plugins/backend/name", KEY_VALUE, "backend", KEY_END));
 	ret.append (*Key (backendRootKey.getName () + "/definition/path", KEY_VALUE, configFile.c_str (), KEY_END));
 
+	// If the path to the config file is an absolute path, automatically set the absolute key
+	if (!configFile.empty () && configFile.at (0) == '/')
+	{
+		ret.append (*Key (backendRootKey.getName () + "/definition/path/absolute", KEY_VALUE, "true", KEY_END));
+	}
+
 	const string configBasePath = Backends::getBasePath (mp) + "/config";
 	ret.append (Key (configBasePath, KEY_END));
 

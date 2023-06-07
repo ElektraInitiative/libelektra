@@ -50,6 +50,12 @@ void freeHooks (KDB * kdb, Key * errorKey)
 
 		kdb->hooks.sendNotification = NULL;
 	}
+
+	if (kdb->hooks.record.plugin != NULL)
+	{
+		elektraPluginClose (kdb->hooks.record.plugin, errorKey);
+		kdb->hooks.record.record = NULL;
+	}
 }
 
 static size_t getFunction (Plugin * plugin, const char * functionName, Key * errorKey)
@@ -71,13 +77,13 @@ static int initHooksGopts (KDB * kdb, Plugin * plugin, Key * errorKey)
 		return -1;
 	}
 
-	kdb->hooks.gopts.plugin = plugin;
-
 	if ((kdb->hooks.gopts.get = (kdbHookGoptsGetPtr) getFunction (plugin, "hook/gopts/get", errorKey)) == NULL)
 	{
 		elektraPluginClose (plugin, errorKey);
 		return -1;
 	}
+
+	kdb->hooks.gopts.plugin = plugin;
 
 	return 0;
 }
@@ -89,8 +95,6 @@ static int initHooksSpec (KDB * kdb, Plugin * plugin, Key * errorKey)
 		return -1;
 	}
 
-	kdb->hooks.spec.plugin = plugin;
-
 	kdb->hooks.spec.copy = (kdbHookSpecCopyPtr) getFunction (plugin, "hook/spec/copy", errorKey);
 	kdb->hooks.spec.remove = (kdbHookSpecRemovePtr) getFunction (plugin, "hook/spec/remove", errorKey);
 
@@ -99,6 +103,30 @@ static int initHooksSpec (KDB * kdb, Plugin * plugin, Key * errorKey)
 		elektraPluginClose (plugin, errorKey);
 		return -1;
 	}
+
+	kdb->hooks.spec.plugin = plugin;
+
+	return 0;
+}
+
+static int initHooksRecord (KDB * kdb, Plugin * plugin, Key * errorKey)
+{
+	if (!plugin)
+	{
+		return -1;
+	}
+
+	kdb->hooks.record.lock = (kdbHookRecordLockPtr) getFunction (plugin, "hook/record/lock", errorKey);
+	kdb->hooks.record.unlock = (kdbHookRecordLockPtr) getFunction (plugin, "hook/record/unlock", errorKey);
+	kdb->hooks.record.record = (kdbHookRecordPtr) getFunction (plugin, "hook/record/record", errorKey);
+
+	if (kdb->hooks.record.record == NULL || kdb->hooks.record.lock == NULL || kdb->hooks.record.unlock == NULL)
+	{
+		elektraPluginClose (plugin, errorKey);
+		return -1;
+	}
+
+	kdb->hooks.record.plugin = plugin;
 
 	return 0;
 }
@@ -305,6 +333,15 @@ static bool isSpecEnabledByConfig (const KeySet * config ELEKTRA_UNUSED)
 	return true;
 }
 
+static bool isRecordingEnabledByConfig (const KeySet * config)
+{
+	KeySet * dupConfig = ksDup (config); // We need to duplicate because dupConfig is const, and ksLookupByName doesn't take const
+	bool isEnabled = ksLookupByName (dupConfig, ELEKTRA_RECORD_CONFIG_ACTIVE_KEY, 0) != NULL;
+	ksDel (dupConfig);
+
+	return isEnabled;
+}
+
 /**
  * This method looks for the hook plugin 'internalnotification'
  *
@@ -369,6 +406,25 @@ int initHooks (KDB * kdb, const KeySet * config, KeySet * modules, const KeySet 
 	{
 		goto error;
 	}
+
+
+	// For recording we try to load the hook always, regardless whether it is enabled in the configuration
+	// This is because recording can be enabled in an already active KDB instance
+	Key * recordPluginLoadErrorKey = errorKey;
+
+	if (!isRecordingEnabledByConfig (config))
+	{
+		// Recording isn't enabled, so we don't need to taint the warning messages if we don't find the plugin
+		recordPluginLoadErrorKey = keyDup (errorKey, KEY_CP_ALL);
+	}
+
+	Plugin * recorderPlugin = loadPlugin ("recorder", kdb->global, modules, contract, recordPluginLoadErrorKey);
+	if (recorderPlugin != NULL)
+	{
+		initHooksRecord (kdb, recorderPlugin, errorKey);
+	}
+
+	if (recordPluginLoadErrorKey != errorKey) keyDel (recordPluginLoadErrorKey);
 
 	if (!existingError)
 	{

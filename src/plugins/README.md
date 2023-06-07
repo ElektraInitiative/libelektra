@@ -111,6 +111,7 @@ Only suited for import/export:
 - [xmltool](xmltool/) uses XML in the deprecated Elektra XML schema
   for importing configuration from Elektra 0.7.
 - [c](c/) writes Elektra C-structures (`ksNew(.. keyNew(...`)
+- [ansible](ansible/) writes the given KeySet as Ansible Playbook that uses the [ansible-libelektra](https://galaxy.ansible.com/elektra_initiative/libelektra) module
 
 Plugins that just show some functionality, (currently) not intended for
 productive use:
@@ -255,6 +256,7 @@ binding during run-time:
 - [gopts](gopts/) global plugin to automatically call `elektraGetOpts`
 - [process](process/) proxy plugin that uses separate executables as plugin implementations
 - [backend](backend/) is the default plugin implementing backend functionality for configuration files
+- [recorder](recorder/) is the plugin used to implement session recording
 
 ### Plugins for Development
 

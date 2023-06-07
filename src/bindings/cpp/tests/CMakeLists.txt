@@ -31,7 +31,8 @@ set (
 	testcpp_keyio.cpp
 	testcpp_ks.cpp
 	testcpp_ksget.cpp
-	testcpp_meta.cpp)
+	testcpp_meta.cpp
+	testcpp_diff.cpp)
 foreach (file ${TESTS})
 
 	get_filename_component (name ${file} NAME_WE)

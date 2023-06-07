@@ -12,11 +12,13 @@
 #include <string>
 #include <vector>
 
+#include <elektradiff.hpp>
 #include <kdbexcept.hpp>
 #include <key.hpp>
 #include <keyset.hpp>
 
 #include <kdb.h>
+#include <kdbchangetracking.h>
 #include <kdbgopts.h>
 
 
@@ -60,6 +62,12 @@ public:
 	virtual inline int get (KeySet & returned, Key & parentKey);
 	virtual inline int set (KeySet & returned, std::string const & keyname);
 	virtual inline int set (KeySet & returned, Key & parentKey);
+
+	virtual inline ElektraDiff calculateChanges (KeySet & changedKeySet, std::string const & parentKeyName);
+	virtual inline ElektraDiff calculateChanges (KeySet & changedKeySet, Key & parentKey);
+
+	inline ckdb::KDB * getKdb () const;
+	inline ckdb::KDB * operator* () const;
 
 private:
 	ckdb::KDB * handle; ///< holds an kdb handle
@@ -286,6 +294,59 @@ inline int KDB::set (KeySet & returned, Key & parentKey)
 		throw KDBException (parentKey);
 	}
 	return ret;
+}
+
+/**
+ * Calculates the changes between the provided KeySet and the current state of the KDB
+ *
+ * @param changedKeySet the keyset that should be used to diff
+ * @param parentKeyName only changes same or below this keys are calculated
+ *
+ * @return a diff with all the changes
+ */
+inline ElektraDiff KDB::calculateChanges (KeySet & changedKeySet, std::string const & parentKeyName)
+{
+	Key parentKey (parentKeyName, KEY_END);
+	return calculateChanges (changedKeySet, parentKey);
+}
+
+/**
+ * Calculates the changes between the provided KeySet and the current state of the KDB
+ *
+ * @param changedKeySet the keyset that should be used to diff
+ * @param parentKey only changes same or below this keys are calculated
+ *
+ * @return a diff with all the changes
+ */
+inline ElektraDiff KDB::calculateChanges (KeySet & changedKeySet, Key & parentKey)
+{
+	const ckdb::ChangeTrackingContext * context = ckdb::elektraChangeTrackingGetContextFromKdb (handle);
+	ckdb::ElektraDiff * diff = ckdb::elektraChangeTrackingCalculateDiff (changedKeySet.getKeySet (), context, parentKey.getKey ());
+	return ElektraDiff (diff);
+}
+
+/**
+ * Passes out the raw kdb pointer.
+ *
+ * This pointer can be used to directly interact with the underlying kdb instance
+ *
+ * \note that the ownership remains in the object
+ */
+inline ckdb::KDB * KDB::getKdb () const
+{
+	return handle;
+}
+
+/**
+ * Is an abbreviation for getKdb.
+ *
+ * @copydoc getKdb
+ *
+ * @see getKdb()
+ */
+inline ckdb::KDB * KDB::operator* () const
+{
+	return handle;
 }
 
 /**
