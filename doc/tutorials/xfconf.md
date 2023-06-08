@@ -82,7 +82,7 @@ kdb set system:/sw/org/xfce/xfconf/test/hello world
 #> Create a new key system:/sw/org/xfce/xfconf/test/hello with string "world"
 
 # Verify it with Xfconf
-xfconf-query -c test -p hello
+xfconf-query -c test -p /hello
 #> world
 ```
 
