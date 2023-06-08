@@ -68,10 +68,7 @@ Replacing the system libraries may require root privileges.
 kdb xfconf-system-lib-replace
 
 # Use Elektra instead of Xfconf only for the current user
-kdb xfconf-user-lib replace
-
-# When replacing only the users library, either restart the session or run
-source ~/.xprofile
+kdb xfconf-user-lib-replace && source ~/.xprofile
 ```
 
 Note that a system upgrade may reset the system library replacement.
