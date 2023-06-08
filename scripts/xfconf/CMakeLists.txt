@@ -1,3 +1,11 @@
+include (FindXfconf)
+if (NOT XFCONF_FOUND)
+	message ("xfconf scripts are not included due to missing xfconf libraries")
+	return ()
+endif ()
+
+file (REAL_PATH ${XFCONF_LIBRARY} XFCONF_LIBRARY_REALPATH)
+
 install (
 	PROGRAMS xfconf-populate
 	DESTINATION ${TARGET_TOOL_EXEC_FOLDER}
