@@ -125,19 +125,19 @@ This makes Xfconf's type system completely independent of Elektra, at the cost o
 
 The following table shows a comparison between the different type systems.
 
-| Xfconf   | Elektra                    | Note                                                                                         |
-| :------- | -------------------------- | -------------------------------------------------------------------------------------------- |
-| `string` | `char*`                    |                                                                                              |
-| `uchar`  | `kdb_octet_t`              | Not implemented in the Xfconf binding.                                                       |
-| `char`   | `kdb_char_t`               | Not implemented in the Xfconf binding.                                                       |
-| `uint16` | `kdb_unsigned_short_t`     | Not implemented in the Xfconf binding.                                                       |
-| `int16`  | `kdb_short_t`              | Not implemented in the Xfconf binding.                                                       |
-| `uint`   | `kdb_unsigned_long_t`      |                                                                                              |
-| `int`    | `kdb_long_t`               |                                                                                              |
-| `uint64` | `kdb_unsigned_long_long_t` |                                                                                              |
-| `int64`  | `kdb_long_long_t`          |                                                                                              |
-| `float`  | `kdb_float_t`              |                                                                                              |
-| `double` | `kdb_double_t`             |                                                                                              |
-| `bool`   | `kdb_boolean_t`            |                                                                                              |
-| `array`  |                            | No direct type in Elektra. The key name structure determines whether it is an array or not.  |
-| `empty`  |                            | Does not exist in Elektra. Paths in Elektra which are no leaf nodes will be equally handled. |
+| Xfconf   | Elektra                    | Xfce Property Example (Channel, Property)        | Note                                                                                         |
+| :------- | -------------------------- | ------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| `string` | `char*`                    | `xfce4-panel`, `/panels/panel-1/position`        |                                                                                              |
+| `uchar`  | `kdb_octet_t`              |                                                  | Not implemented in the Xfconf binding.                                                       |
+| `char`   | `kdb_char_t`               |                                                  | Not implemented in the Xfconf binding.                                                       |
+| `uint16` | `kdb_unsigned_short_t`     |                                                  | Not implemented in the Xfconf binding.                                                       |
+| `int16`  | `kdb_short_t`              |                                                  | Not implemented in the Xfconf binding.                                                       |
+| `uint`   | `kdb_unsigned_long_t`      | `xfce4-panel`, `/panels/panel-1/length`          |                                                                                              |
+| `int`    | `kdb_long_t`               | `xfce4-session`, `/sessions/Count`               |                                                                                              |
+| `uint64` | `kdb_unsigned_long_long_t` |                                                  |                                                                                              |
+| `int64`  | `kdb_long_long_t`          |                                                  |                                                                                              |
+| `float`  | `kdb_float_t`              |                                                  |                                                                                              |
+| `double` | `kdb_double_t`             |                                                  |                                                                                              |
+| `bool`   | `kdb_boolean_t`            | `xfce4-panel`, `/panels/panel-1/position-locked` |                                                                                              |
+| `array`  |                            | `xfce4-panel`, `/panels`                         | No direct type in Elektra. The key name structure determines whether it is an array or not.  |
+| `empty`  |                            | `xfce4-panel`, `/panels/panel-1`                 | Does not exist in Elektra. Paths in Elektra which are no leaf nodes will be equally handled. |
