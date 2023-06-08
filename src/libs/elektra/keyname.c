@@ -8,10 +8,6 @@
 
 /** @class doxygenNamespaces
  *
- * @brief .
- *
- * .
- *
  * - @p spec:/something for specification of other keys.
  * - @p proc:/something for in-memory keys, e.g. commandline.
  * - @p dir:/something for dir keys in current working directory
