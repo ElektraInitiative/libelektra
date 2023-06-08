@@ -23,25 +23,25 @@ kdb mount -R noresolver none /sw/xfce4/thunar xfconf channel=thunar
 **Warning**: The following operations will cause permanent changes to your system, please handle with care.
 
 Thunar should now be ready to be configured by Elektra.
-For example, the following command can be used to use single clicks instead of double clicks.
+For example, the following command can be used to use the details view instead of a symbol grid in Thunar.
 
 ```shell
-# Setting the value to `false` beforehand
-xfconf-query -c thunar -p /misc-single-click -s false -t bool -n
+# Reset the property beforehand
+xfconf-query -c thunar -r -p /last-view
 
-kdb set system:/sw/xfce4/thunar/misc-single-click TRUE
-#> Set string to "TRUE"
-#> Using name system:/sw/xfce4/thunar/misc-single-click
+kdb set system:/sw/xfce4/thunar/last-view ThunarDetailsView
+#> Set string to "ThunarDetailsView"
+#> Using name system:/sw/xfce4/thunar/last-view
 ```
 
 The result can then be verified using both Elektra and `xfconf-query`.
 
 ```shell
-kdb get /sw/xfce4/thunar/misc-single-click
-#> TRUE
+kdb get /sw/xfce4/thunar/last-view
+#> ThunarDetailsView
 
-xfconf-query -c thunar -p /misc-single-click
-#> true
+xfconf-query -c thunar -p /last-view
+#> ThunarDetailsView
 ```
 
 Using a text editor, you can also view the changes in the
