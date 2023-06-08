@@ -511,7 +511,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Use openwrt/sdk instead of openwrtorg/sdk. _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
