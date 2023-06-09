@@ -3,6 +3,7 @@
 #include "kdberrors.h"
 #include "matching.h"
 
+#include <ctype.h>
 #include <kdbhelper.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -207,6 +208,51 @@ static Key * specCollision (KeySet * specKeys)
 		}
 	}
 	return 0;
+}
+
+/**
+ * It iterates over the {@p name} and re-allocates a new string where it omits all the
+ * digits after an array character.
+ *
+ * NOTE: Returned string needs to be freed manually.
+ *
+ * @param name the original array key name
+ * @param lastOccurenceOfCharacter used to omit all digits after this character '#'
+ * @return a newly allocated string without digits after the array character, in case there is an error, NULL
+ */
+static char * getKeyNameWithoutDigitsAfterArrayCharacter (const char * name, const char * lastOccurenceOfCharacter)
+{
+	if (name == NULL || lastOccurenceOfCharacter == NULL)
+	{
+		return NULL;
+	}
+
+	size_t sizeOfName = elektraStrLen (name);
+	char * newName = elektraCalloc (sizeOfName);
+	int c = 0;
+	int offBy = 1;
+	for (size_t i = 0; i < sizeOfName; i = i + offBy, c++)
+	{
+		offBy = 1;
+		if (lastOccurenceOfCharacter == &name[i])
+		{
+			for (size_t x = i + 1; x < sizeOfName; x++)
+			{
+				if (isdigit(name[x]))
+				{
+					offBy++;
+				}
+				else
+				{
+					break;
+				}
+			}
+		}
+		newName[c] = name[i];
+	}
+	newName[++c] = '\0';
+
+	return newName;
 }
 
 /**
@@ -453,8 +499,36 @@ int elektraSpecRemove (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, ELEKTR
 		}
 
 		// Find out if there is a spec:/ key for the current key
+		const char * name = keyName (current);
 		keySetName (specName, "spec:/");
-		keyAddName (specName, strchr (keyName (current), '/'));
+
+
+		// check if specName is array name
+		char * lastOccurenceOfArrayCharacter = strrchr(name, '#');
+		if (lastOccurenceOfArrayCharacter != NULL)
+		{
+			Key * key = keyNew ("spec:/", NULL);
+			keyAddName (key, strchr (name, '/'));
+
+			int count = getNumberOfArrayCharactersInSpecName(key);
+			if (count > 1)
+			{
+				char * newName = getKeyNameWithoutDigitsAfterArrayCharacter (strchr (name, '/'), lastOccurenceOfArrayCharacter);
+				keyAddName (specName, newName);
+				elektraFree (newName);
+			}
+			else
+			{
+				keyAddName (specName, strchr (name, '/'));
+			}
+
+			keyDel (key);
+		}
+		else
+		{
+			keyAddName (specName, strchr (name, '/'));
+		}
+
 		Key * specKey = ksLookup (returned, specName, 0);
 
 		if (specKey != NULL)

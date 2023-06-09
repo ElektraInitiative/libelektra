@@ -1002,6 +1002,44 @@ static void test_with_array_specification_with_array_size_one_should_succeed (bo
 	ksDel (ks);
 }
 
+/**
+ * Test should verify that spec key gets deleted correctly from array element.
+ *
+ * @param isKdbGet boolean value indicating if it is a kdb get call
+ */
+static void test_hook_remove_spec_keys_from_array_should_succeed (bool isKdbGet)
+{
+	printf ("test %s, isKdbGet=%d\n", __func__, isKdbGet);
+
+	TEST_BEGIN
+	{
+		KeySet * ks = ksNew (0, KS_END);
+
+		ksAppendKey (ks, keyNew ("spec:/sw/libelektra/opensesame/#0/current/sensors/#/loc", KEY_META, "description", "location of the sensor", KEY_END));
+		ksAppendKey (ks, keyNew ("system:/sw/libelektra/opensesame/#0/current/sensors/#0/loc", KEY_VALUE, "guests", KEY_END));
+
+		int resultCopy = elektraSpecCopy (NULL, ks, parentKey, true);
+
+		// check if meta keys were copied
+		Key * realKey = ksLookupByName (ks, "system:/sw/libelektra/opensesame/#0/current/sensors/#0/loc", 0);
+		succeed_if (realKey != NULL, "key must exist");
+		succeed_if (keyGetMeta (realKey, "meta:/description") != NULL, "meta must exist after copying");
+
+		int resultRemove = elektraSpecRemove (NULL, ks, parentKey);
+
+		// check if meta keys were removed
+		ksLookupByName (ks, "system:/sw/libelektra/opensesame/#0/current/sensors/#0/loc", 0);
+		succeed_if (realKey != NULL, "key must exist");
+		succeed_if (keyGetMeta (realKey, "meta:/description") == NULL, "meta must NOT exist after copying");
+
+		TEST_CHECK (resultCopy == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
+		TEST_CHECK (resultRemove == ELEKTRA_PLUGIN_STATUS_SUCCESS, "plugin should have succeeded");
+
+		ksDel (ks);
+	}
+	TEST_END
+}
+
 int main (void)
 {
 	test_hook_copy_with_require_meta_key_and_missing_key_should_error (false);
@@ -1031,6 +1069,8 @@ int main (void)
 	test_normal_key_with_meta_data_and_array_element_in_key_name_should_succeed (true);
 	example_codegen_menu_test_should_succeed (true);
 	test_with_array_specification_with_array_size_one_should_succeed (true);
+
+	test_hook_remove_spec_keys_from_array_should_succeed(true);
 
 	return 0;
 }
