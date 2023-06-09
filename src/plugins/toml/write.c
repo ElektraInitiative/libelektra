@@ -863,7 +863,7 @@ static int collectComments (CommentList ** comments, Key * key, Writer * writer)
 		else if (elektraStrCmp (pos, "order") != 0 && elektraStrCmp (pos, "type") != 0 && elektraStrCmp (pos, "tomltype") != 0 &&
 			 elektraStrCmp (pos, "origvalue") != 0 && elektraStrCmp (pos, "binary") != 0 && elektraStrCmp (pos, "array") != 0)
 		{
-			ELEKTRA_SET_RESOURCE_ERRORF (key, "The Metakey %s is not supported by TOML", keyString (meta));
+			ELEKTRA_SET_RESOURCE_ERRORF (writer->rootKey, "The Metakey %s is not supported by TOML", keyName (meta));
 			return -1;
 		}
 	}
