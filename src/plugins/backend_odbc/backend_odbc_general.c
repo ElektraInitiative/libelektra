@@ -13,6 +13,8 @@
 
 
 #include "./backend_odbc_general.h"
+
+#include <kdberrors.h>
 #include <kdblogger.h>
 #include <sqlext.h>
 #include <stddef.h> /* for NULL */
@@ -35,11 +37,12 @@ SQLHENV allocateEnvHandle (Key * errorKey)
 	if (!SQL_SUCCEEDED (ret))
 	{
 		ELEKTRA_LOG_NOTICE ("SQLAllocHandle() failed!\nCould not allocate handle for ODBC environment!");
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 		return NULL;
 	}
 	else if (ret == SQL_SUCCESS_WITH_INFO)
 	{
-		setOdbcError (SQL_HANDLE_ENV, sqlEnv, "allocateEnvHandle", true, errorKey);
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_ENV, sqlEnv, errorKey);
 	}
 
 	return sqlEnv;
@@ -52,6 +55,7 @@ SQLHENV allocateEnvHandle (Key * errorKey)
  * This is required by ODBC before allocation a connection handle.
  *
  * @param sqlEnv An allocated ODBC environment handle, as returned by @ref allocateEnvHandle()
+ * 	This handle gets freed if an error occurred, so don't dereference it if the function returned 'false'.
  * @param[out] errorKey Used to store errors and warnings
  *
  * @retval 'true' if the operation was successful
@@ -67,13 +71,13 @@ bool setOdbcVersion (SQLHENV sqlEnv, unsigned long version, Key * errorKey)
 	if (!SQL_SUCCEEDED (ret))
 	{
 		ELEKTRA_LOG_NOTICE ("SQLSetEnvAttr() failed!\nCould not set ODBC-version attribute for ODBC environment!");
-		setOdbcError (SQL_HANDLE_ENV, sqlEnv, "setOdbcVersion", false, errorKey);
+		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_ENV, sqlEnv, errorKey);
 		SQLFreeHandle (SQL_HANDLE_ENV, sqlEnv);
 		return false;
 	}
 	else if (ret == SQL_SUCCESS_WITH_INFO)
 	{
-		setOdbcError (SQL_HANDLE_ENV, sqlEnv, "setOdbcVersion", true, errorKey);
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_ENV, sqlEnv, errorKey);
 	}
 
 	return true;
@@ -84,6 +88,7 @@ bool setOdbcVersion (SQLHENV sqlEnv, unsigned long version, Key * errorKey)
  * @brief Allocate a new ODBC connection handle
  *
  * @param sqlEnv An allocated ODBC environment handle, for which the ODBC version has been set
+ * 	This handle gets freed if an error occurred, so don't dereference it if the function returned NULL.
  * @param[out] errorKey Used to store errors and warnings
  *
  * @return The allocated connection handle
@@ -101,14 +106,14 @@ SQLHDBC allocateConnectionHandle (SQLHENV sqlEnv, Key * errorKey)
 	if (!SQL_SUCCEEDED (ret))
 	{
 		ELEKTRA_LOG_NOTICE ("SQLAllocHandle () failed!\nCould not allocate handle for ODBC connection!");
-		setOdbcError (SQL_HANDLE_ENV, sqlEnv, "allocateConnectionHandle", false, errorKey);
+		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_ENV, sqlEnv, errorKey);
 		SQLFreeHandle (SQL_HANDLE_ENV, sqlEnv);
 		return NULL;
 	}
 	else if (ret == SQL_SUCCESS_WITH_INFO)
 	{
-		setOdbcError (SQL_HANDLE_ENV, sqlEnv, "allocateConnectionHandle (environment)", true, errorKey);
-		setOdbcError (SQL_HANDLE_DBC, sqlConnection, "allocateConnectionHandle (connection)", true, errorKey);
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_ENV, sqlEnv, errorKey);
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_DBC, sqlConnection, errorKey);
 	}
 
 	return sqlConnection;
@@ -116,9 +121,10 @@ SQLHDBC allocateConnectionHandle (SQLHENV sqlEnv, Key * errorKey)
 
 
 /**
- * @brief Sets the timeout after a login attempt (= connect to data source) is considered as failed
+ * @brief Sets the timeout after which a login attempt (= connect to data source) is considered as failed
  *
  * @param sqlConnection An allocated ODBC connection handle
+ * 	This handle gets freed if an error occurred, so don't dereference it if the function returned 'false'.
  * @param timeout The time to wait in seconds (0 = wait indefinitely --> use with care!)
  * @param[out] errorKey Used to store errors and warnings
  *
@@ -134,14 +140,14 @@ bool setLoginTimeout (SQLHDBC sqlConnection, unsigned long timeout, Key * errorK
 	if (!SQL_SUCCEEDED (ret))
 	{
 		ELEKTRA_LOG_NOTICE ("SQLSetConnectAttr() failed!\nCould not set timeout attribute for ODBC connection!");
-		setOdbcError (SQL_HANDLE_DBC, sqlConnection, "setLoginTimeout", false, errorKey);
+		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_DBC, sqlConnection, errorKey);
 		SQLFreeHandle (SQL_HANDLE_DBC, sqlConnection);
 
 		return false;
 	}
 	else if (ret == SQL_SUCCESS_WITH_INFO)
 	{
-		setOdbcError (SQL_HANDLE_DBC, sqlConnection, "setLoginTimeout", true, errorKey);
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_DBC, sqlConnection, errorKey);
 	}
 
 	return true;
@@ -152,6 +158,7 @@ bool setLoginTimeout (SQLHDBC sqlConnection, unsigned long timeout, Key * errorK
  * @brief Sets the transaction mode (automatic or manual commits) for an ODBC connection
  *
  * @param sqlConnection An allocated ODBC connection handle
+ * 	This handle gets freed if an error occurred, so don't dereference it if the function returned 'false'.
  * @param enableAutoCommit Should every SQL query automatically commit a transaction (true)
  * 	or should manual transaction control be used (false)
  * @param[out] errorKey Used to store errors and warnings
@@ -178,13 +185,13 @@ bool setAutocommit (SQLHDBC sqlConnection, bool enableAutoCommit, Key * errorKey
 	if (!SQL_SUCCEEDED (ret))
 	{
 		ELEKTRA_LOG_NOTICE ("SQLSetConnectAttr () failed!\nCould not set the autocommit mode for an ODBC connection!");
-		setOdbcError (SQL_HANDLE_DBC, sqlConnection, "setAutocommit", false, errorKey);
+		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_DBC, sqlConnection, errorKey);
 		SQLFreeHandle (SQL_HANDLE_DBC, sqlConnection);
 		return false;
 	}
 	else if (ret == SQL_SUCCESS_WITH_INFO)
 	{
-		setOdbcError (SQL_HANDLE_DBC, sqlConnection, "setAutocommit", true, errorKey);
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_DBC, sqlConnection, errorKey);
 	}
 
 	return true;
@@ -197,6 +204,7 @@ bool setAutocommit (SQLHDBC sqlConnection, bool enableAutoCommit, Key * errorKey
  * @pre The connection handle must refer to an open connection, for which manual transaction mode is active and a transaction was started
  *
  * @param sqlConnection An ODBC connection handle that satisfies the mentioned preconditions
+ * 	This handle gets freed if an error occurred, so don't dereference it if the function returned 'false'.
  * @param commit 'true' if the transaction should be committed,
  * 	'false' if the transaction should be rolled back (= canceled)
  * @param[out] errorKey Used to store errors and warnings
@@ -222,13 +230,13 @@ bool endTransaction (SQLHDBC sqlConnection, bool commit, Key * errorKey)
 	if (!SQL_SUCCEEDED (ret))
 	{
 		ELEKTRA_LOG_NOTICE ("SQLEndTran () failed!\nCould not %s the transaction!", (commit ? "commit" : "rollback"));
-		setOdbcError (SQL_HANDLE_DBC, sqlConnection, "endTransaction", false, errorKey);
+		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_DBC, sqlConnection, errorKey);
 		SQLFreeHandle (SQL_HANDLE_DBC, sqlConnection);
 		return false;
 	}
 	else if (ret == SQL_SUCCESS_WITH_INFO)
 	{
-		setOdbcError (SQL_HANDLE_DBC, sqlConnection, "endTransaction", true, errorKey);
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_DBC, sqlConnection, errorKey);
 	}
 
 	return true;
@@ -239,6 +247,7 @@ bool endTransaction (SQLHDBC sqlConnection, bool commit, Key * errorKey)
  * @brief Establish a connection to an ODBC data source
  *
  * @param sqlConnection An allocated ODBC connection handle
+ * 	This handle gets freed if an error occurred, so don't dereference it if the function returned 'false'.
  * @param dsConfig A valid data source configuration
  * @param[out] errorKey Used to store errors and warnings
  *
@@ -265,13 +274,13 @@ bool connectToDataSource (SQLHDBC sqlConnection, struct dataSourceConfig * dsCon
 			"SQLConnect() failed!\nCould not connect to the ODBC data source %s as user %s! Maybe the data source name, "
 			"username or password is wrong!",
 			dsConfig->dataSourceName, dsConfig->userName);
-		setOdbcError (SQL_HANDLE_DBC, sqlConnection, "connectToDataSource", false, errorKey);
+		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_DBC, sqlConnection, errorKey);
 		SQLFreeHandle (SQL_HANDLE_DBC, sqlConnection);
 		return false;
 	}
 	else if (ret == SQL_SUCCESS_WITH_INFO)
 	{
-		setOdbcError (SQL_HANDLE_DBC, sqlConnection, "connectToDataSource", true, errorKey);
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_DBC, sqlConnection, errorKey);
 	}
 
 	ELEKTRA_LOG_DEBUG ("Connected to the ODBC data source '%s' as user '%s'.", dsConfig->dataSourceName, dsConfig->userName);
@@ -285,6 +294,7 @@ bool connectToDataSource (SQLHDBC sqlConnection, struct dataSourceConfig * dsCon
  * This function assumes that there are four columns ('key-name', 'key-value', 'metakey-name' and 'metakey-value')
  *
  * @param sqlStmt The allocated and prepared SQL statement for which the columns should be bound
+ * 	This handle gets freed if an error occurred, so don't dereference it if the function returned 'false'.
  * @param buffers The buffers where the data for that columns should be stored
  * @param[out] errorKey Used to store errors and warnings
  *
@@ -302,13 +312,13 @@ bool bindColumns (SQLHSTMT sqlStmt, struct columnData * buffers, Key * errorKey)
 	if (!SQL_SUCCEEDED (ret))
 	{
 		ELEKTRA_LOG_NOTICE ("SQLBindCol() failed!\nCould not bind the first column to the keyName!");
-		setOdbcError (SQL_HANDLE_STMT, sqlStmt, "bindColumns (1)", false, errorKey);
+		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_STMT, sqlStmt, errorKey);
 		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 		return false;
 	}
 	else if (ret == SQL_SUCCESS_WITH_INFO)
 	{
-		setOdbcError (SQL_HANDLE_STMT, sqlStmt, "bindColumns (1)", true, errorKey);
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_STMT, sqlStmt, errorKey);
 	}
 
 	/* Bind column 2 (key-value) */
@@ -316,13 +326,13 @@ bool bindColumns (SQLHSTMT sqlStmt, struct columnData * buffers, Key * errorKey)
 	if (!SQL_SUCCEEDED (ret))
 	{
 		ELEKTRA_LOG_NOTICE ("SQLBindCol() failed!\nCould not bind the second column to the keyString (value of the key)!");
-		setOdbcError (SQL_HANDLE_STMT, sqlStmt, "bindColumns (2)", false, errorKey);
+		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_STMT, sqlStmt, errorKey);
 		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 		return false;
 	}
 	else if (ret == SQL_SUCCESS_WITH_INFO)
 	{
-		setOdbcError (SQL_HANDLE_STMT, sqlStmt, "bindColumns (2)", true, errorKey);
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_STMT, sqlStmt, errorKey);
 	}
 
 	/* Bind column 3 (metakey-name) */
@@ -330,13 +340,13 @@ bool bindColumns (SQLHSTMT sqlStmt, struct columnData * buffers, Key * errorKey)
 	if (!SQL_SUCCEEDED (ret))
 	{
 		ELEKTRA_LOG_NOTICE ("SQLBindCol() failed!\nCould not bind the second column to the keyString (value of the key)!");
-		setOdbcError (SQL_HANDLE_STMT, sqlStmt, "bindColumns (3)", false, errorKey);
+		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_STMT, sqlStmt, errorKey);
 		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 		return false;
 	}
 	else if (ret == SQL_SUCCESS_WITH_INFO)
 	{
-		setOdbcError (SQL_HANDLE_STMT, sqlStmt, "bindColumns (3)", true, errorKey);
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_STMT, sqlStmt, errorKey);
 	}
 
 	/* Bind column 4 (metakey-value) */
@@ -344,13 +354,13 @@ bool bindColumns (SQLHSTMT sqlStmt, struct columnData * buffers, Key * errorKey)
 	if (!SQL_SUCCEEDED (ret))
 	{
 		ELEKTRA_LOG_NOTICE ("SQLBindCol() failed!\nCould not bind the second column to the keyString (value of the key)!");
-		setOdbcError (SQL_HANDLE_STMT, sqlStmt, "bindColumns (4)", false, errorKey);
+		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_STMT, sqlStmt, errorKey);
 		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 		return false;
 	}
 	else if (ret == SQL_SUCCESS_WITH_INFO)
 	{
-		setOdbcError (SQL_HANDLE_STMT, sqlStmt, "bindColumns (4)", true, errorKey);
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_STMT, sqlStmt, errorKey);
 	}
 
 	return true;

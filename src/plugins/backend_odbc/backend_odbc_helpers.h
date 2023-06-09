@@ -73,13 +73,26 @@ struct columnData
 char ** extractOdbcErrors (SQLSMALLINT handleType, SQLHANDLE odbcHandle);
 
 /* Set an ODBC error or add a warning to a key */
-int setOdbcError (SQLSMALLINT handleType, SQLHANDLE handle, char * functionName, bool isWarning, Key * errorKey);
+int setOdbcError (SQLSMALLINT handleType, SQLHANDLE handle, const char * fileName, const char * functionName, const char * lineNo,
+		  bool isWarning, Key * errorKey);
+
+/* Macro to automatically fill the parameters for 'fileName', 'functionName' and 'lineNo' */
+#define ELEKTRA_SET_ODBC_ERROR(handleType, handle, errorKey)                                                                               \
+	do                                                                                                                                 \
+	{                                                                                                                                  \
+		setOdbcError (handleType, handle, __FILE__, __func__, ELEKTRA_STRINGIFY (__LINE__), false, errorKey);                      \
+	} while (0)
+#define ELEKTRA_ADD_ODBC_WARNING(handleType, handle, warningKey)                                                                           \
+	do                                                                                                                                 \
+	{                                                                                                                                  \
+		setOdbcError (handleType, handle, __FILE__, __func__, ELEKTRA_STRINGIFY (__LINE__), true, warningKey);                     \
+	} while (0)
 
 /* A list of available data source names, make sure to free the returned strings and the string array itself. */
 char ** getAvailableDataSources (void);
 
 /* Fill the datasource config based on the Keys in the definition */
-struct dataSourceConfig * fillDsStructFromDefinitionKs (KeySet * ksDefinition);
+struct dataSourceConfig * fillDsStructFromDefinitionKs (KeySet * ksDefinition, Key * errorKey);
 
 /* Get the sum of the number of characters from all strings in the dataSourceConfig struct */
 char * dsConfigToString (struct dataSourceConfig * dsConfig);

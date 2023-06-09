@@ -19,28 +19,26 @@ It was tested with unixODBC on Linux, but should also work with iODBC and Micros
 
 The minimum requirement is a table with at least two columns:
 
-- Key names (string, primary key (PK))
-- Key values (strings)
+- Key-name (string, primary key (PK))
+- Key-value (string)
 
 Additionally, a second table with at least three columns is required.
 
-- Key name (string, foreign key (FK) to the first table)
-- Metakey name (string)
-- Metakey value (string)
+- Key-name (string, foreign key (FK) to the first table)
+- Metakey-name (string)
+- Metakey-value (string)
 
-The PK of this table consists of two columns: the **key-name** and the **metakey-name**.
+The primary key of this table consists of two columns: the **key-name** and the **metakey-name**.
 In the language of ER-modelling, the metatable can therefore by considered a **weak-entity**.
 
 > Currently, only data sources with tables for metadata are supported!
 > So you have to define a meta-table.
-> Data sources without a table for metadata are will probably be supported in the future.
-> If you want to use metadata, the ODBC driver for you data source has to support **outer joins**.
+> Data sources without a table for metadata will probably be supported in the future.
+> If you want to use metadata, the ODBC driver for your data source has to support **outer joins**.
 > This implies that currently, only ODBC drivers with support for outer joins are supported by the ODBC backend.
 
-The tables may also contain other columns, but they are not processed by this plugin.
-
-<!-- TODO: After implementing write-functionality (kdb set), mention that additional column must support NULL-
-values if you want to add new keys or metadata to the respective table -->
+The tables may also contain other columns, but they are not processed by this plugin and must support NULL- or DEFAULT-values,
+if you want to add tuples to the table via Elektra (e.g. by calling `kdb set <key> <value>`).
 
 The following properties are available:
 

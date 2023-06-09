@@ -137,7 +137,7 @@ static char * getSelectQueryString (struct dataSourceConfig * dsConfig, char * q
 	strEnd = stpcpy (strEnd, quoteString);
 	strEnd = stpcpy (strEnd, dsConfig->metaTableKeyColName);
 	strEnd = stpcpy (strEnd, quoteString);
-	strEnd = stpcpy (strEnd, "}");
+	stpcpy (strEnd, "}");
 
 	return queryString;
 }
@@ -151,7 +151,8 @@ static char * getSelectQueryString (struct dataSourceConfig * dsConfig, char * q
  * @pre The @p 'sqlConnection' handle must have been initialized and a connection must have been established
  *
  * @param sqlConnection The initialized connection handle. It must represent an active connection.
- * @param dsConfig The configuration of the ODBC data source, as retrieved by \ref \ref fillDsStructFromDefinitionKs
+ * 	This handle gets freed if an error occurred, so don't dereference it if the function returned NULL.
+ * @param dsConfig The configuration of the ODBC data source, as retrieved by \ref fillDsStructFromDefinitionKs
  * "fillDsStructFromDefinitionKs"
  * @param[out] errorKey Used to store errors and warnings
  *
@@ -169,8 +170,7 @@ static SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfi
 	if (!SQL_SUCCEEDED (ret))
 	{
 		ELEKTRA_LOG_NOTICE ("SQLAllocHandle() failed!\nCould not allocate a handle for an SQL statement!");
-		setOdbcError (SQL_HANDLE_DBC, sqlConnection, "prepareSelectStmt", false, errorKey);
-
+		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_DBC, sqlConnection, errorKey);
 
 		if (sqlStmt)
 		{
@@ -183,8 +183,8 @@ static SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfi
 	}
 	else if (ret == SQL_SUCCESS_WITH_INFO)
 	{
-		setOdbcError (SQL_HANDLE_DBC, sqlConnection, "prepareSelectStmt (connection)", true, errorKey);
-		setOdbcError (SQL_HANDLE_STMT, sqlStmt, "prepareSelectStmt (statement)", true, errorKey);
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_DBC, sqlConnection, errorKey);
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_STMT, sqlStmt, errorKey);
 	}
 
 
@@ -205,9 +205,8 @@ static SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfi
 
 	if (!SQL_SUCCEEDED (ret) || ret == SQL_SUCCESS_WITH_INFO)
 	{
-		setOdbcError (SQL_HANDLE_DBC, sqlConnection, "prepareSelectStmt (identifierQuoteChar)", true, errorKey);
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_DBC, sqlConnection, errorKey);
 	}
-
 
 	char * queryString;
 	if (quoteCharLen > 1)
@@ -222,7 +221,7 @@ static SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfi
 			ELEKTRA_LOG_NOTICE (
 				"Could not get an identifier quote string from the driver, despite the driver state that the string for "
 				"the info SQL_IDENTIFIER_QUOTE_CHAR has more than one character!");
-			setOdbcError (SQL_HANDLE_DBC, sqlConnection, "prepareSelectStmt (identifierQuoteString)", false, errorKey);
+			ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_DBC, sqlConnection, errorKey);
 
 			elektraFree (identifierQuoteStr);
 			SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
@@ -233,7 +232,7 @@ static SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfi
 		}
 		else if (ret == SQL_SUCCESS_WITH_INFO)
 		{
-			setOdbcError (SQL_HANDLE_DBC, sqlConnection, "prepareSelectStmt (identifierQuoteString)", true, errorKey);
+			ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_DBC, sqlConnection, errorKey);
 		}
 
 		queryString = getSelectQueryString (dsConfig, identifierQuoteStr);
@@ -274,7 +273,7 @@ static SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfi
 	{
 		if (ret == SQL_SUCCESS_WITH_INFO)
 		{
-			setOdbcError (SQL_HANDLE_STMT, sqlStmt, "prepareSelectStmt", true, errorKey);
+			ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_STMT, sqlStmt, errorKey);
 		}
 
 		return sqlStmt;
@@ -282,7 +281,7 @@ static SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfi
 	else
 	{
 		ELEKTRA_LOG_NOTICE ("SQLAllocHandle() failed!\nCould not allocate a handle for an SQL statement!");
-		setOdbcError (SQL_HANDLE_STMT, sqlStmt, "prepareSelectStmt", false, errorKey);
+		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_STMT, sqlStmt, errorKey);
 
 		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 		SQLDisconnect (sqlConnection);
@@ -298,6 +297,7 @@ static SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfi
  * @pre The @p 'sqlStmt' handle must have been initialized and prepared
  *
  * @param sqlStmt The prepared SQL statement that should be executed
+ * 	This handle gets freed if an error occurred, so don't dereference it if the function returned 'false'.
  * @param[out] errorKey Used to store errors and warnings
  *
  * @retval 'true' if the statement got executed successfully
@@ -311,13 +311,13 @@ static bool executeSqlStatement (SQLHSTMT sqlStmt, Key * errorKey)
 
 	if (!SQL_SUCCEEDED (ret))
 	{
-		setOdbcError (SQL_HANDLE_STMT, sqlStmt, "executeSqlStatement", false, errorKey);
+		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_STMT, sqlStmt, errorKey);
 		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 		return false;
 	}
 	else if (ret == SQL_SUCCESS_WITH_INFO)
 	{
-		setOdbcError (SQL_HANDLE_STMT, sqlStmt, "executeSqlStatement", true, errorKey);
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_STMT, sqlStmt, errorKey);
 	}
 
 	return true;
@@ -337,6 +337,7 @@ static bool executeSqlStatement (SQLHSTMT sqlStmt, Key * errorKey)
  * The buffer is just only as a pointer because the memory maybe gets reallocated and moved to a different memory address.
  *
  * @param sqlStmt The executed statement, for which @b SQLFetch() has been called before
+ * 	This handle gets freed if an error occurred, so don't dereference it if the function returned 'false'.
  * @param colNumber The number of the column from which the data should be retrieved
  * @param targetType The C data type that the fetched result should be converted to
  * 	See https://learn.microsoft.com/en-us/sql/odbc/reference/appendixes/converting-data-from-c-to-sql-data-types for supported
@@ -395,7 +396,7 @@ static bool getLongData (SQLHSTMT sqlStmt, SQLUSMALLINT colNumber, SQLSMALLINT t
 		{
 			if (getDataRet == SQL_SUCCESS_WITH_INFO)
 			{
-				setOdbcError (SQL_HANDLE_STMT, sqlStmt, "getLongData", true, errorKey);
+				ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_STMT, sqlStmt, errorKey);
 			}
 			else
 			{
@@ -406,7 +407,7 @@ static bool getLongData (SQLHSTMT sqlStmt, SQLUSMALLINT colNumber, SQLSMALLINT t
 		}
 		else
 		{
-			setOdbcError (SQL_HANDLE_STMT, sqlStmt, "getLongData", false, errorKey);
+			ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_STMT, sqlStmt, errorKey);
 			SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 			return false;
 		}
@@ -425,6 +426,7 @@ static bool getLongData (SQLHSTMT sqlStmt, SQLUSMALLINT colNumber, SQLSMALLINT t
  * This function also converts the data retrieved from the datasource to a KeySet (keys + associated values and metadata)
  *
  * @param sqlStmt An executed SQL statement
+ * 	This handle gets freed if an error occurred, so don't dereference it if the function returned NULL.
  * @param buffers A struct with the pre-defined output buffers that are used to retrieve that data of the queried columns
  * 	See \ref struct columnData "struct columnData".
  * @param[out] errorKey Used to store errors and warnings
@@ -460,7 +462,7 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 
 		if (!SQL_SUCCEEDED (ret))
 		{
-			setOdbcError (SQL_HANDLE_STMT, sqlStmt, "fetchResults", false, errorKey);
+			ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_STMT, sqlStmt, errorKey);
 			elektraFree (prevKeyName);
 
 			if (ksResult)
@@ -471,240 +473,236 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 			SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 			return NULL;
 		}
-		else
-		{
-			ELEKTRA_ASSERT (
-				buffers->bufferKeyName[0] && buffers->nameLenInd != SQL_NULL_DATA,
+
+		ELEKTRA_ASSERT (buffers->bufferKeyName[0] && buffers->nameLenInd != SQL_NULL_DATA,
 				"The ODBC-backend retrieved an empty- or null-string for the key-name. This is not allowed! Please check "
 				"you data source.");
 
-			char * longKeyName = NULL;
-			char * longKeyString = NULL;
-			char * longMetaKeyName = NULL;
-			char * longMetaKeyString = NULL;
-			bool isFurtherMetaKey = false;
+		char * longKeyName = NULL;
+		char * longKeyString = NULL;
+		char * longMetaKeyName = NULL;
+		char * longMetaKeyString = NULL;
+		bool isFurtherMetaKey = false;
 
 
-			if (ret == SQL_SUCCESS_WITH_INFO)
+		if (ret == SQL_SUCCESS_WITH_INFO)
+		{
+			/* Check if string was truncated (buffer too small) */
+			SQLCHAR sqlState[SQL_SQLSTATE_SIZE + 1];
+			SQLGetDiagField (SQL_HANDLE_STMT, sqlStmt, 1, SQL_DIAG_SQLSTATE, sqlState, SQL_SQLSTATE_SIZE + 1, 0);
+
+
+			/* SQLSTATE 01004 = Data truncated */
+			if (elektraStrCmp ((const char *) sqlState, "01004") == 0)
 			{
-				/* Check if string was truncated (buffer too small) */
-				SQLCHAR sqlState[SQL_SQLSTATE_SIZE + 1];
-				SQLGetDiagField (SQL_HANDLE_STMT, sqlStmt, 1, SQL_DIAG_SQLSTATE, sqlState, SQL_SQLSTATE_SIZE + 1, 0);
+				/* The buffer size constants include the byte for the \0, while the LenInd-variables don't! */
 
-
-				/* SQLSTATE 01004 = Data truncated */
-				if (elektraStrCmp ((const char *) sqlState, "01004") == 0)
+				/* Check key-name column */
+				bool retGetLongData = true;
+				if (buffers->nameLenInd == SQL_NO_TOTAL)
 				{
-					/* The buffer size constants include the byte for the \0, while the LenInd-variables don't! */
-
-					/* Check key-name column */
-					bool retGetLongData = true;
-					if (buffers->nameLenInd == SQL_NO_TOTAL)
-					{
-						/* No information about the total length is available --> The new buffer maybe must be
-						 * resized multiple times */
-						longKeyName = (char *) elektraMalloc (sizeof (char) * (KEYNAME_BUFFER_SIZE * 2));
-						retGetLongData = getLongData (sqlStmt, 1, SQL_C_CHAR, &longKeyName, KEYNAME_BUFFER_SIZE * 2,
-									      errorKey);
-					}
-					else if (KEYNAME_BUFFER_SIZE <= buffers->nameLenInd)
-					{
-						longKeyName = (char *) elektraMalloc (sizeof (char) * (buffers->nameLenInd + 1));
-						retGetLongData = getLongData (sqlStmt, 1, SQL_C_CHAR, &longKeyName,
-									      (buffers->nameLenInd + 1), errorKey);
-					}
-
-					/* Check if the keyname changed since the last iteration */
-					if (longKeyName && prevKeyName && elektraStrCmp (longKeyName, prevKeyName) == 0)
-					{
-						elektraFree (longKeyName);
-						longKeyName = NULL;
-						isFurtherMetaKey = true;
-					}
-					else if (longKeyName)
-					{
-						elektraFree (prevKeyName);
-						prevKeyName = longKeyName;
-					}
-
-					/* Check key-string column */
-					if (!isFurtherMetaKey && retGetLongData && buffers->strLenInd == SQL_NO_TOTAL)
-					{
-						longKeyString = (char *) elektraMalloc (sizeof (char) * (KEYSTRING_BUFFER_SIZE * 2));
-						retGetLongData = getLongData (sqlStmt, 2, SQL_C_CHAR, &longKeyString,
-									      KEYSTRING_BUFFER_SIZE * 2, errorKey);
-					}
-					else if (!isFurtherMetaKey && KEYSTRING_BUFFER_SIZE <= buffers->strLenInd)
-					{
-						longKeyString = (char *) elektraMalloc (sizeof (char) * (buffers->strLenInd + 1));
-						retGetLongData = getLongData (sqlStmt, 2, SQL_C_CHAR, &longKeyString,
-									      (buffers->strLenInd + 1), errorKey);
-					}
-
-					/* Check metakey-name column */
-					if (retGetLongData && buffers->metaNameLenInd == SQL_NO_TOTAL)
-					{
-						longMetaKeyName = (char *) elektraMalloc (sizeof (char) * (METAKEYNAME_BUFFER_SIZE * 2));
-						retGetLongData = getLongData (sqlStmt, 3, SQL_C_CHAR, &longMetaKeyName,
-									      METAKEYNAME_BUFFER_SIZE * 2, errorKey);
-					}
-					else if (METAKEYNAME_BUFFER_SIZE <= buffers->metaNameLenInd)
-					{
-						longMetaKeyName = (char *) elektraMalloc (sizeof (char) * (buffers->metaNameLenInd + 1));
-						retGetLongData = getLongData (sqlStmt, 3, SQL_C_CHAR, &longMetaKeyName,
-									      (buffers->metaNameLenInd + 1), errorKey);
-					}
-
-					/* Check metakey-string column */
-					if (retGetLongData && buffers->metaStrLenInd == SQL_NO_TOTAL)
-					{
-						longMetaKeyString = (char *) elektraMalloc (sizeof (char) * (METASTRING_BUFFER_SIZE * 2));
-						retGetLongData = getLongData (sqlStmt, 4, SQL_C_CHAR, &longMetaKeyString,
-									      METASTRING_BUFFER_SIZE * 2, errorKey);
-					}
-					else if (METASTRING_BUFFER_SIZE <= buffers->metaStrLenInd)
-					{
-						longMetaKeyString = (char *) elektraMalloc (sizeof (char) * (buffers->metaStrLenInd + 1));
-						retGetLongData = getLongData (sqlStmt, 4, SQL_C_CHAR, &longMetaKeyString,
-									      (buffers->metaStrLenInd + 1), errorKey);
-					}
-
-					if (!retGetLongData)
-					{
-						/* The variable longKeyName should not be freed here, it either points to the same memory as
-						 * prevKeyName or is NULL */
-
-						elektraFree (prevKeyName);
-						elektraFree (longKeyString);
-						elektraFree (longMetaKeyName);
-						elektraFree (longMetaKeyString);
-
-						/* Statement handle was already freed by getLongData() function */
-						if (ksResult)
-						{
-							ksDel (ksResult);
-						}
-
-						SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
-						return NULL;
-					}
+					/* No information about the total length is available --> The new buffer maybe must be
+					 * resized multiple times */
+					longKeyName = (char *) elektraMalloc (sizeof (char) * (KEYNAME_BUFFER_SIZE * 2));
+					retGetLongData =
+						getLongData (sqlStmt, 1, SQL_C_CHAR, &longKeyName, KEYNAME_BUFFER_SIZE * 2, errorKey);
 				}
-				else
+				else if (KEYNAME_BUFFER_SIZE <= buffers->nameLenInd)
 				{
-					setOdbcError (SQL_HANDLE_STMT, sqlStmt, "fetchResults", true, errorKey);
+					longKeyName = (char *) elektraMalloc (sizeof (char) * (buffers->nameLenInd + 1));
+					retGetLongData =
+						getLongData (sqlStmt, 1, SQL_C_CHAR, &longKeyName, (buffers->nameLenInd + 1), errorKey);
 				}
-			}
 
-			if (!isFurtherMetaKey && !longKeyName)
-			{
-				/* Check short keyname */
-				if (prevKeyName && elektraStrCmp (prevKeyName, (const char *) buffers->bufferKeyName) == 0)
+				/* Check if the keyname changed since the last iteration */
+				if (longKeyName && prevKeyName && elektraStrCmp (longKeyName, prevKeyName) == 0)
 				{
+					elektraFree (longKeyName);
+					longKeyName = NULL;
 					isFurtherMetaKey = true;
 				}
-				else
+				else if (longKeyName)
 				{
 					elektraFree (prevKeyName);
-					prevKeyName = elektraStrDup ((const char *) buffers->bufferKeyName);
-				}
-			}
-
-			if (!ksResult)
-			{
-				ksResult = ksNew (0, KS_END);
-			}
-
-			if (!isFurtherMetaKey)
-			{
-				/* Create new key */
-				prevKey = curKey;
-				curKey = keyDup (errorKey, KEY_CP_NAME);
-
-				if (longKeyName)
-				{
-					keyAddName (curKey, longKeyName);
-					/* No freeing of longKeyName here, because the same string is referenced by prevKeyName! */
-				}
-				else
-				{
-					keyAddName (curKey, (char *) buffers->bufferKeyName);
+					prevKeyName = longKeyName;
 				}
 
-
-				if (longKeyString)
+				/* Check key-string column */
+				if (!isFurtherMetaKey && retGetLongData && buffers->strLenInd == SQL_NO_TOTAL)
 				{
-					keySetString (curKey, longKeyString);
+					longKeyString = (char *) elektraMalloc (sizeof (char) * (KEYSTRING_BUFFER_SIZE * 2));
+					retGetLongData =
+						getLongData (sqlStmt, 2, SQL_C_CHAR, &longKeyString, KEYSTRING_BUFFER_SIZE * 2, errorKey);
+				}
+				else if (!isFurtherMetaKey && KEYSTRING_BUFFER_SIZE <= buffers->strLenInd)
+				{
+					longKeyString = (char *) elektraMalloc (sizeof (char) * (buffers->strLenInd + 1));
+					retGetLongData =
+						getLongData (sqlStmt, 2, SQL_C_CHAR, &longKeyString, (buffers->strLenInd + 1), errorKey);
+				}
+
+				/* Check metakey-name column */
+				if (retGetLongData && buffers->metaNameLenInd == SQL_NO_TOTAL)
+				{
+					longMetaKeyName = (char *) elektraMalloc (sizeof (char) * (METAKEYNAME_BUFFER_SIZE * 2));
+					retGetLongData = getLongData (sqlStmt, 3, SQL_C_CHAR, &longMetaKeyName, METAKEYNAME_BUFFER_SIZE * 2,
+								      errorKey);
+				}
+				else if (METAKEYNAME_BUFFER_SIZE <= buffers->metaNameLenInd)
+				{
+					longMetaKeyName = (char *) elektraMalloc (sizeof (char) * (buffers->metaNameLenInd + 1));
+					retGetLongData = getLongData (sqlStmt, 3, SQL_C_CHAR, &longMetaKeyName,
+								      (buffers->metaNameLenInd + 1), errorKey);
+				}
+
+				/* Check metakey-string column */
+				if (retGetLongData && buffers->metaStrLenInd == SQL_NO_TOTAL)
+				{
+					longMetaKeyString = (char *) elektraMalloc (sizeof (char) * (METASTRING_BUFFER_SIZE * 2));
+					retGetLongData = getLongData (sqlStmt, 4, SQL_C_CHAR, &longMetaKeyString,
+								      METASTRING_BUFFER_SIZE * 2, errorKey);
+				}
+				else if (METASTRING_BUFFER_SIZE <= buffers->metaStrLenInd)
+				{
+					longMetaKeyString = (char *) elektraMalloc (sizeof (char) * (buffers->metaStrLenInd + 1));
+					retGetLongData = getLongData (sqlStmt, 4, SQL_C_CHAR, &longMetaKeyString,
+								      (buffers->metaStrLenInd + 1), errorKey);
+				}
+
+				if (!retGetLongData)
+				{
+					/* The variable longKeyName should not be freed here, it either points to the same memory as
+					 * prevKeyName or is NULL */
+
+					elektraFree (prevKeyName);
 					elektraFree (longKeyString);
-				}
-				else if (buffers->bufferKeyStr[0] && buffers->strLenInd != SQL_NULL_DATA)
-				{
-					keySetString (curKey, (char *) buffers->bufferKeyStr);
-				}
-				else
-				{
-					keySetString (curKey, "");
+					elektraFree (longMetaKeyName);
+					elektraFree (longMetaKeyString);
+
+					/* Statement handle was already freed by getLongData() function */
+					if (ksResult)
+					{
+						ksDel (ksResult);
+					}
+
+					SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
+					return NULL;
 				}
 			}
 			else
 			{
-				ELEKTRA_ASSERT (
-					curKey,
+				ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_STMT, sqlStmt, errorKey);
+			}
+		}
+
+		if (!isFurtherMetaKey && !longKeyName)
+		{
+			/* Check short keyname */
+			if (prevKeyName && elektraStrCmp (prevKeyName, (const char *) buffers->bufferKeyName) == 0)
+			{
+				isFurtherMetaKey = true;
+			}
+			else
+			{
+				elektraFree (prevKeyName);
+				prevKeyName = elektraStrDup ((const char *) buffers->bufferKeyName);
+			}
+		}
+
+		if (!ksResult)
+		{
+			ksResult = ksNew (0, KS_END);
+		}
+
+		if (!isFurtherMetaKey)
+		{
+			/* Create new key */
+			prevKey = curKey;
+			curKey = keyDup (errorKey, KEY_CP_NAME);
+
+			if (longKeyName)
+			{
+				keyAddName (curKey, longKeyName);
+				/* No freeing of longKeyName here, because the same string is referenced by prevKeyName! */
+			}
+			else
+			{
+				keyAddName (curKey, (char *) buffers->bufferKeyName);
+			}
+
+
+			if (longKeyString)
+			{
+				keySetString (curKey, longKeyString);
+				elektraFree (longKeyString);
+			}
+			else if (buffers->bufferKeyStr[0] && buffers->strLenInd != SQL_NULL_DATA)
+			{
+				keySetString (curKey, (char *) buffers->bufferKeyStr);
+			}
+			else
+			{
+				keySetString (curKey, "");
+			}
+		}
+		else
+		{
+			ELEKTRA_ASSERT (curKey,
 					"The flag the indicates that a further metakey is present was set, but the current key was NULL. "
 					"This is likely a programming error.\nPlease report this issues at https://issues.libelektra.org");
-			}
+		}
 
-			const char * metaKeyName = NULL;
+		const char * metaKeyName = NULL;
 
-			if (longMetaKeyName)
-			{
-				metaKeyName = longMetaKeyName;
-			}
-			else if (buffers->bufferMetaKeyName[0] && buffers->metaNameLenInd != SQL_NULL_DATA)
-			{
-				metaKeyName = (const char *) buffers->bufferMetaKeyName;
-			}
-			else
-			{
-				ELEKTRA_ASSERT (!longMetaKeyString && !(buffers->bufferMetaKeyStr[0]),
-						"No metakey-name was found, but a metakey-string, maybe the datasource contains invalid "
-						"data, please check your datasource!");
-			}
+		if (longMetaKeyName)
+		{
+			metaKeyName = longMetaKeyName;
+		}
+		else if (buffers->bufferMetaKeyName[0] && buffers->metaNameLenInd != SQL_NULL_DATA)
+		{
+			metaKeyName = (const char *) buffers->bufferMetaKeyName;
+		}
+		else
+		{
+			ELEKTRA_ASSERT (!longMetaKeyString && !(buffers->bufferMetaKeyStr[0]),
+					"No metakey-name was found, but a metakey-string, maybe the datasource contains invalid "
+					"data, please check your datasource!");
+		}
 
 
-			if (metaKeyName)
+		if (metaKeyName)
+		{
+			if (longMetaKeyString || buffers->bufferMetaKeyStr[0])
 			{
-				if (longMetaKeyString || buffers->bufferMetaKeyStr[0])
+				if (longMetaKeyString)
 				{
-					if (longMetaKeyString)
-					{
-						keySetMeta (curKey, metaKeyName, longMetaKeyString);
-						elektraFree (longMetaKeyString);
-					}
-					else
-					{
-						keySetMeta (curKey, metaKeyName, (const char *) buffers->bufferMetaKeyStr);
-					}
+					keySetMeta (curKey, metaKeyName, longMetaKeyString);
+					elektraFree (longMetaKeyString);
 				}
 				else
 				{
-					keySetMeta (curKey, metaKeyName, "");
+					keySetMeta (curKey, metaKeyName, (const char *) buffers->bufferMetaKeyStr);
 				}
 			}
-
-			elektraFree (longMetaKeyName);
-
-
-			if (prevKey && curKey != prevKey)
+			else
 			{
-				/* Previous key (incl. all metakeys) is finished --> add it to KeySet */
-				ksAppendKey (ksResult, prevKey);
+				keySetMeta (curKey, metaKeyName, "");
 			}
-
-			buffers->bufferKeyName[0] = 0;
-			buffers->bufferKeyStr[0] = 0;
-			buffers->bufferMetaKeyName[0] = 0;
-			buffers->bufferMetaKeyStr[0] = 0;
 		}
+
+		elektraFree (longMetaKeyName);
+
+
+		if (prevKey && curKey != prevKey)
+		{
+			/* Previous key (incl. all metakeys) is finished --> add it to KeySet */
+			ksAppendKey (ksResult, prevKey);
+		}
+
+		buffers->bufferKeyName[0] = 0;
+		buffers->bufferKeyStr[0] = 0;
+		buffers->bufferMetaKeyName[0] = 0;
+		buffers->bufferMetaKeyStr[0] = 0;
 	}
 
 	elektraFree (prevKeyName);

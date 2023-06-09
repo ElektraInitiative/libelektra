@@ -73,7 +73,7 @@ char ** extractOdbcErrors (SQLSMALLINT handleType, SQLHANDLE odbcHandle)
 		{
 			ELEKTRA_ASSERT (msgCount >= 0,
 					"The message counter reached a value which indicates a negative count of messages, this looks like "
-					"a bug!\nPlease report this bug at https://issues.libelektra.org.");
+					"a bug! Please report this bug at https://issues.libelektra.org.");
 
 			if (msgCount == 0)
 			{
@@ -129,7 +129,8 @@ char ** extractOdbcErrors (SQLSMALLINT handleType, SQLHANDLE odbcHandle)
  * @retval 0 if no error/warning was found
  * @retval -1 if an error occurred in this function (e.g. invalid handle given)
  */
-int setOdbcError (SQLSMALLINT handleType, SQLHANDLE handle, char * functionName, bool isWarning, Key * errorKey)
+int setOdbcError (SQLSMALLINT handleType, SQLHANDLE handle, const char * fileName, const char * functionName, const char * lineNo,
+		  bool isWarning, Key * errorKey)
 {
 	/* Get number of available status records */
 	SQLSMALLINT numRecs = 0;
@@ -194,29 +195,29 @@ int setOdbcError (SQLSMALLINT handleType, SQLHANDLE handle, char * functionName,
 		 * see: https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/sequence-of-status-records */
 		if (i == 1 && !isWarning)
 		{
-			ELEKTRA_SET_INTERNAL_ERRORF (errorKey,
-						     "An ODBC function returned an error for the mountpoint '%s'\n"
-						     "in the function '%s'\n"
-						     "The following information is from the ODBC library:\n"
-						     "Number of error: %d of %d\n"
-						     "Status code: %s\n"
-						     "Native error code: %d\n"
-						     "Error message: %s\n",
-						     keyString (errorKey), functionName ? functionName : "", i, numRecs, sqlState,
-						     nativeError, longErrMsg ? longErrMsg : errMsg);
+			elektraSetErrorINTERNAL (errorKey, fileName, lineNo, ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),
+						 "An ODBC function returned an error for the mountpoint '%s'\n"
+						 "in the function '%s'\n"
+						 "The following information is from the ODBC library:\n"
+						 "Number of error: %d of %d\n"
+						 "Status code: %s\n"
+						 "Native error code: %d\n"
+						 "Error message: %s\n",
+						 keyString (errorKey), functionName ? functionName : "", i, numRecs, sqlState, nativeError,
+						 longErrMsg ? longErrMsg : errMsg);
 		}
 		else
 		{
-			ELEKTRA_ADD_INTERNAL_WARNINGF (errorKey,
-						       "An ODBC function returned an error for the mountpoint '%s'\n"
-						       "in the function '%s'\n"
-						       "The following information is from the ODBC library:\n"
-						       "Number of error: %d of %d\n"
-						       "Status code: %s\n"
-						       "Native error code: %d\n"
-						       "Error message: %s\n",
-						       keyString (errorKey), functionName ? functionName : "", i, numRecs, sqlState,
-						       nativeError, longErrMsg ? longErrMsg : errMsg);
+			elektraAddWarningINTERNAL (errorKey, fileName, lineNo, ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),
+						   "An ODBC function returned an error for the mountpoint '%s'\n"
+						   "in the function '%s'\n"
+						   "The following information is from the ODBC library:\n"
+						   "Number of error: %d of %d\n"
+						   "Status code: %s\n"
+						   "Native error code: %d\n"
+						   "Error message: %s\n",
+						   keyString (errorKey), functionName ? functionName : "", i, numRecs, sqlState,
+						   nativeError, longErrMsg ? longErrMsg : errMsg);
 		}
 		elektraFree (longErrMsg);
 	}
@@ -247,7 +248,7 @@ char ** getAvailableDataSources (void)
 {
 	SQLHENV env;
 
-	SQLCHAR * dsn = NULL;
+	char * dsn = NULL;
 	SQLSMALLINT lenDsn;
 	SQLSMALLINT maxLenDsn = 0;
 
@@ -264,7 +265,7 @@ char ** getAvailableDataSources (void)
 		{
 			ELEKTRA_ASSERT (dsnCount >= 0,
 					"The datasource counter reached a value which indicates a negative count of data sources, this "
-					"looks like a bug!\nPlease report this bug at https://issues.libelektra.org.");
+					"looks like a bug! Please report this bug at https://issues.libelektra.org.");
 			if (dsnCount == 0)
 			{
 				/* No data sources found */
@@ -272,20 +273,21 @@ char ** getAvailableDataSources (void)
 			}
 
 			/* We need one entry for the NULL indicating the end of the returned string array */
-			result = elektraMalloc ((dsnCount + 1) * sizeof (char *));
+			result = elektraCalloc ((dsnCount + 1) * sizeof (char *));
 
 			/* Add one byte for \0 */
-			dsn = elektraMalloc ((maxLenDsn + 1) * sizeof (SQLCHAR));
+			dsn = elektraMalloc ((maxLenDsn + 1) * sizeof (char));
 		}
 
 		dsnCount = 0;
 		for (SQLUSMALLINT direction = SQL_FETCH_FIRST;
-		     SQL_SUCCEEDED (SQLDataSources (env, direction, dsn, i ? maxLenDsn + 1 : 0, &lenDsn, NULL, 0, NULL));
+		     SQL_SUCCEEDED (SQLDataSources (env, direction, (SQLCHAR *) dsn, i ? maxLenDsn + 1 : 0, &lenDsn, NULL, 0, NULL));
 		     direction = SQL_FETCH_NEXT)
 		{
 			if (i)
 			{
-				result[dsnCount] = (char *) dsn;
+				result[dsnCount] = elektraCalloc ((lenDsn + 1) * sizeof (char));
+				strcpy (result[dsnCount], (char *) dsn);
 			}
 			else
 			{
@@ -357,16 +359,18 @@ static char * lookupStringFromKs (KeySet * ks, const char * keyName)
  * @see ELEKTRA_PLUGIN_FUNCTION (init)
  * @see https://www.libelektra.org/devdocu/backend-plugins
  */
-struct dataSourceConfig * fillDsStructFromDefinitionKs (KeySet * ksDefinition)
+struct dataSourceConfig * fillDsStructFromDefinitionKs (KeySet * ksDefinition, Key * errorKey)
 {
 	if (!ksDefinition)
 	{
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "Got NULL for the 'ksDefinition' argument.");
 		return NULL;
 	}
 
 	struct dataSourceConfig * dsConfig = elektraCalloc (sizeof (struct dataSourceConfig));
 	if (!dsConfig)
 	{
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 		return NULL;
 	}
 
@@ -377,6 +381,8 @@ struct dataSourceConfig * fillDsStructFromDefinitionKs (KeySet * ksDefinition)
 
 	if (!(dsConfig->dataSourceName))
 	{
+		ELEKTRA_SET_INTERFACE_ERROR (
+			errorKey, "The mandatory value 'dataSourceName' was missing from the mountpoint definition in 'ksDefinition'.");
 		valueMissing = true;
 	}
 
@@ -392,6 +398,8 @@ struct dataSourceConfig * fillDsStructFromDefinitionKs (KeySet * ksDefinition)
 		dsConfig->tableName = lookupStringFromKs (ksDefinition, "system:/table/name");
 		if (!(dsConfig->tableName))
 		{
+			ELEKTRA_SET_INTERFACE_ERROR (
+				errorKey, "The mandatory value 'tableName' was missing from the mountpoint definition in 'ksDefinition'.");
 			valueMissing = true;
 		}
 	}
@@ -399,10 +407,19 @@ struct dataSourceConfig * fillDsStructFromDefinitionKs (KeySet * ksDefinition)
 	if (!valueMissing)
 	{
 		dsConfig->keyColName = lookupStringFromKs (ksDefinition, "system:/table/keyColName");
+		if (!(dsConfig->keyColName))
+		{
+			ELEKTRA_SET_INTERFACE_ERROR (
+				errorKey, "The mandatory value 'keyColName' was missing from the mountpoint definition in 'ksDefinition'.");
+			valueMissing = true;
+		}
+
 		dsConfig->valColName = lookupStringFromKs (ksDefinition, "system:/table/valColName");
 
-		if (!(dsConfig->keyColName) || !(dsConfig->valColName))
+		if (!(dsConfig->valColName))
 		{
+			ELEKTRA_SET_INTERFACE_ERROR (
+				errorKey, "The mandatory value 'valColName' was missing from the mountpoint definition in 'ksDefinition'.");
 			valueMissing = true;
 		}
 	}
@@ -411,15 +428,42 @@ struct dataSourceConfig * fillDsStructFromDefinitionKs (KeySet * ksDefinition)
 	{
 		dsConfig->metaTableName = lookupStringFromKs (ksDefinition, "system:/metaTable/name");
 
+		/* TODO: also support data sources without metatables (then no metadata is supported for such mountpoints)
+		 * This can be useful for ODBC drivers which don't support outer joins. */
+		if (!(dsConfig->metaTableName))
+		{
+			ELEKTRA_SET_INTERFACE_ERROR (
+				errorKey,
+				"The mandatory value 'metaTableName' was missing from the mountpoint definition in 'ksDefinition'.");
+			valueMissing = true;
+		}
+
 		if (dsConfig->metaTableName)
 		{
 			dsConfig->metaTableKeyColName = lookupStringFromKs (ksDefinition, "system:/metaTable/keyColName");
-			dsConfig->metaTableMetaKeyColName = lookupStringFromKs (ksDefinition, "system:/metaTable/metaKeyColName");
-			dsConfig->metaTableMetaValColName = lookupStringFromKs (ksDefinition, "system:/metaTable/metaValColName");
-
-			if (!(dsConfig->metaTableKeyColName) || !(dsConfig->metaTableMetaKeyColName) ||
-			    !(dsConfig->metaTableMetaValColName))
+			if (!(dsConfig->metaTableKeyColName))
 			{
+				ELEKTRA_SET_INTERFACE_ERROR (errorKey,
+							     "The mandatory value 'metaTableKeyColName' was missing from the mountpoint "
+							     "definition in 'ksDefinition'.");
+				valueMissing = true;
+			}
+
+			dsConfig->metaTableMetaKeyColName = lookupStringFromKs (ksDefinition, "system:/metaTable/metaKeyColName");
+			if (!(dsConfig->metaTableMetaKeyColName))
+			{
+				ELEKTRA_SET_INTERFACE_ERROR (errorKey,
+							     "The mandatory value 'metaTableMetaKeyColName' was missing from the "
+							     "mountpoint definition in 'ksDefinition'.");
+				valueMissing = true;
+			}
+
+			dsConfig->metaTableMetaValColName = lookupStringFromKs (ksDefinition, "system:/metaTable/metaValColName");
+			if (!(dsConfig->metaTableMetaValColName))
+			{
+				ELEKTRA_SET_INTERFACE_ERROR (errorKey,
+							     "The mandatory value 'metaTableMetaValColName' was missing from the "
+							     "mountpoint definition in 'ksDefinition'.");
 				valueMissing = true;
 			}
 		}

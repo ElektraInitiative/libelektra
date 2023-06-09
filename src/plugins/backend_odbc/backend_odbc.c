@@ -25,26 +25,32 @@ int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * ksDefinition, Key 
 {
 	if (!ksDefinition)
 	{
-		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "Got NULL for the KeySet 'ksDefinition' for the mountpoint at %s\n",
+		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "Got NULL for the 'ksDefinition' argument for the mountpoint at %s",
 						 keyName (parentKey));
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	else if (!plugin)
 	{
-		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "Got NULL for the 'plugin' argument for the mountpoint at %s\n",
+		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "Got NULL for the 'plugin' argument for the mountpoint at %s",
 						 keyName (parentKey));
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
 	/* Parse the mountpoint definition and check if the mountpoint definition CAN be valid */
-	struct dataSourceConfig * dsConfig = fillDsStructFromDefinitionKs (ksDefinition);
+	struct dataSourceConfig * dsConfig = fillDsStructFromDefinitionKs (ksDefinition, parentKey);
 
 	if (!dsConfig)
 	{
-		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "Could not get all necessary data from the mountpoint definition at %s\n",
-						 keyName (parentKey));
+		/* The fillDsStructFromDefinitionKs () function should've set the error on the parentKey */
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
+
+	void * pluginData = elektraPluginGetData (plugin);
+	if (pluginData)
+	{
+		elektraFree (pluginData);
+	}
+
 
 	elektraPluginSetData (plugin, dsConfig);
 
@@ -96,8 +102,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ksReturned, Key * p
 		ssize_t ret = keySetString (parentKey, dsConfigToString (dsConfig));
 
 		ELEKTRA_ASSERT (ret != 0,
-				"keySetString returned 0. This looks like a programming error!\\nPlease report the issue at "
-				"https://issues.libelektra.org");
+				"keySetString returned 0. This looks like a bug! Please report the issue at https://issues.libelektra.org");
 		if (ret == 1 || ret == -1)
 		{
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -109,7 +114,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ksReturned, Key * p
 	}
 	case ELEKTRA_KDB_GET_PHASE_CACHECHECK:
 		/* TODO: implement cache */
-		// return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	case ELEKTRA_KDB_GET_PHASE_PRE_STORAGE:
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	case ELEKTRA_KDB_GET_PHASE_STORAGE:

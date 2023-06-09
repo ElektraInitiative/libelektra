@@ -6,7 +6,7 @@ CREATE TABLE elektraKeys (
 );
 
 CREATE TABLE metaKeys (
-    keyName TEXT,
+    keyName TEXT NOT NULL,
     metaKeyName TEXT NOT NULL,
     metaKeyValue TEXT DEFAULT NULL,
     CONSTRAINT fk_metakeys FOREIGN KEY (keyName) REFERENCES elektraKeys (keyName),

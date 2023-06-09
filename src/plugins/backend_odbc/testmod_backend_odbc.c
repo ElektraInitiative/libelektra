@@ -32,17 +32,18 @@ static void test_null_helpers (void)
 	succeed_if (!extractOdbcErrors (SQL_HANDLE_ENV, NULL), "should return NULL");
 
 	Key * testKey = keyNew ("/", KEY_END);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_ENV, NULL, NULL, false, NULL), "should return -1");
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_ENV, NULL, NULL, false, testKey), "should return -1");
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_ENV, NULL, NULL, true, NULL), "should return -1");
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_ENV, NULL, NULL, true, testKey), "should return -1");
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_ENV, NULL, "", false, NULL), "should return -1");
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_ENV, NULL, "", false, testKey), "should return -1");
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_ENV, NULL, "", true, NULL), "should return -1");
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_ENV, NULL, "", true, testKey), "should return -1");
+
+	succeed_if (-1 == setOdbcError (SQL_HANDLE_ENV, NULL, __FILE__, __func__, ELEKTRA_STRINGIFY (__LINE__), false, NULL),
+		    "should return -1");
+	succeed_if (-1 == setOdbcError (SQL_HANDLE_ENV, NULL, __FILE__, __func__, ELEKTRA_STRINGIFY (__LINE__), false, testKey),
+		    "should return -1");
+	succeed_if (-1 == setOdbcError (SQL_HANDLE_ENV, NULL, __FILE__, __func__, ELEKTRA_STRINGIFY (__LINE__), true, NULL),
+		    "should return -1");
+	succeed_if (-1 == setOdbcError (SQL_HANDLE_ENV, NULL, __FILE__, __func__, ELEKTRA_STRINGIFY (__LINE__), true, testKey),
+		    "should return -1");
 	keyDel (testKey);
 
-	succeed_if (!fillDsStructFromDefinitionKs (NULL), "should return NULL");
+	succeed_if (!fillDsStructFromDefinitionKs (NULL, NULL), "should return NULL");
 
 	succeed_if (!dsConfigToString (NULL), "should return NULL");
 }
@@ -129,83 +130,48 @@ static void test_invalid_helpers (void)
 	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
 
 	Key * testKey = keyNew ("/", KEY_END);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_DBC, hEnv, NULL, false, NULL), "should return -1");
+	succeed_if (-1 == setOdbcError (SQL_HANDLE_DBC, hEnv, __FILE__, __func__, ELEKTRA_STRINGIFY (__LINE__), false, NULL),
+		    "should return -1");
 	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_DBC, hEnv, NULL, false, testKey), "should return -1");
+	succeed_if (-1 == setOdbcError (SQL_HANDLE_DBC, hEnv, __FILE__, __func__, ELEKTRA_STRINGIFY (__LINE__), false, testKey),
+		    "should return -1");
 	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_DBC, hEnv, NULL, true, NULL), "should return -1");
+	succeed_if (-1 == setOdbcError (SQL_HANDLE_DBC, hEnv, __FILE__, __func__, ELEKTRA_STRINGIFY (__LINE__), true, NULL),
+		    "should return -1");
 	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_DBC, hEnv, NULL, true, testKey), "should return -1");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_DBC, hEnv, "", false, NULL), "should return -1");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_DBC, hEnv, "", false, testKey), "should return -1");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_DBC, hEnv, "", true, NULL), "should return -1");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_DBC, hEnv, "", true, testKey), "should return -1");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_DBC, hEnv, "testFn", false, NULL), "should return -1");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_DBC, hEnv, "testFn", false, testKey), "should return -1");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_DBC, hEnv, "testFn", true, NULL), "should return -1");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_DBC, hEnv, "testFn", true, testKey), "should return -1");
+	succeed_if (-1 == setOdbcError (SQL_HANDLE_DBC, hEnv, __FILE__, __func__, ELEKTRA_STRINGIFY (__LINE__), true, testKey),
+		    "should return -1");
 	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
 
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_STMT, hEnv, NULL, false, NULL), "should return -1");
+	succeed_if (-1 == setOdbcError (SQL_HANDLE_STMT, hEnv, __FILE__, __func__, ELEKTRA_STRINGIFY (__LINE__), false, NULL),
+		    "should return -1");
 	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_STMT, hEnv, NULL, false, testKey), "should return -1");
+	succeed_if (-1 == setOdbcError (SQL_HANDLE_STMT, hEnv, __FILE__, __func__, ELEKTRA_STRINGIFY (__LINE__), false, testKey),
+		    "should return -1");
 	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_STMT, hEnv, NULL, true, NULL), "should return -1");
+	succeed_if (-1 == setOdbcError (SQL_HANDLE_STMT, hEnv, __FILE__, __func__, ELEKTRA_STRINGIFY (__LINE__), true, NULL),
+		    "should return -1");
 	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_STMT, hEnv, NULL, true, testKey), "should return -1");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_STMT, hEnv, "", false, NULL), "should return -1");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_STMT, hEnv, "", false, testKey), "should return -1");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_STMT, hEnv, "", true, NULL), "should return -1");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_STMT, hEnv, "", true, testKey), "should return -1");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_STMT, hEnv, "testFn", false, NULL), "should return -1");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_STMT, hEnv, "testFn", false, testKey), "should return -1");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_STMT, hEnv, "testFn", true, NULL), "should return -1");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_STMT, hEnv, "testFn", true, testKey), "should return -1");
+	succeed_if (-1 == setOdbcError (SQL_HANDLE_STMT, hEnv, __FILE__, __func__, ELEKTRA_STRINGIFY (__LINE__), true, testKey),
+		    "should return -1");
 	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
 
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_DESC, hEnv, NULL, false, NULL), "should return -1");
+	succeed_if (-1 == setOdbcError (SQL_HANDLE_DESC, hEnv, __FILE__, __func__, ELEKTRA_STRINGIFY (__LINE__), false, NULL),
+		    "should return -1");
 	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_DESC, hEnv, NULL, false, testKey), "should return -1");
+	succeed_if (-1 == setOdbcError (SQL_HANDLE_DESC, hEnv, __FILE__, __func__, ELEKTRA_STRINGIFY (__LINE__), false, testKey),
+		    "should return -1");
 	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_DESC, hEnv, NULL, true, NULL), "should return -1");
+	succeed_if (-1 == setOdbcError (SQL_HANDLE_DESC, hEnv, __FILE__, __func__, ELEKTRA_STRINGIFY (__LINE__), true, NULL),
+		    "should return -1");
 	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_DESC, hEnv, NULL, true, testKey), "should return -1");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_DESC, hEnv, "", false, NULL), "should return -1");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_DESC, hEnv, "", false, testKey), "should return -1");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_DESC, hEnv, "", true, NULL), "should return -1");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_DESC, hEnv, "", true, testKey), "should return -1");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_DESC, hEnv, "testFn", false, NULL), "should return -1");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_DESC, hEnv, "testFn", false, testKey), "should return -1");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_DESC, hEnv, "testFn", true, NULL), "should return -1");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (-1 == setOdbcError (SQL_HANDLE_DESC, hEnv, "testFn", true, testKey), "should return -1");
+	succeed_if (-1 == setOdbcError (SQL_HANDLE_DESC, hEnv, __FILE__, __func__, ELEKTRA_STRINGIFY (__LINE__), true, testKey),
+		    "should return -1");
+
 	keyDel (testKey);
 
 	KeySet * testKs = ksNew (0, KS_END);
-	succeed_if (!fillDsStructFromDefinitionKs (testKs), "should return NULL");
+	succeed_if (!fillDsStructFromDefinitionKs (testKs, NULL), "should return NULL");
 	ksDel (testKs);
 
 
