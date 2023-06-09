@@ -22,7 +22,7 @@
 /**
  * @brief Constructs a SELECT query string for the ODBC backend based on the given data source configuration
  *
- * @param dsConfig A valid data source config, as returned by the \ref fillDsStructFromDefinitionKs "fillDsStructFromDefinitionKs" function
+ * @param dsConfig A valid data source config, as returned by the fillDsStructFromDefinitionKs() function
  * @param quoteString The characters that should be added before and after identifiers, pass NULL if your identifiers in @dsconfig are
  * 	already quoted or if you don't want to use quoted identifiers
  *
@@ -152,8 +152,7 @@ static char * getSelectQueryString (struct dataSourceConfig * dsConfig, char * q
  *
  * @param sqlConnection The initialized connection handle. It must represent an active connection.
  * 	This handle gets freed if an error occurred, so don't dereference it if the function returned NULL.
- * @param dsConfig The configuration of the ODBC data source, as retrieved by \ref fillDsStructFromDefinitionKs
- * "fillDsStructFromDefinitionKs"
+ * @param dsConfig The configuration of the ODBC data source, as retrieved by fillDsStructFromDefinitionKs()
  * @param[out] errorKey Used to store errors and warnings
  *
  * @return A handle to the prepared statement
@@ -428,7 +427,7 @@ static bool getLongData (SQLHSTMT sqlStmt, SQLUSMALLINT colNumber, SQLSMALLINT t
  * @param sqlStmt An executed SQL statement
  * 	This handle gets freed if an error occurred, so don't dereference it if the function returned NULL.
  * @param buffers A struct with the pre-defined output buffers that are used to retrieve that data of the queried columns
- * 	See \ref struct columnData "struct columnData".
+ * 	See 'struct columnData'.
  * @param[out] errorKey Used to store errors and warnings
  *
  * @returns The KeySet with the data retrieved from the SQL SELECT query.

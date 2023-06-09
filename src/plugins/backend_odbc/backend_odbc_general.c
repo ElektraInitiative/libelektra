@@ -54,7 +54,7 @@ SQLHENV allocateEnvHandle (Key * errorKey)
  *
  * This is required by ODBC before allocation a connection handle.
  *
- * @param sqlEnv An allocated ODBC environment handle, as returned by @ref allocateEnvHandle()
+ * @param sqlEnv An allocated ODBC environment handle, as returned by allocateEnvHandle()
  * 	This handle gets freed if an error occurred, so don't dereference it if the function returned 'false'.
  * @param[out] errorKey Used to store errors and warnings
  *

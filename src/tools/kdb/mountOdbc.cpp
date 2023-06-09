@@ -94,8 +94,9 @@ int MountOdbcCommand::execute (Cmdline const & cl)
 	}
 
 	kdb::KeySet ksOdbcConfig;
+#if DEBUG
 	ssize_t requiredSize = 11;
-
+#endif
 	/* Now use the specified mountpoint to create the mountpoint configuration under "system:/elektra/mountpoints" */
 	kdb::Key keyMp ("system:/elektra/mountpoints/" + mp, KEY_END);
 	ksOdbcConfig.append (keyMp);
@@ -108,14 +109,18 @@ int MountOdbcCommand::execute (Cmdline const & cl)
 	{
 		ksOdbcConfig.append (
 			kdb::Key ("system:/elektra/mountpoints/" + mp + "/definition/userName", KEY_VALUE, userName.c_str (), KEY_END));
+#if DEBUG
 		requiredSize++;
+#endif
 	}
 
 	if (!password.empty ())
 	{
 		ksOdbcConfig.append (
 			kdb::Key ("system:/elektra/mountpoints/" + mp + "/definition/password", KEY_VALUE, password.c_str (), KEY_END));
+#if DEBUG
 		requiredSize++;
+#endif
 	}
 
 	ksOdbcConfig.append (

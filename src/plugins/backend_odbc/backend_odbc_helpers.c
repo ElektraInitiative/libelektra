@@ -498,7 +498,7 @@ struct dataSourceConfig * fillDsStructFromDefinitionKs (KeySet * ksDefinition, K
  * The created string is intended for use as an identifier for a data source.
  * This function should be used during the @b RESOLVER phase of the ODBC backend.
  *
- * @param dsConfig A valid data source config, as returned by the \ref fillDsStructFromDefinitionKs() function
+ * @param dsConfig A valid data source config, as returned by the fillDsStructFromDefinitionKs() function
  *
  * @return A string that contains all fields of the config that identify a data source for the ODBC backend, copied to newly allocated
  * memory Make sure to free the returned string.
