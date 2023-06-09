@@ -1015,7 +1015,8 @@ static void test_hook_remove_spec_keys_from_array_should_succeed (bool isKdbGet)
 	{
 		KeySet * ks = ksNew (0, KS_END);
 
-		ksAppendKey (ks, keyNew ("spec:/sw/libelektra/opensesame/#0/current/sensors/#/loc", KEY_META, "description", "location of the sensor", KEY_END));
+		ksAppendKey (ks, keyNew ("spec:/sw/libelektra/opensesame/#0/current/sensors/#/loc", KEY_META, "description",
+					 "location of the sensor", KEY_END));
 		ksAppendKey (ks, keyNew ("system:/sw/libelektra/opensesame/#0/current/sensors/#0/loc", KEY_VALUE, "guests", KEY_END));
 
 		int resultCopy = elektraSpecCopy (NULL, ks, parentKey, true);
@@ -1070,7 +1071,7 @@ int main (void)
 	example_codegen_menu_test_should_succeed (true);
 	test_with_array_specification_with_array_size_one_should_succeed (true);
 
-	test_hook_remove_spec_keys_from_array_should_succeed(true);
+	test_hook_remove_spec_keys_from_array_should_succeed (true);
 
 	return 0;
 }

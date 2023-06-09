@@ -238,7 +238,7 @@ static char * getKeyNameWithoutDigitsAfterArrayCharacter (const char * name, con
 		{
 			for (size_t x = i + 1; x < sizeOfName; x++)
 			{
-				if (isdigit(name[x]))
+				if (isdigit (name[x]))
 				{
 					offBy++;
 				}
@@ -504,16 +504,17 @@ int elektraSpecRemove (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, ELEKTR
 
 
 		// check if specName is array name
-		char * lastOccurenceOfArrayCharacter = strrchr(name, '#');
+		char * lastOccurenceOfArrayCharacter = strrchr (name, '#');
 		if (lastOccurenceOfArrayCharacter != NULL)
 		{
 			Key * key = keyNew ("spec:/", NULL);
 			keyAddName (key, strchr (name, '/'));
 
-			int count = getNumberOfArrayCharactersInSpecName(key);
+			int count = getNumberOfArrayCharactersInSpecName (key);
 			if (count > 1)
 			{
-				char * newName = getKeyNameWithoutDigitsAfterArrayCharacter (strchr (name, '/'), lastOccurenceOfArrayCharacter);
+				char * newName =
+					getKeyNameWithoutDigitsAfterArrayCharacter (strchr (name, '/'), lastOccurenceOfArrayCharacter);
 				keyAddName (specName, newName);
 				elektraFree (newName);
 			}
