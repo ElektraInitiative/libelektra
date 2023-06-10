@@ -190,9 +190,9 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 
-### <<Library>>
+### kdb
 
-- <<TODO>>
+- Implement internal cache as described in [the decision](/doc/decisions/6_implemented/internal_cache.md). _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - Add new changetracking API _(Maximilian Irlinger @atmaxinger)_
 - Fix unwanted removal of subkeys when using mv _(Hannes Laimer @hannes99)_
