@@ -213,6 +213,31 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- <<TODO>>
+
+### C++
+
+- Provide getter for the underlying C object of KDB _(Maximilian Irlinger @atmaxinger)_
+- Add `ElektraDiff` binding for C++ _(Maximilian Irlinger @atmaxinger)_
+- The `dup` method of `KeySet` now returns a wrapped object _(Maximilian Irlinger @atmaxinger)_
+- Add an overload for `KeySet::cut` that accepts a string for the keyname _(Maximilian Irlinger)_
+- The `dup` method of `Key` now returns a wrapped object _(Maximilian Irlinger @atmaxinger)_
+- Add overloads for `Key::isBelow`, `Key::isBelowOrSame` and `Key::isDirectBelow` that accept a string as the key name _(Maximilian Irlinger @atmaxinger)_
+- Include the header `cstdint` in `key.hpp`. It is needed for an enum of type `std::uint8_t` _(Florian Lindner @flo91)_
+
+### <<Binding>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Python
+
+- Add `ElektraDiff` binding _(Maximilian Irlinger @atmaxinger)_
+- The `__meta__` attribute on a key now returns a proper keyset _(Maximilian Irlinger @atmaxinger)_
+- Add new module `kdb.errors` to simplify extracting errors and warnings from keys _(Maximilian Irlinger @atmaxinger)_
+- Add new module `kdb.record` for interfacing with the session recording capabilities of Elektra _(Maximilian Irlinger @atmaxinger)_
+- Add `getConflictingKeys` method to `kdb.merge.MergeResult`. _(Maximilian Irlinger @atmaxinger)_
 
 ### <<Binding>>
 
@@ -495,7 +520,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - <<TODO>>
 - <<TODO>>
-- The arch package `texlive-most` is no longer available, replaced it with `texlive-core` and `texlive-bin`. See https://archlinux.org/packages/?q=texlive _(Florian Lindner @flo91)_
+- The arch package `texlive-most` is no longer available, replaced it with `texlive-core`, `texlive-bin` and `texlive-latexextra`. See https://archlinux.org/packages/?q=texlive _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

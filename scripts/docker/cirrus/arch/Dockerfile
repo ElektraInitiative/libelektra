@@ -15,6 +15,7 @@ RUN pacman -Sy --noconfirm \
     rubygems \
     texlive-core \
     texlive-bin \
+    texlive-latexextra \
     wget \
     xfconf \
     yajl \
