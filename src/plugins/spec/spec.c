@@ -250,7 +250,6 @@ static char * getKeyNameWithoutDigitsAfterArrayCharacter (const char * name, con
 		}
 		newName[c] = name[i];
 	}
-	newName[++c] = '\0';
 
 	return newName;
 }
