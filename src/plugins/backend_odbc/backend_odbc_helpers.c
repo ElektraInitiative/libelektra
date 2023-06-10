@@ -18,6 +18,7 @@
 
 #include <sqlext.h>
 #include <stdio.h> /* for sprintf */
+#include <stdlib.h>
 #include <string.h>
 
 /**
@@ -469,6 +470,73 @@ struct dataSourceConfig * fillDsStructFromDefinitionKs (KeySet * ksDefinition, K
 		}
 	}
 
+
+	if (!valueMissing)
+	{
+		/* set default value for timeout to 5 seconds */
+		dsConfig->timeOut = 5;
+
+		/* timeout is optional, if no timeout is specified, the default value is used */
+		Key * keyTimeout = ksLookupByName (ksDefinition, "system:/timeout", KDB_O_NONE);
+		const char * valTimeout = keyString (keyTimeout);
+		if (keyTimeout && valTimeout && *valTimeout)
+		{
+			if (*valTimeout == '-')
+			{
+				ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (errorKey,
+									  "The timeout of the ODBC connection must be "
+									  "a non-negative number, but you provided %s.\nTherefore, "
+									  "the standard timeout of %hhu seconds is used.",
+									  valTimeout, dsConfig->timeOut);
+			}
+			else
+			{
+				char * eptr;
+				unsigned long lTimeout = strtoul (valTimeout, &eptr, 10);
+
+				if (*eptr)
+				{
+					ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (errorKey,
+										  "The timeout of the ODBC connection must be "
+										  "a non-negative number, but you provided %s.\nTherefore, "
+										  "the standard timeout of %hhu seconds is used.",
+										  valTimeout, dsConfig->timeOut);
+				}
+				else if (lTimeout > UCHAR_MAX)
+				{
+					ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (errorKey,
+										  "The maximum value for the timeout of the ODBC "
+										  "connection is %hhu seconds, but you provided %lu.\n"
+										  "Therefore, the maximum value of %hhu is used for the "
+										  "timeout.",
+										  UCHAR_MAX, lTimeout, UCHAR_MAX);
+					dsConfig->timeOut = UCHAR_MAX;
+				}
+				else
+				{
+					dsConfig->timeOut = lTimeout;
+					ELEKTRA_LOG_DEBUG ("A timeout of %ud seconds was specified for the ODBC connection!",
+							   dsConfig->timeOut);
+				}
+			}
+		}
+		else
+		{
+			ELEKTRA_LOG ("No timeout specified for the ODBC connection, using standard timeout of %ud seconds.",
+				     dsConfig->timeOut);
+		}
+
+
+		if (dsConfig->timeOut == 0)
+		{
+			ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNING (errorKey,
+								 "You specified '0' for the timeout of the ODBC conenction. "
+								 "This means that no timeout is used at all and can lead to freezing "
+								 "of the application when trying the access an ODBC data source."
+								 "This setting is meanly intended for debugging purpose and should "
+								 "be used with care.");
+		}
+	}
 
 	if (valueMissing)
 	{

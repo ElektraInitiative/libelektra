@@ -24,7 +24,6 @@ void fillDsStructExceptDsName (struct dataSourceConfig * dsConfig)
 	dsConfig->metaTableMetaValColName = "metaVal";
 }
 
-
 static void test_null_helpers (void)
 {
 	printf ("Test passing NULL arguments to ODBC backend *helper* functions\n");
@@ -47,6 +46,7 @@ static void test_null_helpers (void)
 
 	succeed_if (!dsConfigToString (NULL), "should return NULL");
 }
+
 static void test_null_general (void)
 {
 	printf ("Test passing NULL arguments to ODBC backend *general* functions\n");
@@ -94,6 +94,7 @@ static void test_null_general (void)
 
 	keyDel (testKey);
 }
+
 static void test_null_get (void)
 {
 	printf ("Test passing NULL arguments to ODBC backend *get* functions\n");
@@ -108,12 +109,6 @@ static void test_null_get (void)
 
 	elektraFree (dsConfig);
 	keyDel (testKey);
-}
-static void test_null (void)
-{
-	test_null_helpers ();
-	test_null_general ();
-	test_null_get ();
 }
 
 static void test_invalid_helpers (void)
@@ -181,6 +176,7 @@ static void test_invalid_helpers (void)
 	succeed_if (!dsConfigToString (dsConfig), "should return NULL");
 	elektraFree (dsConfig);
 }
+
 static void test_invalid_general (void)
 {
 	Key * testKey = keyNew ("/", KEY_END);
@@ -285,6 +281,7 @@ static void test_invalid_general (void)
 
 	keyDel (testKey);
 }
+
 static void test_invalid_get (void)
 {
 	struct dataSourceConfig * dsConfig = elektraCalloc (sizeof (struct dataSourceConfig));
@@ -299,6 +296,14 @@ static void test_invalid_get (void)
 	keyDel (testKey);
 	elektraFree (dsConfig);
 }
+
+static void test_null (void)
+{
+	test_null_helpers ();
+	test_null_general ();
+	test_null_get ();
+}
+
 static void test_invalid (void)
 {
 	test_invalid_helpers ();

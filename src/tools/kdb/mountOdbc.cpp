@@ -21,9 +21,9 @@ MountOdbcCommand::~MountOdbcCommand () = default;
 
 void MountOdbcCommand::checkArguments (const Cmdline & cl)
 {
-	if (cl.arguments.size () != 11)
+	if (cl.arguments.size () != 12)
 	{
-		throw std::invalid_argument ("11 arguments required, but only " + std::to_string (cl.arguments.size ()) + " provided.");
+		throw std::invalid_argument ("12 arguments required, but only " + std::to_string (cl.arguments.size ()) + " provided.");
 	}
 }
 
@@ -35,6 +35,13 @@ void replaceSubstrings (std::string & str, std::string oldSubStr, std::string ne
 	}
 }
 
+bool strContainsUnsignedChar (std::string & toCheck)
+{
+	std::istringstream inputStringStream (toCheck);
+	unsigned char uCharVal;
+	inputStringStream >> uCharVal;
+	return !inputStringStream.fail () && inputStringStream.eof ();
+}
 
 int MountOdbcCommand::execute (Cmdline const & cl)
 {
@@ -66,7 +73,7 @@ int MountOdbcCommand::execute (Cmdline const & cl)
 	printWarnings (std::cerr, root, cl.verbose, cl.debug);
 
 	/* throws exception if no valid key was provided */
-	kdb::Key keyMpPath = cl.createKey (10);
+	kdb::Key keyMpPath = cl.createKey (11);
 
 	std::string mp = keyMpPath.getName ();
 
@@ -84,14 +91,23 @@ int MountOdbcCommand::execute (Cmdline const & cl)
 	std::string mtKeyColName = cl.arguments[7];
 	std::string mtMetaKeyColName = cl.arguments[8];
 	std::string mtMetaValColName = cl.arguments[9];
+	std::string timeout = cl.arguments[10];
 
 	if (dataSourceName.empty () || tableName.empty () || keyColName.empty () || valColName.empty () || metaTableName.empty () ||
 	    mtKeyColName.empty () || mtMetaKeyColName.empty () || mtMetaValColName.empty ())
 	{
 		throw std::invalid_argument (
-			"Empty strings (\"\") are only allowed for the 'username' and 'password' arguments.\n"
+			"Empty strings (\"\") are only allowed for the 'username', 'password' and 'timeout' arguments.\n"
 			"For all other arguments, valid non-empty strings must be provided!");
 	}
+
+	if (!timeout.empty () && !strContainsUnsignedChar (timeout))
+	{
+		throw std::invalid_argument (
+			"If you specify a timeout, it must fit into an unsigned char.\n"
+			"The maximum allowed value on this system is " ELEKTRA_STRINGIFY (UCHAR_MAX));
+	}
+
 
 	kdb::KeySet ksOdbcConfig;
 #if DEBUG
@@ -118,6 +134,15 @@ int MountOdbcCommand::execute (Cmdline const & cl)
 	{
 		ksOdbcConfig.append (
 			kdb::Key ("system:/elektra/mountpoints/" + mp + "/definition/password", KEY_VALUE, password.c_str (), KEY_END));
+#if DEBUG
+		requiredSize++;
+#endif
+	}
+
+	if (!timeout.empty ())
+	{
+		ksOdbcConfig.append (
+			kdb::Key ("system:/elektra/mountpoints/" + mp + "/definition/timeout", KEY_VALUE, timeout.c_str (), KEY_END));
 #if DEBUG
 		requiredSize++;
 #endif

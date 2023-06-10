@@ -45,6 +45,7 @@ struct dataSourceConfig
 	char * metaTableKeyColName;
 	char * metaTableMetaKeyColName;
 	char * metaTableMetaValColName;
+	unsigned char timeOut;
 };
 
 

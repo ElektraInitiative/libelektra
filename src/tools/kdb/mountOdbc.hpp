@@ -30,7 +30,7 @@ public:
 	std::string getSynopsis () override
 	{
 		return "<data source name> <user name> <password> <table name> <key column name> <value column name> <meta table name> <mt "
-		       "key column name> <mt metakey column name> <mt metavalue column name> <mountpoint>";
+		       "key column name> <mt metakey column name> <mt metavalue column name> <timeout (s)> <mountpoint>";
 	}
 
 	std::string getShortHelpText () override

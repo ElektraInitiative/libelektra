@@ -732,6 +732,13 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
  */
 KeySet * getKeysFromDataSource (struct dataSourceConfig * dsConfig, Key * errorKey)
 {
+	if (!dsConfig)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "The provided data source configuration (struct dataSourceConfig) was NULL!");
+		return NULL;
+	}
+
+
 	/* 1. Allocate Environment handle and register version */
 	SQLHENV sqlEnv = allocateEnvHandle (errorKey);
 	if (!sqlEnv)
@@ -752,7 +759,7 @@ KeySet * getKeysFromDataSource (struct dataSourceConfig * dsConfig, Key * errorK
 		return NULL;
 	}
 
-	if (!setLoginTimeout (sqlConnection, 5, errorKey))
+	if (!setLoginTimeout (sqlConnection, dsConfig->timeOut, errorKey))
 	{
 		SQLFreeHandle (SQL_HANDLE_ENV, sqlEnv);
 		return NULL;
