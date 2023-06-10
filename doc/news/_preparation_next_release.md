@@ -292,7 +292,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - <<TODO>>
 - <<TODO>>
-- Fix bug in Doxygen comment for `const char * keyName (const Key * key)` which lead to failed building of the refman.pdf on recent TeX Live releases
+- Fix bug in Doxygen comment for `const char * keyName (const Key * key)` which lead to failed building of the refman.pdf on recent TeX Live releases _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -495,6 +495,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - <<TODO>>
 - <<TODO>>
+- The arch package `texlive-most` is no longer available, replaced it with `texlive-core` and `texlive-bin`. See https://archlinux.org/packages/?q=texlive _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
