@@ -218,7 +218,7 @@ As can be seen, the change tracking within the `dbus` and `logchange` plugins wr
    This alternative would put most of the burden onto the plugin authors.
    Depending on what the plugins do, every plugin may also need to deep-dup every keyset of every parent it ever receives via `kdbGet`.
    This will increase memory usage.
-   However, this could be paired with the [COW semantics](../4_decided/internal_cache.md) so the memory toll would not be that big of a deal.
+   However, this could be paired with the [COW semantics](../6_implemented/internal_cache.md) so the memory toll would not be that big of a deal.
    The biggest problem with this approach would be the unnecessary duplication of the non-trivial change tracking algorithm.
 
 6. Don't restrict sequences further and provide a common framework to handle change tracking correctly.
@@ -226,7 +226,7 @@ As can be seen, the change tracking within the `dbus` and `logchange` plugins wr
    As the problem has only been observed with plugins doing their own change tracking, we could provide a general change tracking framework within Elektra.
    This way, we have only one such algorithm in a central place, and plugin authors don't have to think about the sequences their plugins are called by developers.
 
-   This approach can also be paired with [COW semantics](../4_decided/internal_cache.md), so that memory toll will be kept low.
+   This approach can also be paired with [COW semantics](../6_implemented/internal_cache.md), so that memory toll will be kept low.
    A separate [decision for change tracking](../3_in_review/change_tracking.md) is currently in progress.
 
    Should we observe this problem with use cases other than change tracking, we can provide general frameworks for those too.
@@ -244,7 +244,7 @@ As can be seen, the change tracking within the `dbus` and `logchange` plugins wr
 ## Related Decisions
 
 - [Change Tracking](../3_in_review/change_tracking.md)
-- [Internal KeySet Cache](../4_decided/internal_cache.md)
+- [Internal KeySet Cache](../6_implemented/internal_cache.md)
 - []()
 
 ## Notes
