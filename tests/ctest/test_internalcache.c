@@ -1,10 +1,10 @@
 /**
-* @file
-*
-* @brief Test suite for internal data structures.
-*
-* @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
-*/
+ * @file
+ *
+ * @brief Test suite for internal data structures.
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
 
 #include "kdbhelper.h"
 #include "kdbprivate.h"
@@ -12,12 +12,12 @@
 
 static void test_doubleGet (void)
 {
-	printf("running %s\n", __func__);
+	printf ("running %s\n", __func__);
 
 	// Setup
-	Key * parentKey = keyNew("/somewhere", KS_END);
-	KeySet * ks = ksNew(0, KS_END);
-	KDB * kdb = kdbOpen (ksNew(0, KS_END), parentKey);
+	Key * parentKey = keyNew ("/somewhere", KS_END);
+	KeySet * ks = ksNew (0, KS_END);
+	KDB * kdb = kdbOpen (ksNew (0, KS_END), parentKey);
 	kdbGet (kdb, ks, parentKey);
 	ksAppendKey (ks, keyNew ("user:/somewhere", KEY_VALUE, "abc", KEY_END));
 	ksAppendKey (ks, keyNew ("user:/somewhere/key", KEY_VALUE, "xyz", KEY_END));
@@ -25,7 +25,7 @@ static void test_doubleGet (void)
 	kdbClose (kdb, parentKey);
 
 	// Scenario
-	kdb = kdbOpen (ksNew(0, KS_END), parentKey);
+	kdb = kdbOpen (ksNew (0, KS_END), parentKey);
 
 	KeySet * ks1 = ksNew (0, KS_END);
 	KeySet * ks2 = ksNew (0, KS_END);
@@ -45,12 +45,12 @@ static void test_doubleGet (void)
 
 static void test_get_modified_keys (void)
 {
-	printf("running %s\n", __func__);
+	printf ("running %s\n", __func__);
 
 	// Setup
-	Key * parentKey = keyNew("/somewhere", KS_END);
-	KeySet * ksInitial = ksNew(0, KS_END);
-	KDB * kdb = kdbOpen (ksNew(0, KS_END), parentKey);
+	Key * parentKey = keyNew ("/somewhere", KS_END);
+	KeySet * ksInitial = ksNew (0, KS_END);
+	KDB * kdb = kdbOpen (ksNew (0, KS_END), parentKey);
 	kdbGet (kdb, ksInitial, parentKey);
 	ksAppendKey (ksInitial, keyNew ("user:/somewhere", KEY_VALUE, "abc", KEY_END));
 	ksAppendKey (ksInitial, keyNew ("user:/somewhere/key", KEY_VALUE, "xyz", KEY_END));
@@ -58,7 +58,7 @@ static void test_get_modified_keys (void)
 	kdbClose (kdb, parentKey);
 
 	// Scenario
-	kdb = kdbOpen (ksNew(0, KS_END), parentKey);
+	kdb = kdbOpen (ksNew (0, KS_END), parentKey);
 
 	KeySet * ks1 = ksNew (0, KS_END);
 	KeySet * ks2 = ksNew (0, KS_END);

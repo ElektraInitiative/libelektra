@@ -1884,8 +1884,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	// Step 6: return if no backends left
 	// HACK: for gopts
-	if (ksGetSize (fromInternalCache) == 0 &&
-	     (ksGetSize (backends) == 0 || (goptsActive && procOnly && ksGetSize (backends) == 1)))
+	if (ksGetSize (fromInternalCache) == 0 && (ksGetSize (backends) == 0 || (goptsActive && procOnly && ksGetSize (backends) == 1)))
 	{
 		keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 		keyDel (initialParent);
