@@ -520,7 +520,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - <<TODO>>
 - <<TODO>>
-- The arch package `texlive-most` is no longer available, replaced it with `texlive-core`, `texlive-bin` and `texlive-latexextra`. See https://archlinux.org/packages/?q=texlive _(Florian Lindner @flo91)_
+- The arch package `texlive-most` is no longer available, replaced it with `texlive-core`, `texlive-bin`, `texlive-latexextra` abd `texlive-fontsextra`. See https://archlinux.org/packages/?q=texlive _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

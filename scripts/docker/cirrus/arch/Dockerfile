@@ -16,6 +16,7 @@ RUN pacman -Sy --noconfirm \
     texlive-core \
     texlive-bin \
     texlive-latexextra \
+    texlive-fontsextra \
     wget \
     xfconf \
     yajl \
