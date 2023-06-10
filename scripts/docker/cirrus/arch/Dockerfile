@@ -16,6 +16,7 @@ RUN pacman -Sy --noconfirm \
     unixodbc \
     texlive-core \
     texlive-bin \
+    texlive-latexextra \
     wget \
     xfconf \
     yajl \
