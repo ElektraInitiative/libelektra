@@ -342,7 +342,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Fix bug in Doxygen comment for `const char * keyName (const Key * key)` which lead to failed building of the refman.pdf on recent TeX Live releases
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
