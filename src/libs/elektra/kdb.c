@@ -1894,6 +1894,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 		ksDel (backends);
 		ksDel (allBackends);
+		ksDel (fromInternalCache);
 		errno = errnosave;
 		return 2;
 	}
