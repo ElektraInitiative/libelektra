@@ -20,6 +20,8 @@
 
 
 /**
+ * @internal
+ *
  * @brief Constructs a SELECT query string for the ODBC backend based on the given data source configuration.
  *
  * @param dsConfig A valid data source config, as returned by the fillDsStructFromDefinitionKs() function
@@ -144,6 +146,8 @@ static char * getSelectQueryString (struct dataSourceConfig * dsConfig, char * q
 
 
 /**
+ * @internal
+ *
  * @brief Prepares a SELECT SQL-statement that can later be executed to actually fetch the values.
  *
  * The statement is constructed to retrieve all keys, values and associated metadata
@@ -291,6 +295,8 @@ static SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfi
 
 
 /**
+ * @internal
+ *
  * @brief Executes a prepared SQL statement.
  *
  * @pre The @p sqlStmt handle must have been initialized and prepared
@@ -323,6 +329,8 @@ static bool executeSqlStatement (SQLHSTMT sqlStmt, Key * errorKey)
 }
 
 /**
+ * @internal
+ *
  * @brief Use this function to retrieve data that didn't fit into the pre-defined buffers.
  *
  *
@@ -420,6 +428,8 @@ static bool getLongData (SQLHSTMT sqlStmt, SQLUSMALLINT colNumber, SQLSMALLINT t
 }
 
 /**
+ * @internal
+ *
  * @brief Fetch the data that was queried by executing a SELECT statement.
  *
  * @pre The @p sqlStmt must have been executed before calling this function with it as an argument.

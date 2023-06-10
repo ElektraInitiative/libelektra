@@ -22,13 +22,15 @@
 #include <string.h>
 
 /**
+ * @internal
+ *
  * @brief Get the number of digits an integer value consists of (e.g. 123 has 3 digits, therefore 3 is returned)
  *
  * @param i The integer value from which the number of digits should be computed
  *
  * @return The number of digits the given integer value consists of
  */
-unsigned char getNumDigits (int i)
+static unsigned char getNumDigits (int i)
 {
 	unsigned char digits = 1;
 
@@ -304,6 +306,8 @@ char ** getAvailableDataSources (void)
 
 
 /**
+ * @internal
+ *
  * @brief Lookup the string value of a Key in a KeySet
  *
  * @param ks The KeySet which should be searched for the Key
