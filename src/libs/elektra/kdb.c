@@ -2510,9 +2510,12 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 			below = ksBelow (handle->allKeys, backendKey);
 			ksDel (ksCut (below, initialParent));
 
-			KeySet * b = ksBelow (ks, initialParent);
-			ksAppend (below, b);
-			ksDel (b);
+			KeySet * bBackend = ksBelow (ks, backendKey);
+			KeySet * bParent = ksBelow (bBackend, initialParent);
+			ksAppend (below, bParent);
+
+			ksDel (bParent);
+			ksDel (bBackend);
 		}
 		else
 		{
