@@ -10,6 +10,7 @@
 #define ELEKTRA_KEY_HPP
 
 #include <cstdarg>
+#include <cstdint>
 #include <cstring>
 
 #if __GNUC__ >= 12
