@@ -1844,6 +1844,8 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		return -1;
 	}
 
+	KeySet * fromInternalCache = ksBelow (handle->allKeys, initialParent);
+
 	parentKey->hasReadOnlyName = false;
 	parentKey->hasReadOnlyValue = false;
 
@@ -1856,11 +1858,25 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	// Step 5: remove up-to-date backends
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
-		if (keyGetMeta (ksAtCursor (backends, i), "meta:/internal/kdbneedsupdate") == NULL)
+		Key * backendKey = ksAtCursor (backends, i);
+		if (keyGetMeta (backendKey, "meta:/internal/kdbneedsupdate") == NULL)
 		{
 			elektraKsPopAtCursor (backends, i);
 			--i;
 		}
+		else if (fromInternalCache != NULL)
+		{
+			// Remove keys from fromInternalCache that have updated data in backends
+			ksDel (ksCut (fromInternalCache, backendKey));
+		}
+	}
+
+	if (fromInternalCache != NULL)
+	{
+		// Create a deep-duplication of the cache keys
+		KeySet * t = fromInternalCache;
+		fromInternalCache = ksDeepDup (fromInternalCache);
+		ksDel (t);
 	}
 
 	bool procOnly = keyGetNamespace (ksAtCursor (backends, 0)) == KEY_NS_PROC &&
@@ -1868,7 +1884,8 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	// Step 6: return if no backends left
 	// HACK: for gopts
-	if (ksGetSize (backends) == 0 || (goptsActive && procOnly && ksGetSize (backends) == 1))
+	if (ksGetSize (fromInternalCache) == 0 &&
+	     (ksGetSize (backends) == 0 || (goptsActive && procOnly && ksGetSize (backends) == 1)))
 	{
 		keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 		keyDel (initialParent);
@@ -1961,13 +1978,22 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	// Step 14: run spec plugin
 	parentKey->hasReadOnlyName = true;
 	parentKey->hasReadOnlyValue = true;
-	if (handle->hooks.spec.plugin && handle->hooks.spec.copy (handle->hooks.spec.plugin, dataKs, parentKey, true) == -1)
+
+	KeySet * keysForSpec = ksNew (ksGetSize (dataKs) + ksGetSize (fromInternalCache), KS_END);
+	ksAppend (keysForSpec, dataKs);
+	ksAppend (keysForSpec, fromInternalCache);
+
+	if (handle->hooks.spec.plugin && handle->hooks.spec.copy (handle->hooks.spec.plugin, keysForSpec, parentKey, true) == -1)
 	{
 		parentKey->hasReadOnlyName = false;
 		parentKey->hasReadOnlyValue = false;
 		ksDel (dataKs);
+		ksDel (keysForSpec);
 		goto error;
 	}
+
+	ksDel (keysForSpec);
+
 	parentKey->hasReadOnlyName = false;
 	parentKey->hasReadOnlyValue = false;
 
@@ -2007,6 +2033,8 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	// Step 18: merge data into ks and return
 	ksClear (dataKs);
 	backendsMerge (backends, dataKs);
+
+	ksAppend (ks, fromInternalCache);
 	ksAppend (ks, dataKs);
 
 	// TODO (atmaxinger): should we have a default:/ backend?
@@ -2041,6 +2069,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		ksAppendDup (handle->allKeys, dataKs);
 	}
 	ksDel (dataKs);
+	ksDel (fromInternalCache);
 
 	errno = errnosave;
 	return procOnly ? 2 : 1;
@@ -2055,6 +2084,7 @@ error:
 
 	ksDel (backends);
 	ksDel (allBackends);
+	if (fromInternalCache) ksDel (fromInternalCache);
 
 	errno = errnosave;
 	return -1;
@@ -2474,7 +2504,21 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	{
 		Key * backendKey = ksAtCursor (backends, i);
 
-		KeySet * below = ksBelow (ks, backendKey);
+		KeySet * below = NULL;
+		if (handle->allKeys != NULL)
+		{
+			below = ksBelow (handle->allKeys, backendKey);
+			ksDel (ksCut (below, initialParent));
+
+			KeySet * b = ksBelow (ks, initialParent);
+			ksAppend (below, b);
+			ksDel (b);
+		}
+		else
+		{
+			below = ksBelow (ks, backendKey);
+		}
+
 		KeySet * deepDupedBelow = ksDeepDup (below);
 		ksAppend (setKs, deepDupedBelow);
 		ksDel (below);
