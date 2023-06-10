@@ -510,8 +510,8 @@ struct dataSourceConfig * fillDsStructFromDefinitionKs (KeySet * ksDefinition, K
 				{
 					ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (errorKey,
 										  "The maximum value for the timeout of the ODBC "
-										  "connection is %hhu seconds, but you provided %lu.\n"
-										  "Therefore, the maximum value of %hhu is used for the "
+										  "connection is %d seconds, but you provided %lu.\n"
+										  "Therefore, the maximum value of %d is used for the "
 										  "timeout.",
 										  UCHAR_MAX, lTimeout, UCHAR_MAX);
 					dsConfig->timeOut = UCHAR_MAX;
