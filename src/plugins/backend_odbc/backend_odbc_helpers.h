@@ -31,7 +31,7 @@
 /** @brief The configuration of an ODBC data source
  *
  * Username and password are not needed by all data sources or may are defined as part of the data source definition.
- * For unixODBC, data sources are usually defined in the file /etc/unixODBC/odbc.ini
+ * For unixODBC, data sources are usually defined in the file odbc.ini
  */
 struct dataSourceConfig
 {

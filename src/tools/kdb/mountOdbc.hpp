@@ -5,6 +5,7 @@
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
+
 #ifndef MOUNTODBC_HPP
 #define MOUNTODBC_HPP
 

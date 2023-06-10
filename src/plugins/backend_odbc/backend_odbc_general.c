@@ -6,7 +6,6 @@
  * This is the place for functions that are needed for setting up the environment or are used by both, get- and set-operations
  * Some examples are allocating various handles, setting general attributes, connecting the data sources, etc.
  * This file is intended esp. for ODBC related tasks.
- * General helper functions should be place in backend_odbc_helpers
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
@@ -121,11 +120,11 @@ SQLHDBC allocateConnectionHandle (SQLHENV sqlEnv, Key * errorKey)
 
 
 /**
- * @brief Sets the timeout after which a login attempt (= connect to data source) is considered as failed
+ * @brief Sets the timeout after which a login attempt (connect to data source) is considered as failed
  *
  * @param sqlConnection An allocated ODBC connection handle
  * 	This handle gets freed if an error occurred, so don't dereference it if the function returned 'false'.
- * @param timeout The time to wait in seconds (0 = wait indefinitely --> use with care!)
+ * @param timeout The time to wait in seconds (0 means waiting indefinitely, use with care!)
  * @param[out] errorKey Used to store errors and warnings
  *
  * @retval 'true' if the operation was successful
@@ -206,7 +205,7 @@ bool setAutocommit (SQLHDBC sqlConnection, bool enableAutoCommit, Key * errorKey
  * @param sqlConnection An ODBC connection handle that satisfies the mentioned preconditions
  * 	This handle gets freed if an error occurred, so don't dereference it if the function returned 'false'.
  * @param commit 'true' if the transaction should be committed,
- * 	'false' if the transaction should be rolled back (= canceled)
+ * 	'false' if the transaction should be rolled back (canceled)
  * @param[out] errorKey Used to store errors and warnings
  *
  * @retval 'true' if the operation was successful

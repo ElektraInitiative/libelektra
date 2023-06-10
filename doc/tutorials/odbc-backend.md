@@ -163,20 +163,47 @@ Maybe the drivers are also offered as packages by the package manager of your OS
 
 ## 5. Creating the ODBC data sources for the Databases
 
-Now we have to create two configuration files for unixODBC:
+Now we have to create or edit two configuration files for unixODBC:
 
 - **odbcinst.ini:** for letting unixODBC know about the drivers and where it can find them
 - **odbc.ini:** for configuring the actual data sources, which can then be mounted into Elektra's KDB
 
 On most systems, these files should be stored at `/etc/unixODBC/`.
 
+As we are working with Elektra here, it would be a nice option, to also use it for creating and managing the `.ini` files for the ODBC configuration.
 Unfortunately, the current Elektra plugins for .ini-files don't support the exact syntax that is used by the unixODBC configuration files.
-Therefore, we have to write the configuration files manually using a text editor.
+But we can still use the more generic [line plugin](/src/plugins/line/README.md) to create the files.
+Of course, you can also use a text editor to edit the files.
+
+> As you can see in the following listings, you need the permission to write to the `/etc/unixODBC/` ini-files.
+> In most cases, this means that the `kdb set` command to store the vales must be executed with root privileges, e.g. by using `sudo`.
+
+> The line-plugin ignores the key-name given in `kdb set` and just adds the given key-value as the last line to the given file.
+> The keys can be accessed via the line-number in the file, similar to [arrays](./arrays.md).
+> Therefore, we use these indices also as key-names in the following `kdb set` commands.
 
 ### odbcinst.ini
 
 At first, we tell unixODBC where it can find the ODBC drivers we want to use.
-The content of the `/etc/unixODBC/odbcinst.ini` file might look like this:
+We store this information in the `/etc/unixODBC/odbcinst.ini` file:
+
+```bash
+kdb mount /etc/unixODBC/odbcinst.ini system:/conf/unixODBC/odbcinst/#0/current line
+sudo kdb set system:/conf/unixODBC/odbcinst/#0/current/#0 "[SQLite]"
+sudo kdb set system:/conf/unixODBC/odbcinst/#0/current/#1 "Description=SQLite ODBC Driver"
+sudo kdb set system:/conf/unixODBC/odbcinst/#0/current/#2 "Driver=/usr/local/lib/libsqlite3odbc.so"
+sudo kdb set system:/conf/unixODBC/odbcinst/#0/current/#3 "Setup=/usr/local/lib/libsqlite3odbc.so"
+sudo kdb set system:/conf/unixODBC/odbcinst/#0/current/#4 "FileUsage=1"
+sudo kdb set system:/conf/unixODBC/odbcinst/#0/current/#5 "Threading=2"
+sudo kdb set system:/conf/unixODBC/odbcinst/#0/current/#6 ""
+sudo kdb set system:/conf/unixODBC/odbcinst/#0/current/#7 "[Postgresql]"
+sudo kdb set system:/conf/unixODBC/odbcinst/#0/current/#8 "Description=General ODBC for PostgreSQL"
+sudo kdb set system:/conf/unixODBC/odbcinst/#0/current/#9 "Driver=/usr/local/lib/psqlodbca.so"
+sudo kdb set system:/conf/unixODBC/odbcinst/#0/current/#10 "Setup=/usr/lib/libodbcpsqlS.so"
+sudo kdb set system:/conf/unixODBC/odbcinst/#0/current/#11 "Setup64=/usr/lib64/libodbcpsqlS.so"
+```
+
+The content of the `/etc/unixODBC/odbcinst.ini` file should look like this:
 
 ```ini
 [SQLite]
@@ -186,7 +213,7 @@ Setup=/usr/local/lib/libsqlite3odbc.so
 FileUsage=1
 Threading=2
 
-[postgresql]
+[Postgresql]
 Description=General ODBC for PostgreSQL
 Driver=/usr/local/lib/psqlodbca.so
 Setup=/usr/lib/libodbcpsqlS.so
@@ -194,7 +221,7 @@ Setup64=/usr/lib64/libodbcpsqlS.so
 ```
 
 Please check these paths and adjust them so that they match the place where the drivers and setup libraries are stored on your system.
-At first, the name of the entry is defined, in our example `SQLite` and `postgresql`, then the configuration for the driver is given.
+At first, the name of the entry is defined, in our example `SQLite` and `Postgresql`, then the configuration for the driver is given.
 
 The `Threading=2` option enables multithreading support for the SQLite driver.
 If you don't need to use multiple threads/instances accessing the SQLite ODBC data source in parallel, you can gain a bit of performance by activating the single-threaded mode.
@@ -211,12 +238,43 @@ The setting `FileUsage=1` indicates to unixODBC that the driver is file-based.
 ### odbc.ini
 
 After the driver settings, we have to define the actual ODBC data sources in `/etc/unixODBC/odbc.ini`.
-This file might look like this:
+
+```bash
+kdb mount /etc/unixODBC/odbc.ini system:/conf/unixODBC/odbc/#0/current line
+sudo kdb set system:/conf/unixODBC/odbc/#0/current/#1 "[Selektra]"
+sudo kdb set system:/conf/unixODBC/odbc/#0/current/#2 "Description=SQLite Database for Elektra"
+sudo kdb set system:/conf/unixODBC/odbc/#0/current/#3 "Database=home/user/elektraOdbc.db"
+sudo kdb set system:/conf/unixODBC/odbc/#0/current/#4 "Timeout=3500"
+sudo kdb set system:/conf/unixODBC/odbc/#0/current/#5 ""
+sudo kdb set system:/conf/unixODBC/odbc/#0/current/#6 "[Pelektra]"
+sudo kdb set system:/conf/unixODBC/odbc/#0/current/#7 "Description=Postgresql"
+sudo kdb set system:/conf/unixODBC/odbc/#0/current/#8 "Driver=Postgresql"
+sudo kdb set system:/conf/unixODBC/odbc/#0/current/#9 "Trace=No"
+sudo kdb set system:/conf/unixODBC/odbc/#0/current/#10 "Database=elektraDB"
+sudo kdb set system:/conf/unixODBC/odbc/#0/current/#11 "Servername=localhost"
+sudo kdb set system:/conf/unixODBC/odbc/#0/current/#12 "Username=elektraUser"
+sudo kdb set system:/conf/unixODBC/odbc/#0/current/#13 "Password=elektra"
+sudo kdb set system:/conf/unixODBC/odbc/#0/current/#14 "Port=5432"
+sudo kdb set system:/conf/unixODBC/odbc/#0/current/#15 "Protocol=6.4"
+sudo kdb set system:/conf/unixODBC/odbc/#0/current/#16 "ReadOnly=No"
+sudo kdb set system:/conf/unixODBC/odbc/#0/current/#17 "RowVersioning=No"
+sudo kdb set system:/conf/unixODBC/odbc/#0/current/#18 "ShowSystemTables=No"
+sudo kdb set system:/conf/unixODBC/odbc/#0/current/#19 "ShowOidColumn=No"
+sudo kdb set system:/conf/unixODBC/odbc/#0/current/#20 "FakeOidIndex=No"
+```
+
+This content of the file should look like this:
 
 ```ini
+[Selektra]
+Description=SQLite Database for Elektra
+Driver=SQLite
+Database=home/user/elektraOdbc.db
+Timeout=3500
+
 [Pelektra]
-Description=postgresql
-Driver=postgresql
+Description=Postgresql
+Driver=Postgresql
 Trace=No
 Database=elektraDB
 Servername=localhost
@@ -229,15 +287,9 @@ RowVersioning=No
 ShowSystemTables=No
 ShowOidColumn=No
 FakeOidIndex=No
-
-[Selektra]
-Description=SQLite Database for Elektra
-Driver=SQLite
-Database=home/user/elektraOdbc.db
-Timeout=3500
 ```
 
-At first, the data source name is chosen, in our example `Pelektra` and `Selektra`, then the configuration values for the data source are defined.
+At first, the data source name is chosen, in our example `Selektra` and `Pelektra`, then the configuration values for the data source are defined.
 The value for the key `Driver` must match the corresponding name of the entry that is defined in `odbcinst.ini`.
 
 ## 6. Compiling Elektra with support for the ODBC Backend

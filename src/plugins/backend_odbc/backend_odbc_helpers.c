@@ -44,10 +44,10 @@ unsigned char getNumDigits (int i)
  * @brief Get a string array with all currently present errors for the given ODBC handle
  *
  * @param handleType The type of the handle (environment, connection, statement, descriptor)
- * 	environment = SQL_HANDLE_ENV
- * 	connection = SQL_HANDLE_DBC
- * 	statement = SQL_HANDLE_STMT
- * 	descriptor = SQL_HANDLE_DESC
+ * 	environment:	SQL_HANDLE_ENV
+ * 	connection:	SQL_HANDLE_DBC
+ * 	statement:	SQL_HANDLE_STMT
+ * 	descriptor;	SQL_HANDLE_DESC
  *
  * @param odbcHandle The actual valid handle which must match the type given in @p handleType
  *
@@ -113,20 +113,20 @@ char ** extractOdbcErrors (SQLSMALLINT handleType, SQLHANDLE odbcHandle)
 
 
 /**
- * @brief Set an ODBC error and/or add ODBC warnings to @p errorKey
+ * @brief Set an ODBC error or add ODBC warnings to @p errorKey
  *
  * @param handleType The type of the handle (environment, connection, statement, descriptor)
- * 	environment = SQL_HANDLE_ENV
- * 	connection = SQL_HANDLE_DBC
- * 	statement = SQL_HANDLE_STMT
- * 	descriptor = SQL_HANDLE_DESC
+ * 	environment:	SQL_HANDLE_ENV
+ * 	connection:	SQL_HANDLE_DBC
+ * 	statement:	SQL_HANDLE_STMT
+ * 	descriptor:	SQL_HANDLE_DESC
  * @param handle The actual valid ODBC handle which must match the type given in @p handleType
- * @param functionName The name of the function in which the error/warning(s) were emitted
+ * @param functionName The name of the function in which the error or warning(s) were emitted
  * @param isWarning true: treat first record as warning, false: treat first record as error
  * @param errorKey Used to store errors and warnings
  *
- * @return The number of processed errors/warnings
- * @retval 0 if no error/warning was found
+ * @return The number of processed errors and warnings
+ * @retval 0 if no error or warning was found
  * @retval -1 if an error occurred in this function (e.g. invalid handle given)
  */
 int setOdbcError (SQLSMALLINT handleType, SQLHANDLE handle, const char * fileName, const char * functionName, const char * lineNo,
@@ -303,7 +303,7 @@ char ** getAvailableDataSources (void)
 
 
 /**
- * @brief Lookup the string value of a @b Key in a @b KeySet
+ * @brief Lookup the string value of a Key in a KeySet
  *
  * @param ks The KeySet which should be searched for the Key
  * @param keyName The name of the Key from which that string-value should be copied
@@ -344,7 +344,7 @@ static char * lookupStringFromKs (KeySet * ks, const char * keyName)
 }
 
 /**
- * @brief Creates a struct for the data source configuration that is provided in a @b KeySet
+ * @brief Creates a struct for the data source configuration that is provided in a KeySet
  *
  * This function should be used during the initialization of the ODBC backend.
  *
@@ -496,16 +496,16 @@ struct dataSourceConfig * fillDsStructFromDefinitionKs (KeySet * ksDefinition, K
  * @brief Creates a string the contains all mandatory configuration values for an ODBC data source
  *
  * The created string is intended for use as an identifier for a data source.
- * This function should be used during the @b RESOLVER phase of the ODBC backend.
+ * This function should be used during the RESOLVER phase of the ODBC backend.
  *
  * @param dsConfig A valid data source config, as returned by the fillDsStructFromDefinitionKs() function
  *
  * @return A string that contains all fields of the config that identify a data source for the ODBC backend, copied to newly allocated
  * memory Make sure to free the returned string.
  *
- * @retval NULL If an empty configuration struct was passed, no data source name was found or memory allocation failed
+ * @retval NULL if an empty configuration struct was passed, no data source name was found or memory allocation failed
  *
- * @see 'fillDsStructFromDefinitionKs(KeySet * ksDefinition)' to get a dataSourceConfig struct from a KeySet with the mountpoint definition
+ * @see fillDsStructFromDefinitionKs(KeySet * ksDefinition) to get a dataSourceConfig struct from a KeySet with the mountpoint definition
  */
 char * dsConfigToString (struct dataSourceConfig * dsConfig)
 {

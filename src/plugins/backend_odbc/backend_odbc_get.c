@@ -20,15 +20,15 @@
 
 
 /**
- * @brief Constructs a SELECT query string for the ODBC backend based on the given data source configuration
+ * @brief Constructs a SELECT query string for the ODBC backend based on the given data source configuration.
  *
  * @param dsConfig A valid data source config, as returned by the fillDsStructFromDefinitionKs() function
- * @param quoteString The characters that should be added before and after identifiers, pass NULL if your identifiers in @dsconfig are
+ * @param quoteString The characters that should be added before and after identifiers, pass NULL if your identifiers in dsConfig are
  * 	already quoted or if you don't want to use quoted identifiers
  *
  * @return The query string for the select query to get keynames, key-values and metadata from an SQL data source.
  * 	Make sure to free the returned string.
- * @retval "" (empty string) if invalid input detected
+ * @retval empty string if invalid input detected
  * 	This string must not be freed!
  * @retval NULL if memory allocation failed
  */
@@ -144,11 +144,11 @@ static char * getSelectQueryString (struct dataSourceConfig * dsConfig, char * q
 
 
 /**
- * @brief Prepares a SELECT SQL-statement that can later be executed to actually fetch the values
+ * @brief Prepares a SELECT SQL-statement that can later be executed to actually fetch the values.
  *
- * The statement is constructed to retrieve all keys, values and associated metadata (metakeys + values)
+ * The statement is constructed to retrieve all keys, values and associated metadata
  *
- * @pre The @p 'sqlConnection' handle must have been initialized and a connection must have been established
+ * @pre The @p sqlConnection handle must have been initialized and a connection must have been established
  *
  * @param sqlConnection The initialized connection handle. It must represent an active connection.
  * 	This handle gets freed if an error occurred, so don't dereference it if the function returned NULL.
@@ -156,7 +156,7 @@ static char * getSelectQueryString (struct dataSourceConfig * dsConfig, char * q
  * @param[out] errorKey Used to store errors and warnings
  *
  * @return A handle to the prepared statement
- * 	Make sure to free the returned handle with @b 'SQLFreeHandle()'.
+ * 	Make sure to free the returned handle with SQLFreeHandle().
  * @retval NULL if an error occurred (see @p errorKey for details)
  */
 static SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfig * dsConfig, Key * errorKey)
@@ -291,9 +291,9 @@ static SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfi
 
 
 /**
- * @brief Executes a prepared SQL statement
+ * @brief Executes a prepared SQL statement.
  *
- * @pre The @p 'sqlStmt' handle must have been initialized and prepared
+ * @pre The @p sqlStmt handle must have been initialized and prepared
  *
  * @param sqlStmt The prepared SQL statement that should be executed
  * 	This handle gets freed if an error occurred, so don't dereference it if the function returned 'false'.
@@ -323,32 +323,33 @@ static bool executeSqlStatement (SQLHSTMT sqlStmt, Key * errorKey)
 }
 
 /**
- * @brief Use this function to retrieve data that didn't fit into the pre-defined buffers
+ * @brief Use this function to retrieve data that didn't fit into the pre-defined buffers.
+ *
  *
  * This function is used to retrieve data that gets returned by the execution of a SELECT-statement and didn't fit into the
  * fix-sized buffers. For such values, memory must be allocated dynamically.
  *
- * The function also re-allocates the buffer it was still too small to get the whole returned data.
+ * The function also re-allocates the buffer if it was still too small to get the whole returned data.
  * This is especially useful for data sources that don't know the size of the returned data in advance.
  *
- * @pre The buffer @p *targetValue must point to allocated memory of size @p bufferSize.
- * Please consider that the buffer should be of type @b char*, like common strings, not of type char**, like string-arrays.
- * The buffer is just only as a pointer because the memory maybe gets reallocated and moved to a different memory address.
+ * @pre The buffer @p targetValue must point to allocated memory of size @p bufferSize.
+ * Please consider that the buffer should be of type char*, like common strings, not of type char**, like string-arrays.
+ * The buffer is just passed as a pointer (char**) because the memory maybe gets reallocated and moved to a different memory address.
  *
- * @param sqlStmt The executed statement, for which @b SQLFetch() has been called before
+ * @param sqlStmt The executed statement, for which SQLFetch() has been called before
  * 	This handle gets freed if an error occurred, so don't dereference it if the function returned 'false'.
  * @param colNumber The number of the column from which the data should be retrieved
  * @param targetType The C data type that the fetched result should be converted to
  * 	See https://learn.microsoft.com/en-us/sql/odbc/reference/appendixes/converting-data-from-c-to-sql-data-types for supported
  * conversions.
  * @param[in,out] targetValue The buffer where the data should be stored
- * @param bufferSize The size of the buffer (as given to @b malloc())
+ * @param bufferSize The size of the buffer (as given to malloc())
  * @param[out] errorKey Used to store errors and warnings
  *
  * @rerval 'true' if the data was fetched successfully
  * @retval 'false' if an error occurred (see @p errorKey for details)
  *
- * @note The row number is not given as an argument, but related to the last call of @b SQLFetch()
+ * @note The row number is not given as an argument, but related to the last call of SQLFetch()
  *
  * @see fetchResults() for processing the results of an executed SELECT statement
  */
@@ -419,10 +420,10 @@ static bool getLongData (SQLHSTMT sqlStmt, SQLUSMALLINT colNumber, SQLSMALLINT t
 }
 
 /**
- * @brief Fetch the data that was queried by executing a SELECT statement
+ * @brief Fetch the data that was queried by executing a SELECT statement.
  *
  * @pre The @p sqlStmt must have been executed before calling this function with it as an argument.
- * This function also converts the data retrieved from the datasource to a KeySet (keys + associated values and metadata)
+ * This function also converts the data retrieved from the datasource to a KeySet (keys, associated values and metadata)
  *
  * @param sqlStmt An executed SQL statement
  * 	This handle gets freed if an error occurred, so don't dereference it if the function returned NULL.
@@ -721,7 +722,7 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 	return ksResult;
 }
 
-/** @brief Use ODBC to get keys and values from a data source
+/** @brief Use ODBC to get keys and values from a data source.
  *
  * @param dsConfig The configuration of the data source.
  * @param[out] errorKey Used to store errors and warnings
