@@ -13,7 +13,7 @@
 - `value column name`: The name of the column where the key-values (strings) should be stored. This column should support NULL-values.
 - `meta table name`: The name of the table where the metadata for the keys should be stored.
 - `mt key column name`: The name of the column in the meta table where the key-name should be stored. This should be a foreign key that refers to the column with the key-name of the other table.
-- `mt metakey column name`: The name of the column in the meta table where the name of the meta-key should be stored. This column, together with the column for the key-name, should define the primary key of the meta table.
+- `mt metakey column name`: The name of the column in the meta table where the name of the metakey should be stored. This column, together with the column for the key-name, should define the primary key of the meta table.
 - `mt metavalue column name`: The name of the column in the meta table where the value (string) of the metakey should be stored. This column should support NULL-values.
 - `timeout (s)`: The timeout (in seconds) that should be used when connecting to the data source. When passing '0', the timeout gets disabled and the application could potentially wait forever. So use this option with care! If you want to use a default timeout, you can just pass `""` for this argument.
 - `mountpoint`: The place in the KDB where the ODBC data source should be mounted. The syntax is the same as with the file-based backend, but you can only use `user:/` and `system:/` namespaces as mountpoints for ODBC data sources.
@@ -27,7 +27,7 @@
 
 This command allows a user to persistently mount a new _backend_ that refers to an ODBC data source.
 The concept is the same as for mounting with the file-based backend.
-So it is recommended to also read to manpage for [kdb-mount(1)](kdb-mount.md).
+So it is recommended to also read to man page for [kdb-mount(1)](kdb-mount.md).
 More about mounting is explained in [elektra-mounting(7)](elektra-mounting.md).
 
 ## IMPORTANT
@@ -54,7 +54,7 @@ Use `kdb file system:/elektra/mountpoints` to find out where exactly it will wri
 - `-d`, `--debug`:
   Give debug information. Prints additional information in case of errors/warnings.
 - `-f`, `--force`:
-  Create the mountpoint even if the data source can not be reached at mount time.
+  Create the mountpoint even if the data source can not be reached at mount-time.
 
 ## Examples
 
