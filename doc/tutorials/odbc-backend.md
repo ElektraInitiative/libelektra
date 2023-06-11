@@ -243,7 +243,7 @@ After the driver settings, we have to define the actual ODBC data sources in `/e
 kdb mount /etc/unixODBC/odbc.ini system:/conf/unixODBC/odbc/#0/current line
 sudo kdb set system:/conf/unixODBC/odbc/#0/current/#1 "[Selektra]"
 sudo kdb set system:/conf/unixODBC/odbc/#0/current/#2 "Description=SQLite Database for Elektra"
-sudo kdb set system:/conf/unixODBC/odbc/#0/current/#3 "Database=home/user/elektraOdbc.db"
+sudo kdb set system:/conf/unixODBC/odbc/#0/current/#3 "Database=/home/user/elektraOdbc.db"
 sudo kdb set system:/conf/unixODBC/odbc/#0/current/#4 "Timeout=3500"
 sudo kdb set system:/conf/unixODBC/odbc/#0/current/#5 ""
 sudo kdb set system:/conf/unixODBC/odbc/#0/current/#6 "[Pelektra]"
@@ -269,7 +269,7 @@ This content of the file should look like this:
 [Selektra]
 Description=SQLite Database for Elektra
 Driver=SQLite
-Database=home/user/elektraOdbc.db
+Database=/home/user/elektraOdbc.db
 Timeout=3500
 
 [Pelektra]
@@ -326,7 +326,9 @@ One option is to provide a general mounting command for all types of backends.
 However, for now we use the `kdb mountOdbc` command.
 If you just type the command without additional arguments, you get some information about how the command works and which arguments are expected.
 
-To fully define a mountpoint for an ODBC data source, we need 11 arguments, 10 for defining the data source,
+> Only `system:/` and `user:/` namespaces are supported for ODBC mountpoints.
+
+To fully define a mountpoint for an ODBC data source, we need 12 arguments, 11 for defining the data source,
 and the last argument is the path where the mountpoint should be created in the KDB.
 
 The usage-message tells us which arguments are needed and in which order they must be given:
@@ -334,7 +336,7 @@ The usage-message tells us which arguments are needed and in which order they mu
 ```sh
 Usage: kdb mountOdbc <data source name> <user name> <password> <table name>
       <key column name> <value column name> <meta table name> <mt key column name>
-      <mt metakey column name> <mt metavalue column name> <mountpoint>
+      <mt metakey column name> <mt metavalue column name> <timeout (s)> <mountpoint>
 ```
 
 If you have read the first section about the expected scheme of the used databases, the arguments should be self-explanatory.
@@ -354,12 +356,13 @@ Nevertheless, here is a listing that describes the different arguments:
 - **\<mt metakey column name\>:** The name of the column in the meta-table where the names of the metakeys are stored.
   - This column together with the key-column form the PK of the meta-table.
 - **\<mt metaval column name\>:** The name of the column in the meta-table where the values of the metakeys are stored.
+- **\<timeout (s)\>:** The timeout (in seconds) after a connection attempt to the data source should be aborted. If you specify `""`, a default value (a few seconds) is used, if you specify `0`, the timeout is disable and the application can potentially wait forever. Use this option with care.
 - **\<mountpoint\>:** The place in the KDB where the new mountpoint should be created (e.g. `user:/odbcData`).
 
 Finally, we can create the mountpoint for our SQLite database:
 
 ```sh
-kdb mountOdbc Selektra "" "" elektraKeys keyName keyValue metaKeys keyName metaKeyName metaKeyValue user:/odbcSqlite
+kdb mountOdbc Selektra "" "" elektraKeys keyName keyValue metaKeys keyName metaKeyName metaKeyValue "" user:/odbcSqlite
 # The new mountpoint for the ODBC data source was successfully created!
 ```
 

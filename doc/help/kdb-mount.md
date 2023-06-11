@@ -120,4 +120,5 @@ To recode and rename a configuration file using Elektra:<br>
 - [elektra-glossary(7)](elektra-glossary.md).
 - [kdb-spec-mount(1)](kdb-spec-mount.md).
 - [kdb-umount(1)](kdb-umount.md).
+- [kdb-mountOdbc(1)](kdb-mountOdbc.md).
 - [elektra-mounting(7)](elektra-mounting.md).
