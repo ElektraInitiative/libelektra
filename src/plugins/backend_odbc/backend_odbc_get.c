@@ -194,7 +194,7 @@ static SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfi
 	/* Get driver specific identifier quote character
 	 * (see: https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/quoted-identifiers) for more information */
 
-	char identifierQuoteChar[2];
+	char identifierQuoteChar[2] = { 0, 0 };
 	SQLSMALLINT quoteCharLen = 0;
 	ret = SQLGetInfo (sqlConnection, SQL_IDENTIFIER_QUOTE_CHAR, identifierQuoteChar, 2, &quoteCharLen);
 

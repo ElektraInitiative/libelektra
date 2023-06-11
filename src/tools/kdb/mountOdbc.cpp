@@ -37,10 +37,38 @@ void replaceSubstrings (std::string & str, std::string oldSubStr, std::string ne
 
 bool strContainsUnsignedChar (std::string & toCheck)
 {
+	for (char c : toCheck)
+	{
+		if (!isdigit (c))
+		{
+			return false;
+		}
+	}
+
 	std::istringstream inputStringStream (toCheck);
-	unsigned char uCharVal;
-	inputStringStream >> uCharVal;
-	return !inputStringStream.fail () && inputStringStream.eof ();
+	unsigned long lngVal;
+	inputStringStream >> lngVal;
+
+	if (lngVal > UCHAR_MAX)
+	{
+		return false;
+	}
+
+	return !inputStringStream.fail ();
+}
+
+bool checkNameSpace (std::string toCheck)
+{
+	std::string userNs = "user:/";
+	std::string systemNs = "system:/";
+
+
+	if (toCheck.compare (0, userNs.length (), userNs) == 0 || toCheck.compare (0, systemNs.length (), systemNs) == 0)
+	{
+		return true;
+	}
+
+	return false;
 }
 
 int MountOdbcCommand::execute (Cmdline const & cl)
@@ -77,6 +105,14 @@ int MountOdbcCommand::execute (Cmdline const & cl)
 
 	std::string mp = keyMpPath.getName ();
 
+	if (!checkNameSpace (mp))
+	{
+		throw std::invalid_argument (
+			"Only mountpoints for the user- and system-namespaces are supported by the ODBC backend!\n"
+			"Therefore, the given mountpoint must start with 'user:/' or 'system:/', but '" +
+			mp + "' was given.");
+	}
+
 	/* escape slashes in the mountpoint path */
 	std::string mpOriginal (mp);
 	replaceSubstrings (mp, "/", "\\/");
@@ -105,7 +141,8 @@ int MountOdbcCommand::execute (Cmdline const & cl)
 	{
 		throw std::invalid_argument (
 			"If you specify a timeout, it must fit into an unsigned char.\n"
-			"The maximum allowed value on this system is " ELEKTRA_STRINGIFY (UCHAR_MAX));
+			"The maximum allowed value on this system is " +
+			std::to_string (UCHAR_MAX) + " but you passed " + timeout);
 	}
 
 
