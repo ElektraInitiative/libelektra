@@ -4,11 +4,7 @@ if (NOT XFCONF_FOUND)
 	return ()
 endif ()
 
-file (READ_SYMLINK "${XFCONF_LIBRARY}" XFCONF_LIBRARY_REALPATH)
-if (NOT IS_ABSOLUTE "${XFCONF_LIBRARY_REALPATH}")
-	get_filename_component (dir "${XFCONF_LIBRARY}" DIRECTORY)
-	set (XFCONF_LIBRARY_REALPATH "${dir}/${XFCONF_LIBRARY_REALPATH}")
-endif ()
+get_filename_component (XFCONF_LIBRARY_REALPATH "${XFCONF_LIBRARY}" REALPATH)
 
 install (
 	PROGRAMS xfconf-populate
