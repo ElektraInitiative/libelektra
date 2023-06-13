@@ -36,6 +36,7 @@ RUN apt-get -y install \
   python3-all \
   ruby-dev \
   swig \
+  unixodbc \
   unzip \
   valgrind \
   wget \

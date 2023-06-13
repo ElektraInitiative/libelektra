@@ -52,6 +52,7 @@ RUN zypper update -y && zypper install -y \
         swig \
         systemd-devel \
         tar \
+        unixODBC \
         unzip \
         valgrind \
         wget \
@@ -62,7 +63,7 @@ RUN zypper update -y && zypper install -y \
         zeromq-devel \
         zlib-devel \
         python3-pip \
-    	golang
+        golang
 
 # Build dependency for libelektra-fuse
 RUN pip3 install wheel

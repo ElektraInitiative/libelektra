@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="32cm" height="5cm" viewBox="217 -136 623 85" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <rect style="fill: #ffffff" x="353" y="-111" width="112.7" height="36"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="353" y="-111" width="112.7" height="36"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="409.35" y="-90.3437">elektraKeys</text>
+  </g>
+  <g>
+    <ellipse style="fill: #ffffff" cx="271.705" cy="-116.664" rx="46.95" ry="18"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="271.705" cy="-116.664" rx="46.95" ry="18"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="271.705" y="-114.008">keyName</text>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="244.755" y1="-108.664" x2="298.655" y2="-108.664"/>
+  </g>
+  <g>
+    <ellipse style="fill: #ffffff" cx="268.968" cy="-71.181" rx="50.8" ry="18"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="268.968" cy="-71.181" rx="50.8" ry="18"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="268.968" y="-68.5247">keyValue</text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="578.14" y="-111.059" width="89.6" height="36"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="578.14" y="-111.059" width="89.6" height="36"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="583.14" y="-106.059" width="79.6" height="26"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="622.94" y="-90.4023">metaKeys</text>
+  </g>
+  <g>
+    <ellipse style="fill: #ffffff" cx="768.577" cy="-116.936" rx="62.35" ry="18"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="768.577" cy="-116.936" rx="62.35" ry="18"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="768.577" y="-114.28">metaKeyName</text>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke-dasharray: 6; stroke: #000000" x1="726.227" y1="-108.936" x2="810.927" y2="-108.936"/>
+  </g>
+  <g>
+    <ellipse style="fill: #ffffff" cx="772.427" cy="-69.936" rx="66.2" ry="18"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="772.427" cy="-69.936" rx="66.2" ry="18"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="772.427" y="-67.2798">metaKeyValue</text>
+  </g>
+  <g>
+    <polygon style="fill: #ffffff" points="491.577,-93.153 523.127,-112.083 554.677,-93.153 523.127,-74.223 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="491.577,-93.153 523.127,-112.083 554.677,-93.153 523.127,-74.223 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:end;font-family:monospace;font-style:normal;font-weight:normal" x="485.577" y="-99.153">1</text>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="560.677" y="-99.153">*</text>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="523.127" y="-90.4967">has</text>
+  </g>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="319.661,-116.664 336.33,-116.664 336.33,-93 353,-93 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="319.768,-71.181 336.384,-71.181 336.384,-93 353,-93 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="706.227,-116.936 686.983,-116.936 686.983,-93.0585 667.74,-93.0585 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="706.227,-69.936 686.983,-69.936 686.983,-93.0585 667.74,-93.0585 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="465.7,-93 478.142,-93 478.142,-93.153 490.585,-93.153 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="578.14,-93.0585 566.408,-93.0585 566.408,-93.153 554.677,-93.153 "/>
+</svg>

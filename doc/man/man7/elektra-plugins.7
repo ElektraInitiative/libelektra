@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre3
-.TH "ELEKTRA\-PLUGINS" "7" "April 2023" ""
+.TH "ELEKTRA\-PLUGINS" "7" "May 2023" ""
 .SH "NAME"
 \fBelektra\-plugins\fR \- plugins overview
 .P
@@ -45,6 +45,13 @@ See INSTALL \fI/doc/INSTALL\.md\fR\. Many plugins are already part of the core p
 .SH "See Also"
 For an easy introduction, see this tutorial how to write a storage plugin \fI/doc/tutorials/plugins\.md\fR\. For more background information of the plugins framework, continue here \fI/doc/dev/plugins\-framework\.md\fR\. Otherwise, you can visit the the API documentation \fIhttps://doc\.libelektra\.org/api/latest/html/group__plugin\.html\fR\.
 .SH "Plugins"
+.SS "Backends"
+Backends provide access to different data sources (e\.g\. files, databases, network resources)
+.IP "\(bu" 4
+backend \fIbackend/\fR is the default plugin implementing backend functionality for configuration files
+.IP "\(bu" 4
+backend_odbc \fIbackend_odbc/\fR provides access to ODBC data sources for storing configuration data (keys, values, metadata)
+.IP "" 0
 .SS "Resolver"
 Before configuration is actually written, the file name needs to be determined (resolvers will be automatically added by kdb mount):
 .IP "\(bu" 4
@@ -289,8 +296,6 @@ sync \fIsync/\fR uses POSIX APIs to sync configuration files with the hard disk
 gopts \fIgopts/\fR global plugin to automatically call \fBelektraGetOpts\fR
 .IP "\(bu" 4
 process \fIprocess/\fR proxy plugin that uses separate executables as plugin implementations
-.IP "\(bu" 4
-backend \fIbackend/\fR is the default plugin implementing backend functionality for configuration files
 .IP "\(bu" 4
 recorder \fIrecorder/\fR is the plugin used to implement session recording
 .IP "" 0

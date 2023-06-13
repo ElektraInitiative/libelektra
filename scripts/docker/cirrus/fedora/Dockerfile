@@ -7,7 +7,7 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         cmake \
         curl \
         dbus-devel \
-    	dbus-x11 \
+        dbus-x11 \
         diffutils \
         file \
         findutils \
@@ -39,6 +39,7 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         ruby-devel \
         rubygem-test-unit \
         swig \
+        unixODBC \
         unzip \
         valgrind \
         wget \
@@ -48,7 +49,7 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         yajl-devel \
         yaml-cpp-devel \
         zlib-devel \
-    	golang \
+        golang \
     && dnf clean all -y
 
 # Google Test

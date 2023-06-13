@@ -7,7 +7,7 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         cmake \
         curl \
         dbus-devel \
-    	dbus-x11 \
+        dbus-x11 \
         devscripts \
         diffutils \
         discount \
@@ -51,18 +51,19 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         strace \
         swig \
         systemd-devel \
+        unixODBC \
         unzip \
         valgrind \
         wget \
         which \
         xerces-c-devel \
         xfconf-devel \
-    	yajl-devel \
+        yajl-devel \
         yaml-cpp-devel \
         zeromq-devel \
         zlib-devel \
         python3-pip \
-    	golang \
+        golang \
     && dnf debuginfo-install -y \
         bison \
         flex \

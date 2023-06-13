@@ -54,10 +54,11 @@ RUN apt-get update && apt-get -y install \
         ruby-dev \
         rustc \
         swig4.0 \
+        unixodbc \
         unzip \
         valgrind \
         python3-pip \
-    	golang \
+        golang \
     && rm -rf /var/lib/apt/lists/*
 
 # Build dependency for libelektra-fuse

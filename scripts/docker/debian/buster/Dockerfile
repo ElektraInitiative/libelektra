@@ -13,7 +13,7 @@ RUN apt-get update && apt-get -y install \
         clang-7 \
         cmake \
         curl \
-    	dbus-x11 \
+        dbus-x11 \
         debsigs \
         default-jdk \
         devscripts \
@@ -76,6 +76,7 @@ RUN apt-get update && apt-get -y install \
         swig3.0 \
         systemd \
         tclcl-dev \
+        unixodbc \
         uuid-dev \
         unzip \
         valgrind \

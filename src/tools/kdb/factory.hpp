@@ -46,6 +46,7 @@
 #include <metaremove.hpp>
 #include <metaset.hpp>
 #include <mount.hpp>
+#include <mountOdbc.hpp>
 #include <mv.hpp>
 #include <namespace.hpp>
 #include <plugincheck.hpp>
@@ -105,6 +106,7 @@ public:
 		m_factory.insert (std::make_pair ("mv", std::make_shared<Cnstancer<MvCommand>> ()));
 		m_factory.insert (std::make_pair ("mount", std::make_shared<Cnstancer<MountCommand>> ()));
 		m_factory.insert (std::make_pair ("remount", std::make_shared<Cnstancer<RemountCommand>> ()));
+		m_factory.insert (std::make_pair ("mountOdbc", std::make_shared<Cnstancer<MountOdbcCommand>> ()));
 		m_factory.insert (std::make_pair ("shell", std::make_shared<Cnstancer<ShellCommand>> ()));
 		m_factory.insert (std::make_pair ("find", std::make_shared<Cnstancer<FindCommand>> ()));
 		m_factory.insert (std::make_pair ("meta-get", std::make_shared<Cnstancer<MetaGetCommand>> ()));

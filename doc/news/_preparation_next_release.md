@@ -46,6 +46,8 @@ docker run -it elektra/elektra
 
 - <<HIGHLIGHT>>
 - <<HIGHLIGHT>>
+- New Changetracking API
+- ODBC Backend _(Florian Lindner @flo91)_
 - <<HIGHLIGHT>>
 
 ### <<HIGHLIGHT>>
@@ -76,6 +78,17 @@ Applications should already handle this case gracefully, and just retry writing 
 ### New Changetracking API
 
 ### <<HIGHLIGHT>>
+
+### ODBC Backend
+
+Based on the new and more versatile concept for [backends](/doc/dev/backend-plugins.md),
+where backends are implemented as plugins, a new backend-plugin that uses ODBC data sources for storing keys has been developed.
+It was tested on Gentoo Linux with [unixODBC](https://www.unixodbc.org) using [SQLite](https://www.sqlite.org) and [PostgreSQL](https://www.postgresql.org) data sources.
+The ODBC backend-plugin can only be built if the ODBC library is available on the build system. This can be accomplished by installing e.g. unixODBC.
+Microsoft ODBC (on MS Windows) and [iODBC](https://www.iodbc.org) should also be supported, but were not tested yet.
+If you use the plugin with another ODBC implementation as unixODBC, you are very welcome to update the documentation with your experiences!
+
+The [tutorial](../tutorials/odbc-backend.md) is a good place for getting started with the new ODBC backend for Elektra.
 
 ### <<HIGHLIGHT>>
 

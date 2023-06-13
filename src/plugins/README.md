@@ -61,6 +61,13 @@ Otherwise, you can visit the [the API documentation](https://doc.libelektra.org/
 
 ## Plugins
 
+### Backends
+
+Backends provide access to different data sources (e.g. files, databases, network resources)
+
+- [backend](backend/) is the default plugin implementing backend functionality for configuration files
+- [backend_odbc](backend_odbc/) provides access to ODBC data sources for storing configuration data (keys, values, metadata)
+
 ### Resolver
 
 Before configuration is actually written, the file name needs to be
@@ -255,7 +262,6 @@ binding during run-time:
 - [sync](sync/) uses POSIX APIs to sync configuration files with the hard disk
 - [gopts](gopts/) global plugin to automatically call `elektraGetOpts`
 - [process](process/) proxy plugin that uses separate executables as plugin implementations
-- [backend](backend/) is the default plugin implementing backend functionality for configuration files
 - [recorder](recorder/) is the plugin used to implement session recording
 
 ### Plugins for Development

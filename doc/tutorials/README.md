@@ -77,4 +77,5 @@ Elektra:
 These tutorials provide additional information on how to
 install and set up specific tools.
 
+- [ODBC Backend](odbc-backend.md)
 - [Webui](install-webui.md)

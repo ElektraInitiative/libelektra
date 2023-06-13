@@ -1,0 +1,90 @@
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre3
+.TH "KDB\-MOUNTODBC" "1" "June 2023" ""
+.SH "NAME"
+\fBkdb\-mountOdbc\fR \- Mount an ODBC data source to the key database
+.SH "SYNOPSIS"
+\fBkdb mountOdbc <data source name> <user name> <password> <table name> <key column name> <value column name> <meta table name> <mt key column name> <mt metakey column name> <mt metavalue column name> <timeout (s)> <mountpoint>\fR
+.br
+.IP "\(bu" 4
+Where \fBdata source name\fR is the name of the ODBC data source as defined in \fBodbc\.ini\fR (usually stored at \fB/etc/unixODBC/\fR)\.
+.IP "\(bu" 4
+Only ODBC drivers that support \fBouter joins\fR are suited for the Elektra ODBC backend\.
+.IP "" 0
+
+.IP "\(bu" 4
+\fBuser name\fR: The username that should be used for connecting to the ODBC data source\. If no username is needed, or it is already specified in the ini\-file for the configuration of the datasource, \fB""\fR can be provided for this argument\.
+.IP "\(bu" 4
+\fBpassword\fR: The same rules as for \fBuser name\fR also apply to this argument\.
+.IP "\(bu" 4
+\fBtable name\fR: The name of the table in the data source where the keys and their values should be stored\.
+.IP "\(bu" 4
+\fBkey column name\fR: The name of the column where the key\-names should be stored\. This should be the primary key of the table\.
+.IP "\(bu" 4
+\fBvalue column name\fR: The name of the column where the key\-values (strings) should be stored\. This column should support NULL\-values\.
+.IP "\(bu" 4
+\fBmeta table name\fR: The name of the table where the metadata for the keys should be stored\.
+.IP "\(bu" 4
+\fBmt key column name\fR: The name of the column in the meta table where the key\-name should be stored\. This should be a foreign key that refers to the column with the key\-name of the other table\.
+.IP "\(bu" 4
+\fBmt metakey column name\fR: The name of the column in the meta table where the name of the metakey should be stored\. This column, together with the column for the key\-name, should define the primary key of the meta table\.
+.IP "\(bu" 4
+\fBmt metavalue column name\fR: The name of the column in the meta table where the value (string) of the metakey should be stored\. This column should support NULL\-values\.
+.IP "\(bu" 4
+\fBtimeout (s)\fR: The timeout (in seconds) that should be used when connecting to the data source\. When passing '0', the timeout gets disabled and the application could potentially wait forever\. So use this option with care! If you want to use a default timeout, you can just pass \fB""\fR for this argument\.
+.IP "\(bu" 4
+\fBmountpoint\fR: The place in the KDB where the ODBC data source should be mounted\. The syntax is the same as with the file\-based backend, but you can only use \fBuser:/\fR and \fBsystem:/\fR namespaces as mountpoints for ODBC data sources\.
+.IP "" 0
+.IP "" 4
+All columns in the data source that are specified via one of the described arguments, should be of type \fBTEXT\fR\. The tables can have additional columns\. These are not processed by the ODBC backend, but should support NULL or DEFAULT values\.
+.IP "" 0
+.SH "DESCRIPTION"
+This command allows a user to persistently mount a new \fIbackend\fR that refers to an ODBC data source\. The concept is the same as for mounting with the file\-based backend\. So it is recommended to also read to man page for kdb\-mount(1) \fIkdb\-mount\.md\fR\. More about mounting is explained in elektra\-mounting(7) \fIelektra\-mounting\.md\fR\.
+.SH "IMPORTANT"
+This command modifies \fBsystem:/elektra/mountpoints\fR\. Depending on the location of that part of the KDB, you may need root privileges to execute this command\. Use \fBkdb file system:/elektra/mountpoints\fR to find out where exactly it will write to\.
+.IP "" 4
+There is no special command for unmounting ODBC data sources\. You can just use the kdb\-umount(1) \fIkdb\-umount\.md\fR command the same way as with mountpoints for files\.
+.IP "" 0
+.SH "OPTIONS"
+.TP
+\fB\-H\fR, \fB\-\-help\fR
+Show the man page\.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Print version info\.
+.TP
+\fB\-p\fR, \fB\-\-profile <profile>\fR
+Use a different kdb profile\.
+.TP
+\fB\-C\fR, \fB\-\-color <when>\fR
+Print never/auto(default)/always colored output\.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Explain what is happening\. Prints additional information in case of errors/warnings\.
+.TP
+\fB\-d\fR, \fB\-\-debug\fR
+Give debug information\. Prints additional information in case of errors/warnings\.
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+Create the mountpoint even if the data source can not be reached at mount\-time\.
+.SH "Examples"
+To mount the sample SQLite data source which is available at /src/plugins/backend_odbc/sampleDb/elektraDB\.db:
+.br
+\fBkdb mountOdbc Selektra "" "" elektraKeys keyName keyValue metaKeys keyName metaKeyName metaKeyValue "" user:/odbcSqlite\fR
+.P
+To specify all arguments:
+.br
+\fBkdb mountOdbc Selektra myUser myPassword elektraKeys keyName keyValue metaKeys keyName metaKeyName metaKeyValue 12 user:/odbcSqlite\fR
+.SH "SEE ALSO"
+.IP "\(bu" 4
+kdb\-mount(1) \fIkdb\-mount\.md\fR\.
+.IP "\(bu" 4
+elektra\-glossary(7) \fIelektra\-glossary\.md\fR\.
+.IP "\(bu" 4
+kdb\-spec\-mount(1) \fIkdb\-spec\-mount\.md\fR\.
+.IP "\(bu" 4
+kdb\-umount(1) \fIkdb\-umount\.md\fR\.
+.IP "\(bu" 4
+elektra\-mounting(7) \fIelektra\-mounting\.md\fR\.
+.IP "" 0
+

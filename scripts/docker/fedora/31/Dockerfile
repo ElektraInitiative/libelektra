@@ -7,7 +7,7 @@ RUN dnf upgrade -y && dnf install -y \
         cmake \
         curl \
         dbus-devel \
-    	dbus-x11 \
+        dbus-x11 \
         diffutils \
         dnf-plugins-core \
         file \
@@ -40,6 +40,7 @@ RUN dnf upgrade -y && dnf install -y \
         ruby-devel \
         rubygem-test-unit \
         swig \
+        unixODBC \
         unzip \
         valgrind \
         wget \
@@ -50,7 +51,7 @@ RUN dnf upgrade -y && dnf install -y \
         yaml-cpp-devel \
         zlib-devel \
         python3-pip \
-    	golang \
+        golang \
     && dnf debuginfo-install -y \
         bison \
         flex \
