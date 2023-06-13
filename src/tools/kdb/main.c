@@ -279,6 +279,8 @@ int main (int argc, char ** argv)
 		if (result != 0 && (argc != 2 || elektraStrCmp (argv[1], "mount") != 0))
 		{
 			fprintf (stderr, "ERROR: %s\n", errorMessage);
+			const char * helpMessage = elektraGetOptsHelpMessage (parentKey, NULL, NULL);
+			fprintf (stderr, "\n%s\n", helpMessage);
 			goto cleanup;
 		}
 	}
