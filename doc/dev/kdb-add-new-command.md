@@ -7,7 +7,9 @@ Here we'll go over what has to be done in order to implement a new command in C 
 First we need a header as well as a c file for the new command.
 
 ### Header
+
 The `<name>.h` has to look something like this:
+
 ```c
 /**
  * @file
@@ -45,7 +47,9 @@ int exec... (KeySet * options, Key * errorKey);
 ```
 
 ### `C` file
+
 The `<name>.c` to implement the two functions already described in the header file, in addition to those two functions `COMMAND_NAME`, `GET_OPTION_KEY` and `GET_OPTION` have to be defined as follows:
+
 ```c
 #define COMMAND_NAME "..." // your command name
 
@@ -56,9 +60,11 @@ The `<name>.c` to implement the two functions already described in the header fi
 It should also `#include <colors.h>` and `#include <command.h>`, those contain all the needed helper macros and function.
 
 #### Specification
+
 `void add...Spec (KeySet * spec)` will contain the specification of the command new command.
 It has to append it to the passed `KeySet * spec`, the framework will call this function to register its specification.
 The function could look something like this:
+
 ```c
 void addGetSpec (KeySet * spec)
 {
@@ -77,12 +83,14 @@ The `ADD_BASIC_OPTIONS` at the end adds options that are common across all comma
 It if your command should support these, it makes sense to use the macro.
 
 #### Execution
+
 The `int exec... (KeySet * options, Key * errorKey)` receives two parameters, `options` and `errorKey`.
 Where `options` contains the passed options and arguments and `errorKey` is where any errors or warnings have to be written to so the framework can properly print them.
 It should start with the `GET_BASIC_OPTIONS` macro, this sets everything up needed for logging(and logging level), basic options and colored printing.
 So afterward `CLI_PRINT` and `CLI_ERROR_PRINT` can be used.
 When returning for the `exec` function the `RETURN (n)` macro should be used, it makes sure things allocated by `GET_BASIC_OPTIONS` are freed properly.
 A basic version of this function could look something like this:
+
 ```c
 int ret = 0;
 	GET_BASIC_OPTIONS
@@ -116,7 +124,7 @@ int ret = 0;
 	{
 		CLI_PRINT (CLI_LOG_VERBOSE, "The key was not found in any other namespace, taking the %s\n", BOLD ("default"));
 	}
-	
+
 	...
 
 cleanup:
@@ -129,21 +137,27 @@ For getting keys from arguments the helper function `getKeyFromOptions` can the 
 It will resolve bookmarks and make sure the argument is a valid keyname.
 
 ## 2. Output
+
 All output in the `exec` function should be done using either `CLI_PRINT` or `CLI_ERROR_PRINT` with the appropriate logging level.
 Available logging levels are `CLI_LOG_NONE`, `CLI_LOG_VERBOSE` and `CLI_LOG_DEBUG`.
 By using `CLI_PRINT` or `CLI_ERROR_PRINT` logging levels are handled automatically.
 
 ## 3. Errors/Warning
+
 If errors occur during the execution of your command, they should be set in `errorKey` and not printed directly.
 This could look something like this:
+
 ```c
 ELEKTRA_SET_INTERNAL_ERROR (errorKey, "could not copy key meta to errorKey");
 ```
+
 These error setting macros are available in `kdberrors.h`.
 By setting the like this, they are later printed properly formatted by the framework.
 
 ## 4. "registering" the new command
+
 You just have to `#include` your header file in `main.c` and add an element to the `command subcommands[]` array.
+
 ```c
 command subcommands[] = {
 	...
