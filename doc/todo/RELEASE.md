@@ -85,6 +85,17 @@ If no release critical problems are found during testing, continue.
   `mkdir -p build && cd build && cmake .. && make html && ../scripts/link-checker external-links.txt`
 - Verify if website is correct
 
+## Publish Git tags
+
+- The release pipeline produces a Git bundle of the repository including the new versin tag.
+  As a precaution, publishing the release tag is done manually. This allows the developer
+  to review the changes before pushing to master.
+- Download the Git bundle, which is located in the build artifacts: e.g. `artifacts/debian-bullseye/libelektra.bundle`.
+- Add the downloaded bundle as a remote to an existing git repo using: `git remote add bundle ../libelektra.bundle`.
+- Fetch the tags from the bundle using: `git fetch bundle --tags`.
+- Verify that everything is correct with the release tag (and that there are no superfluous tags). If your tags were in sync, there should only be one new release tag.
+- Push the new tags using: `git push --tags upstream`.
+
 ### Preperation for next release
 
 - Increment `CMPVERSION` in `scripts/build/run_icheck`
