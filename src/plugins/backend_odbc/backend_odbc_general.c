@@ -132,7 +132,7 @@ SQLHDBC allocateConnectionHandle (SQLHENV sqlEnv, Key * errorKey)
  *
  * @see allocateConnectionHandle() for getting a connection handle that can be passed to this function
  */
-bool setLoginTimeout (SQLHDBC sqlConnection, unsigned long timeout, Key * errorKey)
+bool setLoginTimeout (SQLHDBC sqlConnection, uintptr_t timeout, Key * errorKey)
 {
 	SQLRETURN ret = SQLSetConnectAttr (sqlConnection, SQL_LOGIN_TIMEOUT, (SQLPOINTER) timeout, 0);
 

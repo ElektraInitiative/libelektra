@@ -18,11 +18,12 @@
 #include <kdblogger.h>
 #include <string.h>
 
-
 /**
  * @internal
  *
  * @brief Constructs a SELECT query string for the ODBC backend based on the given data source configuration.
+ *
+ * @pre All mandatory values in @p dsConfig must be present and valid.
  *
  * @param dsConfig A valid data source config, as returned by the fillDsStructFromDefinitionKs() function
  * @param quoteString The characters that should be added before and after identifiers, pass NULL if your identifiers in dsConfig are
@@ -30,116 +31,60 @@
  *
  * @return The query string for the select query to get keynames, key-values and metadata from an SQL data source.
  * 	Make sure to free the returned string.
- * @retval empty string if invalid input detected
- * 	This string must not be freed!
- * @retval NULL if memory allocation failed
+ * @retval NULL if memory allocation failed, no @p quoteString was given or an invalid identifier value
+ * 	was in @p dsConfig, see warnings and error in @p errorKey for more details
  */
-static char * getSelectQueryString (struct dataSourceConfig * dsConfig, char * quoteString)
+static char * getSelectQueryString (struct dataSourceConfig * dsConfig, char * quoteString, Key * errorKey)
 {
 	/* A sample query string that shows the structure of the SELECT query that this function generates:
 	 * SELECT "elektra"."key", "elektra"."val", "elektrameta"."metakey", "elektrameta"."metaval" FROM {oj "elektra" LEFT OUTER JOIN
 	 * "elektrameta" ON "elektra"."key"="elektrameta"."key"}
 	 */
 
-	/* Verify that all necessary strings are provided */
-	if (!dsConfig || !(dsConfig->tableName) || !(*(dsConfig->tableName)) || !(dsConfig->keyColName) || !(*(dsConfig->keyColName)) ||
-	    !(dsConfig->valColName) || !(*(dsConfig->valColName)) || !(dsConfig->metaTableName) || !(*(dsConfig->metaTableName)) ||
-	    !(dsConfig->metaTableKeyColName) || !(*(dsConfig->metaTableKeyColName)) || !(dsConfig->metaTableMetaKeyColName) ||
-	    !(*(dsConfig->metaTableMetaKeyColName)) || !(dsConfig->metaTableMetaValColName) || !(*(dsConfig->metaTableMetaValColName)))
+	if (!quoteString || !(*quoteString))
 	{
-		return "";
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "NULL or empty strings are not supported for the quoteString");
+		return NULL;
 	}
 
-
-	/* 1. Calculate strlen of all column names */
-	size_t sumLen = strlen (dsConfig->keyColName) * 2 + strlen (dsConfig->valColName) + strlen (dsConfig->metaTableMetaKeyColName) +
-			strlen (dsConfig->metaTableMetaValColName) + strlen (dsConfig->metaTableKeyColName);
-
-	/* 2. Add table names (for SELECT and outer join parts of the query string, add 6 bytes for the cases where the column name follows
-	 * the table name ('.' as separator */
-	sumLen += strlen (dsConfig->tableName) * 4 + strlen (dsConfig->metaTableName) * 4 + 6;
-
-	/* 3. Add strlen for static parts of the query + 1 byte for \0 */
-	sumLen += strlen ("SELECT , , ,  FROM {oj  LEFT OUTER JOIN  ON =}");
-
-	/* 4. Add bytes for quoting identifiers (table- and column-names) */
-	if (quoteString)
+	/* Check if any identifier contains the quote string */
+	if (checkIdentifiersForSubString (dsConfig, quoteString, errorKey))
 	{
-		sumLen += (14 * 2 * strlen (quoteString));
-	}
-	else
-	{
-		/* Don't use quotes for identifiers */
-		quoteString = "";
+		/* A concrete error message should have been set to errorKey */
+		return NULL;
 	}
 
-	char * queryString = elektraMalloc (sizeof (char) * sumLen);
+	// clang-format off
+	char * queryString = elektraFormat ("SELECT %s%s%s.%s%s%s, %s%s%s.%s%s%s, %s%s%s.%s%s%s, %s%s%s.%s%s%s FROM {oj %s%s%s "
+		"LEFT OUTER JOIN %s%s%s ON %s%s%s.%s%s%s=%s%s%s.%s%s%s}",
+		quoteString, dsConfig->tableName, quoteString,
+		quoteString, dsConfig->keyColName, quoteString,
+
+		quoteString, dsConfig->tableName, quoteString,
+		quoteString, dsConfig->valColName, quoteString,
+
+		quoteString, dsConfig->metaTableName, quoteString,
+		quoteString, dsConfig->metaTableMetaKeyColName, quoteString,
+
+		quoteString, dsConfig->metaTableName, quoteString,
+		quoteString, dsConfig->metaTableMetaValColName, quoteString,
+
+		quoteString, dsConfig->tableName, quoteString,
+
+		quoteString, dsConfig->metaTableName, quoteString,
+
+		quoteString, dsConfig->tableName, quoteString,
+		quoteString, dsConfig->keyColName, quoteString,
+
+		quoteString, dsConfig->metaTableName, quoteString,
+		quoteString, dsConfig->metaTableKeyColName, quoteString);
+	// clang-format on
+
 
 	if (!queryString)
 	{
 		return NULL;
 	}
-
-	/* Build the string */
-	char * strEnd = stpcpy (queryString, "SELECT ");
-	strEnd = stpcpy (strEnd, quoteString);
-	strEnd = stpcpy (strEnd, dsConfig->tableName);
-	strEnd = stpcpy (strEnd, quoteString);
-	strEnd = stpcpy (strEnd, ".");
-	strEnd = stpcpy (strEnd, quoteString);
-	strEnd = stpcpy (strEnd, dsConfig->keyColName);
-	strEnd = stpcpy (strEnd, quoteString);
-	strEnd = stpcpy (strEnd, ", ");
-	strEnd = stpcpy (strEnd, quoteString);
-	strEnd = stpcpy (strEnd, dsConfig->tableName);
-	strEnd = stpcpy (strEnd, quoteString);
-	strEnd = stpcpy (strEnd, ".");
-	strEnd = stpcpy (strEnd, quoteString);
-	strEnd = stpcpy (strEnd, dsConfig->valColName);
-	strEnd = stpcpy (strEnd, quoteString);
-
-	strEnd = stpcpy (strEnd, ", ");
-	strEnd = stpcpy (strEnd, quoteString);
-	strEnd = stpcpy (strEnd, dsConfig->metaTableName);
-	strEnd = stpcpy (strEnd, quoteString);
-	strEnd = stpcpy (strEnd, ".");
-	strEnd = stpcpy (strEnd, quoteString);
-	strEnd = stpcpy (strEnd, dsConfig->metaTableMetaKeyColName);
-	strEnd = stpcpy (strEnd, quoteString);
-	strEnd = stpcpy (strEnd, ", ");
-	strEnd = stpcpy (strEnd, quoteString);
-	strEnd = stpcpy (strEnd, dsConfig->metaTableName);
-	strEnd = stpcpy (strEnd, quoteString);
-	strEnd = stpcpy (strEnd, ".");
-	strEnd = stpcpy (strEnd, quoteString);
-	strEnd = stpcpy (strEnd, dsConfig->metaTableMetaValColName);
-	strEnd = stpcpy (strEnd, quoteString);
-
-	strEnd = stpcpy (strEnd, " FROM {oj ");
-	strEnd = stpcpy (strEnd, quoteString);
-	strEnd = stpcpy (strEnd, dsConfig->tableName);
-	strEnd = stpcpy (strEnd, quoteString);
-	strEnd = stpcpy (strEnd, " LEFT OUTER JOIN ");
-	strEnd = stpcpy (strEnd, quoteString);
-	strEnd = stpcpy (strEnd, dsConfig->metaTableName);
-	strEnd = stpcpy (strEnd, quoteString);
-	strEnd = stpcpy (strEnd, " ON ");
-	strEnd = stpcpy (strEnd, quoteString);
-	strEnd = stpcpy (strEnd, dsConfig->tableName);
-	strEnd = stpcpy (strEnd, quoteString);
-	strEnd = stpcpy (strEnd, ".");
-	strEnd = stpcpy (strEnd, quoteString);
-	strEnd = stpcpy (strEnd, dsConfig->keyColName);
-	strEnd = stpcpy (strEnd, quoteString);
-	strEnd = stpcpy (strEnd, "=");
-	strEnd = stpcpy (strEnd, quoteString);
-	strEnd = stpcpy (strEnd, dsConfig->metaTableName);
-	strEnd = stpcpy (strEnd, quoteString);
-	strEnd = stpcpy (strEnd, ".");
-	strEnd = stpcpy (strEnd, quoteString);
-	strEnd = stpcpy (strEnd, dsConfig->metaTableKeyColName);
-	strEnd = stpcpy (strEnd, quoteString);
-	stpcpy (strEnd, "}");
 
 	return queryString;
 }
@@ -150,9 +95,10 @@ static char * getSelectQueryString (struct dataSourceConfig * dsConfig, char * q
  *
  * @brief Prepares a SELECT SQL-statement that can later be executed to actually fetch the values.
  *
- * The statement is constructed to retrieve all keys, values and associated metadata
+ * The statement is constructed to retrieve all keys, values and associated metadata.
  *
- * @pre The @p sqlConnection handle must have been initialized and a connection must have been established
+ * @pre The @p sqlConnection handle must have been initialized and a connection must have been established.
+ * @pre All mandatory values in @p dsConfig must be present and valid.
  *
  * @param sqlConnection The initialized connection handle. It must represent an active connection.
  * 	This handle gets freed if an error occurred, so don't dereference it if the function returned NULL.
@@ -162,6 +108,8 @@ static char * getSelectQueryString (struct dataSourceConfig * dsConfig, char * q
  * @return A handle to the prepared statement
  * 	Make sure to free the returned handle with SQLFreeHandle().
  * @retval NULL if an error occurred (see @p errorKey for details)
+ *
+ * @see fillDsStructFromDefinitionKs() for getting a valid dataSourceConfig struct
  */
 static SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfig * dsConfig, Key * errorKey)
 {
@@ -212,9 +160,12 @@ static SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfi
 	}
 
 	char * queryString;
-	if (quoteCharLen > 1)
+	if ((quoteCharLen) > 1)
 	{
-		ELEKTRA_LOG_WARNING ("Got a string for the info SQL_IDENTIFIER_QUOTE_CHAR with more than one character, this is unusual.");
+		/* TODO: Check support for Unicode */
+		ELEKTRA_LOG_WARNING (
+			"Got a string for the info SQL_IDENTIFIER_QUOTE_CHAR with more than one byte, this is unusual."
+			"If you are using Unicode on MS Windows (UTF-16), please be aware that this could lead to errors.");
 		char * identifierQuoteStr = elektraMalloc ((quoteCharLen + 1) * sizeof (char));
 		ret = SQLGetInfo (sqlConnection, SQL_IDENTIFIER_QUOTE_CHAR, identifierQuoteStr, 1, &quoteCharLen);
 
@@ -238,12 +189,12 @@ static SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfi
 			ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_DBC, sqlConnection, errorKey);
 		}
 
-		queryString = getSelectQueryString (dsConfig, identifierQuoteStr);
+		queryString = getSelectQueryString (dsConfig, identifierQuoteStr, errorKey);
 		elektraFree (identifierQuoteStr);
 	}
 	else
 	{
-		queryString = getSelectQueryString (dsConfig, identifierQuoteChar);
+		queryString = getSelectQueryString (dsConfig, identifierQuoteChar, errorKey);
 	}
 
 	if (!queryString || !(*queryString))
@@ -364,7 +315,6 @@ static bool executeSqlStatement (SQLHSTMT sqlStmt, Key * errorKey)
 static bool getLongData (SQLHSTMT sqlStmt, SQLUSMALLINT colNumber, SQLSMALLINT targetType, char ** targetValue, SQLLEN bufferSize,
 			 Key * errorKey)
 {
-	SQLLEN getDataLenOrInd;
 	SQLRETURN getDataRet;
 	unsigned int iteration = 0;
 
@@ -397,8 +347,7 @@ static bool getLongData (SQLHSTMT sqlStmt, SQLUSMALLINT colNumber, SQLSMALLINT t
 			}
 		}
 
-		getDataRet = SQLGetData (sqlStmt, colNumber, targetType, (*targetValue) + (iteration * (bufferSize - 1)), bufferSize,
-					 &getDataLenOrInd);
+		getDataRet = SQLGetData (sqlStmt, colNumber, targetType, (*targetValue) + (iteration * (bufferSize - 1)), bufferSize, NULL);
 
 		if (SQL_SUCCEEDED (getDataRet))
 		{
@@ -439,7 +388,7 @@ static bool getLongData (SQLHSTMT sqlStmt, SQLUSMALLINT colNumber, SQLSMALLINT t
  * 	This handle gets freed if an error occurred, so don't dereference it if the function returned NULL.
  * @param buffers A struct with the pre-defined output buffers that are used to retrieve that data of the queried columns
  * 	See 'struct columnData'.
- * @param[out] errorKey Used to store errors and warnings
+ * @param[out] parentKey Used to store errors and warnings and for getting the mountpoint root path
  *
  * @returns The KeySet with the data retrieved from the SQL SELECT query.
  * 	Make sure to ksDel() the returned KeySet.
@@ -447,7 +396,7 @@ static bool getLongData (SQLHSTMT sqlStmt, SQLUSMALLINT colNumber, SQLSMALLINT t
  *
  * @see executeSqlStatement() for executing a prepared SQL statement
  */
-static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key * errorKey)
+static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key * parentKey)
 {
 	SQLRETURN ret;
 	KeySet * ksResult = NULL;
@@ -459,10 +408,10 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 
 	if (!sqlStmt || !buffers)
 	{
-		if (errorKey)
+		if (parentKey)
 		{
 			ELEKTRA_SET_INTERFACE_ERROR (
-				errorKey, "A NULL pointer was given as an argument to fetchResults() for 'sqlStmt' or 'columnData'");
+				parentKey, "A NULL pointer was given as an argument to fetchResults() for 'sqlStmt' or 'columnData'");
 		}
 		return NULL;
 	}
@@ -472,7 +421,7 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 
 		if (!SQL_SUCCEEDED (ret))
 		{
-			ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_STMT, sqlStmt, errorKey);
+			ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_STMT, sqlStmt, parentKey);
 			elektraFree (prevKeyName);
 
 			if (ksResult)
@@ -515,13 +464,13 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 					 * resized multiple times */
 					longKeyName = (char *) elektraMalloc (sizeof (char) * (KEYNAME_BUFFER_SIZE * 2));
 					retGetLongData =
-						getLongData (sqlStmt, 1, SQL_C_CHAR, &longKeyName, KEYNAME_BUFFER_SIZE * 2, errorKey);
+						getLongData (sqlStmt, 1, SQL_C_CHAR, &longKeyName, KEYNAME_BUFFER_SIZE * 2, parentKey);
 				}
 				else if (KEYNAME_BUFFER_SIZE <= buffers->nameLenInd)
 				{
 					longKeyName = (char *) elektraMalloc (sizeof (char) * (buffers->nameLenInd + 1));
 					retGetLongData =
-						getLongData (sqlStmt, 1, SQL_C_CHAR, &longKeyName, (buffers->nameLenInd + 1), errorKey);
+						getLongData (sqlStmt, 1, SQL_C_CHAR, &longKeyName, (buffers->nameLenInd + 1), parentKey);
 				}
 
 				/* Check if the keyname changed since the last iteration */
@@ -542,13 +491,13 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 				{
 					longKeyString = (char *) elektraMalloc (sizeof (char) * (KEYSTRING_BUFFER_SIZE * 2));
 					retGetLongData =
-						getLongData (sqlStmt, 2, SQL_C_CHAR, &longKeyString, KEYSTRING_BUFFER_SIZE * 2, errorKey);
+						getLongData (sqlStmt, 2, SQL_C_CHAR, &longKeyString, KEYSTRING_BUFFER_SIZE * 2, parentKey);
 				}
 				else if (!isFurtherMetaKey && KEYSTRING_BUFFER_SIZE <= buffers->strLenInd)
 				{
 					longKeyString = (char *) elektraMalloc (sizeof (char) * (buffers->strLenInd + 1));
 					retGetLongData =
-						getLongData (sqlStmt, 2, SQL_C_CHAR, &longKeyString, (buffers->strLenInd + 1), errorKey);
+						getLongData (sqlStmt, 2, SQL_C_CHAR, &longKeyString, (buffers->strLenInd + 1), parentKey);
 				}
 
 				/* Check metakey-name column */
@@ -556,13 +505,13 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 				{
 					longMetaKeyName = (char *) elektraMalloc (sizeof (char) * (METAKEYNAME_BUFFER_SIZE * 2));
 					retGetLongData = getLongData (sqlStmt, 3, SQL_C_CHAR, &longMetaKeyName, METAKEYNAME_BUFFER_SIZE * 2,
-								      errorKey);
+								      parentKey);
 				}
 				else if (METAKEYNAME_BUFFER_SIZE <= buffers->metaNameLenInd)
 				{
 					longMetaKeyName = (char *) elektraMalloc (sizeof (char) * (buffers->metaNameLenInd + 1));
 					retGetLongData = getLongData (sqlStmt, 3, SQL_C_CHAR, &longMetaKeyName,
-								      (buffers->metaNameLenInd + 1), errorKey);
+								      (buffers->metaNameLenInd + 1), parentKey);
 				}
 
 				/* Check metakey-string column */
@@ -570,13 +519,13 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 				{
 					longMetaKeyString = (char *) elektraMalloc (sizeof (char) * (METASTRING_BUFFER_SIZE * 2));
 					retGetLongData = getLongData (sqlStmt, 4, SQL_C_CHAR, &longMetaKeyString,
-								      METASTRING_BUFFER_SIZE * 2, errorKey);
+								      METASTRING_BUFFER_SIZE * 2, parentKey);
 				}
 				else if (METASTRING_BUFFER_SIZE <= buffers->metaStrLenInd)
 				{
 					longMetaKeyString = (char *) elektraMalloc (sizeof (char) * (buffers->metaStrLenInd + 1));
 					retGetLongData = getLongData (sqlStmt, 4, SQL_C_CHAR, &longMetaKeyString,
-								      (buffers->metaStrLenInd + 1), errorKey);
+								      (buffers->metaStrLenInd + 1), parentKey);
 				}
 
 				if (!retGetLongData)
@@ -601,7 +550,7 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 			}
 			else
 			{
-				ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_STMT, sqlStmt, errorKey);
+				ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_STMT, sqlStmt, parentKey);
 			}
 		}
 
@@ -628,7 +577,7 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 		{
 			/* Create new key */
 			prevKey = curKey;
-			curKey = keyDup (errorKey, KEY_CP_NAME);
+			curKey = keyDup (parentKey, KEY_CP_NAME);
 
 			if (longKeyName)
 			{

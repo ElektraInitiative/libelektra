@@ -6,6 +6,7 @@
 <mt key column name> <mt metakey column name> <mt metavalue column name> <timeout (s)> <mountpoint>`<br>
 
 - Where `data source name` is the name of the ODBC data source as defined in `odbc.ini` (usually stored at `/etc/unixODBC/`).
+  - Only ODBC drivers that support **outer joins** are suited for the Elektra ODBC backend.
 - `user name`: The username that should be used for connecting to the ODBC data source. If no username is needed, or it is already specified in the ini-file for the configuration of the datasource, `""` can be provided for this argument.
 - `password`: The same rules as for `user name` also apply to this argument.
 - `table name`: The name of the table in the data source where the keys and their values should be stored.
@@ -21,8 +22,6 @@
 > All columns in the data source that are specified via one of the described arguments, should be of type `TEXT`.
 > The tables can have additional columns. These are not processed by the ODBC backend, but should support NULL or DEFAULT values.
 
-> Only ODBC drivers that support **outer joins** are suited for the Elektra ODBC backend.
-
 ## DESCRIPTION
 
 This command allows a user to persistently mount a new _backend_ that refers to an ODBC data source.
@@ -32,8 +31,8 @@ More about mounting is explained in [elektra-mounting(7)](elektra-mounting.md).
 
 ## IMPORTANT
 
-This command writes into the `/etc` directory to make the mounting persistent.
-As such it requires root permissions.
+This command modifies `system:/elektra/mountpoints`.
+Depending on the location of that part of the KDB, you may need root privileges to execute this command.
 Use `kdb file system:/elektra/mountpoints` to find out where exactly it will write to.
 
 > There is no special command for unmounting ODBC data sources.
@@ -58,7 +57,7 @@ Use `kdb file system:/elektra/mountpoints` to find out where exactly it will wri
 
 ## Examples
 
-To mount the sample SQLite data source:<br>
+To mount the sample SQLite data source which is available at /src/plugins/backend_odbc/sampleDb/elektraDB.db:<br>
 `kdb mountOdbc Selektra "" "" elektraKeys keyName keyValue metaKeys keyName metaKeyName metaKeyValue "" user:/odbcSqlite`
 
 To specify all arguments:<br>

@@ -9,6 +9,10 @@
 .IP "\(bu" 4
 Where \fBdata source name\fR is the name of the ODBC data source as defined in \fBodbc\.ini\fR (usually stored at \fB/etc/unixODBC/\fR)\.
 .IP "\(bu" 4
+Only ODBC drivers that support \fBouter joins\fR are suited for the Elektra ODBC backend\.
+.IP "" 0
+
+.IP "\(bu" 4
 \fBuser name\fR: The username that should be used for connecting to the ODBC data source\. If no username is needed, or it is already specified in the ini\-file for the configuration of the datasource, \fB""\fR can be provided for this argument\.
 .IP "\(bu" 4
 \fBpassword\fR: The same rules as for \fBuser name\fR also apply to this argument\.
@@ -34,13 +38,10 @@ Where \fBdata source name\fR is the name of the ODBC data source as defined in \
 .IP "" 4
 All columns in the data source that are specified via one of the described arguments, should be of type \fBTEXT\fR\. The tables can have additional columns\. These are not processed by the ODBC backend, but should support NULL or DEFAULT values\.
 .IP "" 0
-.IP "" 4
-Only ODBC drivers that support \fBouter joins\fR are suited for the Elektra ODBC backend\.
-.IP "" 0
 .SH "DESCRIPTION"
 This command allows a user to persistently mount a new \fIbackend\fR that refers to an ODBC data source\. The concept is the same as for mounting with the file\-based backend\. So it is recommended to also read to man page for kdb\-mount(1) \fIkdb\-mount\.md\fR\. More about mounting is explained in elektra\-mounting(7) \fIelektra\-mounting\.md\fR\.
 .SH "IMPORTANT"
-This command writes into the \fB/etc\fR directory to make the mounting persistent\. As such it requires root permissions\. Use \fBkdb file system:/elektra/mountpoints\fR to find out where exactly it will write to\.
+This command modifies \fBsystem:/elektra/mountpoints\fR\. Depending on the location of that part of the KDB, you may need root privileges to execute this command\. Use \fBkdb file system:/elektra/mountpoints\fR to find out where exactly it will write to\.
 .IP "" 4
 There is no special command for unmounting ODBC data sources\. You can just use the kdb\-umount(1) \fIkdb\-umount\.md\fR command the same way as with mountpoints for files\.
 .IP "" 0
@@ -67,7 +68,7 @@ Give debug information\. Prints additional information in case of errors/warning
 \fB\-f\fR, \fB\-\-force\fR
 Create the mountpoint even if the data source can not be reached at mount\-time\.
 .SH "Examples"
-To mount the sample SQLite data source:
+To mount the sample SQLite data source which is available at /src/plugins/backend_odbc/sampleDb/elektraDB\.db:
 .br
 \fBkdb mountOdbc Selektra "" "" elektraKeys keyName keyValue metaKeys keyName metaKeyName metaKeyValue "" user:/odbcSqlite\fR
 .P

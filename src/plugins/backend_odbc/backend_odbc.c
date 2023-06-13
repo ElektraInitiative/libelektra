@@ -45,15 +45,7 @@ int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * ksDefinition, Key 
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	void * pluginData = elektraPluginGetData (plugin);
-	if (pluginData)
-	{
-		elektraFree (pluginData);
-	}
-
-
 	elektraPluginSetData (plugin, dsConfig);
-
 
 	// init as read-only
 	/* TODO: Implement set function and then change to STATUS_SUCCESS */
@@ -72,9 +64,6 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ksReturned, Key * p
 			keyNew ("system:/elektra/modules/backend_odbc/exports/open", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (open), KEY_END),
 			keyNew ("system:/elektra/modules/backend_odbc/exports/init", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (init), KEY_END),
 			keyNew ("system:/elektra/modules/backend_odbc/exports/get", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (get), KEY_END),
-			keyNew ("system:/elektra/modules/backend_odbc/exports/set", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (set), KEY_END),
-			keyNew ("system:/elektra/modules/backend_odbc/exports/commit", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (commit), KEY_END),
-			keyNew ("system:/elektra/modules/backend_odbc/exports/error", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (error), KEY_END),
 			keyNew ("system:/elektra/modules/backend_odbc/exports/close", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (close), KEY_END),
 #include ELEKTRA_README
 			keyNew ("system:/elektra/modules/backend_odbc/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
@@ -132,28 +121,6 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ksReturned, Key * p
 	}
 }
 
-
-int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * plugin ELEKTRA_UNUSED, KeySet * ks ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
-{
-	/* TODO: Implement set function */
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-}
-
-
-int ELEKTRA_PLUGIN_FUNCTION (commit) (Plugin * plugin ELEKTRA_UNUSED, KeySet * ks ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
-{
-	/* TODO: Implement commit for set-operations */
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-}
-
-
-int ELEKTRA_PLUGIN_FUNCTION (error) (Plugin * plugin ELEKTRA_UNUSED, KeySet * ks ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
-{
-	/* TODO: Implement error function */
-	return ELEKTRA_PLUGIN_STATUS_ERROR;
-}
-
-
 int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * plugin, Key * errorKey ELEKTRA_UNUSED)
 {
 	struct dataSourceConfig * dsConfig = elektraPluginGetData (plugin);
@@ -169,9 +136,6 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 		ELEKTRA_PLUGIN_OPEN, &ELEKTRA_PLUGIN_FUNCTION (open),
 		ELEKTRA_PLUGIN_INIT, &ELEKTRA_PLUGIN_FUNCTION (init),
 		ELEKTRA_PLUGIN_GET, &ELEKTRA_PLUGIN_FUNCTION (get),
-		ELEKTRA_PLUGIN_SET, &ELEKTRA_PLUGIN_FUNCTION (set),
-		ELEKTRA_PLUGIN_COMMIT, &ELEKTRA_PLUGIN_FUNCTION (commit),
-		ELEKTRA_PLUGIN_ERROR, &ELEKTRA_PLUGIN_FUNCTION (error),
 		ELEKTRA_PLUGIN_CLOSE, &ELEKTRA_PLUGIN_FUNCTION (close),
 	ELEKTRA_PLUGIN_END);
 	// clang-format on

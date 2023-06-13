@@ -185,9 +185,9 @@ static void test_invalid_general (void)
 
 	succeed_if (hEnv, "Could not allocate SQL environment handle");
 
-	/* pass invalid versions */
 	/* Disabled because the tests fail on FreeBSD (setODBCVersion does return true) */
-	/*
+#ifndef __FreeBSD__
+	/* pass invalid versions */
 	succeed_if (!setOdbcVersion (hEnv, 0, NULL), "should return false");
 	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
 	succeed_if (!setOdbcVersion (hEnv, 0, testKey), "should return false");
@@ -196,8 +196,7 @@ static void test_invalid_general (void)
 	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
 	succeed_if (!setOdbcVersion (hEnv, 999, testKey), "should return false");
 	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	*/
-
+#endif
 	/* pass invalid handle (connection instead of environment) */
 	SQLHDBC hConn = NULL;
 	SQLAllocHandle (SQL_HANDLE_DBC, hEnv, &hConn);

@@ -15,10 +15,12 @@
 
 #include "./backend_odbc_helpers.h"
 
+#include <stdint.h>
+
 SQLHENV allocateEnvHandle (Key * parentKey);
 bool setOdbcVersion (SQLHENV sqlEnv, unsigned long version, Key * parentKey);
 SQLHDBC allocateConnectionHandle (SQLHENV sqlEnv, Key * parentKey);
-bool setLoginTimeout (SQLHDBC sqlConnection, unsigned long timeout, Key * errorKey);
+bool setLoginTimeout (SQLHDBC sqlConnection, uintptr_t timeout, Key * errorKey);
 bool setAutocommit (SQLHDBC sqlConnection, bool enableAutoCommit, Key * errorKey);
 bool endTransaction (SQLHDBC sqlConnection, bool commit, Key * errorKey);
 bool connectToDataSource (SQLHDBC sqlConnection, struct dataSourceConfig * dsConfig, Key * errorKey);

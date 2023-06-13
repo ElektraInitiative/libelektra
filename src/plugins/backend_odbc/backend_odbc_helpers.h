@@ -96,7 +96,9 @@ char ** getAvailableDataSources (void);
 struct dataSourceConfig * fillDsStructFromDefinitionKs (KeySet * ksDefinition, Key * errorKey);
 
 /* Get the sum of the number of characters from all strings in the dataSourceConfig struct */
-char * dsConfigToString (struct dataSourceConfig * dsConfig);
+char * dsConfigToString (const struct dataSourceConfig * dsConfig);
 
+/* Check no identifier in the data source configuration contains the given substring (useful for finding illegal characters like quotes) */
+bool checkIdentifiersForSubString (const struct dataSourceConfig * dsConfig, const char * subStr, Key * errorKey);
 
 #endif // ELEKTRA_BACKEND_ODBC_HELPERS_H

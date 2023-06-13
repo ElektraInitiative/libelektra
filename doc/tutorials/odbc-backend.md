@@ -31,8 +31,9 @@ The tutorial covers the following steps:
 ### Database scheme
 
 The basic database scheme is quite simple.
-You just need a table that contains two columns which can store a text of arbitrary length.
-Usually, the SQL data type `TEXT` is used for that purpose.
+You just need a table that contains two columns which can store a text value.
+Usually, the SQL data types `TEXT`, `CHAR` and `VARCHAR` are used for that purpose.
+They must contain valid UTF-8 sequences.
 One column is used for storing the **names** of the keys, the other one for storing their **values**.
 The column where the key-names are stored should be defined as the _primary key_ (PK) for that table.
 
@@ -43,17 +44,16 @@ Otherwise, lots of Elektra's features are not supported.-->
 Next, we have to create a table for storing metadata.
 The table for the metadata needs at least three columns:
 
-- A column with the _key-name_ which must be defined as a _foreign key_ (FK) to the PK of the table where the keys are stored.
+- A column with the _key-name_ which should be defined as a _foreign key_ (FK) to the PK of the table where the keys are stored.
 - A column for the _name_ of the metakeys.
 - A column for the _value_ of the metakeys.
 
-> The column for the **key-name** and the column for the **metakey-name** together form the PK of that table.
+> The column for the **key-name** and the column for the **metakey-name** together should form the PK of that table.
 
-Again, all these columns should be defined to store the data type `TEXT`.
-If you want to use `CHAR` or `VARCHAR` columns, it's your responsibility to make sure that the stored values don't exceed the maximum defined length.
+Again, all these columns should be defined to store the data types `TEXT`, `CHAR` or `VARCHAR` column.
 
 It is allowed that the tables contain more columns, these additional columns are not processed by Elektra,
-_must not_ be part of a PK and _must_ support NULL-values (if you want to add new keys in a future version of Elektra).
+_must not_ be part of a PK and _must_ support NULL- or DEFAULT-values (if you want to add new keys in a future version of Elektra).
 Currently, as only read support is implemented, columns that don't support NULL values are also possible, but not recommended.
 
 The following ER-diagram shows the described scheme:
@@ -129,7 +129,7 @@ If you want to use PostgreSQL, a bit more initial work is necessary.
 It is recommended to set up a user account, create a database and then create the tables using similar SQL statements as given above.
 You can run the PostgreSQL instance locally on the same computer where you use Elektra, but also on another node in the network.
 With this approach, it is possible to provide a centralized configuration storage for a whole network.
-As PostgreSQL natively supports transactions, it is also possible to share the same tables between multiple Elektra clients.
+As PostgreSQL natively supports transactions and multiple clients, it is also possible to share the same tables between multiple Elektra clients.
 Another option is to save the configurations for different users in separate tables.
 When a user logs in on any client PC in the network, the table with the matching configuration data can then, with some scripting, be mounted via Elektra.
 
@@ -169,40 +169,6 @@ Now we have to create or edit two configuration files for unixODBC:
 - **odbc.ini:** for configuring the actual data sources, which can then be mounted into Elektra's KDB
 
 On most systems, these files should be stored at `/etc/unixODBC/`.
-
-As we are working with Elektra here, it would be a nice option, to also use it for creating and managing the `.ini` files for the ODBC configuration.
-Unfortunately, the current Elektra plugins for .ini-files don't support the exact syntax that is used by the unixODBC configuration files.
-But we can still use the more generic [line plugin](/src/plugins/line/README.md) to create the files.
-Of course, you can also use a text editor to edit the files.
-
-> As you can see in the following listings, you need the permission to write to the `/etc/unixODBC/` ini-files.
-> In most cases, this means that the `kdb set` command to store the vales must be executed with root privileges, e.g. by using `sudo`.
-
-> The line-plugin ignores the key-name given in `kdb set` and just adds the given key-value as the last line to the given file.
-> The keys can be accessed via the line-number in the file, similar to [arrays](./arrays.md).
-> Therefore, we use these indices also as key-names in the following `kdb set` commands.
-
-### odbcinst.ini
-
-At first, we tell unixODBC where it can find the ODBC drivers we want to use.
-We store this information in the `/etc/unixODBC/odbcinst.ini` file:
-
-```bash
-kdb mount /etc/unixODBC/odbcinst.ini system:/conf/unixODBC/odbcinst/#0/current line
-sudo kdb set system:/conf/unixODBC/odbcinst/#0/current/#0 "[SQLite]"
-sudo kdb set system:/conf/unixODBC/odbcinst/#0/current/#1 "Description=SQLite ODBC Driver"
-sudo kdb set system:/conf/unixODBC/odbcinst/#0/current/#2 "Driver=/usr/local/lib/libsqlite3odbc.so"
-sudo kdb set system:/conf/unixODBC/odbcinst/#0/current/#3 "Setup=/usr/local/lib/libsqlite3odbc.so"
-sudo kdb set system:/conf/unixODBC/odbcinst/#0/current/#4 "FileUsage=1"
-sudo kdb set system:/conf/unixODBC/odbcinst/#0/current/#5 "Threading=2"
-sudo kdb set system:/conf/unixODBC/odbcinst/#0/current/#6 ""
-sudo kdb set system:/conf/unixODBC/odbcinst/#0/current/#7 "[Postgresql]"
-sudo kdb set system:/conf/unixODBC/odbcinst/#0/current/#8 "Description=General ODBC for PostgreSQL"
-sudo kdb set system:/conf/unixODBC/odbcinst/#0/current/#9 "Driver=/usr/local/lib/psqlodbca.so"
-sudo kdb set system:/conf/unixODBC/odbcinst/#0/current/#10 "Setup=/usr/lib/libodbcpsqlS.so"
-sudo kdb set system:/conf/unixODBC/odbcinst/#0/current/#11 "Setup64=/usr/lib64/libodbcpsqlS.so"
-```
-
 The content of the `/etc/unixODBC/odbcinst.ini` file should look like this:
 
 ```ini
@@ -238,31 +204,6 @@ The setting `FileUsage=1` indicates to unixODBC that the driver is file-based.
 ### odbc.ini
 
 After the driver settings, we have to define the actual ODBC data sources in `/etc/unixODBC/odbc.ini`.
-
-```bash
-kdb mount /etc/unixODBC/odbc.ini system:/conf/unixODBC/odbc/#0/current line
-sudo kdb set system:/conf/unixODBC/odbc/#0/current/#1 "[Selektra]"
-sudo kdb set system:/conf/unixODBC/odbc/#0/current/#2 "Description=SQLite Database for Elektra"
-sudo kdb set system:/conf/unixODBC/odbc/#0/current/#3 "Database=/home/user/elektraOdbc.db"
-sudo kdb set system:/conf/unixODBC/odbc/#0/current/#4 "Timeout=3500"
-sudo kdb set system:/conf/unixODBC/odbc/#0/current/#5 ""
-sudo kdb set system:/conf/unixODBC/odbc/#0/current/#6 "[Pelektra]"
-sudo kdb set system:/conf/unixODBC/odbc/#0/current/#7 "Description=Postgresql"
-sudo kdb set system:/conf/unixODBC/odbc/#0/current/#8 "Driver=Postgresql"
-sudo kdb set system:/conf/unixODBC/odbc/#0/current/#9 "Trace=No"
-sudo kdb set system:/conf/unixODBC/odbc/#0/current/#10 "Database=elektraDB"
-sudo kdb set system:/conf/unixODBC/odbc/#0/current/#11 "Servername=localhost"
-sudo kdb set system:/conf/unixODBC/odbc/#0/current/#12 "Username=elektraUser"
-sudo kdb set system:/conf/unixODBC/odbc/#0/current/#13 "Password=elektra"
-sudo kdb set system:/conf/unixODBC/odbc/#0/current/#14 "Port=5432"
-sudo kdb set system:/conf/unixODBC/odbc/#0/current/#15 "Protocol=6.4"
-sudo kdb set system:/conf/unixODBC/odbc/#0/current/#16 "ReadOnly=No"
-sudo kdb set system:/conf/unixODBC/odbc/#0/current/#17 "RowVersioning=No"
-sudo kdb set system:/conf/unixODBC/odbc/#0/current/#18 "ShowSystemTables=No"
-sudo kdb set system:/conf/unixODBC/odbc/#0/current/#19 "ShowOidColumn=No"
-sudo kdb set system:/conf/unixODBC/odbc/#0/current/#20 "FakeOidIndex=No"
-```
-
 This content of the file should look like this:
 
 ```ini
@@ -320,46 +261,14 @@ Otherwise, the `backend_odbc` plugin gets automatically excluded.
 Now, we can finally mount our ODBC data sources into the global Key Database (KDB) of Elektra.
 Currently, a separate command `kdb mountOdbc` exists for this purpose.
 Unfortunately, in contrast to the well-known `kdb mount` for the file-based backend, currently no additional plugins are supported.
-The situation is not ideal and may change in the future.
-One option is to provide a general mounting command for all types of backends.
 
 However, for now we use the `kdb mountOdbc` command.
 If you just type the command without additional arguments, you get some information about how the command works and which arguments are expected.
 
 > Only `system:/` and `user:/` namespaces are supported for ODBC mountpoints.
 
-To fully define a mountpoint for an ODBC data source, we need 12 arguments, 11 for defining the data source,
-and the last argument is the path where the mountpoint should be created in the KDB.
-
-The usage-message tells us which arguments are needed and in which order they must be given:
-
-```sh
-Usage: kdb mountOdbc <data source name> <user name> <password> <table name>
-      <key column name> <value column name> <meta table name> <mt key column name>
-      <mt metakey column name> <mt metavalue column name> <timeout (s)> <mountpoint>
-```
-
-If you have read the first section about the expected scheme of the used databases, the arguments should be self-explanatory.
-Nevertheless, here is a listing that describes the different arguments:
-
-- **\<data source name\>:** The name of the data source as defined in `/etc/unixODBC/odbc.ini`.
-- **\<user name\>:** The name of the user that should be used for connecting to the data source.
-  - If your data source doesn't need a username, or you have defined a username in the `odbc.ini` file, you can just pass an empty string `""` here.
-- **\<password\>:** The password that should be used to connect to the data source.
-  - As with the username, you can pass `""` if no password is needed or the password is already set in the `odbc.ini` file.
-- **\<table name\>:** The name of the table where the key-names and -values are stored.
-- **\<key column name\>:** The name of the column where the key-names are stored. This must be the PK of the table.
-- **\<value column name\>:** The name of the column where the key-values are stored.
-- **\<meta table name\>:** The name of the table where the metadata for the keys is stored.
-- **\<mt key column name\>:** The column where the name of the key to which the metadata belongs to is stored.
-  - This must be a foreign key (FK) to the PK `key column` of the table for the (non-meta) keys.
-- **\<mt metakey column name\>:** The name of the column in the meta-table where the names of the metakeys are stored.
-  - This column together with the key-column form the PK of the meta-table.
-- **\<mt metaval column name\>:** The name of the column in the meta-table where the values of the metakeys are stored.
-- **\<timeout (s)\>:** The timeout (in seconds) after a connection attempt to the data source should be aborted. If you specify `""`, a default value (a few seconds) is used, if you specify `0`, the timeout is disable and the application can potentially wait forever. Use this option with care.
-- **\<mountpoint\>:** The place in the KDB where the new mountpoint should be created (e.g. `user:/odbcData`).
-
-Finally, we can create the mountpoint for our SQLite database:
+Finally, we can create the mountpoint for our SQLite database using the `kdb mountOdbc` command.
+Further details about the arguments of the command are available in its [man page](/doc/help/kdb-mountOdbc.md).
 
 ```sh
 kdb mountOdbc Selektra "" "" elektraKeys keyName keyValue metaKeys keyName metaKeyName metaKeyValue "" user:/odbcSqlite

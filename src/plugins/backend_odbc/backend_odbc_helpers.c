@@ -67,51 +67,43 @@ char ** extractOdbcErrors (SQLSMALLINT handleType, SQLHANDLE odbcHandle)
 	SQLSMALLINT lenText;
 	SQLSMALLINT maxLenText = 0;
 	char ** resultArray = NULL;
-	int msgCount = 0;
+	int msgCount;
 
-	/* two iterations, 1st to determine length of string, 2nd for actually creating the string */
-	for (int i = 0; i < 2; i++)
+	SQLINTEGER recNum = 1;
+	/* Detect maximum text length */
+	for (msgCount = 0; SQL_SUCCEEDED (SQLGetDiagRec (handleType, odbcHandle, recNum++, state, &nativeErrCode, text, 0, &lenText));
+	     msgCount++)
 	{
-		if (i)
+		if (lenText > maxLenText)
 		{
-			ELEKTRA_ASSERT (msgCount >= 0,
-					"The message counter reached a value which indicates a negative count of messages, this looks like "
-					"a bug! Please report this bug at https://issues.libelektra.org.");
-
-			if (msgCount == 0)
-			{
-				return NULL;
-			}
-
-			text = elektraMalloc (maxLenText + 1);
-			resultArray = elektraMalloc ((msgCount + 1) * sizeof (char *));
-		}
-
-		SQLINTEGER recNum = 1;
-		for (msgCount = 0; SQL_SUCCEEDED (SQLGetDiagRec (handleType, odbcHandle, recNum++, state, &nativeErrCode, text,
-								 (i ? maxLenText + 1 : 0), &lenText));
-		     msgCount++)
-		{
-			if (i)
-			{
-				/* 5 extra chars (3x ':', 1x i, 1x '\0') */
-				resultArray[msgCount] = elektraMalloc (SQL_SQLSTATE_SIZE + maxLenText + getNumDigits (nativeErrCode) + 5);
-				sprintf (resultArray[msgCount], "%s:%d:%d:%s", state, i, nativeErrCode, text);
-			}
-			else
-			{
-				if (lenText > maxLenText) maxLenText = lenText;
-			}
-		}
-
-		if (i)
-		{
-			elektraFree (text);
-			return resultArray;
+			maxLenText = lenText;
 		}
 	}
 
-	return NULL;
+	ELEKTRA_ASSERT (msgCount >= 0,
+			"The message counter reached a value which indicates a negative count of messages, this looks like "
+			"a bug! Please report this bug at https://issues.libelektra.org.");
+
+	if (msgCount == 0)
+	{
+		return NULL;
+	}
+
+	text = elektraMalloc (maxLenText + 1);
+	resultArray = elektraMalloc ((msgCount + 1) * sizeof (char *));
+
+	recNum = 1;
+	for (msgCount = 0;
+	     SQL_SUCCEEDED (SQLGetDiagRec (handleType, odbcHandle, recNum++, state, &nativeErrCode, text, maxLenText + 1, &lenText));
+	     msgCount++)
+	{
+		/* 5 extra chars (3x ':', 1x '1', 1x '\0') */
+		resultArray[msgCount] = elektraMalloc (SQL_SQLSTATE_SIZE + maxLenText + getNumDigits (nativeErrCode) + 5);
+		sprintf (resultArray[msgCount], "%s:%d:%d:%s", state, 1, nativeErrCode, text);
+	}
+
+	elektraFree (text);
+	return resultArray;
 }
 
 
@@ -193,10 +185,10 @@ int setOdbcError (SQLSMALLINT handleType, SQLHANDLE handle, const char * fileNam
 			longErrMsg = NULL;
 		}
 
-		/* Only one error can be set, all other ODBC errors are added as warnings
+		/* Only one error can be set, all other ODBC errors are added as  (already done by the Elektra error/warning API)
 		 * According to the definition, records that describe errors come first
 		 * see: https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/sequence-of-status-records */
-		if (i == 1 && !isWarning)
+		if (!isWarning)
 		{
 			elektraSetErrorINTERNAL (errorKey, fileName, lineNo, ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME),
 						 "An ODBC function returned an error for the mountpoint '%s'\n"
@@ -255,49 +247,50 @@ char ** getAvailableDataSources (void)
 	SQLSMALLINT lenDsn;
 	SQLSMALLINT maxLenDsn = 0;
 
-	int dsnCount;
+	int dsnCount = 0;
 	char ** result = NULL;
 
 	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &env);
 	SQLSetEnvAttr (env, SQL_ATTR_ODBC_VERSION, (SQLPOINTER) SQL_OV_ODBC3, 0);
 
-	/* 2 runs, 1st for determining needed string buffer sizes, 2nd for actually retrieving the strings */
-	for (int i = 0; i < 2; i++)
+
+	for (SQLUSMALLINT direction = SQL_FETCH_FIRST;
+	     SQL_SUCCEEDED (SQLDataSources (env, direction, (SQLCHAR *) dsn, 0, &lenDsn, NULL, 0, NULL)); direction = SQL_FETCH_NEXT)
 	{
-		if (i)
+		if (lenDsn > maxLenDsn)
 		{
-			ELEKTRA_ASSERT (dsnCount >= 0,
-					"The datasource counter reached a value which indicates a negative count of data sources, this "
-					"looks like a bug! Please report this bug at https://issues.libelektra.org.");
-			if (dsnCount == 0)
-			{
-				/* No data sources found */
-				return NULL;
-			}
-
-			/* We need one entry for the NULL indicating the end of the returned string array */
-			result = elektraCalloc ((dsnCount + 1) * sizeof (char *));
-
-			/* Add one byte for \0 */
-			dsn = elektraMalloc ((maxLenDsn + 1) * sizeof (char));
+			maxLenDsn = lenDsn;
 		}
 
-		dsnCount = 0;
-		for (SQLUSMALLINT direction = SQL_FETCH_FIRST;
-		     SQL_SUCCEEDED (SQLDataSources (env, direction, (SQLCHAR *) dsn, i ? maxLenDsn + 1 : 0, &lenDsn, NULL, 0, NULL));
-		     direction = SQL_FETCH_NEXT)
-		{
-			if (i)
-			{
-				result[dsnCount] = elektraCalloc ((lenDsn + 1) * sizeof (char));
-				strcpy (result[dsnCount], (char *) dsn);
-			}
-			else
-			{
-				if (lenDsn > maxLenDsn) maxLenDsn = lenDsn;
-			}
-			dsnCount++;
-		}
+		dsnCount++;
+	}
+
+
+	ELEKTRA_ASSERT (dsnCount >= 0,
+			"The datasource counter reached a value which indicates a negative count of data sources, this "
+			"looks like a bug! Please report this bug at https://issues.libelektra.org.");
+	if (dsnCount == 0)
+	{
+		/* No data sources found */
+		return NULL;
+	}
+
+	/* We need one entry for the NULL indicating the end of the returned string array */
+	result = elektraCalloc ((dsnCount + 1) * sizeof (char *));
+
+	/* Add one byte for \0 */
+	dsn = elektraMalloc ((maxLenDsn + 1) * sizeof (char));
+
+
+	dsnCount = 0;
+
+	for (SQLUSMALLINT direction = SQL_FETCH_FIRST;
+	     SQL_SUCCEEDED (SQLDataSources (env, direction, (SQLCHAR *) dsn, maxLenDsn + 1, &lenDsn, NULL, 0, NULL));
+	     direction = SQL_FETCH_NEXT)
+	{
+		result[dsnCount] = elektraCalloc ((lenDsn + 1) * sizeof (char));
+		strcpy (result[dsnCount], (char *) dsn);
+		dsnCount++;
 	}
 
 	SQLFreeHandle (SQL_HANDLE_ENV, env);
@@ -328,25 +321,10 @@ static char * lookupStringFromKs (KeySet * ks, const char * keyName)
 		return NULL;
 	}
 
-	char * resultString = elektraMalloc (keyGetValueSize (resultKey));
 
-	if (!resultString)
-	{
-		return NULL;
-	}
-
-	ssize_t ret = keyGetString (resultKey, resultString, keyGetValueSize (resultKey));
-	ELEKTRA_ASSERT (ret != 0,
-			"keyGetString() returned 0! This should not have happened! Please report the bug at https://issues.libelektra.org");
-
-	if (ret == -1)
-	{
-		elektraFree (resultString);
-		return NULL;
-	}
-
-	return resultString;
+	return elektraStrDup (keyString (resultKey));
 }
+
 
 /**
  * @brief Creates a struct for the data source configuration that is provided in a KeySet
@@ -380,7 +358,6 @@ struct dataSourceConfig * fillDsStructFromDefinitionKs (KeySet * ksDefinition, K
 	}
 
 	/* Get configuration data for the ODBC data source */
-	bool valueMissing = false;
 
 	dsConfig->dataSourceName = lookupStringFromKs (ksDefinition, "system:/dataSourceName");
 
@@ -388,104 +365,99 @@ struct dataSourceConfig * fillDsStructFromDefinitionKs (KeySet * ksDefinition, K
 	{
 		ELEKTRA_SET_INTERFACE_ERROR (
 			errorKey, "The mandatory value 'dataSourceName' was missing from the mountpoint definition in 'ksDefinition'.");
-		valueMissing = true;
+		goto errFillDsFromConf;
 	}
 
-	if (!valueMissing)
-	{
-		/* Username and password are optional (NULL = no username/password)
-		 * Some data sources don't require credentials or have them configured as part of the ODBC data source definition
-		 * (e.g. in odbc.ini)
-		 */
-		dsConfig->userName = lookupStringFromKs (ksDefinition, "system:/userName");
-		dsConfig->password = lookupStringFromKs (ksDefinition, "system:/password");
 
-		dsConfig->tableName = lookupStringFromKs (ksDefinition, "system:/table/name");
-		if (!(dsConfig->tableName))
-		{
-			ELEKTRA_SET_INTERFACE_ERROR (
-				errorKey, "The mandatory value 'tableName' was missing from the mountpoint definition in 'ksDefinition'.");
-			valueMissing = true;
-		}
+	/* Username and password are optional (NULL = no username/password)
+	 * Some data sources don't require credentials or have them configured as part of the ODBC data source definition
+	 * (e.g. in odbc.ini)
+	 */
+	dsConfig->userName = lookupStringFromKs (ksDefinition, "system:/userName");
+	dsConfig->password = lookupStringFromKs (ksDefinition, "system:/password");
+
+	dsConfig->tableName = lookupStringFromKs (ksDefinition, "system:/table/name");
+	if (!(dsConfig->tableName))
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (
+			errorKey, "The mandatory value 'tableName' was missing from the mountpoint definition in 'ksDefinition'.");
+		goto errFillDsFromConf;
 	}
 
-	if (!valueMissing)
+
+	dsConfig->keyColName = lookupStringFromKs (ksDefinition, "system:/table/keyColName");
+	if (!(dsConfig->keyColName))
 	{
-		dsConfig->keyColName = lookupStringFromKs (ksDefinition, "system:/table/keyColName");
-		if (!(dsConfig->keyColName))
-		{
-			ELEKTRA_SET_INTERFACE_ERROR (
-				errorKey, "The mandatory value 'keyColName' was missing from the mountpoint definition in 'ksDefinition'.");
-			valueMissing = true;
-		}
-
-		dsConfig->valColName = lookupStringFromKs (ksDefinition, "system:/table/valColName");
-
-		if (!(dsConfig->valColName))
-		{
-			ELEKTRA_SET_INTERFACE_ERROR (
-				errorKey, "The mandatory value 'valColName' was missing from the mountpoint definition in 'ksDefinition'.");
-			valueMissing = true;
-		}
+		ELEKTRA_SET_INTERFACE_ERROR (
+			errorKey, "The mandatory value 'keyColName' was missing from the mountpoint definition in 'ksDefinition'.");
+		goto errFillDsFromConf;
 	}
 
-	if (!valueMissing)
-	{
-		dsConfig->metaTableName = lookupStringFromKs (ksDefinition, "system:/metaTable/name");
+	dsConfig->valColName = lookupStringFromKs (ksDefinition, "system:/table/valColName");
 
-		/* TODO: also support data sources without metatables (then no metadata is supported for such mountpoints)
-		 * This can be useful for ODBC drivers which don't support outer joins. */
-		if (!(dsConfig->metaTableName))
+	if (!(dsConfig->valColName))
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (
+			errorKey, "The mandatory value 'valColName' was missing from the mountpoint definition in 'ksDefinition'.");
+		goto errFillDsFromConf;
+	}
+
+
+	dsConfig->metaTableName = lookupStringFromKs (ksDefinition, "system:/metaTable/name");
+
+	/* TODO: also support data sources without metatables (then no metadata is supported for such mountpoints)
+	 * This can be useful for ODBC drivers which don't support outer joins. */
+	if (!(dsConfig->metaTableName))
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (
+			errorKey, "The mandatory value 'metaTableName' was missing from the mountpoint definition in 'ksDefinition'.");
+		goto errFillDsFromConf;
+	}
+
+	if (dsConfig->metaTableName)
+	{
+		dsConfig->metaTableKeyColName = lookupStringFromKs (ksDefinition, "system:/metaTable/keyColName");
+		if (!(dsConfig->metaTableKeyColName))
 		{
-			ELEKTRA_SET_INTERFACE_ERROR (
-				errorKey,
-				"The mandatory value 'metaTableName' was missing from the mountpoint definition in 'ksDefinition'.");
-			valueMissing = true;
+			ELEKTRA_SET_INTERFACE_ERROR (errorKey,
+						     "The mandatory value 'metaTableKeyColName' was missing from the mountpoint "
+						     "definition in 'ksDefinition'.");
+			goto errFillDsFromConf;
 		}
 
-		if (dsConfig->metaTableName)
+		dsConfig->metaTableMetaKeyColName = lookupStringFromKs (ksDefinition, "system:/metaTable/metaKeyColName");
+		if (!(dsConfig->metaTableMetaKeyColName))
 		{
-			dsConfig->metaTableKeyColName = lookupStringFromKs (ksDefinition, "system:/metaTable/keyColName");
-			if (!(dsConfig->metaTableKeyColName))
-			{
-				ELEKTRA_SET_INTERFACE_ERROR (errorKey,
-							     "The mandatory value 'metaTableKeyColName' was missing from the mountpoint "
-							     "definition in 'ksDefinition'.");
-				valueMissing = true;
-			}
+			ELEKTRA_SET_INTERFACE_ERROR (errorKey,
+						     "The mandatory value 'metaTableMetaKeyColName' was missing from the "
+						     "mountpoint definition in 'ksDefinition'.");
+			goto errFillDsFromConf;
+		}
 
-			dsConfig->metaTableMetaKeyColName = lookupStringFromKs (ksDefinition, "system:/metaTable/metaKeyColName");
-			if (!(dsConfig->metaTableMetaKeyColName))
-			{
-				ELEKTRA_SET_INTERFACE_ERROR (errorKey,
-							     "The mandatory value 'metaTableMetaKeyColName' was missing from the "
-							     "mountpoint definition in 'ksDefinition'.");
-				valueMissing = true;
-			}
-
-			dsConfig->metaTableMetaValColName = lookupStringFromKs (ksDefinition, "system:/metaTable/metaValColName");
-			if (!(dsConfig->metaTableMetaValColName))
-			{
-				ELEKTRA_SET_INTERFACE_ERROR (errorKey,
-							     "The mandatory value 'metaTableMetaValColName' was missing from the "
-							     "mountpoint definition in 'ksDefinition'.");
-				valueMissing = true;
-			}
+		dsConfig->metaTableMetaValColName = lookupStringFromKs (ksDefinition, "system:/metaTable/metaValColName");
+		if (!(dsConfig->metaTableMetaValColName))
+		{
+			ELEKTRA_SET_INTERFACE_ERROR (errorKey,
+						     "The mandatory value 'metaTableMetaValColName' was missing from the "
+						     "mountpoint definition in 'ksDefinition'.");
+			goto errFillDsFromConf;
 		}
 	}
 
 
-	if (!valueMissing)
-	{
-		/* set default value for timeout to 5 seconds */
-		dsConfig->timeOut = 5;
+	/* set default value for timeout to 5 seconds */
+	dsConfig->timeOut = 5;
 
-		/* timeout is optional, if no timeout is specified, the default value is used */
-		Key * keyTimeout = ksLookupByName (ksDefinition, "system:/timeout", KDB_O_NONE);
-		const char * valTimeout = keyString (keyTimeout);
-		if (keyTimeout && valTimeout && *valTimeout)
+	/* timeout is optional, if no timeout is specified, the default value is used */
+	Key * keyTimeout = ksLookupByName (ksDefinition, "system:/timeout", KDB_O_NONE);
+	const char * valTimeout = keyString (keyTimeout);
+	if (keyTimeout && valTimeout && *valTimeout)
+	{
 		{
-			if (*valTimeout == '-')
+			char * eptr;
+			long lTimeout = strtol (valTimeout, &eptr, 10);
+
+			if (*eptr || lTimeout < 0)
 			{
 				ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (errorKey,
 									  "The timeout of the ODBC connection must be "
@@ -493,75 +465,59 @@ struct dataSourceConfig * fillDsStructFromDefinitionKs (KeySet * ksDefinition, K
 									  "the standard timeout of %hhu seconds is used.",
 									  valTimeout, dsConfig->timeOut);
 			}
+			else if (lTimeout > UCHAR_MAX)
+			{
+				ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (errorKey,
+									  "The maximum value for the timeout of the ODBC "
+									  "connection is %d seconds, but you provided %lu.\n"
+									  "Therefore, the maximum value of %d is used for the "
+									  "timeout.",
+									  UCHAR_MAX, lTimeout, UCHAR_MAX);
+				dsConfig->timeOut = UCHAR_MAX;
+			}
 			else
 			{
-				char * eptr;
-				unsigned long lTimeout = strtoul (valTimeout, &eptr, 10);
-
-				if (*eptr)
-				{
-					ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (errorKey,
-										  "The timeout of the ODBC connection must be "
-										  "a non-negative number, but you provided %s.\nTherefore, "
-										  "the standard timeout of %hhu seconds is used.",
-										  valTimeout, dsConfig->timeOut);
-				}
-				else if (lTimeout > UCHAR_MAX)
-				{
-					ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (errorKey,
-										  "The maximum value for the timeout of the ODBC "
-										  "connection is %d seconds, but you provided %lu.\n"
-										  "Therefore, the maximum value of %d is used for the "
-										  "timeout.",
-										  UCHAR_MAX, lTimeout, UCHAR_MAX);
-					dsConfig->timeOut = UCHAR_MAX;
-				}
-				else
-				{
-					dsConfig->timeOut = lTimeout;
-					ELEKTRA_LOG_DEBUG ("A timeout of %ud seconds was specified for the ODBC connection!",
-							   dsConfig->timeOut);
-				}
+				dsConfig->timeOut = lTimeout;
+				ELEKTRA_LOG_DEBUG ("A timeout of %ud seconds was specified for the ODBC connection!", dsConfig->timeOut);
 			}
 		}
-		else
-		{
-			ELEKTRA_LOG ("No timeout specified for the ODBC connection, using standard timeout of %ud seconds.",
-				     dsConfig->timeOut);
-		}
-
-
-		if (dsConfig->timeOut == 0)
-		{
-			ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNING (errorKey,
-								 "You specified '0' for the timeout of the ODBC conenction. "
-								 "This means that no timeout is used at all and can lead to freezing "
-								 "of the application when trying the access an ODBC data source."
-								 "This setting is meanly intended for debugging purpose and should "
-								 "be used with care.");
-		}
 	}
-
-	if (valueMissing)
+	else
 	{
-		/* Free all strings in the struct (NULL is ignored by free()) */
-		elektraFree (dsConfig->dataSourceName);
-		elektraFree (dsConfig->userName);
-		elektraFree (dsConfig->password);
-		elektraFree (dsConfig->tableName);
-		elektraFree (dsConfig->keyColName);
-		elektraFree (dsConfig->valColName);
-		elektraFree (dsConfig->metaTableName);
-		elektraFree (dsConfig->metaTableKeyColName);
-		elektraFree (dsConfig->metaTableMetaKeyColName);
-		elektraFree (dsConfig->metaTableMetaValColName);
-
-		/* Free struct */
-		elektraFree (dsConfig);
-		dsConfig = NULL;
+		ELEKTRA_LOG ("No timeout specified for the ODBC connection, using standard timeout of %ud seconds.", dsConfig->timeOut);
 	}
+
+
+	if (dsConfig->timeOut == 0)
+	{
+		ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNING (errorKey,
+							 "You specified '0' for the timeout of the ODBC connection. "
+							 "This means that no timeout is used at all and can lead to freezing "
+							 "of the application when trying the access an ODBC data source."
+							 "This setting is mainly intended for debugging purpose and should "
+							 "be used with care.");
+	}
+
 
 	return dsConfig;
+
+
+errFillDsFromConf:
+	/* Free all strings in the struct (NULL is ignored by free()) */
+	elektraFree (dsConfig->dataSourceName);
+	elektraFree (dsConfig->userName);
+	elektraFree (dsConfig->password);
+	elektraFree (dsConfig->tableName);
+	elektraFree (dsConfig->keyColName);
+	elektraFree (dsConfig->valColName);
+	elektraFree (dsConfig->metaTableName);
+	elektraFree (dsConfig->metaTableKeyColName);
+	elektraFree (dsConfig->metaTableMetaKeyColName);
+	elektraFree (dsConfig->metaTableMetaValColName);
+
+	/* Free struct */
+	elektraFree (dsConfig);
+	return NULL;
 }
 
 /**
@@ -579,7 +535,7 @@ struct dataSourceConfig * fillDsStructFromDefinitionKs (KeySet * ksDefinition, K
  *
  * @see fillDsStructFromDefinitionKs(KeySet * ksDefinition) to get a dataSourceConfig struct from a KeySet with the mountpoint definition
  */
-char * dsConfigToString (struct dataSourceConfig * dsConfig)
+char * dsConfigToString (const struct dataSourceConfig * dsConfig)
 {
 	if (!dsConfig || !dsConfig->dataSourceName || !(*(dsConfig->dataSourceName)))
 	{
@@ -646,4 +602,83 @@ char * dsConfigToString (struct dataSourceConfig * dsConfig)
 	}
 
 	return retStr;
+}
+
+
+/**
+ * @brief Check if any identifier that is part of @p dsConfig, does contain to specified substring
+ *
+ * @param dsConfig The data source configuration struct to check
+ * @param subStr The substring to check for
+ * @param[out] errorKey If not NULL and if @p subStr was found, an error is set which mentions the name
+ * 	of the first wrong identifier and its value. This parameter is esp. intended for detecting invalid substrings.
+ *
+ *
+ * @retval true if the @p subStr was found in any of the identifiers
+ * @retval false if the @p subStr was NOT found in any of the identifiers
+ * @retval true if @p subStr is null or empty
+ */
+bool checkIdentifiersForSubString (const struct dataSourceConfig * dsConfig, const char * subStr, Key * errorKey)
+{
+	if (!subStr || !(*subStr))
+	{
+		return true;
+	}
+
+	const char * foundIdentifierName = NULL;
+	const char * foundIdentifierVal;
+
+	if (strstr (dsConfig->tableName, subStr))
+	{
+		foundIdentifierName = "tableName";
+		foundIdentifierVal = dsConfig->tableName;
+	}
+	else if (strstr (dsConfig->keyColName, subStr))
+	{
+		foundIdentifierName = "keyColName";
+		foundIdentifierVal = dsConfig->keyColName;
+	}
+	else if (strstr (dsConfig->valColName, subStr))
+	{
+		foundIdentifierName = "valColName";
+		foundIdentifierVal = dsConfig->valColName;
+	}
+
+	else if (strstr (dsConfig->metaTableName, subStr))
+	{
+		foundIdentifierName = "metaTableName";
+		foundIdentifierVal = dsConfig->metaTableName;
+	}
+
+	else if (strstr (dsConfig->metaTableKeyColName, subStr))
+	{
+		foundIdentifierName = "metaTableKeyColName";
+		foundIdentifierVal = dsConfig->metaTableKeyColName;
+	}
+
+	else if (strstr (dsConfig->metaTableMetaKeyColName, subStr))
+	{
+		foundIdentifierName = "metaTableMetaKeyColName";
+		foundIdentifierVal = dsConfig->metaTableMetaKeyColName;
+	}
+
+	else if (strstr (dsConfig->metaTableMetaValColName, subStr))
+	{
+		foundIdentifierName = "metaTableMetaValColName";
+		foundIdentifierVal = dsConfig->metaTableMetaValColName;
+	}
+
+	if (foundIdentifierName)
+	{
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (errorKey,
+							 "The identifier %s in the data source configuration contained the "
+							 "invalid substring '%s'. The value of the invalid string is '%s'",
+							 foundIdentifierName, subStr, foundIdentifierVal);
+		return true;
+	}
+	else
+	{
+		/* substr not found */
+		return false;
+	}
 }
