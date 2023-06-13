@@ -49,6 +49,15 @@ struct dataSourceConfig
 };
 
 
+struct odbcSharedData
+{
+	struct dataSourceConfig * dsConfig;
+
+	/* Must be stored in the plugin data, because it is shared between phases (store, commit, rollback) */
+	SQLHENV environment;
+	SQLHDBC connection;
+};
+
 /** @brief Buffers for exchanging data with an ODBC data source
  *
  * This struct defines the buffers that are used for retrieving values from the datasource or saving values in the datasource.
@@ -77,7 +86,7 @@ char ** extractOdbcErrors (SQLSMALLINT handleType, SQLHANDLE odbcHandle);
 int setOdbcError (SQLSMALLINT handleType, SQLHANDLE handle, const char * fileName, const char * functionName, const char * lineNo,
 		  bool isWarning, Key * errorKey);
 
-/* Macro to automatically fill the parameters for 'fileName', 'functionName' and 'lineNo' */
+/* Macros to automatically fill the parameters for 'fileName', 'functionName' and 'lineNo' */
 #define ELEKTRA_SET_ODBC_ERROR(handleType, handle, errorKey)                                                                               \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
@@ -95,10 +104,12 @@ char ** getAvailableDataSources (void);
 /* Fill the datasource config based on the Keys in the definition */
 struct dataSourceConfig * fillDsStructFromDefinitionKs (KeySet * ksDefinition, Key * errorKey);
 
-/* Get the sum of the number of characters from all strings in the dataSourceConfig struct */
-char * dsConfigToString (const struct dataSourceConfig * dsConfig);
-
 /* Check no identifier in the data source configuration contains the given substring (useful for finding illegal characters like quotes) */
 bool checkIdentifiersForSubString (const struct dataSourceConfig * dsConfig, const char * subStr, Key * errorKey);
+
+/* Get a string representation of all members of a dataSourceConfig struct which define a data source */
+char * dsConfigToString (const struct dataSourceConfig * dsConfig);
+
+bool clearOdbcSharedData (struct odbcSharedData * sharedData, bool freeDsConfig, bool freeDsConfigStrings);
 
 #endif // ELEKTRA_BACKEND_ODBC_HELPERS_H

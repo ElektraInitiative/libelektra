@@ -7,8 +7,10 @@
  *
  */
 
+#include "backend_odbc_general.h"
 #include "backend_odbc_get.h"
 
+#include <sqlext.h>
 #include <tests_plugin.h>
 
 void fillDsStructExceptDsName (struct dataSourceConfig * dsConfig)

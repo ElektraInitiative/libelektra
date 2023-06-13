@@ -9,11 +9,19 @@
  */
 
 #include "./backend_odbc.h"
+#include "./backend_odbc_general.h"
 #include "./backend_odbc_get.h"
+#include "./backend_odbc_set.h"
 
 #include <kdbassert.h>
 #include <kdberrors.h>
 #include <kdblogger.h>
+
+#include <kdbchangetracking.h>
+#include <kdbdiff.h>
+
+// FIXME: Remove import, only for dev
+#include <stdio.h>
 
 
 int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * plugin ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
@@ -36,7 +44,14 @@ int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * ksDefinition, Key 
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	/* Parse the mountpoint definition and check if the mountpoint definition CAN be valid */
+	struct odbcSharedData * sharedData = elektraCalloc (sizeof (struct odbcSharedData));
+	if (!sharedData)
+	{
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	/* Check if the mountpoint definition CAN be valid */
 	struct dataSourceConfig * dsConfig = fillDsStructFromDefinitionKs (ksDefinition, parentKey);
 
 	if (!dsConfig)
@@ -45,13 +60,38 @@ int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * ksDefinition, Key 
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	elektraPluginSetData (plugin, dsConfig);
+	sharedData->dsConfig = dsConfig;
 
-	// init as read-only
-	/* TODO: Implement set function and then change to STATUS_SUCCESS */
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	// void * pluginData = elektraPluginGetData (plugin);
+
+	/* TODO: Check if freeing this memory is safe in all cases! */
+	// if (pluginData)
+	//{
+	//	elektraFree (pluginData);
+	// }
+
+	elektraPluginSetData (plugin, sharedData);
+
+	/* init as read-write backend */
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
+
+static int setOdbcStorageUnitId (const struct dataSourceConfig * dsConfig, Key * parentKey)
+{
+	ssize_t ret = keySetString (parentKey, dsConfigToString (dsConfig));
+
+	ELEKTRA_ASSERT (ret != 0,
+			"keySetString returned 0. This looks like a bug! Please report the issue at https://issues.libelektra.org");
+	if (ret == 1 || ret == -1)
+	{
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+	else
+	{
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	}
+}
 
 int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ksReturned, Key * parentKey)
 {
@@ -74,9 +114,9 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ksReturned, Key * p
 	}
 
 	/* Gets filled by the init-function of this plugin (see above) and is used in later phases (esp. storage-phase) */
-	struct dataSourceConfig * dsConfig = elektraPluginGetData (plugin);
+	const struct odbcSharedData * sharedData = elektraPluginGetData (plugin);
 
-	if (!dsConfig)
+	if (!sharedData || !(sharedData->dsConfig))
 	{
 		ELEKTRA_SET_INTERNAL_ERROR (
 			parentKey,
@@ -87,27 +127,20 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ksReturned, Key * p
 	ElektraKdbPhase phase = elektraPluginGetPhase (plugin);
 	switch (phase)
 	{
-	case ELEKTRA_KDB_GET_PHASE_RESOLVER: {
-		ssize_t ret = keySetString (parentKey, dsConfigToString (dsConfig));
+	case ELEKTRA_KDB_GET_PHASE_RESOLVER:
+		/* There is no standardized way in ODBC to get the time of the last modification --> always query the data
+		   However, feel free to implement checks for specific DBMSs. */
+		return setOdbcStorageUnitId (sharedData->dsConfig, parentKey);
 
-		ELEKTRA_ASSERT (ret != 0,
-				"keySetString returned 0. This looks like a bug! Please report the issue at https://issues.libelektra.org");
-		if (ret == 1 || ret == -1)
-		{
-			return ELEKTRA_PLUGIN_STATUS_ERROR;
-		}
-		else
-		{
-			return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-		}
-	}
 	case ELEKTRA_KDB_GET_PHASE_CACHECHECK:
 		/* TODO: implement cache */
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+
 	case ELEKTRA_KDB_GET_PHASE_PRE_STORAGE:
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+
 	case ELEKTRA_KDB_GET_PHASE_STORAGE:
-		if (ksAppend (ksReturned, getKeysFromDataSource (dsConfig, parentKey)) == -1)
+		if (ksAppend (ksReturned, getKeysFromDataSource (sharedData->dsConfig, parentKey)) == -1)
 		{
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
@@ -115,16 +148,239 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ksReturned, Key * p
 		{
 			return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 		}
+
 	case ELEKTRA_KDB_GET_PHASE_POST_STORAGE:
-	default:
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+
+	default:
+		ELEKTRA_SET_INTERNAL_ERRORF (parentKey,
+					     "An unknown get phase (not resolver, cachecheck, prestorage, storage or "
+					     "poststorage) was encountered.\nThe encountered phase has an integer representation of '%d'\n"
+					     "This looks like a bug! Please report this issues at https://issues.libelektra.org",
+					     phase);
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 }
 
-int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * plugin, Key * errorKey ELEKTRA_UNUSED)
+
+int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * plugin, KeySet * ks, Key * parentKey)
 {
-	struct dataSourceConfig * dsConfig = elektraPluginGetData (plugin);
-	elektraFree (dsConfig);
+	/* Gets filled by the init-function of this plugin (see above) and is used in later phases (esp. storage-phase) */
+	struct odbcSharedData * sharedData = elektraPluginGetData (plugin);
+
+	if (!sharedData || !(sharedData->dsConfig))
+	{
+		ELEKTRA_SET_INTERNAL_ERROR (
+			parentKey,
+			"Internal plugin data for the ODBC backend was NULL. Please report this bug at https://issues.libelektra.org.");
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	ElektraKdbPhase phase = elektraPluginGetPhase (plugin);
+
+	switch (phase)
+	{
+	case ELEKTRA_KDB_SET_PHASE_RESOLVER: {
+		/* Check whether the data was changed since the last get operation */
+		int ret = setOdbcStorageUnitId (sharedData->dsConfig, parentKey);
+		if (ret == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			ksAppendKey (elektraPluginGetGlobalKeySet (plugin),
+				     keyNew ("system:/elektra/kdb/backend/failedphase", KEY_BINARY, KEY_SIZE, sizeof (ElektraKdbPhase),
+					     KEY_VALUE, &phase, KEY_END));
+		}
+		return ret;
+	}
+
+	case ELEKTRA_KDB_SET_PHASE_PRE_STORAGE:
+		/* This phase is currently not used (can be used for validation) */
+		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+
+	case ELEKTRA_KDB_SET_PHASE_STORAGE: {
+		/* Get diff with added, removed and modified keys */
+		const ChangeTrackingContext * ctx = elektraChangeTrackingGetContextFromPlugin (plugin);
+		ElektraDiff * diff = elektraChangeTrackingCalculateDiff (ks, ctx, parentKey);
+
+		if (!diff || elektraDiffIsEmpty (diff))
+		{
+			elektraDiffDel (diff);
+			return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+		}
+
+		/* Write the actual data to the ODBC data source */
+		long ret = storeKeysInDataSource (sharedData, diff, parentKey);
+		elektraDiffDel (diff);
+		elektraPluginSetData (plugin, sharedData);
+
+		if (ret < 0)
+		{
+			ksAppendKey (elektraPluginGetGlobalKeySet (plugin),
+				     keyNew ("system:/elektra/kdb/backend/failedphase", KEY_BINARY, KEY_SIZE, sizeof (ElektraKdbPhase),
+					     KEY_VALUE, &phase, KEY_END));
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+		else if (ret == 0)
+		{
+			elektraPluginSetData (plugin, sharedData);
+			return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+		}
+		else
+		{
+			elektraPluginSetData (plugin, sharedData);
+			return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+		}
+	}
+
+	case ELEKTRA_KDB_SET_PHASE_POST_STORAGE:
+		/* Not used here (mainly intended for logging and symmetry to the get-phases) */
+		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+
+	default:
+		ELEKTRA_SET_INTERNAL_ERRORF (parentKey,
+					     "An unknown set phase (not resolver, prestorage, storage or poststorage) was "
+					     "encountered.\nThe encountered phase has an integer representation of '%d'\n"
+					     "This looks like a bug! Please report this issues at https://issues.libelektra.org",
+					     phase);
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+}
+
+
+int ELEKTRA_PLUGIN_FUNCTION (commit) (Plugin * plugin, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
+{
+	ElektraKdbPhase phase = elektraPluginGetPhase (plugin);
+	switch (phase)
+	{
+	case ELEKTRA_KDB_SET_PHASE_PRE_COMMIT:
+		/* Not used by the ODBC backend plugin */
+		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+
+	case ELEKTRA_KDB_SET_PHASE_COMMIT: {
+		printf ("in commit phase\n");
+
+		struct odbcSharedData * sharedData = elektraPluginGetData (plugin);
+		if (!sharedData || !(sharedData->connection) || !(sharedData->environment))
+		{
+			ELEKTRA_SET_INTERNAL_ERROR (parentKey,
+						    "Could not commit transaction! Internal plugin data for the ODBC backend was NULL. "
+						    "Please report this bug at https://issues.libelektra.org.");
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+
+		if (endTransaction (sharedData->connection, true, parentKey))
+		{
+			printf ("Commit succeeded\n");
+			return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+		}
+		else
+		{
+			printf ("Commit failed!\n");
+			ksAppendKey (elektraPluginGetGlobalKeySet (plugin),
+				     keyNew ("system:/elektra/kdb/backend/failedphase", KEY_BINARY, KEY_SIZE, sizeof (ElektraKdbPhase),
+					     KEY_VALUE, &phase, KEY_END));
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+	}
+
+	case ELEKTRA_KDB_SET_PHASE_POST_COMMIT:
+		/* Not used by the ODBC backend plugin (this phase is mostly useful for logging) */
+		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+
+	default:
+		ELEKTRA_SET_INTERNAL_ERRORF (parentKey,
+					     "An unknown commit phase (not precommit, commit or postcommit) was encountered.\n"
+					     "The encountered phase has an integer representation of '%d'\n"
+					     "This looks like a bug! Please report this issues at https://issues.libelektra.org",
+					     phase);
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+}
+
+
+int ELEKTRA_PLUGIN_FUNCTION (error) (Plugin * plugin, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
+{
+	ElektraKdbPhase phase = elektraPluginGetPhase (plugin);
+
+	switch (phase)
+	{
+	case ELEKTRA_KDB_SET_PHASE_PRE_ROLLBACK:
+		/* Phase is used by the ODBC backend plugin */
+		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+
+	case ELEKTRA_KDB_SET_PHASE_ROLLBACK: {
+		struct odbcSharedData * sharedData = elektraPluginGetData (plugin);
+		if (!sharedData || !(sharedData->connection) || !(sharedData->environment))
+		{
+			ELEKTRA_SET_INTERNAL_ERROR (parentKey,
+						    "Could not rollback transaction! Internal plugin data for the ODBC backend was NULL. "
+						    "Please report this bug at https://issues.libelektra.org.");
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+
+		KeySet * globalKs = elektraPluginGetGlobalKeySet (plugin);
+		Key * keyFailedPhase = ksLookupByName (globalKs, "system:/elektra/kdb/backend/failedphase", KDB_O_POP);
+
+		if (!keyFailedPhase)
+		{
+			ELEKTRA_ADD_INTERNAL_WARNING (parentKey,
+						      "The key 'system:/elektra/kdb/backend/failedphase' which should store the name of "
+						      "the failed phase, was not found in global KeySet.");
+		}
+#ifdef HAVE_LOGGER
+		else
+		{
+			ELEKTRA_LOG_NOTICE (
+				"The phase '%s' failed and lead to the execution of the rollback-procedure during kdbSet().\n"
+				"The changes will not be stored on in the data source!",
+				elektraPluginPhaseName (*((ElektraKdbPhase *) keyValue (keyFailedPhase))));
+			keyDel (keyFailedPhase);
+		}
+#endif
+
+		bool ret = endTransaction (sharedData->connection, false, parentKey);
+
+		printf ("End transaction in ROLLBACK returned: %d", ret);
+
+		/* Close the connection and free handles for connection and environment */
+		if (!clearOdbcSharedData (sharedData, false, false))
+		{
+			ELEKTRA_ADD_RESOURCE_WARNING (parentKey,
+						      "Could not successfully close the connection and free the SQL handles for "
+						      " the connection and environment. Please check the state of your data source.");
+		}
+
+		elektraPluginSetData (plugin, sharedData);
+
+		if (ret)
+		{
+			printf ("ROLLBACK succeeded!\n");
+			return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+		}
+		else
+		{
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+	}
+
+	case ELEKTRA_KDB_SET_PHASE_POST_ROLLBACK:
+		/* Phase is not used by the ODBC backend plugin */
+		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	default:
+		ELEKTRA_SET_INTERNAL_ERRORF (parentKey,
+					     "An unknown rollback phase (not prerollback, rollback or postrollback) was"
+					     "encountered.\nThe encountered phase has an integer representation of '%d'\n"
+					     "This looks like a bug! Please report this issues at https://issues.libelektra.org",
+					     phase);
+
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+}
+
+
+int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * plugin ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
+{
+	struct odbcSharedData * sharedData = elektraPluginGetData (plugin);
+	clearOdbcSharedData (sharedData, true, true);
 	elektraPluginSetData (plugin, NULL);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }

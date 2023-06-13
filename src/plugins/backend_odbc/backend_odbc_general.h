@@ -17,13 +17,16 @@
 
 #include <stdint.h>
 
-SQLHENV allocateEnvHandle (Key * parentKey);
+SQLHENV allocateEnvHandle (Key * errorKey);
+SQLHDBC allocateConnectionHandle (SQLHENV sqlEnv, Key * errorKey);
+SQLHSTMT allocateStatementHandle (SQLHDBC sqlConnection, Key * errorKey);
 bool setOdbcVersion (SQLHENV sqlEnv, unsigned long version, Key * parentKey);
-SQLHDBC allocateConnectionHandle (SQLHENV sqlEnv, Key * parentKey);
 bool setLoginTimeout (SQLHDBC sqlConnection, uintptr_t timeout, Key * errorKey);
 bool setAutocommit (SQLHDBC sqlConnection, bool enableAutoCommit, Key * errorKey);
 bool endTransaction (SQLHDBC sqlConnection, bool commit, Key * errorKey);
-bool connectToDataSource (SQLHDBC sqlConnection, struct dataSourceConfig * dsConfig, Key * errorKey);
+bool connectToDataSource (SQLHDBC sqlConnection, const struct dataSourceConfig * dsConfig, Key * errorKey);
 bool bindColumns (SQLHSTMT sqlStmt, struct columnData * buffers, Key * errorKey);
+SQLLEN executeQuery (SQLHSTMT stmt, const char * query, Key * errorKey);
+
 
 #endif // ELEKTRA_BACKEND_ODBC_GENERAL_H

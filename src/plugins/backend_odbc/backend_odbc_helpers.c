@@ -544,13 +544,13 @@ char * dsConfigToString (const struct dataSourceConfig * dsConfig)
 
 	/* add one char for the \0 and 3 char for separating the values with ' - ' */
 	size_t dsConfigStrLen = 1 + (dsConfig->dataSourceName ? strlen (dsConfig->dataSourceName) : 0) +
-				+(dsConfig->tableName ? 3 + strlen (dsConfig->tableName) : 0) +
-				+(dsConfig->keyColName ? 3 + strlen (dsConfig->keyColName) : 0) +
-				+(dsConfig->valColName ? 3 + strlen (dsConfig->valColName) : 0) +
-				+(dsConfig->metaTableName ? 3 + strlen (dsConfig->metaTableName) : 0) +
-				+(dsConfig->metaTableKeyColName ? 3 + strlen (dsConfig->metaTableKeyColName) : 0) +
-				+(dsConfig->metaTableMetaKeyColName ? 3 + strlen (dsConfig->metaTableMetaKeyColName) : 0) +
-				+(dsConfig->metaTableMetaValColName ? 3 + strlen (dsConfig->metaTableMetaValColName) : 0);
+				(dsConfig->tableName ? 3 + strlen (dsConfig->tableName) : 0) +
+				(dsConfig->keyColName ? 3 + strlen (dsConfig->keyColName) : 0) +
+				(dsConfig->valColName ? 3 + strlen (dsConfig->valColName) : 0) +
+				(dsConfig->metaTableName ? 3 + strlen (dsConfig->metaTableName) : 0) +
+				(dsConfig->metaTableKeyColName ? 3 + strlen (dsConfig->metaTableKeyColName) : 0) +
+				(dsConfig->metaTableMetaKeyColName ? 3 + strlen (dsConfig->metaTableMetaKeyColName) : 0) +
+				(dsConfig->metaTableMetaValColName ? 3 + strlen (dsConfig->metaTableMetaValColName) : 0);
 
 	ELEKTRA_ASSERT (dsConfigStrLen > 1,
 			"Calculated length for dsConfig was <= 1. This looks like a bug. Please report this issue at "
@@ -681,4 +681,81 @@ bool checkIdentifiersForSubString (const struct dataSourceConfig * dsConfig, con
 		/* substr not found */
 		return false;
 	}
+}
+
+
+void clearDsConfig (struct dataSourceConfig * dsConfig, bool freeStrings ELEKTRA_UNUSED)
+{
+	if (!dsConfig)
+	{
+		return;
+	}
+
+	if (false)
+	{
+		elektraFree (dsConfig->dataSourceName);
+
+		elektraFree (dsConfig->userName);
+		elektraFree (dsConfig->password);
+
+		elektraFree (dsConfig->tableName);
+		elektraFree (dsConfig->keyColName);
+		elektraFree (dsConfig->valColName);
+
+		elektraFree (dsConfig->metaTableName);
+		elektraFree (dsConfig->metaTableKeyColName);
+		elektraFree (dsConfig->metaTableMetaKeyColName);
+		elektraFree (dsConfig->metaTableMetaValColName);
+	}
+
+	elektraFree (dsConfig);
+}
+
+bool clearOdbcSharedData (struct odbcSharedData * sharedData, bool freeDsConfig, bool freeDsConfigStrings)
+{
+	return true;
+	bool finalRet = true;
+
+	if (!sharedData)
+	{
+		return false;
+	}
+
+	if (sharedData->connection)
+	{
+		SQLRETURN ret = SQLDisconnect (sharedData->connection);
+
+		if (!SQL_SUCCEEDED (ret))
+		{
+			finalRet = false;
+		}
+
+		ret = SQLFreeHandle (SQL_HANDLE_DBC, sharedData->connection);
+
+		if (!SQL_SUCCEEDED (ret))
+		{
+			finalRet = false;
+		}
+
+		sharedData->connection = NULL;
+	}
+
+	if (sharedData->environment)
+	{
+		if (!SQL_SUCCEEDED (SQLFreeHandle (SQL_HANDLE_ENV, sharedData->environment)))
+		{
+			finalRet = false;
+		}
+
+		sharedData->environment = NULL;
+	}
+
+	if (freeDsConfig)
+	{
+		clearDsConfig (sharedData->dsConfig, freeDsConfigStrings);
+	}
+
+	elektraFree (sharedData);
+
+	return finalRet;
 }

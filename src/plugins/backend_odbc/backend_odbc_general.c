@@ -47,6 +47,92 @@ SQLHENV allocateEnvHandle (Key * errorKey)
 	return sqlEnv;
 }
 
+/**
+ * @brief Allocate a new ODBC connection handle
+ *
+ * @param sqlEnv An allocated ODBC environment handle, for which the ODBC version has been set
+ * 	This handle gets freed if an error occurred, so don't dereference it if the function returned NULL.
+ * @param[out] errorKey Used to store errors and warnings
+ *
+ * @return The allocated connection handle
+ * 	Make sure to free the returned handle by calling SQLFreeHandle().
+ * @retval NULL on errors (see @p errorKey for details)
+ *
+ * @see allocateEnvHandle() for getting a new environment handle
+ * @see setOdbcVersion() for setting the ODBC version that should be used with the environment the handle refers to
+ */
+SQLHDBC allocateConnectionHandle (SQLHENV sqlEnv, Key * errorKey)
+{
+	SQLHDBC sqlConnection = NULL;
+	SQLRETURN ret = SQLAllocHandle (SQL_HANDLE_DBC, sqlEnv, &sqlConnection);
+
+	if (!SQL_SUCCEEDED (ret))
+	{
+		ELEKTRA_LOG_NOTICE ("SQLAllocHandle () failed!\nCould not allocate handle for ODBC connection!");
+		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_ENV, sqlEnv, errorKey);
+
+		if (sqlConnection)
+		{
+			SQLFreeHandle (SQL_HANDLE_DBC, sqlConnection);
+		}
+
+		SQLFreeHandle (SQL_HANDLE_ENV, sqlEnv);
+		return NULL;
+	}
+	else if (ret == SQL_SUCCESS_WITH_INFO)
+	{
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_ENV, sqlEnv, errorKey);
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_DBC, sqlConnection, errorKey);
+	}
+
+	return sqlConnection;
+}
+
+
+/**
+ * @brief Allocate a new ODBC statement handle
+ *
+ * @param sqlConnection An initialized connection handle. It must represent an active connection.
+ * 	This handle gets freed if an error occurred, so don't dereference it if the function returned NULL.
+ * @param[out] errorKey Used to store errors and warnings
+ *
+ * @return The allocated statement handle
+ * 	Make sure to free the returned handle by calling SQLFreeHandle().
+ * @retval NULL on errors (see @p errorKey for details)
+ *
+ * @see allocateEnvHandle() for getting a new environment handle
+ * @see allocateConnectionHandle() for getting a new connection handle
+ * @see connectToDataSource() for setting up an active connection, this is needed for allocating a statement with this function
+ */
+SQLHDBC allocateStatementHandle (SQLHDBC sqlConnection, Key * errorKey)
+{
+	/* Handle for a statement */
+	SQLHSTMT sqlStmt = NULL;
+	SQLRETURN ret = SQLAllocHandle (SQL_HANDLE_STMT, sqlConnection, &sqlStmt);
+
+	if (!SQL_SUCCEEDED (ret))
+	{
+		ELEKTRA_LOG_NOTICE ("SQLAllocHandle() failed!\nCould not allocate a handle for an SQL statement!");
+		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_DBC, sqlConnection, errorKey);
+
+		if (sqlStmt)
+		{
+			SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
+		}
+
+		SQLDisconnect (sqlConnection);
+		SQLFreeHandle (SQL_HANDLE_DBC, sqlConnection);
+		return NULL;
+	}
+	else if (ret == SQL_SUCCESS_WITH_INFO)
+	{
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_DBC, sqlConnection, errorKey);
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_STMT, sqlStmt, errorKey);
+	}
+
+	return sqlStmt;
+}
+
 
 /**
  * @brief Set the ODBC version of an allocated ODBC environment handle
@@ -80,42 +166,6 @@ bool setOdbcVersion (SQLHENV sqlEnv, unsigned long version, Key * errorKey)
 	}
 
 	return true;
-}
-
-
-/**
- * @brief Allocate a new ODBC connection handle
- *
- * @param sqlEnv An allocated ODBC environment handle, for which the ODBC version has been set
- * 	This handle gets freed if an error occurred, so don't dereference it if the function returned NULL.
- * @param[out] errorKey Used to store errors and warnings
- *
- * @return The allocated connection handle
- * 	Make sure to free the returned handle by calling SQLFreeHandle().
- * @retval NULL on errors (see @p errorKey for details)
- *
- * @see allocateEnvHandle() for getting a new environment handle
- * @see setOdbcVersion() for setting the ODBC version that should be used with the environment the handle refers to
- */
-SQLHDBC allocateConnectionHandle (SQLHENV sqlEnv, Key * errorKey)
-{
-	SQLHDBC sqlConnection = NULL;
-	SQLRETURN ret = SQLAllocHandle (SQL_HANDLE_DBC, sqlEnv, &sqlConnection);
-
-	if (!SQL_SUCCEEDED (ret))
-	{
-		ELEKTRA_LOG_NOTICE ("SQLAllocHandle () failed!\nCould not allocate handle for ODBC connection!");
-		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_ENV, sqlEnv, errorKey);
-		SQLFreeHandle (SQL_HANDLE_ENV, sqlEnv);
-		return NULL;
-	}
-	else if (ret == SQL_SUCCESS_WITH_INFO)
-	{
-		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_ENV, sqlEnv, errorKey);
-		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_DBC, sqlConnection, errorKey);
-	}
-
-	return sqlConnection;
 }
 
 
@@ -256,7 +306,7 @@ bool endTransaction (SQLHDBC sqlConnection, bool commit, Key * errorKey)
  * @see allocateConnectionHandle() for getting a connection handle that can be passed to this function
  * @see fillDsStructFromDefinitionKs() for getting a @p dsConfig that can be passed to this function
  */
-bool connectToDataSource (SQLHDBC sqlConnection, struct dataSourceConfig * dsConfig, Key * errorKey)
+bool connectToDataSource (SQLHDBC sqlConnection, const struct dataSourceConfig * dsConfig, Key * errorKey)
 {
 	if (!dsConfig || !(dsConfig->dataSourceName))
 	{
@@ -363,4 +413,44 @@ bool bindColumns (SQLHSTMT sqlStmt, struct columnData * buffers, Key * errorKey)
 	}
 
 	return true;
+}
+
+
+SQLLEN executeQuery (SQLHSTMT stmt, const char * query, Key * errorKey)
+{
+	SQLRETURN ret = SQLExecDirect (stmt, (SQLCHAR *) query, SQL_NTS);
+
+	if (SQL_SUCCEEDED (ret) || ret == SQL_NO_DATA)
+	{
+		if (ret == SQL_SUCCESS_WITH_INFO)
+		{
+			ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_STMT, stmt, errorKey);
+		}
+	}
+	else
+	{
+		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_STMT, stmt, errorKey);
+		SQLFreeHandle (SQL_HANDLE_STMT, stmt);
+		return -1;
+	}
+
+
+	SQLLEN rowCount = 0;
+	ret = SQLRowCount (stmt, &rowCount);
+
+	if (SQL_SUCCEEDED (ret))
+	{
+		if (ret == SQL_SUCCESS_WITH_INFO)
+		{
+			ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_STMT, stmt, errorKey);
+		}
+
+		return rowCount;
+	}
+	else
+	{
+		ELEKTRA_ADD_INTERNAL_WARNINGF (errorKey, "Could not get the number of affected rows for the following SQL query: %s",
+					       query);
+		return -2;
+	}
 }

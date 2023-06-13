@@ -197,3 +197,43 @@ size_t elektraPluginGetFunction (Plugin * plugin, const char * name)
 
 	return func;
 }
+
+
+/**
+ * Gets a string with the name of the given constant for a plugin phase
+ *
+ * @param phase The ElektraKdbPhase value for which a string representation should be returned
+ * @return A string with the name of the given phase
+ * @retval "???" if an unknown value for the phase was given
+ */
+const char * elektraPluginPhaseName (ElektraKdbPhase phase)
+{
+	switch (phase)
+	{
+	case ELEKTRA_KDB_GET_PHASE_RESOLVER: // ELEKTRA_KDB_SET_PHASE_RESOLVER
+		return "RESOLVER";
+	case ELEKTRA_KDB_GET_PHASE_CACHECHECK:
+		return "CACHECHECK";
+	case ELEKTRA_KDB_GET_PHASE_PRE_STORAGE: // ELEKTRA_KDB_SET_PHASE_PRE_STORAGE
+		return "PRE_STORAGE";
+	case ELEKTRA_KDB_GET_PHASE_STORAGE: // ELEKTRA_KDB_SET_PHASE_STORAGE
+		return "STORAGE";
+	case ELEKTRA_KDB_GET_PHASE_POST_STORAGE: // ELEKTRA_KDB_SET_PHASE_POST_STORAGE
+		return "POST_STORAGE";
+	case ELEKTRA_KDB_SET_PHASE_PRE_COMMIT:
+		return "PRE_COMMIT";
+	case ELEKTRA_KDB_SET_PHASE_COMMIT:
+		return "COMMIT";
+	case ELEKTRA_KDB_SET_PHASE_POST_COMMIT:
+		return "POST_COMMIT";
+	case ELEKTRA_KDB_SET_PHASE_PRE_ROLLBACK:
+		return "PRE_ROLLBACK";
+	case ELEKTRA_KDB_SET_PHASE_ROLLBACK:
+		return "ROLLBACK";
+	case ELEKTRA_KDB_SET_PHASE_POST_ROLLBACK:
+		return "POST_ROLLBACK";
+	default:
+		ELEKTRA_LOG_DEBUG ("Unknown phase converted to string: %02x", phase);
+		return "???";
+	}
+}

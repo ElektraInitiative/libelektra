@@ -120,9 +120,9 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### backend_odbc
 
-- <<TODO>>
+- Add write functionality to the ODBC backend (INSERT, UPDATE, DELETE) _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 
