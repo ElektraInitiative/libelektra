@@ -59,10 +59,6 @@ int execRecordUndo (KeySet * options, Key * errorKey)
 		ret = 11;
 	}
 
-	if (!noNewLine)
-	{
-		printf ("\n");
-	}
 	keyDel (parentKey);
 	kdbClose (handle, errorKey);
 	RETURN (ret)
