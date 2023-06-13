@@ -225,7 +225,7 @@ int MountOdbcCommand::execute (Cmdline const & cl)
 	{
 		kdb.close ();
 
-		/* Check if the backend_odbc plugin works with the mountpoint (this e.g. verifies that the given table- and column names are
+		/* Check if the backend_odbc plugin works with the mountpoint (this e.g. verify that the given table- and column names are
 		 * correct) */
 		kdb::KeySet keys;
 		kdb::Key parentKey (mpOriginal, KEY_END);
