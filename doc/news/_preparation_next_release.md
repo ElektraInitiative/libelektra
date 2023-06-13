@@ -51,7 +51,7 @@ docker run -it elektra/elektra
 ### BREAKING: New header and library structure
 
 We implemented the previously decided, new [Header File Structure](/doc/decisions/6_implemented/header_file_structure.md), [Including Headers](/doc/decisions/6_implemented/header_include.md), [Library Directory Structure](/doc/decisions/6_implemented/library_directory_structure.md) and [Library Split](/doc/decisions/6_implemented/library_split.md).
-With this change it should be easier to find things in source code and know which headers are public (i.e., included in packages) and which are just internal to the repository.
+With this change it should be easier to navigate the source code and know which headers are public (i.e., included in packages) and which are just internal to the repository.
 
 #### Changed headers
 
@@ -66,7 +66,7 @@ Please look at `src/include/elektra` to find the headers containing the symbols 
 Importantly, it is no longer required to set additional include paths.
 Only the standard include paths (`/usr/include`, or `/usr/local/include` when you install from source) are required.
 
-The new `src/include/elektra` folder includes all headers that Elektra installs (\*), it is copied directly to `/usr/include` on install.
+The new `src/include/elektra` folder, which contains all headers that Elektra installs (\*), is copied directly to `/usr/include` on install.
 The layout of `src/include/elektra` (and consequently the layout of installed headers), follows a fixed pattern:
 
 ```c
