@@ -14,24 +14,33 @@ Some known channel names are
 - **Xfwm**: xfwm4
 - **Xfce Panel**: xfce4-panel
 
-Assuming that the properties of Thunar are to be changed, the following command can be used to mount the channel.
+Assuming that the properties of Thunar anf Xfwm are to be changed, the following command can be used to mount the channels.
+If you are operating in a headless console session (e.g. docker), make sure that dbus is running.
+If it is not, `export $(dbus-launch)` can be used for that.
 
 ```shell
+touch none
 kdb mount -R noresolver none /sw/xfce4/thunar xfconf channel=thunar
+kdb mount -R noresolver none /sw/xfce4/xfwm4 xfconf channel=xfwm4
 ```
 
 **Warning**: The following operations will cause permanent changes to your system, please handle with care.
 
 Thunar should now be ready to be configured by Elektra.
-For example, the following command can be used to use the details view instead of a symbol grid in Thunar.
+The following commands can be used to configure some selected options of Xfce.
 
 ```shell
-# Reset the property beforehand
-xfconf-query -c thunar -r -p /last-view
-
+# Use the details view instead of the grid view in Thunar
 kdb set system:/sw/xfce4/thunar/last-view ThunarDetailsView
-#> Set string to "ThunarDetailsView"
-#> Using name system:/sw/xfce4/thunar/last-view
+#> Create a new key system:/sw/xfce4/thunar/last-view with string "ThunarDetailsView"
+
+# Do not perform a recursive search on network directories
+kdb set system:/sw/xfce4/thunar/misc-recursive-search THUNAR_RECURSIVE_SEARCH_LOCAL
+#> Create a new key system:/sw/xfce4/thunar/misc-recursive-search with string "THUNAR_RECURSIVE_SEARCH_LOCAL"
+
+# Move the window buttons to the left
+kdb set system:/sw/xfce4/xfwm4/general/button_layout "CM|O"
+#> Create a new key system:/sw/xfce4/xfwm4/general/button_layout with string "CM|O"
 ```
 
 The result can then be verified using both Elektra and `xfconf-query`.
@@ -42,15 +51,29 @@ kdb get /sw/xfce4/thunar/last-view
 
 xfconf-query -c thunar -p /last-view
 #> ThunarDetailsView
+
+kdb get /sw/xfce4/thunar/misc-recursive-search
+#> THUNAR_RECURSIVE_SEARCH_LOCAL
+
+xfconf-query -c thunar -p /misc-recursive-search
+#> THUNAR_RECURSIVE_SEARCH_LOCAL
+
+kdb get /sw/xfce4/xfwm4/general/button_layout
+#> CM|O
+
+xfconf-query -c thunar -p /xfwm4/general/button_layout
+#> CM|O
 ```
 
 Using a text editor, you can also view the changes in the
 file `${XDG_CONFIG_HOME:-$HOME/.config}/xfce4/xfconf/xfce-perchannel-xml/thunar.xml`.
+However, this file may not be up-to-date since the Xfconf daemon has a caching mechanism.
 
 When you are finished configuring the Xfce component, you should unmount the corresponding channel with the following command.
 
 ```shell
 kdb umount /sw/xfce4/thunar/
+kdb umount /sw/xfce4/xfwm4/
 ```
 
 ## Replacing Xfconf with Elektra
