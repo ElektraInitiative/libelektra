@@ -41,8 +41,8 @@ The tables may also contain other columns, but they are not processed by this pl
 
 If the column for the key-name is not defined as a primary key and multiple rows contain the same key-name,
 they are treated as one key, where the value is taken from the first row and the metadata is combined.
-If multiple metakeys with the same metakey-name exist for a key, the last meta-value is used.
-This behaviour is part of the internal algorithm of the plugin and could change in the future.
+If multiple metakeys with the same metakey-name exist for a key, the last metavalue is used.
+This behavior is part of the internal algorithm of the plugin and could change in the future.
 So if you want a predictable and expectable behavior, make sure that the described primary- and foreign-key constraints
 are respected.
 
