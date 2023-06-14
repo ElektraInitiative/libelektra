@@ -53,6 +53,7 @@ is defined as follows. The placeholder `<MP>` is the path in the KDB where the r
 This is the path you specify when creating the mountpoint.
 
 The key-names for an ODBC mountpoint-definition are:
+
 ```
 system:/elektra/mountpoints/<mp>
 system:/elektra/mountpoints/<mp>/plugins/backend
