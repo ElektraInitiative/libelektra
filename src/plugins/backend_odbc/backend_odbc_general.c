@@ -418,6 +418,11 @@ bool bindColumns (SQLHSTMT sqlStmt, struct columnData * buffers, Key * errorKey)
 
 SQLLEN executeQuery (SQLHSTMT stmt, const char * query, Key * errorKey)
 {
+	if (!stmt)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "The provided statement handle must not be null.");
+	}
+
 	SQLRETURN ret = SQLExecDirect (stmt, (SQLCHAR *) query, SQL_NTS);
 
 	if (SQL_SUCCEEDED (ret) || ret == SQL_NO_DATA)
