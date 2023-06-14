@@ -90,7 +90,7 @@ static void test_ksResize (void)
 	ksDel (ks);
 
 	ks =
-#include "data_keyset.c"
+#include "../data/data_keyset.c"
 
 		succeed_if (ksGetSize (ks) == 102, "Problem loading keyset with 102 keys");
 	succeed_if (ksGetAlloc (ks) == 102, "alloc size wrong");

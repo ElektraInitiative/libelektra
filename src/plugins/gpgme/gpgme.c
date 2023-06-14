@@ -18,6 +18,7 @@
 
 #include <gpgme.h>
 #include <internal/config.h>
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
 #include <locale.h>
 #include <stdlib.h>

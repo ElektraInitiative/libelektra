@@ -37,6 +37,7 @@
 #include <internal/core/key.h>
 #include <internal/core/keyset.h>
 #include <internal/core/lookup.h>
+#include <internal/macros/attributes.h>
 #include <internal/macros/bitfields.h>
 #include <internal/pluginload/module.h>
 #include <internal/utility/alloc.h>

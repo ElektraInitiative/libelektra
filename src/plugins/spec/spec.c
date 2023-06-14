@@ -3,11 +3,13 @@
 #include "./matching.h"
 
 #include <elektra/core/errors.h>
+#include <elektra/utility/format.h>
 
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/compare.h>
-#include <internal/utility/format.h>
 #include <internal/utility/string.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 

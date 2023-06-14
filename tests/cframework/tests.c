@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include "./tests.h"
 #include <string.h>
-#include <tests.h>
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -37,6 +37,7 @@
 
 #include <internal/config.h>
 #include <internal/core/key.h>
+#include <internal/macros/attributes.h>
 #include <internal/macros/os.h>
 #include <internal/pluginload/module.h>
 #include <internal/utility/logger.h>

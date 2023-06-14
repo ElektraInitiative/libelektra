@@ -20,6 +20,7 @@
 
 #include <uv.h>
 
+#include <internal/macros/attributes.h>
 #include <internal/utility/string.h>
 
 /** zmq context for tests */

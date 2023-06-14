@@ -44,8 +44,10 @@ macro (add_gtest source)
 
 		target_link_libraries (${source} ${CMAKE_THREAD_LIBS_INIT})
 
-		include_directories (SYSTEM ${GOOGLETEST_ROOT}/include)
-		include_directories (${CMAKE_SOURCE_DIR}/tests/gtest-framework)
+		target_include_directories (${source} SYSTEM PRIVATE "${GOOGLETEST_ROOT}/include")
+		target_include_directories (
+			${source} PRIVATE "${CMAKE_SOURCE_DIR}/tests/gtest-framework" "${CMAKE_SOURCE_DIR}/src/bindings/cpp/include"
+					  "${CMAKE_SOURCE_DIR}/src/libs/tools/include")
 
 		if (INSTALL_TESTING)
 			install (

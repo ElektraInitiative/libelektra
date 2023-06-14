@@ -12,6 +12,7 @@
 
 
 #include <internal/config.h>
+#include <internal/macros/attributes.h>
 
 #include <tests_plugin.h>
 

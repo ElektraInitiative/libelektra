@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "../../src/libs/elektra/backends.h"
+#include "../../src/libs/kdb/backends.c"
 
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>

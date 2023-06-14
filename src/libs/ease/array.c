@@ -14,9 +14,9 @@
 #include <elektra/ease/array.h>
 #include <elektra/ease/utils.h>
 #include <elektra/type/types.h>
+#include <elektra/utility/array.h>
 #include <errno.h>
 #include <internal/core/key/api.h>
-#include <internal/utility/array.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>

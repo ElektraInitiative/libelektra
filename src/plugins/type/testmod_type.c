@@ -12,6 +12,7 @@
 
 #include <elektra/core.h>
 #include <elektra/plugin/plugin.h>
+#include <internal/macros/attributes.h>
 #include <internal/pluginload/module.h>
 #include <tests_plugin.h>
 

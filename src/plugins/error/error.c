@@ -12,6 +12,8 @@
 #include <internal/config.h>
 #endif
 
+#include <internal/macros/attributes.h>
+
 #include <stdlib.h>
 
 // #include <stdio.h>

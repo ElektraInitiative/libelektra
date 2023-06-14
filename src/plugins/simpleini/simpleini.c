@@ -8,11 +8,12 @@
 
 #define _GNU_SOURCE
 #include "./simpleini.h"
+#include <elektra/utility/format.h>
 #include <errno.h>
 #include <internal/config.h>
+#include <internal/macros/attributes.h>
 #include <internal/macros/plugin_errors.h>
 #include <internal/utility/alloc.h>
-#include <internal/utility/format.h>
 
 #include <elektra/core/errors.h>
 #include <elektra/ease/name.h>
@@ -111,7 +112,11 @@ static struct lineFormat getFormat (Plugin * handle)
 				ret.format[j] = c;
 			}
 		}
-		--j; // discard null byte that is already there
+		if (userFormatSize > 0)
+		{
+			// discard null byte that is already there
+			--j;
+		}
 		ELEKTRA_ASSERT (ret.format[j] == '\0', "should be null byte at end of string but was %c", ret.format[j]);
 		ret.format[j++] = '\n';
 		ret.format[j] = '\0';

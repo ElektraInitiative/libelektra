@@ -4,8 +4,8 @@ if (NOT LIBGPGME_FOUND)
 else ()
 	# check GPGME version (requires at least 1.10)
 	if (${LIBGPGME_VERSION} MATCHES "1[.][1-9][0-9]+.*")
-		include_directories (${LIBGPGME_INCLUDE_DIRS})
 		add_executable (gen-gpg-testkey gen-gpg-testkey.c)
+		target_include_directories (gen-gpg-testkey PRIVATE ${LIBGPGME_INCLUDE_DIRS})
 		target_link_libraries (gen-gpg-testkey ${LIBGPGME_LIBRARIES})
 		install (
 			TARGETS gen-gpg-testkey

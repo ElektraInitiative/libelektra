@@ -13,8 +13,10 @@
 
 #include <errno.h>
 #include <internal/config.h>
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/string.h>
+
 #include <stdbool.h>
 #include <stdlib.h>
 
@@ -97,7 +99,7 @@ int elektraKeyAppendMetaLine (Key * target, const char * metaName, const char * 
 
 	keyGetString (existingMeta, buffer, keyGetValueSize (existingMeta));
 	strcat (buffer, "\n");
-	strncat (buffer, line, elektraStrLen (line));
+	strcat (buffer, line);
 
 	keySetMeta (target, metaName, buffer);
 	elektraFree (buffer);

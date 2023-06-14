@@ -8,7 +8,7 @@
 
 #include <tests_internal.h>
 
-#include <internal/utility/array.h>
+#include <elektra/utility/array.h>
 
 #ifdef HAVE_TIME_H
 #include <time.h>

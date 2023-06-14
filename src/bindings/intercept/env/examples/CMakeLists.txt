@@ -1,13 +1,9 @@
 include (LibAddMacros)
 
-add_headers (HDR_FILES)
-add_cppheaders (HDR_FILES)
-add_toolheaders (HDR_FILES)
-
 macro (do_example source)
-	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
 	set (SOURCES ${HDR_FILES} ${source}.c)
 	add_executable (${source} ${SOURCES})
+	target_include_directories (${source} PRIVATE "${CMAKE_SOURCE_DIR}/src/bindings/cpp/include")
 
 	install (
 		TARGETS ${source}

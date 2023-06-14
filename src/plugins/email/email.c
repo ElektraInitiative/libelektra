@@ -8,6 +8,7 @@
  */
 
 #include <elektra/core/errors.h>
+#include <internal/macros/attributes.h>
 #include <internal/utility/compare.h>
 #include <regex.h>
 #include <stdio.h>

@@ -6,7 +6,8 @@
  * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  */
 
-#include <opmphmpredictor.c>
+#include "../../src/libs/core/opmphmpredictor.c"
+
 #include <tests_internal.h>
 
 #include <internal/core/lookup.h>

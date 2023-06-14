@@ -5,7 +5,8 @@ file (
 	*.sh)
 
 if (BUILD_SHARED)
-	set (ElektraCodegen_ALL_LIBRARIES "elektra-highlevel;elektra-opts;elektra-invoke;elektra-ease;elektra-kdb;elektra-core")
+	set (ElektraCodegen_ALL_LIBRARIES
+	     "elektra-highlevel;elektra-opts;elektra-invoke;elektra-ease;elektra-kdb;elektra-core;elektra-types;elektra-utility")
 elseif (BUILD_FULL)
 	set (ElektraCodegen_ALL_LIBRARIES "elektra-full")
 elseif (BUILD_STATIC)
@@ -25,10 +26,12 @@ endforeach ()
 unset (C_FLAG_32BIT)
 
 if (INSTALL_TESTING)
+	# TODO: make clear via repo structure that this happens
 	install (
 		DIRECTORY "."
 		DESTINATION "${TARGET_TEST_DATA_FOLDER}/gen"
 		COMPONENT elektra-tests)
+	# TODO: make clear via repo structure that this happens
 	install (
 		DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 		DESTINATION "${TARGET_TEST_DATA_FOLDER}/gen"

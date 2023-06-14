@@ -20,13 +20,14 @@ else ()
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run.sh" "${CMAKE_CURRENT_BINARY_DIR}/run-webd")
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/build.sh" "${CMAKE_CURRENT_BINARY_DIR}/build-webd")
 
-	# install files to destination
+	# install files to destination TODO: make clear via repo structure that this happens
 	install (
 		DIRECTORY .
 		DESTINATION ${install_directory}
 		PATTERN "node_modules" EXCLUDE
 		PATTERN "build" EXCLUDE)
 
+	# TODO: isn't this redundant?
 	install (FILES README.md DESTINATION ${install_directory})
 	install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-webd ${CMAKE_CURRENT_BINARY_DIR}/build-webd
 		 DESTINATION ${TARGET_TOOL_EXEC_FOLDER})

@@ -12,8 +12,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#ifndef ELEKTRA_UTILITY_ALLOC_H
-#define ELEKTRA_UTILITY_ALLOC_H
+#ifndef ELEKTRA_UTILITY_ALLOC_INTERNAL_H
+#define ELEKTRA_UTILITY_ALLOC_INTERNAL_H
 
 #include <internal/utility/assert.h>
 
@@ -28,17 +28,21 @@ namespace ckdb
 extern "C" {
 #endif
 
-int elektraRealloc (void ** buffer, size_t size);
-void * elektraMalloc (size_t size);
-void * elektraCalloc (size_t size);
-void elektraFree (void * ptr);
+static inline void * elektraMalloc (size_t size);
+static inline void * elektraCalloc (size_t size);
+static inline int elektraRealloc (void ** buffer, size_t size);
+static inline void elektraFree (void * ptr);
 
-char * elektraStrDup (const char * s);
-void * elektraMemDup (const void * s, size_t n);
+static inline char * elektraStrDup (const char * s);
+static inline void * elektraMemDup (const void * s, size_t n);
 
 #ifdef __cplusplus
 }
 }
 #endif
 
-#endif // ELEKTRA_UTILITY_ALLOC_H
+// now that we have declared the functions as static inline,
+// we include a copy of their implementation
+#include <internal/utility/alloc_impl.h>
+
+#endif // ELEKTRA_UTILITY_ALLOC_INTERNAL_H

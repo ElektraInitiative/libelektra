@@ -404,7 +404,7 @@ static char * concat (const char * str1, const char * str2)
 	const int str2Len = strlen (str2);
 	char * concat = elektraMalloc (str1Len + str2Len + 1);
 	strcpy (concat, str1);
-	strncpy (concat + str1Len, str2, str2Len + 1);
+	strcpy (concat + str1Len, str2);
 	return concat;
 }
 

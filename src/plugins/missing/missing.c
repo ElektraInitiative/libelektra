@@ -8,10 +8,14 @@
  */
 
 #include "./missing.h"
+
 #include <elektra/core.h>
 #include <elektra/core/errors.h>
 #include <elektra/plugin/plugin.h>
+
+#include <internal/macros/attributes.h>
 #include <internal/utility/compare.h>
+
 int elektraMissingGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/missing"))

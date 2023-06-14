@@ -20,11 +20,7 @@ function (add_externaltest testname)
 		set (testscriptname "${CMAKE_CURRENT_BINARY_DIR}/${testname}")
 		configure_file ("${filename}" "${testscriptname}" @ONLY)
 		# don't actually add as test, only run via `kdb run_all`
-
-		# FIXME: re-enable tests
-
-		#[[
-		 install (
+		install (
 			FILES "${CMAKE_CURRENT_BINARY_DIR}/${testname}"
 			DESTINATION ${TARGET_TOOL_EXEC_FOLDER}
 			PERMISSIONS
@@ -37,7 +33,6 @@ function (add_externaltest testname)
 				WORLD_EXECUTE
 			RENAME "check_external_${testname_we}"
 			COMPONENT elektra-tests)
-		]]
 	endif (ENABLE_KDB_TESTING AND INSTALL_TESTING)
 endfunction (add_externaltest)
 

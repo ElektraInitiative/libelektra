@@ -13,11 +13,8 @@ else ()
 
 	add_binding (lua)
 
-	add_headers (HDR_FILES)
-	add_cppheaders (HDR_FILES)
-
-	include_directories (${LUA_INCLUDE_DIR})
-	include_directories (${CMAKE_CURRENT_SOURCE_DIR})
+	include_directories (SYSTEM ${LUA_INCLUDE_DIR})
+	include_directories ("${CMAKE_SOURCE_DIR}/src/bindings/cpp/include")
 
 	set (CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}")
 	set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SWIG_OUTDIR}")

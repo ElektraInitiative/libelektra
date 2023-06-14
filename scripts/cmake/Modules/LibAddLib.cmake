@@ -18,10 +18,6 @@ function (add_lib name)
 		"SOURCES;LINK_LIBRARIES;LINK_ELEKTRA;INCLUDE_DIRECTORIES;INCLUDE_SYSTEM_DIRECTORIES;COMPILE_DEFINITIONS" # multi value
 		# keywords
 		${ARGN})
-	add_headers (ARG_SOURCES)
-	if (ARG_CPP)
-		add_cppheaders (ARG_SOURCES)
-	endif (ARG_CPP)
 
 	if (ARG_COMPONENT)
 		set (HAS_COMPONENT ${ARG_COMPONENT})
@@ -46,12 +42,11 @@ function (add_lib name)
 	if (BUILD_SHARED)
 		add_library (elektra-${name} SHARED $<TARGET_OBJECTS:elektra-${name}-objects>)
 
-		target_link_libraries (elektra-${name} elektra-core ${ARG_LINK_ELEKTRA})
+		target_link_libraries (elektra-${name} ${ARG_LINK_ELEKTRA})
+		if (NOT ${name} STREQUAL "core")
+			target_link_libraries (elektra-${name} elektra-core)
+		endif ()
 	endif (BUILD_SHARED)
-
-	set_property (GLOBAL APPEND PROPERTY "elektra-full_SRCS" "$<TARGET_OBJECTS:elektra-${name}-objects>")
-
-	set_property (GLOBAL APPEND PROPERTY "elektra-extension_LIBRARIES" elektra-${name})
 
 	if (BUILD_SHARED)
 		target_link_libraries (elektra-${name} ${ARG_LINK_LIBRARIES})
@@ -67,5 +62,22 @@ function (add_lib name)
 			COMPONENT "${HAS_COMPONENT}"
 			EXPORT ElektraTargetsLibelektra)
 	endif (BUILD_SHARED)
+
+	if (ADDED_LIBRARIES)
+		set (TMP "${ADDED_LIBRARIES};${name}")
+		list (SORT TMP)
+		list (REMOVE_DUPLICATES TMP)
+		set (
+			ADDED_LIBRARIES
+			"${TMP}"
+			CACHE STRING "${ADDED_LIBRARIES_DOC}" FORCE)
+	else ()
+		set (
+			ADDED_LIBRARIES
+			"${name}"
+			CACHE STRING "${ADDED_LIBRARIES_DOC}" FORCE)
+	endif ()
+
+	set_property (GLOBAL APPEND PROPERTY "ELEKTRA_LINK_LIBRARIES" "${ARG_LINK_LIBRARIES}")
 
 endfunction ()

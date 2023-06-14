@@ -14,10 +14,10 @@
 #include <elektra/highlevel/types.h>
 #include <elektra/type/conversion.h>
 
+#include <elektra/utility/array.h>
+#include <elektra/utility/format.h>
 #include <internal/macros/symver.h>
 #include <internal/utility/alloc.h>
-#include <internal/utility/array.h>
-#include <internal/utility/format.h>
 #include <internal/utility/logger.h>
 
 #include <stdlib.h>

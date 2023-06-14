@@ -10,6 +10,7 @@
 #include <numeric>
 
 #include <elektra/core/errors.h>
+#include <internal/macros/attributes.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/logger.h>
 

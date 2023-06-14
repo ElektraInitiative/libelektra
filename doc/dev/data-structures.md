@@ -213,7 +213,7 @@ The OPMPHM is a non-dynamic randomized hash map of the Las Vegas type, that crea
 to gain O(1) access.
 
 The elements must be arranged in an array and each element must have a unique name, to identify the elements.
-The source can be found in [opmphm.h](/src/include/internal/core/opmphm.h) and [opmphm.c](/src/libs/elektra/opmphm.c)
+The source can be found in [opmphm.h](/src/include/internal/core/opmphm.h) and [opmphm.c](/src/libs/core/opmphm.c)
 and also works outside of Elektra.
 
 The OPMPHM does not store any buckets, your array of elements are the buckets and the OPMPHM represent an arbitrary

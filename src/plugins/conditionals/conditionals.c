@@ -10,15 +10,13 @@
 #include <elektra/core/errors.h>
 #include <elektra/ease/meta.h>
 
-#ifndef HAVE_KDBCONFIG
 #include <internal/config.h>
-#endif
-
-#include <ctype.h>
-#include <elektra/ease/meta.h>
-#include <errno.h>
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/string.h>
+
+#include <ctype.h>
+#include <errno.h>
 #include <math.h>
 #include <regex.h>
 #include <stdio.h>

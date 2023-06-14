@@ -197,7 +197,7 @@ static Node * createNode (Key * key, Node * parent)
 							destroyTree (node);
 							return NULL;
 						}
-						strncpy (concatName, tableAncestor->relativeName, len);
+						strcpy (concatName, tableAncestor->relativeName);
 						concatName[split] = '.';
 						strncat (&concatName[split + 1], node->relativeName, len - split - 1);
 						elektraFree (node->relativeName);

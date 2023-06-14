@@ -7,12 +7,13 @@
  */
 
 #define _GNU_SOURCE
-#include <benchmarks.h>
+#include "./benchmarks.h"
 #ifdef HAVE_HSEARCHR
 #include <search.h>
 #endif
 #include <sys/time.h>
 
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
 
 struct timeval start;

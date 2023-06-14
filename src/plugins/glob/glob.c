@@ -14,7 +14,9 @@
 #endif
 
 #include <fnmatch.h>
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
+
 struct GlobFlagMap
 {
 	char * name;

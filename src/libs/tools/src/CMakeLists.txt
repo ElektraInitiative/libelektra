@@ -1,8 +1,6 @@
 include (LibAddMacros)
 
-add_headers (HDR_FILES)
-add_cppheaders (HDR_FILES)
-add_toolheaders (HDR_FILES)
+include_directories ("${CMAKE_SOURCE_DIR}/src/bindings/cpp/include" "${CMAKE_CURRENT_SOURCE_DIR}/../include")
 
 file (GLOB_RECURSE SRC_FILES *.cpp)
 

@@ -14,8 +14,9 @@
 #include <elektra/core/keyset.h>
 #include <elektra/ease/array.h>
 #include <elektra/ease/name.h>
+#include <elektra/utility/array.h>
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
-#include <internal/utility/array.h>
 #include <internal/utility/compare.h>
 #include <internal/utility/logger.h>
 #include <internal/utility/string.h>
@@ -208,7 +209,7 @@ int elektraXfconfSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 		}
 		char * xfconfKeyName = elektraMalloc ((elektraStrLen (currentKeyName) + 2) * sizeof (char *));
 		xfconfKeyName[0] = '/';
-		strncpy (&xfconfKeyName[1], currentKeyName, elektraStrLen (currentKeyName));
+		strcpy (&xfconfKeyName[1], currentKeyName);
 		ELEKTRA_LOG_DEBUG ("setting key %s to %s\n", xfconfKeyName, keyString (cur));
 		if (keyGetMeta (cur, "array") != NULL)
 		{

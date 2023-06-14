@@ -1,43 +1,4 @@
 libelektra_0.8 {
-	# kdbmodule.h
-	elektraModulesClose;
-	elektraModulesInit;
-	elektraModulesLoad;
-
-	# plugin loading:
-	elektraPluginClose;
-	elektraPluginGetFunction;
-	elektraPluginOpen;
-
-	# kdbhelper.h
-	elektraCalloc;
-	elektraFormat;
-	elektraFree;
-	elektraMalloc;
-	elektraMemCaseCmp;
-	elektraMemDup;
-	elektraRealloc;
-	elektraStrCaseCmp;
-	elektraStrCmp;
-	elektraStrDup;
-	elektraStrLen;
-	elektraStrNCaseCmp;
-	elektraStrNCmp;
-	elektraVFormat;
-	elektraWriteArrayNumber;
-
-	# kdbease.h
-	keyCompare;
-	keyCompareMeta;
-
-	# kdb.h
-	## KDB functions
-	kdbClose;
-	kdbGet;
-	kdbOpen;
-	kdbSet;
-
-	## Key functions
 	keyAddBaseName;
 	keyAddName;
 	keyBaseName;
@@ -79,7 +40,6 @@ libelektra_0.8 {
 	keyValue;
 	keyVNew;
 
-	## KeySet functions
 	ksAppend;
 	ksAppendKey;
 	ksAtCursor;
@@ -108,7 +68,16 @@ libelektra_0.8 {
 };
 
 libelektra_1.0 {
-	# kdberrors.h
+	keyIsLocked;
+	keyLock;
+	keyMeta;
+
+	ksSearch;
+	ksIncRef;
+	ksDecRef;
+	ksGetRef;
+
+	# FIXME: should be separate lib
 	ELEKTRA_ERROR_CONFLICTING_STATE;
 	ELEKTRA_ERROR_INSTALLATION;
 	ELEKTRA_ERROR_INTERFACE;
@@ -128,58 +97,14 @@ libelektra_1.0 {
 	ELEKTRA_WARNING_RESOURCE;
 	ELEKTRA_WARNING_VALIDATION_SEMANTIC;
 	ELEKTRA_WARNING_VALIDATION_SYNTACTIC;
-
-	# kdb.h
-	elektraGOptsContract;
-	elektraGOptsContractFromStrings;
-
-	## Key functions
-	keyIsLocked;
-	keyLock;
-	keyMeta;
-
-	## KeySet functions
-	ksSearch;
-	ksIncRef;
-	ksDecRef;
-	ksGetRef;
-
-	# kdbchangetracking.h
-	elektraChangeTrackingGetContextFromKdb;
-	elektraChangeTrackingGetContextFromPlugin;
-	elektraChangeTrackingCalculateDiff;
-
-	# kdbdiff.h
-	elektraDiffCalculate;
-	elektraDiffIsEmpty;
-	elektraDiffGetParentKey;
-	elektraDiffDel;
-	elektraDiffIncRef;
-	elektraDiffDecRef;
-	elektraDiffGetRef;
-	elektraDiffGetAddedKeys;
-	elektraDiffGetRemovedKeys;
-	elektraDiffGetModifiedKeys;
-	elektraDiffKeyValueChanged;
-	elektraDiffKeyOnlyMetaChanged;
-	elektraDiffGetAddedMetaKeys;
-	elektraDiffGetRemovedMetaKeys;
-	elektraDiffGetModifiedMetaKeys;
-
-
 };
 
 libelektraprivate_1.0 {
-	# kdbprivate.h
-	elektraAbort;
 	elektraKeyNameCanonicalize;
 	elektraKeyNameEscapePart;
 	elektraKeyNameUnescape;
 	elektraKeyNameValidate;
 	elektraKsPopAtCursor;
-	elektraFindInternalNotificationPlugin;
-	elektraPluginMissing;
-	elektraPluginVersion;
 	elektraRenameKeys;
 	keyIsDir;
 	keyIsProc;
@@ -201,21 +126,10 @@ libelektraprivate_1.0 {
 	elektraIsArrayPart;
 	elektraReadNamespace;
 
-	# TODO [new_backend]: should be removed, tests should depend differently on this
-	backendsDivide;
-
-	elektraDiffNew;
-	elektraChangeTrackingCreateContextForTesting;
-	elektraChangeTrackingContextDel;
-
-	# kdblogger.h
-	elektraLog;
-
-	# kdbrand.h
 	elektraRand;
 	elektraRandGetInitSeed;
 
-	# kdberrors.h
+	# FIXME: should be separate lib
 	elektraSetErrorCONFLICTING_STATE;
 	elektraSetErrorINSTALLATION;
 	elektraSetErrorINTERFACE;

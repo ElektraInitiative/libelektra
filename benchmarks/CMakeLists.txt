@@ -1,11 +1,9 @@
 include (LibAddMacros)
 
-add_headers (HDR_FILES)
-
 macro (do_benchmark source)
-	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
 	set (SOURCES ${HDR_FILES} ${ADDITIONAL_SOURCES} benchmarks.c benchmarks.h ${source}.c)
 	add_executable (benchmark_${source} ${SOURCES})
+	target_include_directories (benchmark_${source} PRIVATE "${CMAKE_SOURCE_DIR}/src/include" "${CMAKE_BINARY_DIR}/src/include")
 
 	target_link_elektra (benchmark_${source} elektra-kdb elektra-meta)
 
@@ -55,6 +53,7 @@ if (ENABLE_OPTIMIZATIONS AND NOT WIN32)
 endif (ENABLE_OPTIMIZATIONS AND NOT WIN32)
 
 add_executable (benchmark_plugingetset plugingetset.c)
+target_include_directories (benchmark_plugingetset PRIVATE "${CMAKE_SOURCE_DIR}/src/include" "${CMAKE_BINARY_DIR}/src/include")
 target_link_elektra (benchmark_plugingetset elektra-core elektra-kdb)
 
 target_link_elektra (benchmark_diff elektra-kdb)

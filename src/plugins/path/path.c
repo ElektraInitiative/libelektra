@@ -9,6 +9,7 @@
 #include "./path.h"
 
 #include <internal/config.h>
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
 
 #include <stdbool.h>

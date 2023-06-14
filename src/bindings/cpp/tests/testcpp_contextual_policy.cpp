@@ -8,6 +8,8 @@
 
 #include <kdbcontext.hpp>
 
+#include <internal/macros/attributes.h>
+
 #include <gtest/gtest.h>
 
 

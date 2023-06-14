@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
 #include <tests.h>
 

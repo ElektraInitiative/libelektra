@@ -12,6 +12,9 @@
 #include "./kconfig_serializer.hpp"
 
 #include <elektra/core/errors.h>
+
+#include <internal/macros/attributes.h>
+
 #include <fstream>
 
 using ckdb::keyNew;

@@ -7,7 +7,9 @@
  */
 
 #define OPMPHM_TEST
-#include <opmphm.c>
+#include "../../src/libs/core/opmphm.c"
+
+#include <internal/macros/attributes.h>
 #include <tests_internal.h>
 
 // dummy for testing

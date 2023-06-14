@@ -102,7 +102,7 @@ All currently planned libraries and their respective API prefixes are listed in 
   (Note: previously `libelektra-plugin` merged with `libelektra-invoke`)
 
 - `libelektra-pluginload`:
-  Internal static library, linked into `libelektra-plugin` (re-exported) and `libelektra-kdb` (not exported).
+  Internal object library, linked into `libelektra-plugin` (re-exported) and `libelektra-kdb` (not exported).
   Contains the code for loading plugins.
 
   **Prefix:**: `elektraPlugin*` (shared with `libelektra-plugin` because exported there)
@@ -140,7 +140,7 @@ All currently planned libraries and their respective API prefixes are listed in 
   **Prefix:** `elektraUtil*`
 
 - `libelektra-base`:
-  Internal static library, linked into `libelektra-core` (not exported) and `libelektra-utility` (partially re-exported).
+  Internal object library, linked into `libelektra-core` (not exported) and `libelektra-utility` (partially re-exported).
   Contains helper functions for e.g., memory allocations, string formatting, etc.
 
   **Prefix:** `elektra*` (for internal), `elektraUtil*` (for exported)

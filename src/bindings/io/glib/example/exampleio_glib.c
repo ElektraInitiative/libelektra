@@ -26,6 +26,7 @@
 #include <elektra/io/api.h>  // I/O binding functions (elektraIo*)
 #include <elektra/io/glib.h> // I/O binding constructor for glib (elektraIoGlibNew)
 #include <glib.h>	     // glib functions
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/assert.h> // assertions (ELEKTRA_NOT_NULL)
 

@@ -9,7 +9,6 @@ else () # find installation path
 
 	set (SRC_FILES hub-zeromq.c)
 
-	add_headers (ELEKTRA_HEADERS)
 	set (SOURCES ${SRC_FILES} ${ELEKTRA_HEADERS})
 
 	# Build hub

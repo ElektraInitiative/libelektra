@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <benchmarks.h>
+#include "./benchmarks.h"
 
 #include <ctype.h>
 
@@ -86,7 +86,7 @@ int main (void)
 	long long nrIterations = 100000000;
 	const char str1[] = "some string to be compared with/some\\/more with a long common part, and only a bit different";
 	char * str2 = elektraMalloc (sizeof (str1));
-	strcat (str2, str1);
+	strcpy (str2, str1);
 	str2[sizeof (str1) - 5] = 'X';
 
 	int res = 0;

@@ -1,0 +1,53 @@
+libelektra_0.8 {
+	elektraModulesClose;
+	elektraModulesInit;
+	elektraModulesLoad;
+
+	elektraPluginClose;
+	elektraPluginGetFunction;
+	elektraPluginOpen;
+
+	kdbClose;
+	kdbGet;
+	kdbOpen;
+	kdbSet;
+};
+
+libelektra_1.0 {
+	elektraGOptsContract;
+	elektraGOptsContractFromStrings;
+
+	# FIXME: should be separate lib
+	# kdbchangetracking.h
+	elektraChangeTrackingGetContextFromKdb;
+	elektraChangeTrackingGetContextFromPlugin;
+	elektraChangeTrackingCalculateDiff;
+
+	# FIXME: separate lib? part of merge?
+	# kdbdiff.h
+	elektraDiffCalculate;
+	elektraDiffIsEmpty;
+	elektraDiffGetParentKey;
+	elektraDiffDel;
+	elektraDiffIncRef;
+	elektraDiffDecRef;
+	elektraDiffGetRef;
+	elektraDiffGetAddedKeys;
+	elektraDiffGetRemovedKeys;
+	elektraDiffGetModifiedKeys;
+	elektraDiffKeyValueChanged;
+	elektraDiffKeyOnlyMetaChanged;
+	elektraDiffGetAddedMetaKeys;
+	elektraDiffGetRemovedMetaKeys;
+	elektraDiffGetModifiedMetaKeys;
+};
+
+libelektraprivate_1.0 {
+	elektraFindInternalNotificationPlugin;
+
+	# FIXME: separate lib? part of merge?
+	# kdbdiff.h
+	elektraDiffNew;
+	elektraChangeTrackingCreateContextForTesting;
+	elektraChangeTrackingContextDel;
+};

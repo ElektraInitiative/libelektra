@@ -10,6 +10,7 @@
 #include "./dpkg.h"
 #include <elektra/core/key.h>
 #include <elektra/core/keyset.h>
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/compare.h>
 #include <internal/utility/string.h>

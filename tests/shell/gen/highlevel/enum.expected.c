@@ -36,10 +36,9 @@
 #include <elektra/opts.h>
 #include <elektra/plugin/invoke.h>
 #include <elektra/type/conversion.h>
-
-#include <internal/utility/alloc.h>
-#include <internal/utility/array.h>
-#include <internal/utility/format.h>
+#include <elektra/utility/alloc.h>
+#include <elektra/utility/array.h>
+#include <elektra/utility/format.h>
 
 static KeySet * embeddedSpec (void)
 {

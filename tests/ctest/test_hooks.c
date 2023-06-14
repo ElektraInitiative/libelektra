@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "../../src/libs/elektra/hooks.c"
+#include "../../src/libs/kdb/hooks.c"
 
 #include <tests.h>
 

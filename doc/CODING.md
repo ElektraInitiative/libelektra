@@ -130,7 +130,7 @@ You can also enable that formatting runs automatically before commiting using `s
 - C-Files have extension `.c`, Header files `.h`.
 - Use internal functions: prefer to use `elektraMalloc`, `elektraFree`.
 
-**Example:** [src/libs/elektra/kdb.c](/src/libs/elektra/kdb.c)
+**Example:** [src/libs/kdb/kdb.c](/src/libs/kdb/kdb.c)
 
 #### Clang Format
 

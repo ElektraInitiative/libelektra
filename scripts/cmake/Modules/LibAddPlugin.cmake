@@ -140,13 +140,8 @@ function (add_plugintest testname)
 			endif ()
 		endforeach ()
 
-		add_headers (TEST_SOURCES)
-		add_testheaders (TEST_SOURCES)
-		include_directories ("${CMAKE_SOURCE_DIR}/tests/cframework")
-
 		if (ARG_CPP)
 			list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testmod_${testname}.cpp")
-			include_directories (${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests ${CMAKE_SOURCE_DIR}/src/bindings/cpp/include)
 		else (ARG_CPP)
 			list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testmod_${testname}.c")
 		endif (ARG_CPP)
@@ -164,6 +159,14 @@ function (add_plugintest testname)
 
 		set (testexename testmod_${testname})
 		add_executable (${testexename} ${TEST_SOURCES})
+
+		if (ARG_CPP)
+			target_include_directories (
+				${testexename}
+				PRIVATE ${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests
+				PRIVATE ${CMAKE_SOURCE_DIR}/src/bindings/cpp/include)
+		endif (ARG_CPP)
+		target_include_directories (${testexename} PRIVATE "${CMAKE_SOURCE_DIR}/tests/cframework")
 
 		if (BUILD_SHARED)
 			if (ARG_LINK_PLUGIN)
@@ -191,6 +194,7 @@ function (add_plugintest testname)
 			endforeach (ee ${ARG_EXTRA_EXECUTABLES})
 
 			if (ARG_INSTALL_TEST_DATA)
+				# TODO: make more clear via repo structure that this happens
 				install (
 					DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${testname}"
 					DESTINATION "${TARGET_TEST_DATA_FOLDER}"
@@ -461,6 +465,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	if (ADDTESTING_PHASE)
 		if (ARG_INSTALL_TEST_DATA AND NOT ARG_ADD_TEST)
 			if (INSTALL_TESTING)
+				# TODO: make more clear via repo structure that this happens
 				install (
 					DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${PLUGIN_SHORT_NAME}"
 					DESTINATION "${TARGET_TEST_DATA_FOLDER}"
@@ -587,11 +592,6 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	endif (ARG_ONLY_SHARED)
 	message (STATUS "${STATUS_MESSAGE}")
 
-	add_headers (ARG_SOURCES)
-	if (ARG_CPP)
-		add_cppheaders (ARG_SOURCES)
-	endif (ARG_CPP)
-
 	add_library (${PLUGIN_OBJS} OBJECT ${ARG_SOURCES})
 
 	if (ARG_DEPENDS)
@@ -612,11 +612,14 @@ function (add_plugin PLUGIN_SHORT_NAME)
 			 "PLUGIN_SHORT_NAME=${PLUGIN_SHORT_NAME}"
 			 "README=readme_${PLUGIN_SHORT_NAME}.c")
 
+	if (ARG_CPP)
+		target_include_directories (${PLUGIN_OBJS} PUBLIC "${CMAKE_SOURCE_DIR}/src/bindings/cpp/include")
+	endif (ARG_CPP)
+	target_include_directories (${PLUGIN_OBJS} PUBLIC "${CMAKE_CURRENT_BINARY_DIR}") # for readme
 	set_property (
 		TARGET ${PLUGIN_OBJS}
 		APPEND
-		PROPERTY INCLUDE_DIRECTORIES ${ARG_INCLUDE_DIRECTORIES} ${CMAKE_CURRENT_BINARY_DIR} # for readme
-	)
+		PROPERTY INCLUDE_DIRECTORIES ${ARG_INCLUDE_DIRECTORIES})
 
 	set_property (
 		TARGET ${PLUGIN_OBJS}
@@ -636,10 +639,14 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	set_property (TARGET ${PLUGIN_OBJS} PROPERTY CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 	if (BUILD_SHARED)
+		# TODO: why is this not built upon ${PLUGIN_OBJS}
 		add_library (${PLUGIN_NAME} MODULE ${ARG_SOURCES} ${ARG_OBJECT_SOURCES})
 		# TODO: switch to -plugin- in CMake targets
 		set_target_properties (${PLUGIN_NAME} PROPERTIES OUTPUT_NAME "elektra-plugin-${PLUGIN_SHORT_NAME}")
 
+		if (ARG_CPP)
+			target_include_directories (${PLUGIN_NAME} PUBLIC "${CMAKE_SOURCE_DIR}/src/bindings/cpp/include")
+		endif (ARG_CPP)
 		if (ARG_DEPENDS)
 			add_dependencies (${PLUGIN_NAME} ${ARG_DEPENDS})
 		endif ()
@@ -658,11 +665,11 @@ function (add_plugin PLUGIN_SHORT_NAME)
 			APPEND
 			PROPERTY COMPILE_DEFINITIONS ${ARG_COMPILE_DEFINITIONS} ${ADDITIONAL_COMPILE_DEFINITIONS} "HAVE_KDBCONFIG_H"
 				 "PLUGIN_SHORT_NAME=${PLUGIN_SHORT_NAME}" "README=readme_${PLUGIN_SHORT_NAME}.c")
+		target_include_directories (${PLUGIN_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}") # for readme
 		set_property (
 			TARGET ${PLUGIN_NAME}
 			APPEND
-			PROPERTY INCLUDE_DIRECTORIES ${ARG_INCLUDE_DIRECTORIES} ${CMAKE_CURRENT_BINARY_DIR} # for readme
-		)
+			PROPERTY INCLUDE_DIRECTORIES ${ARG_INCLUDE_DIRECTORIES})
 		# do not strip rpath during install
 		if (ARG_USE_LINK_RPATH)
 			set_target_properties (${PLUGIN_NAME} PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
@@ -684,11 +691,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	endif ()
 
 	if (NOT ARG_ONLY_SHARED)
-
-		# message (STATUS "added ${PLUGIN_TARGET_OBJS}")
-		set_property (GLOBAL APPEND PROPERTY "elektra-full_SRCS" ${PLUGIN_TARGET_OBJS} ${ARG_OBJECT_SOURCES})
-
-		set_property (GLOBAL APPEND PROPERTY "elektra-full_LIBRARIES" "${ARG_LINK_LIBRARIES}")
+		set_property (GLOBAL APPEND PROPERTY "ELEKTRA_LINK_LIBRARIES" "${ARG_LINK_LIBRARIES}")
 	endif (NOT ARG_ONLY_SHARED)
 
 	# cleanup

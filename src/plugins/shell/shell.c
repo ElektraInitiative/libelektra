@@ -10,6 +10,7 @@
 #include "./shell.h"
 #include <elektra/core/errors.h>
 #include <errno.h>
+#include <internal/macros/attributes.h>
 #include <internal/utility/compare.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -11,6 +11,7 @@
 #endif
 
 #include "./noresolver.h"
+#include <internal/macros/attributes.h>
 #include <internal/utility/logger.h>
 #include <string.h>
 

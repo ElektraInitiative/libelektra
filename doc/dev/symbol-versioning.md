@@ -9,7 +9,7 @@ The setup used is based on the one used by FreeBSD. The main script [`version_ge
 (with small modifications to enable Alpine Linux compatibility).
 
 The main script, is called by CMake during the build process. It parses the `symbols.map` files of all libraries (e.g.
-[`/src/libs/elektra/symbols.map`](/src/libs/elektra/symbols.map)) and combines them into a single file, which is then used by the compiler
+[`/src/libs/core/symbols.map`](/src/libs/core/symbols.map)) and combines them into a single file, which is then used by the compiler
 and the linker.
 
 ### `versions.def`

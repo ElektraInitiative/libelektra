@@ -12,6 +12,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <elektra/core/errors.h>
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/compare.h>
 #include <regex.h>

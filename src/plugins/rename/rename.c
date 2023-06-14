@@ -101,14 +101,14 @@ Key * elektraKeyCreateNewName (const Key * key, const Key * parentKey, const cha
 		strncpy (newName, afterParentString, (ptr - afterParentString));
 		if (replaceWith)
 		{
-			strncpy (newName + strlen (newName), replaceWith, elektraStrLen (replaceWith));
+			strcat (newName, replaceWith);
 		}
 		strncat (newName, ptr + (strlen (cutPath)), strlen (afterParentString) - strlen (cutPath));
 		replace = 1;
 	}
 	else
 	{
-		strncpy (newName, afterParentString, elektraStrLen (afterParentString));
+		strcpy (newName, afterParentString);
 	}
 	int toLower = toLowerPath ? atoi (toLowerPath) : 0;
 	int toUpper = toUpperPath ? atoi (toUpperPath) : 0;

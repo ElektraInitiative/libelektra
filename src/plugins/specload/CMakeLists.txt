@@ -19,8 +19,6 @@ if (ADDTESTING_PHASE)
 
 	set (TEST_SOURCES $<TARGET_OBJECTS:cframework> ${ARG_OBJECT_SOURCES})
 	list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/test_testapp.c")
-	add_headers (TEST_SOURCES)
-	add_testheaders (TEST_SOURCES)
 
 	add_executable (test_elektra-specload-testapp ${TEST_SOURCES})
 	target_link_elektra (test_elektra-specload-testapp elektra-core elektra-invoke)

@@ -13,8 +13,8 @@
 #include <elektra/highlevel/errors.h>
 #include <elektra/type/conversion.h>
 
+#include <elektra/utility/format.h>
 #include <internal/utility/alloc.h>
-#include <internal/utility/format.h>
 
 #include <string.h>
 

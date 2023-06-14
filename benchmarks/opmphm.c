@@ -20,7 +20,7 @@
 #endif
 
 // ==== INCLUDE SECTION ====
-#include "benchmarks.h"
+#include "./benchmarks.h"
 #ifdef HAVE_HSEARCHR
 #include <search.h>
 #endif
@@ -29,13 +29,14 @@
 #include <omp.h>
 #endif
 
-#include "../src/libs/elektra/opmphm.c"
-#include "../src/libs/elektra/opmphmpredictor.c"
-#include "../src/libs/elektra/rand.c"
+#include "../src/libs/core/opmphm.c"
+#include "../src/libs/core/opmphmpredictor.c"
+#include "../src/libs/core/rand.c"
 #include <sys/time.h>
 
 #include <internal/core/keyset.h>
 #include <internal/core/lookup.h>
+#include <internal/macros/attributes.h>
 
 int32_t elektraRandBenchmarkInitSeed;
 

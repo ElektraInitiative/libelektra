@@ -18,6 +18,7 @@
 #include <internal/config.h>
 #include <internal/core/keyset/api.h>
 #include <internal/kdb/struct.h>
+#include <internal/macros/attributes.h>
 #include <internal/plugin/load.h>
 #include <internal/plugin/struct.h>
 #include <internal/pluginload/module.h>

@@ -16,6 +16,7 @@
 #include "./mathcheck.h"
 #include <ctype.h>
 #include <elektra/core/errors.h>
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
 #include <math.h>
 #include <regex.h>

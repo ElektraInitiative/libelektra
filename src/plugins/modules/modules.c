@@ -11,6 +11,7 @@
 
 #include <elektra/core/errors.h>
 
+#include <internal/macros/attributes.h>
 #include <internal/plugin/struct.h>
 #include <internal/utility/compare.h>
 

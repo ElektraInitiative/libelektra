@@ -10,9 +10,10 @@
 
 #include <elektra/type/types.h>
 
+#include <elektra/utility/format.h>
 #include <internal/config.h>
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
-#include <internal/utility/format.h>
 #include <internal/utility/string.h>
 
 #include <errno.h>

@@ -6,7 +6,7 @@ This document is a full explanation of how _key names_ work in Elektra.
 
 In addition to this document, a reference Python implementation can be found in [keynames.py](../scripts/keynames.py).
 The goal of the Python implementation is not to be fast, or to be used in any way other than as a reference.
-If there are any discrepancies between this document, the Python implementation and the actual C implementation in [src/libs/elektra/keyname.c](../src/libs/elektra/keyname.c), you should consider them as follows:
+If there are any discrepancies between this document, the Python implementation and the actual C implementation in [src/libs/core/keyname.c](../src/libs/core/keyname.c), you should consider them as follows:
 
 1. The C implementation is optimized for speed and thus much harder to implement correctly.
 2. In most cases, this document outranks the Python implementation.

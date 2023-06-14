@@ -78,6 +78,7 @@ if (ADDTESTING_PHASE)
 				ENVIRONMENT "RUBYLIB=${CMAKE_BINARY_DIR}/src/bindings/swig/ruby:${CMAKE_SOURCE_DIR}/src/bindings/swig/ruby")
 
 		if (INSTALL_TESTING)
+			# TODO: make clear via repo structure that this happens
 			install (DIRECTORY ruby/ruby_test_scripts DESTINATION ${TARGET_TEST_DATA_FOLDER})
 		endif ()
 	else ()

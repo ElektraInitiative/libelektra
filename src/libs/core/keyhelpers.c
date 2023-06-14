@@ -6,26 +6,16 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#ifdef HAVE_KDBCONFIG_H
-#include <internal/config.h>
-#endif
 
-#ifdef HAVE_STDARG_H
 #include <stdarg.h>
-#endif
-
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
-
-#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
+#include <string.h>
 
 
 #include <elektra/core/key.h>
 #include <elektra/type/types.h>
 
+#include <internal/config.h>
 #include <internal/core/key.h>
 
 /**

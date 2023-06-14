@@ -1,5 +1,4 @@
 set (TEST_FILES $<TARGET_OBJECTS:cframework>)
-add_testheaders (TEST_FILES)
 
 macro (do_glib_test file)
 	get_filename_component (name ${file} NAME_WE)
@@ -10,6 +9,8 @@ macro (do_glib_test file)
 	set_target_properties (${name} PROPERTIES COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 
 	target_link_libraries (${name} PRIVATE ${GELEKTRA_LIBRARY})
+
+	target_include_directories (${name} PRIVATE "${CMAKE_SOURCE_DIR}/tests/cframework")
 
 	add_test (NAME ${name} COMMAND "${CMAKE_BINARY_DIR}/bin/${name}" "${CMAKE_CURRENT_SOURCE_DIR}")
 

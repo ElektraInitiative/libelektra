@@ -16,8 +16,10 @@
 #include <sys/types.h>
 
 #include <internal/config.h>
+#include <internal/macros/attributes.h>
 #include <internal/macros/plugin_errors.h>
 #include <internal/utility/alloc.h>
+
 typedef void CommentConstructor (KeySet *, size_t, const char *, const char *);
 
 /*

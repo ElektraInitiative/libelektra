@@ -13,6 +13,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <internal/config.h>
+#include <internal/macros/attributes.h>
 #include <internal/utility/compare.h>
 #include <stdio.h>
 #include <sys/stat.h>

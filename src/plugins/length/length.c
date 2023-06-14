@@ -10,6 +10,7 @@
 #include "./length.h"
 #include <elektra/core/errors.h>
 #include <elektra/type/conversion.h>
+#include <internal/macros/attributes.h>
 #include <internal/utility/compare.h>
 #include <stdlib.h>
 

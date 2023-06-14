@@ -75,12 +75,31 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        brew update
+        set -ex
+
         brew config
-        # Unlink parallel package, because of conflict with moreutils
-        brew unlink parallel || >&2 printf 'Unlinking parallel failed.`\n'
-        # Uninstall old Python versions and azure-cli due to file conflicts
-        brew remove azure-cli pipx python@3.10 python@3.11|| >&2 printf 'Uninstalling old python versions and azure-cli failed.`\n'
+
+        brew update
+
+        # homebrew fails to upgrade python due to unlinking failure
+        # (cf. https://github.com/actions/setup-python/issues/577 )
+        rm -f /usr/local/bin/2to3
+        rm -f /usr/local/bin/idle3
+        rm -f /usr/local/bin/pydoc3
+        rm -f /usr/local/bin/python3
+        rm -f /usr/local/bin/python3-config
+        rm -f /usr/local/bin/2to3-3.11
+        rm -f /usr/local/bin/idle3.11
+        rm -f /usr/local/bin/pydoc3.11
+        rm -f /usr/local/bin/python3.11
+        rm -f /usr/local/bin/python3.11-config
+        rm -f /usr/local/lib/libtcl8.6.dylib
+        rm -f /usr/local/lib/libtk8.6.dylib
+        rm -f /usr/local/bin/go
+        rm -f /usr/local/bin/gofmt
+
+        brew upgrade
+
         brew install augeas \
           antlr \
           antlr4-cpp-runtime \
@@ -113,10 +132,13 @@ jobs:
           yajl \
           yaml-cpp \
           zeromq
+
         if [ "$CC" = 'clang' ]; then
           brew install --cask oclint
         fi
+
         brew install --cask adoptopenjdk
+
         # Try to install `checkbashisms` (The file server that hosts the package is unfortunately quite unreliable.)
         brew install checkbashisms || >&2 printf 'Warning: Unable to install `checkbashims`\n'
 

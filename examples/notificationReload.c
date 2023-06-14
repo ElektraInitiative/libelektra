@@ -26,6 +26,7 @@
 #include <elektra/notifications.h> // notification functions
 #include <glib-unix.h>		   // g_unix_signal_add()
 #include <glib.h>		   // glib functions
+#include <internal/macros/attributes.h>
 #include <internal/utility/alloc.h>
 
 #include <signal.h> // signal()

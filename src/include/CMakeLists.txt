@@ -19,7 +19,6 @@ check_include_file (ctype.h HAVE_CTYPE_H)
 check_include_file (errno.h HAVE_ERRNO_H)
 check_include_file (features.h HAVE_FEATURES_H)
 check_include_file (locale.h HAVE_LOCALE_H)
-check_include_file (stdio.h HAVE_STDIO_H)
 check_include_file (stdlib.h HAVE_STDLIB_H)
 check_include_file (string.h HAVE_STRING_H)
 check_include_file (time.h HAVE_TIME_H)
@@ -161,7 +160,6 @@ test_big_endian (ELEKTRA_BIG_ENDIAN)
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektra/config.h.in" "${CMAKE_CURRENT_BINARY_DIR}/elektra/config.h")
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/internal/config.h.in" "${CMAKE_CURRENT_BINARY_DIR}/internal/config.h")
 
-# DO NOT install kdbconfig.h it may cause conflicts with applications own config.h files
 install (
 	DIRECTORY elektra
 	DESTINATION include
@@ -169,6 +167,7 @@ install (
 	FILES_MATCHING
 	PATTERN "*.h")
 
+# TODO: restrict to generated config.h TODO: make sure config.h cannot conflict with headers from other software
 install (
 	DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/elektra"
 	DESTINATION include

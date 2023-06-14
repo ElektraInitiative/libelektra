@@ -12,10 +12,11 @@
 #include <elektra/core/errors.h>
 #include <elektra/ease/array.h>
 #include <elektra/plugin/invoke.h>
+#include <elektra/utility/format.h>
+#include <internal/macros/attributes.h>
 #include <internal/pluginload/module.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/compare.h>
-#include <internal/utility/format.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

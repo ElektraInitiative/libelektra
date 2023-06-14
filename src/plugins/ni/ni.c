@@ -9,6 +9,7 @@
 #include "./ni.h"
 
 #include <internal/config.h>
+#include <internal/macros/attributes.h>
 #include <internal/macros/plugin_errors.h>
 
 #include <elektra/core/errors.h>

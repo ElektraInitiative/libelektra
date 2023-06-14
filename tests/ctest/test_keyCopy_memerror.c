@@ -6,18 +6,21 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "../../src/libs/elektra/cow.c"
-#include "../../src/libs/elektra/internal.c"
-#include "../../src/libs/elektra/key.c"
-#include "../../src/libs/elektra/keyhelpers.c"
-#include "../../src/libs/elektra/keyname.c"
-#include "../../src/libs/elektra/keyvalue.c"
-#include "../../src/libs/elektra/opmphm.c"
-#include "../../src/libs/elektra/opmphmpredictor.c"
+#define ksDup ksDupFailing
+
+#include "../../src/libs/core/cow.c"
+#include "../../src/libs/core/key.c"
+#include "../../src/libs/core/keyhelpers.c"
+#include "../../src/libs/core/keyname.c"
+#include "../../src/libs/core/keyvalue.c"
+#include "../../src/libs/core/opmphm.c"
+#include "../../src/libs/core/opmphmpredictor.c"
 
 #include <tests_internal.h>
 
-KeySet * ksDup (const KeySet * source ELEKTRA_UNUSED)
+#include <internal/macros/attributes.h>
+
+KeySet * ksDupFailing (const KeySet * source ELEKTRA_UNUSED)
 {
 	// We override ksDup here to return NULL
 	// This should cause keyCopy to fail

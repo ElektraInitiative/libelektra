@@ -9,6 +9,7 @@
 #include "./utility.h"
 
 #include <elektra/ease/array.h>
+#include <elektra/utility/array.h>
 #include <internal/utility/alloc.h>
 #include <internal/utility/assert.h>
 #include <internal/utility/compare.h>
@@ -37,21 +38,9 @@ void keyUpdateArrayMetakey (Key * key, size_t newIndex)
 
 char * indexToArrayString (size_t index)
 {
-	size_t digits = 1;
-	for (size_t value = index; value > 9; digits++)
-	{
-		value /= 10;
-	}
-	int strLen = 1 +	    //  '#'
-		     (digits - 1) + // underscores
-		     digits +	    // actual digits
-		     1;		    // '\0'
-	char * str = (char *) elektraCalloc (sizeof (char) * strLen);
-	memset (str, '_', sizeof (char) * strLen);
-	str[0] = '#';
-	str[strLen - 1] = 0;
-	snprintf (str + 1 + (digits - 1), strLen, "%lu", index);
-	return str;
+	char newName[ELEKTRA_MAX_ARRAY_SIZE];
+	elektraWriteArrayNumber (newName, index);
+	return elektraStrDup (newName);
 }
 
 size_t arrayStringToIndex (const char * indexStr)
