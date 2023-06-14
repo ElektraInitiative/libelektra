@@ -102,14 +102,14 @@ static void test_null_get (void)
 	printf ("Test passing NULL arguments to ODBC backend *get* functions\n");
 
 	Key * testKey = keyNew ("/", KEY_END);
-	struct dataSourceConfig * dsConfig = elektraCalloc (sizeof (struct dataSourceConfig));
+	struct odbcSharedData * sharedData = elektraCalloc (sizeof (struct odbcSharedData));
 
-	succeed_if (!getKeysFromDataSource (NULL, NULL), "should return NULL");
-	succeed_if (!getKeysFromDataSource (NULL, testKey), "should return NULL");
-	succeed_if (!getKeysFromDataSource (dsConfig, NULL), "should return NULL");
-	succeed_if (!getKeysFromDataSource (dsConfig, testKey), "should return NULL");
+	succeed_if (!getKeysFromDataSource (NULL, false, NULL), "should return NULL");
+	succeed_if (!getKeysFromDataSource (NULL, false, testKey), "should return NULL");
+	succeed_if (!getKeysFromDataSource (sharedData, false, NULL), "should return NULL");
+	succeed_if (!getKeysFromDataSource (sharedData, false, testKey), "should return NULL");
 
-	elektraFree (dsConfig);
+	elektraFree (sharedData);
 	keyDel (testKey);
 }
 
@@ -285,17 +285,22 @@ static void test_invalid_general (void)
 
 static void test_invalid_get (void)
 {
-	struct dataSourceConfig * dsConfig = elektraCalloc (sizeof (struct dataSourceConfig));
+	struct odbcSharedData * sharedData = elektraCalloc (sizeof (struct odbcSharedData));
 	Key * testKey = keyNew ("/", KEY_END);
 
-	succeed_if (!getKeysFromDataSource (dsConfig, NULL), "should return NULL");
-	succeed_if (!getKeysFromDataSource (dsConfig, testKey), "should return NULL");
+	succeed_if (!getKeysFromDataSource (sharedData, false, NULL), "should return NULL");
+	succeed_if (!getKeysFromDataSource (sharedData, false, testKey), "should return NULL");
+
+	struct dataSourceConfig * dsConfig = elektraCalloc (sizeof (struct dataSourceConfig));
 	fillDsStructExceptDsName (dsConfig);
-	succeed_if (!getKeysFromDataSource (dsConfig, NULL), "should return NULL");
-	succeed_if (!getKeysFromDataSource (dsConfig, testKey), "should return NULL");
+	sharedData->dsConfig = dsConfig;
+
+	succeed_if (!getKeysFromDataSource (sharedData, false, NULL), "should return NULL");
+	succeed_if (!getKeysFromDataSource (sharedData, false, testKey), "should return NULL");
 
 	keyDel (testKey);
 	elektraFree (dsConfig);
+	elektraFree (sharedData);
 }
 
 static void test_null (void)

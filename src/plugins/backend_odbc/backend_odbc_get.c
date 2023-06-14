@@ -125,10 +125,6 @@ static SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, const struct dataSourc
 		return NULL;
 	}
 
-	char * quoteString = "";
-	char * queryString = getSelectQueryString (dsConfig, quoteString, errorKey);
-
-
 	/* Get driver specific identifier quote character
 	 * (see: https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/quoted-identifiers) for more information */
 
@@ -149,7 +145,7 @@ static SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, const struct dataSourc
 		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_DBC, sqlConnection, errorKey);
 	}
 
-
+	char * queryString;
 	if (quoteCharLen > 1)
 	{
 		/* TODO: Check support for Unicode */
@@ -675,16 +671,29 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 /** @brief Use ODBC to get keys and values from a data source.
  *
  * @param dsConfig The configuration of the data source.
+ * @param keepTransaction If true, autocommit is disabled, the started transaction is kept open and the environment and connection handles
+ * 	are stored in @p sharedData
  * @param[out] errorKey Used to store errors and warnings
+ *
  * @returns A KeySet with Keys that represent the data that was fetched from the data source
  * 	Make sure to ksDel() the returned KeySet.
  * @retval NULL if an error occurred (see @p errorKey for details)
  */
-KeySet * getKeysFromDataSource (const struct dataSourceConfig * dsConfig, Key * errorKey)
+KeySet * getKeysFromDataSource (struct odbcSharedData * sharedData, bool keepTransaction, Key * errorKey)
 {
-	if (!dsConfig)
+	if (!sharedData || !sharedData->dsConfig)
 	{
-		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "The provided data source configuration (struct dataSourceConfig) was NULL!");
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey,
+					     "The provided data source configuration (struct odbcSharedData or the inner struct "
+					     "dataSourceConfig) was NULL!");
+		return NULL;
+	}
+
+	if (sharedData->environment && sharedData->connection)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey,
+					     "The provided struct odbcSharedData must not contain SQL environment or connection "
+					     "handles for the kdbGet(). These variables must be NULL pointers at this stage.");
 		return NULL;
 	}
 
@@ -709,28 +718,30 @@ KeySet * getKeysFromDataSource (const struct dataSourceConfig * dsConfig, Key * 
 		return NULL;
 	}
 
-	if (!setLoginTimeout (sqlConnection, dsConfig->timeOut, errorKey))
+	if (!setLoginTimeout (sqlConnection, sharedData->dsConfig->timeOut, errorKey))
 	{
 		SQLFreeHandle (SQL_HANDLE_ENV, sqlEnv);
 		return NULL;
 	}
 
-	/* For the GET operation, only a single SELECT-query is made, therefore we don't need a rollback of transactions here */
-	if (!setAutocommit (sqlConnection, true, errorKey))
+	/* For the GET operation, only a single SELECT-query is made, therefore we don't need a rollback of transactions here,
+	 * however, if you want to use a transaction and get the open transaction back, this is also supported and e.g. used by
+	 * the kdbSet() function for the this ODBC backend plugin */
+	if (!setAutocommit (sqlConnection, !keepTransaction, errorKey))
 	{
 		SQLFreeHandle (SQL_HANDLE_ENV, sqlEnv);
 		return NULL;
 	}
 
 	/* 3. Connect to the datasource */
-	if (!connectToDataSource (sqlConnection, dsConfig, errorKey))
+	if (!connectToDataSource (sqlConnection, sharedData->dsConfig, errorKey))
 	{
 		SQLFreeHandle (SQL_HANDLE_ENV, sqlEnv);
 		return NULL;
 	}
 
 	/* 4. Create and prepare the SELECT query based on the given dsConfig */
-	SQLHSTMT sqlStmt = prepareSelectStmt (sqlConnection, dsConfig, errorKey);
+	SQLHSTMT sqlStmt = prepareSelectStmt (sqlConnection, sharedData->dsConfig, errorKey);
 
 	if (!sqlStmt)
 	{
@@ -770,6 +781,13 @@ KeySet * getKeysFromDataSource (const struct dataSourceConfig * dsConfig, Key * 
 	if (ksResult)
 	{
 		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
+
+		if (keepTransaction)
+		{
+			sharedData->environment = sqlEnv;
+			sharedData->connection = sqlConnection;
+			return ksResult;
+		}
 	}
 
 	SQLDisconnect (sqlConnection);

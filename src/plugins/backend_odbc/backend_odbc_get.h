@@ -14,6 +14,6 @@
 
 #include "./backend_odbc_helpers.h"
 
-KeySet * getKeysFromDataSource (const struct dataSourceConfig * dsConfig, Key * errorKey);
+KeySet * getKeysFromDataSource (struct odbcSharedData * sharedData, bool keepTransaction, Key * errorKey);
 
 #endif // ELEKTRA_BACKEND_ODBC_GET_H

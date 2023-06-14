@@ -14,8 +14,7 @@
 #define ELEKTRA_BACKEND_ODBC_SET_H
 
 #include "./backend_odbc_helpers.h"
-#include <kdbdiff.h>
 
-long storeKeysInDataSource (struct odbcSharedData * sharedData, const ElektraDiff * diffSet, Key * parentKey);
+long storeKeysInDataSource (struct odbcSharedData * sharedData, KeySet * ks, Key * parentKey);
 
 #endif // ELEKTRA_BACKEND_ODBC_SET_H

@@ -104,6 +104,9 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ksReturned, Key * p
 			keyNew ("system:/elektra/modules/backend_odbc/exports/open", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (open), KEY_END),
 			keyNew ("system:/elektra/modules/backend_odbc/exports/init", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (init), KEY_END),
 			keyNew ("system:/elektra/modules/backend_odbc/exports/get", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (get), KEY_END),
+			keyNew ("system:/elektra/modules/backend_odbc/exports/set", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (set), KEY_END),
+			keyNew ("system:/elektra/modules/backend_odbc/exports/commit", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (commit), KEY_END),
+			keyNew ("system:/elektra/modules/backend_odbc/exports/error", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (error), KEY_END),
 			keyNew ("system:/elektra/modules/backend_odbc/exports/close", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (close), KEY_END),
 #include ELEKTRA_README
 			keyNew ("system:/elektra/modules/backend_odbc/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
@@ -114,7 +117,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ksReturned, Key * p
 	}
 
 	/* Gets filled by the init-function of this plugin (see above) and is used in later phases (esp. storage-phase) */
-	const struct odbcSharedData * sharedData = elektraPluginGetData (plugin);
+	struct odbcSharedData * sharedData = elektraPluginGetData (plugin);
 
 	if (!sharedData || !(sharedData->dsConfig))
 	{
@@ -140,7 +143,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ksReturned, Key * p
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 
 	case ELEKTRA_KDB_GET_PHASE_STORAGE:
-		if (ksAppend (ksReturned, getKeysFromDataSource (sharedData->dsConfig, parentKey)) == -1)
+		if (ksAppend (ksReturned, getKeysFromDataSource (sharedData, false, parentKey)) == -1)
 		{
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
@@ -198,19 +201,19 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * plugin, KeySet * ks, Key * parentKey
 
 	case ELEKTRA_KDB_SET_PHASE_STORAGE: {
 		/* Get diff with added, removed and modified keys */
-		const ChangeTrackingContext * ctx = elektraChangeTrackingGetContextFromPlugin (plugin);
-		ElektraDiff * diff = elektraChangeTrackingCalculateDiff (ks, ctx, parentKey);
+		// const ChangeTrackingContext * ctx = elektraChangeTrackingGetContextFromPlugin (plugin);
+		// ElektraDiff * diff = elektraChangeTrackingCalculateDiff (ks, ctx, parentKey);
 
-		if (!diff || elektraDiffIsEmpty (diff))
-		{
-			elektraDiffDel (diff);
-			return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-		}
+		// if (!diff || elektraDiffIsEmpty (diff))
+		//{
+		//	elektraDiffDel (diff);
+		//	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+		// }
 
 		/* Write the actual data to the ODBC data source */
-		long ret = storeKeysInDataSource (sharedData, diff, parentKey);
-		elektraDiffDel (diff);
-		elektraPluginSetData (plugin, sharedData);
+		long ret = storeKeysInDataSource (sharedData, ks, parentKey);
+		// elektraDiffDel (diff);
+		// elektraPluginSetData (plugin, sharedData);
 
 		if (ret < 0)
 		{
@@ -221,12 +224,10 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * plugin, KeySet * ks, Key * parentKey
 		}
 		else if (ret == 0)
 		{
-			elektraPluginSetData (plugin, sharedData);
 			return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 		}
 		else
 		{
-			elektraPluginSetData (plugin, sharedData);
 			return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 		}
 	}
@@ -392,6 +393,9 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 		ELEKTRA_PLUGIN_OPEN, &ELEKTRA_PLUGIN_FUNCTION (open),
 		ELEKTRA_PLUGIN_INIT, &ELEKTRA_PLUGIN_FUNCTION (init),
 		ELEKTRA_PLUGIN_GET, &ELEKTRA_PLUGIN_FUNCTION (get),
+		ELEKTRA_PLUGIN_SET, &ELEKTRA_PLUGIN_FUNCTION (set),
+		ELEKTRA_PLUGIN_COMMIT, &ELEKTRA_PLUGIN_FUNCTION (commit),
+		ELEKTRA_PLUGIN_ERROR, &ELEKTRA_PLUGIN_FUNCTION (error),
 		ELEKTRA_PLUGIN_CLOSE, &ELEKTRA_PLUGIN_FUNCTION (close),
 	ELEKTRA_PLUGIN_END);
 	// clang-format on

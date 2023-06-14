@@ -10,20 +10,22 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "./backend_odbc_general.h"
 #include "./backend_odbc_set.h"
+#include "./backend_odbc_general.h"
+#include "./backend_odbc_get.h"
 
 /* FIXME: remove include, only for output during dev */
-#include <stdio.h>
 #include <kdbassert.h>
+#include <kdbdiff.h>
 #include <kdbease.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
 #include <kdblogger.h>
+#include <stdio.h>
 #include <string.h>
 
 /* ODBC related includes */
-#include <sql.h>
+// #include <sql.h>
 #include <sqlext.h>
 
 
@@ -61,7 +63,7 @@ static char * getDeleteQuery (const KeySet * deletedKeys, const char * tableName
 		return NULL;
 	}
 
-	size_t queryStrLen = strlen ("DELETE FROM ") + strlen (tableName) + strlen (" WHERE ") + strlen (keyColName) + strlen(" IN ()");
+	size_t queryStrLen = strlen ("DELETE FROM ") + strlen (tableName) + strlen (" WHERE ") + strlen (keyColName) + strlen (" IN ()");
 
 	/* One comma less than number of keys in the keyset is required, so we've already counted the byte for \0 */
 	queryStrLen += strlen ("?,") * ksGetSize (deletedKeys);
@@ -85,7 +87,7 @@ static char * getDeleteQuery (const KeySet * deletedKeys, const char * tableName
 
 	for (elektraCursor it = 0; it < ksGetSize (deletedKeys); it++)
 	{
-		if (it < (ksGetSize (deletedKeys) -1 ))
+		if (it < (ksGetSize (deletedKeys) - 1))
 		{
 			strEnd = stpcpy (strEnd, "?,");
 		}
@@ -94,7 +96,6 @@ static char * getDeleteQuery (const KeySet * deletedKeys, const char * tableName
 			/* last iteration */
 			stpcpy (strEnd, "?)");
 		}
-
 	}
 	return resultStr;
 }
@@ -103,11 +104,7 @@ static char * getDeleteQuery (const KeySet * deletedKeys, const char * tableName
 /**
  *
  * @param sqlConnection
- * @param dsConfig
  * @param deletedKeys
- * @param metaCascading If set to true, it is assumed that the metadata for a deleted key is automatically deleted by the data source.
- * 	This means "on delete cascade" was set for the metatable foreign key
- * 	If set to false, metadata is explicitly deleted before the tuple for the actual keys are deleted (2 queries)
  * @param errorKey
  * @return
  */
@@ -125,7 +122,7 @@ static SQLHSTMT getBoundDeleteStmt (SQLHDBC sqlConnection, const KeySet * delete
 	{
 		const char * curRelKeyName = elektraKeyGetRelativeName (ksAtCursor (deletedKeys, it), errorKey);
 		SQLRETURN ret = SQLBindParameter (sqlStmt, it + 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_CHAR, strlen (curRelKeyName), 0,
-				  (SQLCHAR * ) curRelKeyName, (SQLLEN) strlen (curRelKeyName) + 1, NULL);
+						  (SQLCHAR *) curRelKeyName, (SQLLEN) strlen (curRelKeyName) + 1, NULL);
 
 		printf ("Bound delete value: %s\n", curRelKeyName);
 
@@ -142,37 +139,41 @@ static SQLHSTMT getBoundDeleteStmt (SQLHDBC sqlConnection, const KeySet * delete
 	return sqlStmt;
 }
 
-static SQLHSTMT prepareUpdateStmt (SQLHDBC sqlConnection ELEKTRA_UNUSED, const struct dataSourceConfig * dsConfig ELEKTRA_UNUSED, const KeySet * modifiedKeys ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
+static SQLHSTMT getBoundUpdateStmt (SQLHDBC sqlConnection ELEKTRA_UNUSED, const struct dataSourceConfig * dsConfig ELEKTRA_UNUSED,
+				    const KeySet * modifiedKeys ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 	/* TODO: implement function */
 	/* Handle for a statement */
-	SQLHSTMT sqlStmt = NULL; //allocateStatementHandle (sqlConnection, errorKey);
+	SQLHSTMT sqlStmt = allocateStatementHandle (sqlConnection, errorKey);
 
+	/*
 	if (!sqlStmt)
 	{
 		return NULL;
 	}
 
+	for (elektraCursor it = 0; it < ksGetSize (modifiedKeys))
+	{
+
+	}*/
 
 
 	return sqlStmt;
 }
 
 
-static SQLHSTMT prepareInsertStmt (SQLHDBC sqlConnection ELEKTRA_UNUSED, const struct dataSourceConfig * dsConfig ELEKTRA_UNUSED, const KeySet * insertedKeys ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
+static SQLHSTMT getBoundInsertStmt (SQLHDBC sqlConnection ELEKTRA_UNUSED, const struct dataSourceConfig * dsConfig ELEKTRA_UNUSED,
+				    const KeySet * insertedKeys ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 	/* TODO: Implement function */
 	/* Handle for a statement */
-	SQLHSTMT sqlStmt = NULL; //allocateStatementHandle (sqlConnection, errorKey);
+	SQLHSTMT sqlStmt = NULL; // allocateStatementHandle (sqlConnection, errorKey);
 
+	/*
 	if (!sqlStmt)
 	{
 		return NULL;
-	}
-
-
-
-
+	}*/
 
 	return sqlStmt;
 }
@@ -189,13 +190,17 @@ static SQLHSTMT prepareInsertStmt (SQLHDBC sqlConnection ELEKTRA_UNUSED, const s
  * @param errorKey
  * @return
  */
-long storeKeysInDataSource (struct odbcSharedData * sharedData, const ElektraDiff * diffSet, Key * parentKey)
+long storeKeysInDataSource (struct odbcSharedData * sharedData, KeySet * ks, Key * parentKey)
 {
+
+	/* TODO: Remove checks, already gets checked inside getKeysFromDataSource() */
+	/*
 	if (!sharedData || !(sharedData->dsConfig))
 	{
 		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "The provided shared data or data source configuration was NULL!");
 		return -1;
 	}
+
 
 	if (sharedData->environment)
 	{
@@ -209,12 +214,19 @@ long storeKeysInDataSource (struct odbcSharedData * sharedData, const ElektraDif
 		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "The connection hande in the provided shared data was NOT NULL! "
 					     "This value should not be set before this function is called!");
 		return -1;
-	}
+	}*/
 
+	/* 1. Get the current data from the data source */
+	/* This starts a new transaction that is kept open. The handles for the ODBC environment and connection are stored in sharedData */
+	KeySet * ksDs = getKeysFromDataSource (sharedData, true, parentKey);
+
+	/* 2. Compare the data from the data source with the KeySet which should be persisted, create an ElektraDiff */
+	ElektraDiff * diffSet = elektraDiffCalculate (ks, ksDs, parentKey);
 
 	if (!diffSet || elektraDiffIsEmpty (diffSet))
 	{
 		/* no update */
+		elektraDiffDel (diffSet);
 		return 0;
 	}
 
@@ -223,7 +235,8 @@ long storeKeysInDataSource (struct odbcSharedData * sharedData, const ElektraDif
 	for (elektraCursor it = 0; it < ksGetSize (ksDbgDiff); it++)
 	{
 		Key * curKey = ksAtCursor (ksDbgDiff, it);
-		printf ("keyname: %s, string: %s, relative: %s\n", keyName (curKey), keyString (curKey), elektraKeyGetRelativeName (curKey, parentKey));
+		printf ("keyname: %s, string: %s, relative: %s\n", keyName (curKey), keyString (curKey),
+			elektraKeyGetRelativeName (curKey, parentKey));
 	}
 
 
@@ -234,7 +247,8 @@ long storeKeysInDataSource (struct odbcSharedData * sharedData, const ElektraDif
 	for (elektraCursor it = 0; it < ksGetSize (ksDbgDiff); it++)
 	{
 		Key * curKey = ksAtCursor (ksDbgDiff, it);
-		printf ("keyname: %s, string: %s\n", keyName (curKey), keyString (curKey));
+		printf ("keyname: %s, string: %s, relative: %s\n", keyName (curKey), keyString (curKey),
+			elektraKeyGetRelativeName (curKey, parentKey));
 	}
 	ksDel (ksDbgDiff);
 
@@ -244,56 +258,16 @@ long storeKeysInDataSource (struct odbcSharedData * sharedData, const ElektraDif
 	for (elektraCursor it = 0; it < ksGetSize (ksDbgDiff); it++)
 	{
 		Key * curKey = ksAtCursor (ksDbgDiff, it);
-		printf ("keyname: %s, string: %s\n", keyName (curKey), keyString (curKey));
+		printf ("keyname: %s, string: %s, relative: %s\n", keyName (curKey), keyString (curKey),
+			elektraKeyGetRelativeName (curKey, parentKey));
 	}
 	ksDel (ksDbgDiff);
 	ksDbgDiff = NULL;
 
 
-	/* 1. Allocate Environment handle and register version */
-	SQLHENV sqlEnv = allocateEnvHandle (parentKey);
-	if (!sqlEnv)
-	{
-		return -1;
-	}
-
-	/* Use ODBC version 3 */
-	if (!setOdbcVersion (sqlEnv, SQL_OV_ODBC3, parentKey))
-	{
-		return -1;
-	}
-
-	/* 2. Allocate connection handle, set timeout and enable autocommit */
-	SQLHDBC sqlConnection = allocateConnectionHandle (sqlEnv, parentKey);
-	if (!sqlConnection)
-	{
-		return -1;
-	}
-
-	if (!setLoginTimeout (sqlConnection, sharedData->dsConfig->timeOut, parentKey))
-	{
-		SQLFreeHandle (SQL_HANDLE_ENV, sqlEnv);
-		return -1;
-	}
-
-	/* Disable autocommit for SET-operations, the ODBC backends plugin must explicitly commit or rollback the started transaction! */
-	if (!setAutocommit (sqlConnection, false, parentKey))
-	{
-		SQLFreeHandle (SQL_HANDLE_ENV, sqlEnv);
-		return -1;
-	}
-
-	/* 3. Connect to the datasource */
-	if (!connectToDataSource (sqlConnection, sharedData->dsConfig, parentKey))
-	{
-		SQLFreeHandle (SQL_HANDLE_ENV, sqlEnv);
-		return -1;
-	}
-
 	/* FIXME: Check what to do if some statements are not needed (e.g. only inserts, but no updates or deletions) */
 
-
-	/* 4. Create and prepare the INSERT INTO, UPDATE and DELETE queries based on the given dsConfig */
+	/* 3. Create and prepare the INSERT INTO, UPDATE and DELETE queries based on the given dsConfig */
 	SQLHSTMT stmtDelete = NULL;
 	SQLHSTMT stmtUpdate = NULL;
 	SQLHSTMT stmtInsert = NULL;
@@ -313,13 +287,15 @@ long storeKeysInDataSource (struct odbcSharedData * sharedData, const ElektraDif
 	if (ksGetSize (ksRemovedKeys) > 0)
 	{
 		/* DELETE FROM table WHERE keyname IN (val1, val2, ...) */
-		stmtDelete = getBoundDeleteStmt (sqlConnection, ksRemovedKeys, parentKey);
+		stmtDelete = getBoundDeleteStmt (sharedData->connection, ksRemovedKeys, parentKey);
 		if (stmtDelete)
 		{
 			/* TODO: add configuration option for data sources that have cascading delete enabled
 			 * --> no extra deletion of tuples in the metatable required */
-			queryDeleteMeta = getDeleteQuery (ksRemovedKeys, sharedData->dsConfig->metaTableName, sharedData->dsConfig->metaTableKeyColName, parentKey);
-			queryDelete = getDeleteQuery (ksRemovedKeys, sharedData->dsConfig->tableName, sharedData->dsConfig->keyColName, parentKey);
+			queryDeleteMeta = getDeleteQuery (ksRemovedKeys, sharedData->dsConfig->metaTableName,
+							  sharedData->dsConfig->metaTableKeyColName, parentKey);
+			queryDelete = getDeleteQuery (ksRemovedKeys, sharedData->dsConfig->tableName, sharedData->dsConfig->keyColName,
+						      parentKey);
 		}
 
 		if (!queryDeleteMeta || !queryDelete)
@@ -335,7 +311,7 @@ long storeKeysInDataSource (struct odbcSharedData * sharedData, const ElektraDif
 
 		if (ksGetSize (ksModifiedKeys) > 0)
 		{
-			stmtUpdate = prepareUpdateStmt (sqlConnection, sharedData->dsConfig, ksModifiedKeys, parentKey);
+			stmtUpdate = getBoundUpdateStmt (sharedData->connection, sharedData->dsConfig, ksModifiedKeys, parentKey);
 
 			if (stmtUpdate)
 			{
@@ -351,13 +327,12 @@ long storeKeysInDataSource (struct odbcSharedData * sharedData, const ElektraDif
 	}
 
 
-
 	if (succeeded)
 	{
 		ksInsertedKeys = elektraDiffGetAddedKeys (diffSet);
 		if (ksGetSize (ksInsertedKeys) > 0)
 		{
-			stmtInsert = prepareInsertStmt (sqlConnection, sharedData->dsConfig, ksInsertedKeys, parentKey);
+			stmtInsert = getBoundInsertStmt (sharedData->connection, sharedData->dsConfig, ksInsertedKeys, parentKey);
 
 			if (stmtInsert)
 			{
@@ -382,11 +357,15 @@ long storeKeysInDataSource (struct odbcSharedData * sharedData, const ElektraDif
 
 		if (stmtDelete)
 		{
-			ELEKTRA_ASSERT (queryDeleteMeta && *queryDeleteMeta, "The DELETE query for the metatable was %s, but the SQL "
-					"statement handle for the DELETE operation was not NULL!", queryDelete ? "empty" : "NULL");
+			ELEKTRA_ASSERT (queryDeleteMeta && *queryDeleteMeta,
+					"The DELETE query for the metatable was %s, but the SQL "
+					"statement handle for the DELETE operation was not NULL!",
+					queryDelete ? "empty" : "NULL");
 
-			ELEKTRA_ASSERT (queryDelete && *queryDelete, "The DELETE query for the key-table was %s, but the SQL statement "
-					"handle for the DELETE operation was not NULL!", queryDelete ? "empty" : "NULL");
+			ELEKTRA_ASSERT (queryDelete && *queryDelete,
+					"The DELETE query for the key-table was %s, but the SQL statement "
+					"handle for the DELETE operation was not NULL!",
+					queryDelete ? "empty" : "NULL");
 
 
 			curAffectedRows = executeQuery (stmtDelete, queryDeleteMeta, parentKey);
@@ -403,8 +382,10 @@ long storeKeysInDataSource (struct odbcSharedData * sharedData, const ElektraDif
 
 		if (stmtUpdate)
 		{
-			ELEKTRA_ASSERT (queryUpdate && *queryUpdate, "The UPDATE query was %s, but the SQL statement handle for the UPDATE operation "
-					"was not NULL!", queryUpdate ? "empty" : "NULL");
+			ELEKTRA_ASSERT (queryUpdate && *queryUpdate,
+					"The UPDATE query was %s, but the SQL statement handle for the UPDATE operation "
+					"was not NULL!",
+					queryUpdate ? "empty" : "NULL");
 			curAffectedRows = executeQuery (stmtUpdate, queryUpdate, parentKey);
 
 			printf ("The UPDATE query affected %ld row(s).\n", curAffectedRows);
@@ -417,8 +398,10 @@ long storeKeysInDataSource (struct odbcSharedData * sharedData, const ElektraDif
 
 		if (stmtInsert)
 		{
-			ELEKTRA_ASSERT (queryInsert && *queryInsert, "The INSERT query was %s, but the SQL statement handle for the INSERT operation "
-					"was not NULL!", queryInsert ? "empty" : "NULL");
+			ELEKTRA_ASSERT (queryInsert && *queryInsert,
+					"The INSERT query was %s, but the SQL statement handle for the INSERT operation "
+					"was not NULL!",
+					queryInsert ? "empty" : "NULL");
 			curAffectedRows = executeQuery (stmtInsert, queryInsert, parentKey);
 
 			printf ("The INSERT query affected %ld row(s).\n", curAffectedRows);
@@ -441,8 +424,8 @@ long storeKeysInDataSource (struct odbcSharedData * sharedData, const ElektraDif
 
 	/* As we've processed all queries, we now set the active environment and connection handle on the shared data
 	 * this also applies to failed attempts, as the ROLLBACK phase is executed in that case */
-	sharedData->environment = sqlEnv;
-	sharedData->connection = sqlConnection;
+	// sharedData->environment = sqlEnv;
+	// sharedData->connection = sqlConnection;
 
 	/* execute Query uses strings from keyNames in this KeySet --> can be deleted AFTER executeQuery() was called */
 	ksDel (ksRemovedKeys);
