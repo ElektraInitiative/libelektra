@@ -248,7 +248,7 @@ int main (int argc, char ** argv)
 		const char * helpMessage = elektraGetOptsHelpMessage (parentKey, NULL, NULL);
 		fprintf (stderr, "%s\n", helpMessage);
 		printWarnings (parentKey);
-	        elektraFree ((void *) helpMessage);
+		elektraFree ((void *) helpMessage);
 		keyDel (parentKey);
 		ksDel (options);
 		ksDel (externalBinaries);
