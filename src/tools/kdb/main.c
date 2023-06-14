@@ -248,6 +248,7 @@ int main (int argc, char ** argv)
 		const char * helpMessage = elektraGetOptsHelpMessage (parentKey, NULL, NULL);
 		fprintf (stderr, "%s\n", helpMessage);
 		printWarnings (parentKey);
+	        elektraFree ((void *) helpMessage);
 		keyDel (parentKey);
 		ksDel (options);
 		ksDel (externalBinaries);
@@ -281,6 +282,7 @@ int main (int argc, char ** argv)
 			fprintf (stderr, "ERROR: %s\n", errorMessage);
 			const char * helpMessage = elektraGetOptsHelpMessage (parentKey, NULL, NULL);
 			fprintf (stderr, "\n%s\n", helpMessage);
+			elektraFree ((void *) helpMessage);
 			goto cleanup;
 		}
 	}
