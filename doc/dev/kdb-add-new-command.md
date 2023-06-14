@@ -1,10 +1,10 @@
 # Implement new commands in C
 
-Here we'll go over what has to be done in order to implement a new command in C and integrate it in to the `kdb` CLI framework.
+Here we'll go over the basic requirements to implement a new command in C and integrate it in to the `kdb` CLI framework.
 
 ## 1. Files
 
-First we need a header as well as a c file for the new command.
+First we need a header as well as a c file for the new command in `src/tools/kdb`.
 
 ### Header
 
@@ -61,7 +61,7 @@ It should also `#include <colors.h>` and `#include <command.h>`, those contain a
 
 #### Specification
 
-`void add...Spec (KeySet * spec)` will contain the specification of the command new command.
+`void add...Spec (KeySet * spec)` will contain the specification (for `elektraGetOpts`) of the new command.
 It has to append it to the passed `KeySet * spec`, the framework will call this function to register its specification.
 The function could look something like this:
 
@@ -85,7 +85,7 @@ It if your command should support these, it makes sense to use the macro.
 #### Execution
 
 The `int exec... (KeySet * options, Key * errorKey)` receives two parameters, `options` and `errorKey`.
-Where `options` contains the passed options and arguments and `errorKey` is where any errors or warnings have to be written to so the framework can properly print them.
+Where `options` contains the passed options (as parsed by `elektraGetOpts`) and arguments and `errorKey` is where any errors or warnings have to be written to so the framework can properly print them.
 It should start with the `GET_BASIC_OPTIONS` macro, this sets everything up needed for logging(and logging level), basic options and colored printing.
 So afterward `CLI_PRINT` and `CLI_ERROR_PRINT` can be used.
 When returning for the `exec` function the `RETURN (n)` macro should be used, it makes sure things allocated by `GET_BASIC_OPTIONS` are freed properly.
@@ -156,7 +156,7 @@ By setting the like this, they are later printed properly formatted by the frame
 
 ## 4. "registering" the new command
 
-You just have to `#include` your header file in `main.c` and add an element to the `command subcommands[]` array.
+You just have to `#include` your header file in [`main.c`](/src/tools/kdb/main.c) and add an element to the `command subcommands[]` array.
 
 ```c
 command subcommands[] = {
