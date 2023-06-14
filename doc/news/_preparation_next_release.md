@@ -114,9 +114,9 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### jdbc
 
-- <<TODO>>
+- Fix formatting/spelling problem in README.md _(Hannes Laimer @hannes99)_
 - <<TODO>>
 - <<TODO>>
 
