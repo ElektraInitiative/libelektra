@@ -117,6 +117,9 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 ### jdbc
 
 - Fix formatting/spelling problem in README.md _(Hannes Laimer @hannes99)_
+### opts
+
+- Always generate help message even if `--help` is not used, so it can be used more freely. _(Hannes Laimer @hannes99)_
 - <<TODO>>
 - <<TODO>>
 
