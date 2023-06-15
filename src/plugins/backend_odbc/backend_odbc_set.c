@@ -942,7 +942,7 @@ static void logChangedKeys (ElektraDiff * diffSet, Key * parentKey)
 	{
 		Key * curKey = ksAtCursor (ksDiff, it);
 		ELEKTRA_LOG ("keyname: %s, string: %s, relative: %s\n", keyName (curKey), keyString (curKey),
-			elektraKeyGetRelativeName (curKey, parentKey));
+			     elektraKeyGetRelativeName (curKey, parentKey));
 	}
 	ksDel (ksDiff);
 
@@ -952,7 +952,7 @@ static void logChangedKeys (ElektraDiff * diffSet, Key * parentKey)
 	{
 		Key * curKey = ksAtCursor (ksDiff, it);
 		ELEKTRA_LOG ("keyname: %s, string: %s, relative: %s\n", keyName (curKey), keyString (curKey),
-			elektraKeyGetRelativeName (curKey, parentKey));
+			     elektraKeyGetRelativeName (curKey, parentKey));
 	}
 	ksDel (ksDiff);
 
@@ -962,7 +962,7 @@ static void logChangedKeys (ElektraDiff * diffSet, Key * parentKey)
 	{
 		Key * curKey = ksAtCursor (ksDiff, it);
 		ELEKTRA_LOG ("keyname: %s, string: %s, relative: %s\n", keyName (curKey), keyString (curKey),
-			elektraKeyGetRelativeName (curKey, parentKey));
+			     elektraKeyGetRelativeName (curKey, parentKey));
 	}
 	ksDel (ksDiff);
 }
