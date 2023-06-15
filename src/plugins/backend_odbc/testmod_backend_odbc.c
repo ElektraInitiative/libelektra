@@ -87,13 +87,6 @@ static void test_null_general (void)
 	succeed_if (!connectToDataSource (NULL, dsConfig, testKey), "should return false");
 	elektraFree (dsConfig);
 
-	struct columnData * colData = elektraCalloc (sizeof (struct columnData));
-	succeed_if (!bindColumns (NULL, NULL, NULL), "should return false");
-	succeed_if (!bindColumns (NULL, NULL, testKey), "should return false");
-	succeed_if (!bindColumns (NULL, colData, NULL), "should return false");
-	succeed_if (!bindColumns (NULL, colData, testKey), "should return false");
-	elektraFree (colData);
-
 	keyDel (testKey);
 }
 
@@ -268,17 +261,6 @@ static void test_invalid_general (void)
 	succeed_if (!connectToDataSource (hEnv, dsConfig, testKey), "should return false");
 	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
 	elektraFree (dsConfig);
-
-	/* pass invalid handle (environment instead of statement) */
-	struct columnData * colData = elektraCalloc (sizeof (struct columnData));
-	succeed_if (!bindColumns (hEnv, NULL, NULL), "should return false");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (!bindColumns (hEnv, NULL, testKey), "should return false");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (!bindColumns (hEnv, colData, NULL), "should return false");
-	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (!bindColumns (hEnv, colData, testKey), "should return false");
-	elektraFree (colData);
 
 	keyDel (testKey);
 }

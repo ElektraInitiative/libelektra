@@ -14,14 +14,9 @@
 #include "./backend_odbc_set.h"
 
 #include <kdbassert.h>
+#include <kdbdiff.h>
 #include <kdberrors.h>
 #include <kdblogger.h>
-
-#include <kdbchangetracking.h>
-#include <kdbdiff.h>
-
-// FIXME: Remove import, only for dev
-#include <stdio.h>
 
 
 int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * plugin ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
@@ -202,8 +197,6 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * plugin, KeySet * ks, Key * parentKey
 	case ELEKTRA_KDB_SET_PHASE_STORAGE: {
 		/* Write the actual data to the ODBC data source */
 		long ret = storeKeysInDataSource (sharedData, ks, parentKey);
-		printf ("after storeKeysInDataSource()\n");
-
 		if (ret < 0)
 		{
 			ksAppendKey (elektraPluginGetGlobalKeySet (plugin),
@@ -217,7 +210,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * plugin, KeySet * ks, Key * parentKey
 		}
 		else
 		{
-			printf ("The storage phase affected %ld rows.\n", ret);
+			ELEKTRA_LOG ("The storage phase affected %ld rows.\n", ret);
 			return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 		}
 	}
@@ -247,7 +240,7 @@ int ELEKTRA_PLUGIN_FUNCTION (commit) (Plugin * plugin, KeySet * ks ELEKTRA_UNUSE
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 
 	case ELEKTRA_KDB_SET_PHASE_COMMIT: {
-		printf ("in commit phase\n");
+		ELEKTRA_LOG_DEBUG ("in commit phase\n");
 
 		struct odbcSharedData * sharedData = elektraPluginGetData (plugin);
 		if (!sharedData || !(sharedData->connection) || !(sharedData->environment))
@@ -260,12 +253,12 @@ int ELEKTRA_PLUGIN_FUNCTION (commit) (Plugin * plugin, KeySet * ks ELEKTRA_UNUSE
 
 		if (endTransaction (sharedData->connection, true, parentKey))
 		{
-			printf ("Commit succeeded\n");
+			ELEKTRA_LOG_DEBUG ("Commit succeeded\n");
 			return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 		}
 		else
 		{
-			printf ("Commit failed!\n");
+			ELEKTRA_LOG_DEBUG ("Commit failed!\n");
 			ksAppendKey (elektraPluginGetGlobalKeySet (plugin),
 				     keyNew ("system:/elektra/kdb/backend/failedphase", KEY_BINARY, KEY_SIZE, sizeof (ElektraKdbPhase),
 					     KEY_VALUE, &phase, KEY_END));
@@ -330,8 +323,6 @@ int ELEKTRA_PLUGIN_FUNCTION (error) (Plugin * plugin, KeySet * ks ELEKTRA_UNUSED
 
 		bool ret = endTransaction (sharedData->connection, false, parentKey);
 
-		printf ("End transaction in ROLLBACK returned: %d\n", ret);
-
 		/* Close the connection and free handles for connection and environment */
 		if (!clearOdbcSharedData (sharedData, false, false))
 		{
@@ -344,11 +335,12 @@ int ELEKTRA_PLUGIN_FUNCTION (error) (Plugin * plugin, KeySet * ks ELEKTRA_UNUSED
 
 		if (ret)
 		{
-			printf ("ROLLBACK succeeded!\n");
+			ELEKTRA_LOG_DEBUG ("ROLLBACK succeeded!\n");
 			return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 		}
 		else
 		{
+			ELEKTRA_LOG_DEBUG ("ROLLBACK failed!\n");
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}

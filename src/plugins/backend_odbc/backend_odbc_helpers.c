@@ -606,17 +606,17 @@ char * dsConfigToString (const struct dataSourceConfig * dsConfig)
 
 
 /**
- * @brief Check if any identifier that is part of @p dsConfig, does contain to specified substring
+ * @brief Check if any identifier that is part of @p dsConfig, does contain the specified substring.
  *
- * @param dsConfig The data source configuration struct to check
- * @param subStr The substring to check for
- * @param[out] errorKey If not NULL and if @p subStr was found, an error is set which mentions the name
+ * @param dsConfig The data source configuration struct to check.
+ * @param subStr The substring to check for.
+ * @param[out] errorKey If not NULL and if @p subStr was found, an error is set which mentions the name.
  * 	of the first wrong identifier and its value. This parameter is esp. intended for detecting invalid substrings.
  *
  *
- * @retval true if the @p subStr was found in any of the identifiers
- * @retval false if the @p subStr was NOT found in any of the identifiers
- * @retval true if @p subStr is null or empty
+ * @retval true if the @p subStr was found in any of the identifiers.
+ * @retval false if the @p subStr was NOT found in any of the identifiers.
+ * @retval true if @p subStr is null or empty.
  */
 bool checkIdentifiersForSubString (const struct dataSourceConfig * dsConfig, const char * subStr, Key * errorKey)
 {
@@ -672,7 +672,7 @@ bool checkIdentifiersForSubString (const struct dataSourceConfig * dsConfig, con
 	{
 		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (errorKey,
 							 "The identifier %s in the data source configuration contained the "
-							 "invalid substring '%s'. The value of the invalid string is '%s'",
+							 "invalid substring '%s'. The value of the invalid string is '%s'.",
 							 foundIdentifierName, subStr, foundIdentifierVal);
 		return true;
 	}
@@ -683,15 +683,20 @@ bool checkIdentifiersForSubString (const struct dataSourceConfig * dsConfig, con
 	}
 }
 
-
-void clearDsConfig (struct dataSourceConfig * dsConfig, bool freeStrings ELEKTRA_UNUSED)
+/**
+ * @brief Free the struct @p dsConfig and (if enabled) the strings it contains
+ *
+ * @param dsConfig The dataSourceConfig struct which should be freed.
+ * @param freeStrings if true, the individual strings (char *) in the struct are freed too.
+ */
+void clearDsConfig (struct dataSourceConfig * dsConfig, bool freeStrings)
 {
 	if (!dsConfig)
 	{
 		return;
 	}
 
-	if (false)
+	if (freeStrings)
 	{
 		elektraFree (dsConfig->dataSourceName);
 
@@ -711,9 +716,24 @@ void clearDsConfig (struct dataSourceConfig * dsConfig, bool freeStrings ELEKTRA
 	elektraFree (dsConfig);
 }
 
+/**
+ * @brief Cleanup and free the struct for the shared data, and (if enabled) the inside struct with the data source config
+ * and optionally also the strings it contains.
+ *
+ * If the connection handle is not NULL, the function disconnects and frees the connection handle.
+ * If the environment handle is not NULL, the function frees the environment handle.
+ *
+ * @param sharedData The struct of type odbcSharedData
+ * @param freeDsConfig 'true' if the dataSourceConfig struct inside @p sharedData should be freed too
+ * @param freeDsConfigStrings only considered, if @p freeDsConfig is 'true', then it specifies if the strings
+ * 	inside the dataSourceConfig struct should be freed too.
+ *
+ * @retval 'false' if a NULL pointer was passed for @p sharedData or an error was reported by ODBC when trying to disconnect or free
+ * 	the handles.
+ * @retval 'true' otherwise.
+ */
 bool clearOdbcSharedData (struct odbcSharedData * sharedData, bool freeDsConfig, bool freeDsConfigStrings)
 {
-	return true;
 	bool finalRet = true;
 
 	if (!sharedData)
