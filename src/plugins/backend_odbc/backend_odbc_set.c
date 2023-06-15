@@ -317,7 +317,7 @@ static bool bindKeyNamesToStatement (SQLHSTMT sqlStmt, const KeySet * keysToBind
 
 
 static SQLLEN removeRows (SQLHSTMT sqlStmt, const KeySet * ksRemovedKeys, const char * tableName, const char * keyColName, bool bindParams,
-		   Key * parentKey)
+			  Key * parentKey)
 {
 	if (!sqlStmt)
 	{
