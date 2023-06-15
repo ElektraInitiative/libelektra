@@ -200,20 +200,9 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * plugin, KeySet * ks, Key * parentKey
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 
 	case ELEKTRA_KDB_SET_PHASE_STORAGE: {
-		/* Get diff with added, removed and modified keys */
-		// const ChangeTrackingContext * ctx = elektraChangeTrackingGetContextFromPlugin (plugin);
-		// ElektraDiff * diff = elektraChangeTrackingCalculateDiff (ks, ctx, parentKey);
-
-		// if (!diff || elektraDiffIsEmpty (diff))
-		//{
-		//	elektraDiffDel (diff);
-		//	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-		// }
-
 		/* Write the actual data to the ODBC data source */
 		long ret = storeKeysInDataSource (sharedData, ks, parentKey);
-		// elektraDiffDel (diff);
-		// elektraPluginSetData (plugin, sharedData);
+		printf ("after storeKeysInDataSource()\n");
 
 		if (ret < 0)
 		{
@@ -228,6 +217,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * plugin, KeySet * ks, Key * parentKey
 		}
 		else
 		{
+			printf ("The storage phase affected %ld rows.\n", ret);
 			return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 		}
 	}
@@ -340,7 +330,7 @@ int ELEKTRA_PLUGIN_FUNCTION (error) (Plugin * plugin, KeySet * ks ELEKTRA_UNUSED
 
 		bool ret = endTransaction (sharedData->connection, false, parentKey);
 
-		printf ("End transaction in ROLLBACK returned: %d", ret);
+		printf ("End transaction in ROLLBACK returned: %d\n", ret);
 
 		/* Close the connection and free handles for connection and environment */
 		if (!clearOdbcSharedData (sharedData, false, false))
