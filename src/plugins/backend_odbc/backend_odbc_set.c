@@ -675,7 +675,7 @@ static SQLLEN insertOrUpdateRows (SQLHSTMT sqlStmt, const KeySet * ks, const str
 	return sumAffectedRows;
 }
 
-
+#if DEBUG
 static void printChangedKeys (ElektraDiff * diffSet, Key * parentKey)
 {
 	printf ("Added keys:\n");
@@ -708,6 +708,7 @@ static void printChangedKeys (ElektraDiff * diffSet, Key * parentKey)
 	}
 	ksDel (ksDiff);
 }
+#endif
 
 
 static KeySet * getModifiedNewKeys (KeySet * ks, KeySet * ksModifiedOldKeys)
