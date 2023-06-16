@@ -174,7 +174,7 @@ int execGet (KeySet * options, Key * errorKey)
 
 	if (keyCopyAllMeta (errorKey, toLookUp) == -1)
 	{ // we have to copy the meta keys so the CLI can print the errors
-		ELEKTRA_SET_INTERNAL_ERROR (errorKey, "could not copy key meta to errorKey");
+		ELEKTRA_SET_CLI_ERROR (errorKey, "could not copy key meta to errorKey");
 		keyDel (toLookUp);
 		ksDel (searchIn);
 		RETURN (3)
@@ -182,7 +182,7 @@ int execGet (KeySet * options, Key * errorKey)
 
 	if (found == NULL)
 	{
-		CLI_ERROR_PRINT (CLI_LOG_NONE, "Did not find key '%s'", RED (keyName (toLookUp)));
+		ELEKTRA_SET_CLI_ERRORF (errorKey, "Did not find key '%s'", RED (keyName (toLookUp)));
 		ret = 11;
 		goto cleanup;
 	}

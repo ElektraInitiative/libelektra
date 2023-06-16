@@ -64,13 +64,13 @@ Key * getKeyFromOptions (const char * rawName, Key * errorKey, bool verbose)
 	bool resolved = false;
 	if (!elektraKeyNameValidate (rawName, true) && rawName[0] != '+')
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "'%s' is not valid key name.", rawName);
+		ELEKTRA_SET_CLI_ERRORF (errorKey, "'%s' is not valid key name.", rawName);
 		return NULL;
 	}
 	Key * result = expandKeyName (rawName, &resolved);
 	if (result == NULL)
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "could not resolve bookmark in '%s'", rawName);
+		ELEKTRA_SET_CLI_ERRORF (errorKey, "could not resolve bookmark in '%s'", rawName);
 		return NULL;
 	}
 

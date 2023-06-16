@@ -44,19 +44,23 @@ STDOUT: bar3
 < kdb get $Mountpoint/foo/three
 
 RET: 11
-STDERR: Did not find key 'user:/tests/cli/get/foo/four'
+STDERR: .*Did not find key 'user:/tests/cli/get/foo/four'
+ERROR: C03300
 < kdb get $Mountpoint/foo/four
 
 RET: 11
-STDERR: Did not find key 'user:/tests/cli/get/foo/four'
+STDERR: .*Did not find key 'user:/tests/cli/get/foo/four'
+ERROR: C03300
 < kdb get -a $Mountpoint/foo/four
 
 RET: 11
-STDERR: Did not find key 'user:/tests/cli/get/foo/four'
+STDERR: .*Did not find key 'user:/tests/cli/get/foo/four'
+ERROR: C03300
 < kdb get -av $Mountpoint/foo/four
 
 RET: 11
-STDERR: Did not find key 'user:/tests/cli/get/foo/four'
+STDERR: .*Did not find key 'user:/tests/cli/get/foo/four'
+ERROR: C03300
 < kdb get -av $Mountpoint/foo/four
 
 RET: 0
@@ -68,6 +72,7 @@ STDOUT: bar3
 
 RET: 2
 STDERR: .*'gettest/foo/three' is not valid key name.
+ERROR: C03300
 < kdb get gettest/foo/three
 
 RET: 0

@@ -34,6 +34,8 @@ Error * ErrorFactory::create (const std::string & type, const std::string & desc
 		return new ValidationSyntacticError (description, reason, module, file, mountPoint, configFile, line);
 	else if (type == ELEKTRA_ERROR_VALIDATION_SEMANTIC)
 		return new ValidationSemanticError (description, reason, module, file, mountPoint, configFile, line);
+	else if (type == ELEKTRA_ERROR_CLI)
+		return new CliError (description, reason, module, file, mountPoint, configFile, line);
 	else
 		return nullptr;
 }

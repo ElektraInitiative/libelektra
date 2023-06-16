@@ -278,7 +278,7 @@ kdb set user:/tests/tutorial/spec/should_not_be_here abc
 # ERROR:C03200
 kdb get /tests/tutorial/spec/should_not_be_here
 # RET: 11
-# STDERR: Did not find key '/tests/tutorial/spec/should_not_be_here'
+# STDERR: .*Did not find key '/tests/tutorial/spec/should_not_be_here'
 ```
 
 If we want to reject every optional key (and only want to allow required keys)

@@ -34,6 +34,8 @@ using namespace ckdb;
 #define ELEKTRA_ERROR_CODE_VALIDATION_SYNTACTIC_NAME "Validation Syntactic"
 #define ELEKTRA_ERROR_CODE_VALIDATION_SEMANTIC "C03200"
 #define ELEKTRA_ERROR_CODE_VALIDATION_SEMANTIC_NAME "Validation Semantic"
+#define ELEKTRA_ERROR_CODE_CLI "C03300"
+#define ELEKTRA_ERROR_CODE_CLI_NAME "CLI"
 
 static void addWarning (Key * key, const char * code, const char * name, const char * file, const char * line, const char * module,
 			const char * reasonFmt, va_list va)
@@ -154,6 +156,7 @@ DEFINE_ERROR_AND_WARNING (PLUGIN_MISBEHAVIOR)
 DEFINE_ERROR_AND_WARNING (CONFLICTING_STATE)
 DEFINE_ERROR_AND_WARNING (VALIDATION_SYNTACTIC)
 DEFINE_ERROR_AND_WARNING (VALIDATION_SEMANTIC)
+DEFINE_ERROR_AND_WARNING (CLI)
 
 #define ERROR_SPEC_KEYS(cname)                                                                                                             \
 	keyNew ("system:/elektra/modules/error/specification", KEY_VALUE, "the specification of all error codes", KEY_END),                \
@@ -174,6 +177,7 @@ KeySet * elektraErrorSpecification (void)
 		      ERROR_SPEC_KEYS (CONFLICTING_STATE),
 		      ERROR_SPEC_KEYS (VALIDATION_SYNTACTIC),
 		      ERROR_SPEC_KEYS (VALIDATION_SEMANTIC),
+		      ERROR_SPEC_KEYS (CLI),
 		      // clang-format on
 		      KS_END);
 }
@@ -205,6 +209,7 @@ void elektraTriggerWarnings (const char * nr, Key * parentKey, const char * mess
 	MAYBE_TRIGGER_WARNING (CONFLICTING_STATE, nr, parentKey, message);
 	MAYBE_TRIGGER_WARNING (VALIDATION_SYNTACTIC, nr, parentKey, message);
 	MAYBE_TRIGGER_WARNING (VALIDATION_SEMANTIC, nr, parentKey, message);
+	MAYBE_TRIGGER_WARNING (CLI, nr, parentKey, message);
 	ELEKTRA_ADD_INTERNAL_WARNINGF (parentKey, "Unkown warning code %s", nr);
 }
 
@@ -235,6 +240,7 @@ void elektraTriggerError (const char * nr, Key * parentKey, const char * message
 	MAYBE_TRIGGER_ERROR (CONFLICTING_STATE, nr, parentKey, message);
 	MAYBE_TRIGGER_ERROR (VALIDATION_SYNTACTIC, nr, parentKey, message);
 	MAYBE_TRIGGER_ERROR (VALIDATION_SEMANTIC, nr, parentKey, message);
+	MAYBE_TRIGGER_ERROR (CLI, nr, parentKey, message);
 	ELEKTRA_SET_INTERNAL_ERRORF (parentKey, "Unkown error code %s", nr);
 }
 

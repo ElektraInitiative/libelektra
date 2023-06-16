@@ -15,7 +15,7 @@
   kdb get user:/tests/msr/c
   # Expected:
   # RET:11
-  # STDERR:Did not find key 'user:/tests/msr/c'
+  # STDERR:.*Did not find key 'user:/tests/msr/c'
   kdb rm -r user:/tests/msr
   ```
 

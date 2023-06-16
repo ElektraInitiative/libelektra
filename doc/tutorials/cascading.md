@@ -29,7 +29,7 @@ kdb export system:/tests/overrides dump > $(kdb get user:/tests/overrides)
 
 kdb get /tests/tutorial/cascading/#0/current/test
 # RET: 11
-# STDERR: Did not find key '/tests/tutorial/cascading/#0/current/test'
+# STDERR: .*Did not find key '/tests/tutorial/cascading/#0/current/test'
 
 # Now add the key ...
 sudo kdb set system:/tests/tutorial/cascading/#0/current/test "hello world"

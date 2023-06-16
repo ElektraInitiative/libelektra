@@ -32,6 +32,8 @@ Warning * WarningFactory::create (const std::string & type, const std::string & 
 		return new ValidationSyntacticWarning (description, reason, module, file, mountPoint, configFile, line);
 	else if (type == ELEKTRA_WARNING_VALIDATION_SEMANTIC)
 		return new ValidationSemanticWarning (description, reason, module, file, mountPoint, configFile, line);
+	else if (type == ELEKTRA_WARNING_CLI)
+		return new CliWarning (description, reason, module, file, mountPoint, configFile, line);
 	else
 		return nullptr;
 }
