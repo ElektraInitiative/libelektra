@@ -5,12 +5,12 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = backend
-- infos/status = unfinished experimental
+- infos/status = experimental reviewed
 - infos/description = Plugin implementing full backend functionality for ODBC data sources
 
 ## Introduction
 
-This plugin is a backend plugin that retrieves data using ODBC (Open Database Connectivity) data sources.
+This plugin is a backend plugin that stores and retrieves data using ODBC (Open Database Connectivity) data sources.
 It was tested with unixODBC on Linux, but should also work with iODBC and Microsoft ODBC (on Windows).
 
 > If you want to use it with one of the latter two ODBC implementations, feel free to update this documentation with your experiences!
@@ -37,14 +37,12 @@ In the language of ER-modelling, the metatable can therefore by considered a **w
 > If you want to use metadata, the ODBC driver for your data source has to support **outer joins**.
 > This implies that currently, only ODBC drivers with support for outer joins are supported by the ODBC backend.
 
-The tables may also contain other columns, but they are not processed by this plugin and must support NULL- or DEFAULT-values, if you want to add tuples to the table via Elektra (e.g. by calling `kdb set <key> <value>`) in future versions.
+The tables may also contain other columns, but they are not processed by this plugin and must support NULL- or DEFAULT-values, if you want to add tuples to the table via Elektra (e.g. by calling `kdb set <key> <value>`).
 
-If the column for the key-name is not defined as a primary key and multiple rows contain the same key-name,
-they are treated as one key, where the value is taken from the first row and the metadata is combined.
+If the column for the key-name is not defined as a primary key and multiple rows contain the same key-name, they are treated as one key, where the value is taken from the first row and the metadata is combined.
 If multiple metakeys with the same metakey-name exist for a key, the last metavalue is used.
 This behavior is part of the internal algorithm of the plugin and could change in the future.
-So if you want a predictable and expectable behavior, make sure that the described primary- and foreign-key constraints
-are respected.
+So if you want a predictable and expectable behavior, make sure that the described primary- and foreign-key constraints are respected.
 
 ## Mounting
 

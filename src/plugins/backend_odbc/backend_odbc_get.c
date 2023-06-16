@@ -43,7 +43,7 @@ static char * getSelectQueryString (const struct dataSourceConfig * dsConfig, ch
 {
 	/* A sample query string that shows the structure of the SELECT query that this function generates:
 	 * SELECT "elektra"."key", "elektra"."val", "elektrameta"."metakey", "elektrameta"."metaval" FROM {oj "elektra" LEFT OUTER JOIN
-	 * "elektrameta" ON "elektra"."key"="elektrameta"."key"}
+	 * "elektrameta" ON "elektra"."key"="elektrameta"."key"} ORDER BY "elektra"."key".
 	 */
 
 	if (!quoteString || !(*quoteString))
@@ -61,7 +61,7 @@ static char * getSelectQueryString (const struct dataSourceConfig * dsConfig, ch
 
 	// clang-format off
 	char * queryString = elektraFormat ("SELECT %s%s%s.%s%s%s, %s%s%s.%s%s%s, %s%s%s.%s%s%s, %s%s%s.%s%s%s FROM {oj %s%s%s "
-		"LEFT OUTER JOIN %s%s%s ON %s%s%s.%s%s%s=%s%s%s.%s%s%s}",
+		"LEFT OUTER JOIN %s%s%s ON %s%s%s.%s%s%s=%s%s%s.%s%s%s} ORDER BY %s%s%s.%s%s%s",
 		quoteString, dsConfig->tableName, quoteString,
 		quoteString, dsConfig->keyColName, quoteString,
 
@@ -82,7 +82,10 @@ static char * getSelectQueryString (const struct dataSourceConfig * dsConfig, ch
 		quoteString, dsConfig->keyColName, quoteString,
 
 		quoteString, dsConfig->metaTableName, quoteString,
-		quoteString, dsConfig->metaTableKeyColName, quoteString);
+		quoteString, dsConfig->metaTableKeyColName, quoteString,
+
+		quoteString, dsConfig->tableName, quoteString,
+		quoteString, dsConfig->keyColName, quoteString);
 	// clang-format on
 
 
