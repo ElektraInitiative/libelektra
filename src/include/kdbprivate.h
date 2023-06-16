@@ -453,7 +453,6 @@ struct _ElektraDiff
 struct _ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKeys, KeySet * modifiedNewKeys,
 				      Key * parentKey);
 void elektraDiffAppend (struct _ElektraDiff * target, const struct _ElektraDiff * source, Key * parentKey);
-KeySet * elektraDiffGetModifiedNewKeys (const struct _ElektraDiff * ksd);
 
 struct _ChangeTrackingContext
 {

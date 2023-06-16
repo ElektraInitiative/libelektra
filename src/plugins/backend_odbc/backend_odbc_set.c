@@ -225,6 +225,7 @@ static char * getDeleteQuery (unsigned int numKeys, const char * tableName, cons
 	return queryStr;
 }
 
+
 /**
  * @internal
  *
@@ -266,6 +267,7 @@ static char * getUpdateQuery (const struct dataSourceConfig * dsConfig, bool for
 				      dsConfig->valColName, quoteStr, quoteStr, dsConfig->keyColName, quoteStr);
 	}
 }
+
 
 /**
  * @internal
@@ -380,6 +382,7 @@ static bool bindStringsToStatementV (SQLHSTMT sqlStmt, ssize_t startPos, Key * e
 	return true;
 }
 
+
 /**
  * @internal
  *
@@ -412,17 +415,19 @@ static bool bindStringsToStatement (SQLHSTMT sqlStmt, ssize_t startPos, Key * er
 	return ret;
 }
 
-/* Make sure to bind exactly the number of parameters that match the number of the placeholder which the query-string you want to execute
- * what the given statement handle has , startPos starts at 1*/
 
 /**
  * @internal
  *
  * @brief Bind all key-names of the Keys in a KeySet to a statement.
  *
+ * Make sure to bind exactly the number of parameters that match the number of the placeholder which the query-string you want to execute
+ * what the given statement handle has.
+ *
  * @param sqlStmt The statement for which the values should be bound.
  * @param keysToBind The KeySet that contains the Keys for which you want to bind the key-names.
  * @param startPos The position of the parameter marker ('?') for which the first given value is going to be bound.
+	The first parameter has the value '1', so a startPos <1 is an invalid value.
  * @param useRelativeKeyNames Should the relative names of the key-names be bound? This is the keyname without the beginning-part.
  * 	The key-name of @parentKey is used to determine the relative name.
  * 	Example: key-name = "user:/software/odbc", key-name of parent key = "user:/software" --> string "odbc" gets bound.
@@ -505,6 +510,7 @@ static bool bindKeyNamesToStatement (SQLHSTMT sqlStmt, const KeySet * keysToBind
 	return true;
 }
 
+
 /**
  * @internal
  *
@@ -566,6 +572,7 @@ static SQLLEN removeRows (SQLHSTMT sqlStmt, const KeySet * ksRemovedKeys, const 
 
 	return affectedRows;
 }
+
 
 /**
  * @internal
@@ -752,8 +759,6 @@ static SQLLEN processMetaDataForModifiedKey (SQLHSTMT sqlStmt, Key * modifiedKey
 }
 
 
-/* @p diffSet is only needed for UPDATE operation, for INSERT it is ignored */
-
 /**
  * @internal
  *
@@ -766,6 +771,7 @@ static SQLLEN processMetaDataForModifiedKey (SQLHSTMT sqlStmt, Key * modifiedKey
  * @param dsConfig The data source configuration (contains mountpoint definition).
  * @param update 'true' if existing rows should be updated, 'false' if new rows should be inserted.
  * @param diffSet The ElektraDiff that was created by comparing the data to store with the data that is currently in the data source.
+	 @p diffSet is only needed for UPDATE operation, for INSERT it is ignored.
  * @param quoteStr The char(s) that should be used for quoting identifiers.
  * @param[in,out] parentKey The key-name of this key is needed to determine the relative key-name of the Keys in @ks.
  * 	Used to store errors and warnings.
@@ -922,6 +928,7 @@ static SQLLEN insertOrUpdateRows (SQLHSTMT sqlStmt, const KeySet * ks, const str
 	return sumAffectedRows;
 }
 
+
 #if DEBUG
 /**
  * @internal
@@ -968,69 +975,6 @@ static void logChangedKeys (ElektraDiff * diffSet, Key * parentKey)
 }
 #endif
 
-/**
- * @internal
- *
- * @brief An ElektraDiff contains Keys for which the value and/or metadata got changed.
- * But these Keys have the old values set, we need the new values which should be stored in the data source.
- *
- * @param ks The KeySet with the Keys that should be persisted. This Keys must contain the new values.
- * 	This KeySet must contain Keys with all the key-names that are also stored in @p ksModifiedOldKeys.
- * 	The KeySet @p ks may contain more keys then @p ksModifiedOldKeys, but not less!
- * @param ksModifiedOldKeys The KeySet that contains the keys thats got modified.
- * 	For this function to be useful, this KeySet usually contains the modified Keys with the old values and metadata.
- *
- * @return A filtered KeySet with the Keys from @p ks that also were part of @p ksksModifiedOldKeys.
- * 	The filtering is based on the key-names.
- */
-static KeySet * getModifiedNewKeys (KeySet * ks, KeySet * ksModifiedOldKeys)
-{
-	if (!ks || !ksModifiedOldKeys)
-	{
-		return NULL;
-	}
-
-	KeySet * ksModifiedNewKeys = ksNew (ksGetSize (ksModifiedOldKeys), KS_END);
-	if (!ksModifiedNewKeys)
-	{
-		return NULL;
-	}
-
-	if (ksGetSize (ksModifiedOldKeys) == 0)
-	{
-		/* return empty KeySet */
-		return ksModifiedNewKeys;
-	}
-
-	elektraCursor posCur = ksSearch (ks, ksAtCursor (ksModifiedOldKeys, 0));
-	elektraCursor posEnd = ksSearch (ks, ksAtCursor (ksModifiedOldKeys, ksGetSize (ksModifiedOldKeys) - 1));
-
-	ELEKTRA_ASSERT (posCur >= 0 && posEnd >= 0,
-			"A key that is part of the KeySet with modified keys was not found in the KeySet with "
-			"the keys that should be stored!");
-
-	for (elektraCursor it = 0; it < ksGetSize (ksModifiedOldKeys); it++)
-	{
-		for (Key * curOldKey = ksAtCursor (ksModifiedOldKeys, it);
-		     keyCmp (curOldKey, ksAtCursor (ks, posCur)) != 0 && posCur <= posEnd; posCur++)
-			;
-		/* no loop body */
-
-		ELEKTRA_ASSERT (posCur <= posEnd,
-				"A key that is part of the KeySet with modified keys was not found in the KeySet with "
-				"the keys that should be stored!");
-
-		ksAppendKey (ksModifiedNewKeys, ksAtCursor (ks, posCur));
-	}
-
-
-	ELEKTRA_ASSERT (ksGetSize (ksModifiedOldKeys) == ksGetSize (ksModifiedNewKeys),
-			"The size of the KeySets for the modified "
-			"keys with new and old values did not match!");
-
-	return ksModifiedNewKeys;
-}
-
 
 /**
  * @brief Change the data in the ODBC data source so that it represents the state the is given in @ks.
@@ -1071,11 +1015,7 @@ SQLLEN storeKeysInDataSource (struct odbcSharedData * sharedData, KeySet * ks, K
 
 	if (!quoteStr || !(*quoteStr))
 	{
-		if (quoteStr)
-		{
-			elektraFree (quoteStr);
-		}
-
+		elektraFree (quoteStr);
 		/* An error on the parent key should've been set by getQuoteStr() */
 		ksDel (ksDs);
 		return -1;
@@ -1089,6 +1029,7 @@ SQLLEN storeKeysInDataSource (struct odbcSharedData * sharedData, KeySet * ks, K
 	if (!diffSet || elektraDiffIsEmpty (diffSet))
 	{
 		/* no update */
+		elektraFree (quoteStr);
 		elektraDiffDel (diffSet);
 		return 0;
 	}
@@ -1109,8 +1050,10 @@ SQLLEN storeKeysInDataSource (struct odbcSharedData * sharedData, KeySet * ks, K
 		 * DELETE FROM table WHERE keyname IN (val1, val2, ...) */
 
 		sqlStmt = allocateStatementHandle (sharedData->connection, parentKey);
+
 		if (!sqlStmt)
 		{
+			elektraFree (quoteStr);
 			ksDel (ksRemovedKeys);
 			elektraDiffDel (diffSet);
 			return -1;
@@ -1121,6 +1064,7 @@ SQLLEN storeKeysInDataSource (struct odbcSharedData * sharedData, KeySet * ks, K
 						     sharedData->dsConfig->metaTableKeyColName, quoteStr, true, parentKey);
 		if (curAffectedRows == -1)
 		{
+			elektraFree (quoteStr);
 			ksDel (ksRemovedKeys);
 			elektraDiffDel (diffSet);
 			return -1;
@@ -1133,12 +1077,13 @@ SQLLEN storeKeysInDataSource (struct odbcSharedData * sharedData, KeySet * ks, K
 		/* We can use the already bound parameters for deleting rows from the 2nd table (key-table) */
 		curAffectedRows = removeRows (sqlStmt, ksRemovedKeys, sharedData->dsConfig->tableName, sharedData->dsConfig->keyColName,
 					      quoteStr, false, parentKey);
-		ksDel (ksRemovedKeys);
 
 		ELEKTRA_LOG ("DELETE affected %ld rows!\n", curAffectedRows);
 
 		if (curAffectedRows == -1)
 		{
+			elektraFree (quoteStr);
+			ksDel (ksRemovedKeys);
 			elektraDiffDel (diffSet);
 			return -1;
 		}
@@ -1148,19 +1093,23 @@ SQLLEN storeKeysInDataSource (struct odbcSharedData * sharedData, KeySet * ks, K
 		}
 	}
 
-	/* The keys in ksModifiedKeys contain the old values, but we need the new values for storing the in the data source */
-	KeySet * ksModifiedOldKeys = elektraDiffGetModifiedKeys (diffSet);
+	ksDel (ksRemovedKeys);
 
-	if (ksGetSize (ksModifiedOldKeys) > 0)
+	/* The keys in ksModifiedKeys contain the old values, but we need the new values for storing the in the data source */
+	// KeySet * ksModifiedOldKeys = elektraDiffGetModifiedKeys (diffSet);
+	KeySet * ksModifiedNewKeys = elektraDiffGetModifiedNewKeys (diffSet);
+
+	if (ksGetSize (ksModifiedNewKeys) > 0)
 	{
-		KeySet * ksModifiedNewKeys = getModifiedNewKeys (ks, ksModifiedOldKeys);
+		// KeySet * ksModifiedNewKeys = getModifiedNewKeys (ks, ksModifiedOldKeys);
 
 		/* We only need the keys with the new values */
-		ksDel (ksModifiedOldKeys);
+		// ksDel (ksModifiedOldKeys);
 
 		if (!ksModifiedNewKeys)
 		{
 			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
+			elektraFree (quoteStr);
 			elektraDiffDel (diffSet);
 			return -1;
 		}
@@ -1168,8 +1117,10 @@ SQLLEN storeKeysInDataSource (struct odbcSharedData * sharedData, KeySet * ks, K
 		if (!sqlStmt)
 		{
 			sqlStmt = allocateStatementHandle (sharedData->connection, parentKey);
+
 			if (!sqlStmt)
 			{
+				elektraFree (quoteStr);
 				ksDel (ksModifiedNewKeys);
 				elektraDiffDel (diffSet);
 				return -1;
@@ -1178,12 +1129,14 @@ SQLLEN storeKeysInDataSource (struct odbcSharedData * sharedData, KeySet * ks, K
 
 		SQLLEN curAffectedRows =
 			insertOrUpdateRows (sqlStmt, ksModifiedNewKeys, sharedData->dsConfig, true, diffSet, quoteStr, parentKey);
-		ksDel (ksModifiedNewKeys);
+
 
 		ELEKTRA_LOG ("UPDATE affected %ld rows!\n", curAffectedRows);
 
 		if (curAffectedRows == -1)
 		{
+			elektraFree (quoteStr);
+			ksDel (ksModifiedNewKeys);
 			elektraDiffDel (diffSet);
 			return -1;
 		}
@@ -1192,6 +1145,9 @@ SQLLEN storeKeysInDataSource (struct odbcSharedData * sharedData, KeySet * ks, K
 			sumAffectedRows += curAffectedRows;
 		}
 	}
+
+	ksDel (ksModifiedNewKeys);
+
 
 	KeySet * ksAddedKeys = elektraDiffGetAddedKeys (diffSet);
 
@@ -1200,8 +1156,10 @@ SQLLEN storeKeysInDataSource (struct odbcSharedData * sharedData, KeySet * ks, K
 		if (!sqlStmt)
 		{
 			sqlStmt = allocateStatementHandle (sharedData->connection, parentKey);
+
 			if (!sqlStmt)
 			{
+				elektraFree (quoteStr);
 				ksDel (ksAddedKeys);
 				elektraDiffDel (diffSet);
 				return -1;
@@ -1209,12 +1167,13 @@ SQLLEN storeKeysInDataSource (struct odbcSharedData * sharedData, KeySet * ks, K
 		}
 
 		SQLLEN curAffectedRows = insertOrUpdateRows (sqlStmt, ksAddedKeys, sharedData->dsConfig, false, NULL, quoteStr, parentKey);
-		ksDel (ksAddedKeys);
 
 		ELEKTRA_LOG ("INSERT affected %ld rows!\n", curAffectedRows);
 
 		if (curAffectedRows == -1)
 		{
+			elektraFree (quoteStr);
+			ksDel (ksAddedKeys);
 			elektraDiffDel (diffSet);
 			return -1;
 		}
@@ -1224,7 +1183,12 @@ SQLLEN storeKeysInDataSource (struct odbcSharedData * sharedData, KeySet * ks, K
 		}
 	}
 
-	/* No disconnecting or freeing here, the handle to the connection and the SQL environment are needed until
+	ksDel (ksAddedKeys);
+
+	elektraFree (quoteStr);
+	elektraDiffDel (diffSet);
+
+	/* No disconnecting or freeing of handles here, the handle to the connection and the SQL environment are needed until
 	 * the transaction is committed or rolled back. */
 	ELEKTRA_LOG_DEBUG ("Finished executing queries in open transaction, make sure to end the transaction.");
 	return sumAffectedRows;

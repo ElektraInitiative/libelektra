@@ -403,6 +403,8 @@ SQLLEN executeQuery (SQLHSTMT stmt, const char * query, Key * errorKey)
  * @param[out] errorKey Used to store errors and warnings.
  *
  * @return The string (probably only with one char + \0) that should be added before and after identifiers to quote them.
+ * 	Make sure to free the returned string.
+ *
  * @retval "\"" If no quote string could be retrieved from the ODBC driver.
  * @retval NULL on error
  */
