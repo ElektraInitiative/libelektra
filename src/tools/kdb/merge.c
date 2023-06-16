@@ -48,14 +48,6 @@ void addMergeSpec (KeySet * spec)
 }
 
 int execCppMerge (int argc, char ** argv)
-{ // for `merge` use `cmerge` in cpp
-
-	char * backup = argv[1];
-	argv[1] = "cmerge";
-
-	int ret = cpp_main (argc, argv);
-
-	argv[1] = backup;
-
-	return ret;
+{
+	return cpp_main (argc, argv);
 }
