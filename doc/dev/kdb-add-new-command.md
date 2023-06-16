@@ -48,16 +48,18 @@ int exec... (KeySet * options, Key * errorKey);
 
 ### `C` file
 
-The `<name>.c` to implement the two functions already described in the header file, in addition to those two functions `COMMAND_NAME`, `GET_OPTION_KEY` and `GET_OPTION` have to be defined as follows:
+The `<name>.c` has to implement the two functions already described in the header file, in addition to those `COMMAND_NAME` has to be defined before `#include <command.h>`.
+This is important because macros defined in `command.h` depend on `COMMAND_NAME` being defined.
 
 ```c
 #define COMMAND_NAME "..." // your command name
-
-#define GET_OPTION_KEY(options, name) GET_OPT_KEY (options, COMMAND_BASE_KEY (COMMAND_NAME) "/" name)
-#define GET_OPTION(options, name) GET_OPT (options, COMMAND_BASE_KEY (COMMAND_NAME) "/" name)
+...
+#include <command.h>
+...
 ```
 
-It should also `#include <colors.h>` and `#include <command.h>`, those contain all the needed helper macros and function.
+In addition to `command.h`, it should also `#include <colors.h>`.
+`command.h` and `colors.h` contain all the needed helper macros and functions.
 
 #### Specification
 

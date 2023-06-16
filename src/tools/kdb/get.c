@@ -6,6 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#define COMMAND_NAME "get"
+
 #include <colors.h>
 #include <command.h>
 #include <get.h>
@@ -15,11 +17,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#define COMMAND_NAME "get"
-
-#define GET_OPTION_KEY(options, name) GET_OPT_KEY (options, COMMAND_BASE_KEY (COMMAND_NAME) "/" name)
-#define GET_OPTION(options, name) GET_OPT (options, COMMAND_BASE_KEY (COMMAND_NAME) "/" name)
 
 typedef Key * (*lookup_fn) (KeySet * s, Key * key, Key * found, elektraLookupFlags flags);
 

@@ -45,7 +45,7 @@
  * @brief This macro retrieves the key with a given name from an options key set. This is the more general version that #GET_OPTION_KEY in
  * command files should use.
  * @param options The options KeySet.
- * @param key The name of the key to retrieve.
+ * @param key The full name of the key to retrieve.
  */
 #define GET_OPT_KEY(options, key) ksLookupByName (options, key, 0)
 
@@ -54,9 +54,27 @@
  * @brief This macro retrieves the string value of the key with a given name from an options key set. This is the more general version that
  * #GET_OPTION in command files should use.
  * @param options The options KeySet.
- * @param key The name of the key to retrieve.
+ * @param key The full name of the key to retrieve.
  */
 #define GET_OPT(options, key) keyString (GET_OPT_KEY (options, key))
+
+/**
+ * @def GET_OPTION_KEY
+ * @brief This macro retrieves the key with a given name from an options key set. This is the more specific version that
+ * uses #GET_OPT_KEY and depends on COMMAND_NAME to be defined.
+ * @param options The options KeySet.
+ * @param key The name of the key to retrieve.
+ */
+#define GET_OPTION_KEY(options, name) GET_OPT_KEY (options, COMMAND_BASE_KEY (COMMAND_NAME) "/" name)
+
+/**
+ * @def GET_OPTION
+ * @brief This macro retrieves the string value of the key with a given name from an options key set. This is the more specific version that
+ * uses #GET_OPT and depends on COMMAND_NAME to be defined.
+ * @param options The options KeySet.
+ * @param key The name of the key to retrieve.
+ */
+#define GET_OPTION(options, name) GET_OPT (options, COMMAND_BASE_KEY (COMMAND_NAME) "/" name)
 
 /**
  * @def HAS_ERR

@@ -6,7 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <colors.h>
+#define COMMAND_NAME "set"
+
 #include <command.h>
 #include <kdbassert.h>
 #include <kdbease.h>
@@ -14,11 +15,6 @@
 #include <set.h>
 #include <stdio.h>
 #include <string.h>
-
-#define COMMAND_NAME "set"
-
-#define GET_OPTION_KEY(options, name) GET_OPT_KEY (options, COMMAND_BASE_KEY (COMMAND_NAME) "/" name)
-#define GET_OPTION(options, name) GET_OPT (options, COMMAND_BASE_KEY (COMMAND_NAME) "/" name)
 
 void addSetSpec (KeySet * spec)
 {
