@@ -9,8 +9,8 @@ Here we'll define the specification for a simple script that removes files by mo
 
 Since the arguments are already checked by `kdb`, the script knows these two are true
 
-1. The script can assume that if `$#` is `1`, `$1` has to be the file.
-2. And if `$#` is not `1` it hast to be `2`, with `$1` being the `-f` flag and `$2` being the filename.
+1. The script can assume that if `$#` is `1`, `$1` has to be the file that should be moved to trash.
+2. And if `$#` is not `1` it has to be `2`, with `$1` being the `-f` flag and `$2` being the filename.
 
 because the spec won't allow anything else.
 
@@ -25,8 +25,8 @@ if [ $# -eq 1 ]; then
     echo moved $1 to trash
 else
     # 2. was called with -f flag and the filename
-    rm -f $2
-    echo deleted $2
+    rm -f "$2"
+    echo deleted "$2"
 fi
 ```
 

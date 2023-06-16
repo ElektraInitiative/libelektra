@@ -82,7 +82,6 @@ void addGetSpec (KeySet * spec)
 ```
 
 The `ADD_BASIC_OPTIONS` at the end adds options that are common across all commands to its spec, this includes things like `verbose: -v` or `debug: -d`.
-It if your command should support these, it makes sense to use the macro.
 
 #### Execution
 
@@ -169,4 +168,4 @@ command subcommands[] = {
 
 ## _5. Validate_
 
-After following these stape the new command will show up when typing `kdb --help` and `kdb <your-cmd-name> --help` will show a usage message based on the specification you have provided in the `add...Spec` function.
+After following these steps the new command will show up when typing `kdb --help` and `kdb <your-cmd-name> --help` will show a usage message based on the specification you have provided in the `add...Spec` function.
