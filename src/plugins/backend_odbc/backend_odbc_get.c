@@ -343,12 +343,14 @@ static bool getLongData (SQLHSTMT sqlStmt, SQLUSMALLINT colNumber, SQLSMALLINT t
 	}
 	else if (!targetValue)
 	{
+		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 		ELEKTRA_SET_INTERFACE_ERROR (errorKey,
 					     "A NULL pointer was given as an argument for the buffer 'targetValue' to getLongData()");
 		return false;
 	}
 	else if (bufferSize <= 0)
 	{
+		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "A buffer size <=0 was given as an argument to getLongData()");
 		return false;
 	}
@@ -408,16 +410,15 @@ static bool getLongData (SQLHSTMT sqlStmt, SQLUSMALLINT colNumber, SQLSMALLINT t
  * 	See 'struct columnData'.
  * @param[out] parentKey Used to store errors and warnings and for getting the mountpoint root path
  *
- * @returns The KeySet with the data retrieved from the SQL SELECT query.
+ * @returns The KeySet with the data retrieved from the SQL SELECT query. (empty if no data was fetched (empty data table)
  * 	Make sure to ksDel() the returned KeySet.
- * @retval NULL if no data was fetched or an error occurred (see @p errorKey for details)
+ * @retval NULL if an error occurred (see @p errorKey for details)
  *
  * @see executeSqlStatement() for executing a prepared SQL statement
  */
 static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key * parentKey)
 {
 	SQLRETURN ret;
-	KeySet * ksResult = NULL;
 
 	/* Needed for detecting if the current row contains a new key or just a further metakey for a previous key (outer join) */
 	char * prevKeyName = NULL;
@@ -426,27 +427,26 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 
 	if (!sqlStmt || !buffers)
 	{
-		if (parentKey)
-		{
-			ELEKTRA_SET_INTERFACE_ERROR (
-				parentKey, "A NULL pointer was given as an argument to fetchResults() for 'sqlStmt' or 'columnData'");
-		}
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey,
+					     "A NULL pointer was given as an argument to fetchResults() for 'sqlStmt' or 'columnData'");
 		return NULL;
 	}
 
+	KeySet * ksResult = ksNew (0, KS_END);
+	if (!ksResult)
+	{
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
+		return NULL;
+	}
+
+
 	while ((ret = SQLFetch (sqlStmt)) != SQL_NO_DATA)
 	{
-
 		if (!SQL_SUCCEEDED (ret))
 		{
 			ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_STMT, sqlStmt, parentKey);
 			elektraFree (prevKeyName);
-
-			if (ksResult)
-			{
-				ksDel (ksResult);
-			}
-
+			ksDel (ksResult);
 			SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 			return NULL;
 		}
@@ -511,7 +511,7 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 					retGetLongData =
 						getLongData (sqlStmt, 2, SQL_C_CHAR, &longKeyString, KEYSTRING_BUFFER_SIZE * 2, parentKey);
 				}
-				else if (!isFurtherMetaKey && KEYSTRING_BUFFER_SIZE <= buffers->strLenInd)
+				else if (!isFurtherMetaKey && retGetLongData && KEYSTRING_BUFFER_SIZE <= buffers->strLenInd)
 				{
 					longKeyString = (char *) elektraMalloc (sizeof (char) * (buffers->strLenInd + 1));
 					retGetLongData =
@@ -525,7 +525,7 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 					retGetLongData = getLongData (sqlStmt, 3, SQL_C_CHAR, &longMetaKeyName, METAKEYNAME_BUFFER_SIZE * 2,
 								      parentKey);
 				}
-				else if (METAKEYNAME_BUFFER_SIZE <= buffers->metaNameLenInd)
+				else if (retGetLongData && METAKEYNAME_BUFFER_SIZE <= buffers->metaNameLenInd)
 				{
 					longMetaKeyName = (char *) elektraMalloc (sizeof (char) * (buffers->metaNameLenInd + 1));
 					retGetLongData = getLongData (sqlStmt, 3, SQL_C_CHAR, &longMetaKeyName,
@@ -539,7 +539,7 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 					retGetLongData = getLongData (sqlStmt, 4, SQL_C_CHAR, &longMetaKeyString,
 								      METASTRING_BUFFER_SIZE * 2, parentKey);
 				}
-				else if (METASTRING_BUFFER_SIZE <= buffers->metaStrLenInd)
+				else if (retGetLongData && METASTRING_BUFFER_SIZE <= buffers->metaStrLenInd)
 				{
 					longMetaKeyString = (char *) elektraMalloc (sizeof (char) * (buffers->metaStrLenInd + 1));
 					retGetLongData = getLongData (sqlStmt, 4, SQL_C_CHAR, &longMetaKeyString,
@@ -557,12 +557,7 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 					elektraFree (longMetaKeyString);
 
 					/* Statement handle was already freed by getLongData() function */
-					if (ksResult)
-					{
-						ksDel (ksResult);
-					}
-
-					SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
+					ksDel (ksResult);
 					return NULL;
 				}
 			}
@@ -584,11 +579,6 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 				elektraFree (prevKeyName);
 				prevKeyName = elektraStrDup ((const char *) buffers->bufferKeyName);
 			}
-		}
-
-		if (!ksResult)
-		{
-			ksResult = ksNew (0, KS_END);
 		}
 
 		if (!isFurtherMetaKey)
@@ -626,7 +616,7 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 		{
 			ELEKTRA_ASSERT (curKey,
 					"The flag the indicates that a further metakey is present was set, but the current key was NULL. "
-					"This is likely a programming error.\nPlease report this issues at https://issues.libelektra.org");
+					"This is likely a bug.\nPlease report this issues at https://issues.libelektra.org");
 		}
 
 		const char * metaKeyName = NULL;
@@ -645,7 +635,6 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 					"No metakey-name was found, but a metakey-string, maybe the datasource contains invalid "
 					"data, please check your datasource!");
 		}
-
 
 		if (metaKeyName)
 		{
@@ -689,12 +678,6 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 	{
 		/* Add last key */
 		ksAppendKey (ksResult, curKey);
-	}
-
-	if (!ksResult && sqlStmt)
-	{
-		/* The statement handle must be freed if the function returns NULL */
-		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 	}
 
 	return ksResult;

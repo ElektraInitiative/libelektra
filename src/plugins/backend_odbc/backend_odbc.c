@@ -137,16 +137,19 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ksReturned, Key * p
 	case ELEKTRA_KDB_GET_PHASE_PRE_STORAGE:
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 
-	case ELEKTRA_KDB_GET_PHASE_STORAGE:
-		if (ksAppend (ksReturned, getKeysFromDataSource (sharedData, false, parentKey)) == -1)
+	case ELEKTRA_KDB_GET_PHASE_STORAGE: {
+		KeySet * ksFromDs = getKeysFromDataSource (sharedData, false, parentKey);
+		if (!ksFromDs)
 		{
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 		else
 		{
+			ksAppend (ksReturned, ksFromDs);
+			ksDel (ksFromDs);
 			return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 		}
-
+	}
 	case ELEKTRA_KDB_GET_PHASE_POST_STORAGE:
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 
