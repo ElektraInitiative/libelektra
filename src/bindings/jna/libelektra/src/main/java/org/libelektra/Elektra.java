@@ -21,20 +21,20 @@ interface Elektra extends Library {
    * <br>
    * You must always call this method before retrieving or committing any keys to the database. In
    * the end of the program, after using the key database, you must not forget to {@link
-   * #kdbClose(Pointer, Pointer) kdbClose()}.<br>
+   * #elektraKdbClose(Pointer, Pointer) elektraKdbClose()}.<br>
    * <br>
    * Get a {@code KDB handle} for every thread using Elektra. Don't share the handle across threads,
    * and also not the pointer accessing it.<br>
    * <br>
-   * You don't need {@link #kdbOpen(Pointer, Pointer) kdbOpen()} if you only want to manipulate
+   * You don't need {@link #elektraKdbOpen(Pointer, Pointer) elektraKdbOpen()} if you only want to manipulate
    * plain in-memory {@code Key} or {@code KeySet} objects.
    *
-   * @see #kdbGet(Pointer, Pointer, Pointer) kdbGet()
-   * @see #kdbClose(Pointer, Pointer) kdbClose()
+   * @see #elektraKdbGet(Pointer, Pointer, Pointer) elektraKdbGet()
+   * @see #elektraKdbClose(Pointer, Pointer) elektraKdbClose()
    * @see #keyNew(String, Object...) keyNew()
    * @param contractKeySet TODO #3754 - documentation unclear - the contract that should be ensured
    *     before opening the KDB all data is copied and the KeySet can safely be used for e.g.
-   *     kdbGet() later
+   *     elektraKdbGet() later
    * @param errorKey {@link Pointer} to a valid {@code Key}, where issued errors and warnings will
    *     be made available.
    * @return
@@ -44,19 +44,19 @@ interface Elektra extends Library {
    *     </ul>
    */
   @Nullable
-  Pointer kdbOpen(@Nullable Pointer contractKeySet, Pointer errorKey);
+  Pointer elektraKdbOpen(@Nullable Pointer contractKeySet, Pointer errorKey);
 
   /**
    * Closes the session with the Key database.<br>
    * <br>
    * You must call this method when you finished your affairs with the key database. You can still
-   * manipulate {@code Key} and {@code KeySet} objects after calling {@code #kdbClose(Pointer,
+   * manipulate {@code Key} and {@code KeySet} objects after calling {@code #elektraKdbClose(Pointer,
    * Pointer)}, but you must not use any {@code kdb*()} call afterwards.<br>
    *
-   * @see #kdbOpen(Pointer, Pointer) kdbOpen()
+   * @see #elektraKdbOpen(Pointer, Pointer) elektraKdbOpen()
    * @see #keyNew(String, Object...) keyNew()
    * @param handle {@link Pointer} to a valid {@code KDB handle} as returned by {@link
-   *     #kdbOpen(Pointer, Pointer) kdbOpen()}.
+   *     #elektraKdbOpen(Pointer, Pointer) elektraKdbOpen()}.
    * @param errorKey {@link Pointer} to a valid {@code Key}, where issued errors and warnings will
    *     be made available.
    * @return
@@ -65,18 +65,18 @@ interface Elektra extends Library {
    *       <li>{@code -1} on {@code null} pointer passed
    *     </ul>
    */
-  int kdbClose(Pointer handle, Pointer errorKey);
+  int elektraKdbClose(Pointer handle, Pointer errorKey);
 
   /**
    * Retrieve keys in an atomic and universal way.<br>
    * <br>
    * The {@code returnKeySet} may already contain some keys, e.g. from previous {@link
-   * #kdbGet(Pointer, Pointer, Pointer) kdbGet()} calls. The new retrieved keys will be appended
+   * #elektraKdbGet(Pointer, Pointer, Pointer) elektraKdbGet()} calls. The new retrieved keys will be appended
    * using the native function underlying {@link #ksAppendKey(Pointer, Pointer) ksAppendKey()}.
    *
-   * @apiNote {@link #kdbGet(Pointer, Pointer, Pointer) kdbGet()} might retrieve more keys than
+   * @apiNote {@link #elektraKdbGet(Pointer, Pointer, Pointer) elektraKdbGet()} might retrieve more keys than
    *     requested (that are not below parentKey). These keys must be passed to when saving
-   *     modifications via {@link #kdbSet(Pointer, Pointer, Pointer) kdbSet()}, otherwise they will
+   *     modifications via {@link #elektraKdbSet(Pointer, Pointer, Pointer) elektraKdbSet()}, otherwise they will
    *     be lost. This stems from the fact that the user has the only copy of the whole
    *     configuration and backends only write configuration that was passed to them. For example,
    *     if you get {@code system:/mountpoint/interest} you will not only get all keys below {@code
@@ -84,18 +84,18 @@ interface Elektra extends Library {
    *     system:/mountpoint} is a mountpoint as the name suggests, but {@code
    *     system:/mountpoint/interest} is not a mountpoint). Make sure to not touch or remove keys
    *     outside the keys of interest, because others may need them!
-   * @implNote Optimization: In the first run of {@link #kdbGet(Pointer, Pointer, Pointer) kdbGet()}
+   * @implNote Optimization: In the first run of {@link #elektraKdbGet(Pointer, Pointer, Pointer) elektraKdbGet()}
    *     all requested (or more) keys are retrieved. On subsequent calls only the keys are retrieved
    *     where something was changed inside the key database. The other keys stay in the {@code
    *     KeySet} returned as passed.
-   * @see #kdbOpen(Pointer, Pointer) kdbOpen() which needs to be called before
+   * @see #elektraKdbOpen(Pointer, Pointer) elektraKdbOpen() which needs to be called before
    * @see #ksLookup(Pointer, Pointer, int) ksLookup() and
    * @see #ksLookupByName(Pointer, String, int) ksLookupByName() for powerful lookups after the
    *     {@code KeySet} was retrieved
-   * @see #kdbSet(Pointer, Pointer, Pointer) kdbSet() to save the configuration afterwards
-   * @see #kdbClose(Pointer, Pointer) kdbClose() to finish affairs with the key database
+   * @see #elektraKdbSet(Pointer, Pointer, Pointer) elektraKdbSet() to save the configuration afterwards
+   * @see #elektraKdbClose(Pointer, Pointer) elektraKdbClose() to finish affairs with the key database
    * @param handle {@link Pointer} to a valid {@code KDB handle} as returned by {@link
-   *     #kdbOpen(Pointer, Pointer) kdbOpen()}.
+   *     #elektraKdbOpen(Pointer, Pointer) elektraKdbOpen()}.
    * @param returnKeySet {@link Pointer} to a valid {@code KeySet} to be populated with all keys
    *     found. It will not be changed on error or if no update is required.
    * @param parentKey {@link Pointer} to a valid {@code Key}. It is used to add warnings and set an
@@ -112,11 +112,11 @@ interface Elektra extends Library {
    *       <li>{@code 0} if there was no update
    *       <li>{@code -1} on failure or {@code null} pointer passed
    *     </ul>
-   *     When a backend fails, {@link #kdbGet(Pointer, Pointer, Pointer) kdbGet()} will return
+   *     When a backend fails, {@link #elektraKdbGet(Pointer, Pointer, Pointer) elektraKdbGet()} will return
    *     {@code -1} with all error and warning information in the {@code parentKey} and {@code
    *     returnKeySet} left unchanged.
    */
-  int kdbGet(Pointer handle, Pointer returnKeySet, Pointer parentKey);
+  int elektraKdbGet(Pointer handle, Pointer returnKeySet, Pointer parentKey);
 
   /**
    * Set keys in an atomic and universal way.<br>
@@ -124,18 +124,18 @@ interface Elektra extends Library {
    * For the particularities of error handling, please see the documentation of the native library:
    * TODO #3754 link to C API documentation
    *
-   * @apiNote {@link #kdbGet(Pointer, Pointer, Pointer) kdbGet()} must be called before {@link
-   *     #kdbSet(Pointer, Pointer, Pointer) kdbSet()}: initially (after {@link #kdbOpen(Pointer,
-   *     Pointer) kdbOpen()}) and also after conflict errors in {@link #kdbSet(Pointer, Pointer,
-   *     Pointer) kdbSet()}. <br>
+   * @apiNote {@link #elektraKdbGet(Pointer, Pointer, Pointer) elektraKdbGet()} must be called before {@link
+   *     #elektraKdbSet(Pointer, Pointer, Pointer) elektraKdbSet()}: initially (after {@link #elektraKdbOpen(Pointer,
+   *     Pointer) elektraKdbOpen()}) and also after conflict errors in {@link #elektraKdbSet(Pointer, Pointer,
+   *     Pointer) elektraKdbSet()}. <br>
    *     It is your responsibility to save the original keyset if you need it afterwards.<br>
    *     If you want to be sure to get a fresh keyset again, you need to open a second handle to the
-   *     key database using kdbOpen().
-   * @see #kdbOpen(Pointer, Pointer) kdbopen() and
-   * @see #kdbGet(Pointer, Pointer, Pointer) kdbGet() must be called first
-   * @see #kdbClose(Pointer, Pointer) kdbClose() must be called afterwards
+   *     key database using elektraKdbOpen().
+   * @see #elektraKdbOpen(Pointer, Pointer) elektraKdbopen() and
+   * @see #elektraKdbGet(Pointer, Pointer, Pointer) elektraKdbGet() must be called first
+   * @see #elektraKdbClose(Pointer, Pointer) elektraKdbClose() must be called afterwards
    * @param handle {@link Pointer} to a valid {@code KDB handle} as returned by {@link
-   *     #kdbOpen(Pointer, Pointer) kdbOpen()}.
+   *     #elektraKdbOpen(Pointer, Pointer) elektraKdbOpen()}.
    * @param keySet {@link Pointer} to a valid {@code KeySet} containing modified keys, otherwise no
    *     update is done.
    * @param parentKey {@link Pointer} to a valid {@code Key}. It is used to add warnings and set an
@@ -143,8 +143,8 @@ interface Elektra extends Library {
    *     possible that more are changed).<br>
    *     With {@code parentKey} you can give an hint which part of the given {@code KeySet} is of
    *     interest to you. Then you promise to only modify or remove keys below this key. All others
-   *     would be passed back as they were retrieved by {@link #kdbGet(Pointer, Pointer, Pointer)
-   *     kdbGet()}.
+   *     would be passed back as they were retrieved by {@link #elektraKdbGet(Pointer, Pointer, Pointer)
+   *     elektraKdbGet()}.
    *     <ul>
    *       <li>cascading keys (starting with "/") will set the path in all namespaces
    *       <li>"/" will commit all keys
@@ -160,10 +160,10 @@ interface Elektra extends Library {
    *           will be set on {@code parentKey} if possible
    *     </ul>
    */
-  int kdbSet(Pointer handle, Pointer keySet, Pointer parentKey);
+  int elektraKdbSet(Pointer handle, Pointer keySet, Pointer parentKey);
 
   /**
-   * Sets up a contract for use with {@link #kdbOpen(Pointer, Pointer) kdbOpen()} that configures
+   * Sets up a contract for use with {@link #elektraKdbOpen(Pointer, Pointer) elektraKdbOpen()} that configures
    * the {@code gopts} plugin.
    *
    * @param contractKeySet {@link Pointer} to a valid {@code KeySet} into which the contract will be
