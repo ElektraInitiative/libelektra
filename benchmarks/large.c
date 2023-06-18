@@ -13,20 +13,20 @@ Key * key;
 
 void benchmarkOpen (void)
 {
-	kdb = kdbOpen (NULL, key);
+	kdb = elektraKdbOpen (NULL, key);
 }
 
 void benchmarkInread (void)
 {
 	KeySet * n = ksNew (0, KS_END);
-	kdbGet (kdb, n, key);
+	elektraKdbGet (kdb, n, key);
 	ksDel (n);
 }
 
 void benchmarkReadin (void)
 {
 	KeySet * n = ksNew (0, KS_END);
-	kdbGet (kdb, n, key);
+	elektraKdbGet (kdb, n, key);
 	ksDel (n);
 }
 
@@ -49,27 +49,27 @@ void benchmarkLookupByName (void)
 
 void benchmarkReread (void)
 {
-	kdbGet (kdb, large, key);
+	elektraKdbGet (kdb, large, key);
 }
 
 void benchmarkInwrite (void)
 {
-	kdbSet (kdb, large, key);
+	elektraKdbSet (kdb, large, key);
 }
 
 void benchmarkRewrite (void)
 {
-	kdbSet (kdb, large, key);
+	elektraKdbSet (kdb, large, key);
 }
 
 void benchmarkWriteout (void)
 {
-	kdbSet (kdb, large, key);
+	elektraKdbSet (kdb, large, key);
 }
 
 void benchmarkClose (void)
 {
-	kdbClose (kdb, key);
+	elektraKdbClose (kdb, key);
 }
 
 

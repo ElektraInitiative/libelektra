@@ -21,12 +21,12 @@ extern "C" {
 
 typedef struct _KDB KDB;
 
-KDB * kdbOpen (const KeySet * contract, Key * parentKey);
+KDB * elektraKdbOpen (const KeySet * contract, Key * parentKey);
 
-int kdbClose (KDB * handle, Key * errorKey);
+int elektraKdbClose (KDB * handle, Key * errorKey);
 
-int kdbGet (KDB * handle, KeySet * returned, Key * parentKey);
-int kdbSet (KDB * handle, KeySet * returned, Key * parentKey);
+int elektraKdbGet (KDB * handle, KeySet * returned, Key * parentKey);
+int elektraKdbSet (KDB * handle, KeySet * returned, Key * parentKey);
 
 
 #ifdef __cplusplus

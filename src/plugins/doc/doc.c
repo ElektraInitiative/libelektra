@@ -236,7 +236,7 @@ static void usercode (KDB * handle, KeySet * keyset, Key * key)
 	// some more user code
 	keySetString (key, "mycomment"); // the user changes the key
 	ksAppendKey (keyset, key);	 // append the key to the keyset
-	kdbSet (handle, keyset, 0);	 // and syncs it to disc
+	elektraKdbSet (handle, keyset, 0);	 // and syncs it to disc
 }
 
 // so now kdbSet is called

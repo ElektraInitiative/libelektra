@@ -15,7 +15,7 @@ static void gelektra_kdb_finalize (GObject * object)
 {
 	GElektraKdb * self = GELEKTRA_KDB (object);
 
-	if (self->handle) kdbClose (self->handle, NULL);
+	if (self->handle) elektraKdbClose (self->handle, NULL);
 	self->handle = NULL;
 
 	/* Always chain up to the parent class; as with dispose(), finalize()
@@ -45,7 +45,7 @@ static void gelektra_kdb_class_init (GElektraKdbClass * klass)
  */
 GElektraKdb * gelektra_kdb_open (GElektraKeySet * contract, GElektraKey * error)
 {
-	return gelektra_kdb_make (kdbOpen (contract == NULL ? NULL : contract->keyset, error->key));
+	return gelektra_kdb_make (elektraKdbOpen (contract == NULL ? NULL : contract->keyset, error->key));
 }
 
 /**
@@ -65,7 +65,7 @@ GElektraKdb * gelektra_kdb_make (KDB * handle)
 /* destructor */
 gint gelektra_kdb_close (GElektraKdb * kdb, GElektraKey * error)
 {
-	int ret = kdbClose (kdb->handle, (error) ? error->key : NULL);
+	int ret = elektraKdbClose (kdb->handle, (error) ? error->key : NULL);
 	kdb->handle = NULL;
 	return ret;
 }
@@ -81,17 +81,17 @@ gint gelektra_kdb_close (GElektraKdb * kdb, GElektraKey * error)
  */
 void gelektra_kdb_gi_open (GElektraKdb * kdb, GElektraKeySet * contract, GElektraKey * error)
 {
-	kdb->handle = kdbOpen (contract == NULL ? NULL : contract->keyset, error->key);
+	kdb->handle = elektraKdbOpen (contract == NULL ? NULL : contract->keyset, error->key);
 }
 
 gint gelektra_kdb_get (GElektraKdb * kdb, GElektraKeySet * returned, GElektraKey * parent)
 {
-	return kdbGet (kdb->handle, returned->keyset, parent->key);
+	return elektraKdbGet (kdb->handle, returned->keyset, parent->key);
 }
 
 gint gelektra_kdb_set (GElektraKdb * kdb, GElektraKeySet * returned, GElektraKey * parent)
 {
-	return kdbSet (kdb->handle, returned->keyset, parent->key);
+	return elektraKdbSet (kdb->handle, returned->keyset, parent->key);
 }
 
 /**

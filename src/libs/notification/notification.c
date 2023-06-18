@@ -28,7 +28,7 @@
 static void elektraNotificationKdbUpdate (KDB * kdb, Key * changedKey)
 {
 	KeySet * ks = ksNew (0, KS_END);
-	kdbGet (kdb, ks, changedKey);
+	elektraKdbGet (kdb, ks, changedKey);
 	ksDel (ks);
 }
 

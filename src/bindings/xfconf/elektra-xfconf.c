@@ -29,7 +29,7 @@ gboolean xfconf_init (GError ** error)
 		if (elektraKdb == NULL)
 		{
 			g_info ("structures are not initialized yet, proceeding");
-			elektraKdb = kdbOpen (NULL, elektraError);
+			elektraKdb = elektraKdbOpen (NULL, elektraError);
 			if (elektraKdb == NULL)
 			{
 				g_debug ("unable to open elektraKdb");
@@ -73,7 +73,7 @@ gchar ** xfconf_list_channels (void)
 	KeySet * channelKeySet = ksNew (0, KS_END);
 
 	require_channel_read_lock ();
-	kdbGet (elektraKdb, channelKeySet, parentKey);
+	elektraKdbGet (elektraKdb, channelKeySet, parentKey);
 	ssize_t keySetLength = ksGetSize (channelKeySet);
 	gchar ** channelNames = calloc (keySetLength + 1, sizeof (gchar *));
 	const Key * currentKey;

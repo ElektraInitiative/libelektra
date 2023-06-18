@@ -20,8 +20,8 @@ int main (void)
 	// clang-format off
 //! [basic usage]
 Key * key = keyNew ("/sw/tests/myapp/#0/current/",  KEY_END);
-KDB * handle = kdbOpen (NULL, key);
-kdbGet (handle, myConfig, key);
+KDB * handle = elektraKdbOpen (NULL, key);
+elektraKdbGet (handle, myConfig, key);
 Key * result = ksLookupByName (myConfig, "/sw/tests/myapp/#0/current/testkey1", 0);
 //! [basic usage]
 	// clang-format on
@@ -38,5 +38,5 @@ Key * result = ksLookupByName (myConfig, "/sw/tests/myapp/#0/current/testkey1", 
 
 	// maybe you want kdbSet() myConfig here
 
-	kdbClose (handle, 0); // no more affairs with the key database.
+	elektraKdbClose (handle, 0); // no more affairs with the key database.
 }

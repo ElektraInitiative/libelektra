@@ -153,25 +153,25 @@ int main (int argc, char ** argv)
 
 	Key * parentKey = keyNew ("user:/test", KEY_END);
 	KeySet * contract = ksNew (0, KS_END);
-	KDB * kdb = kdbOpen (contract, parentKey);
+	KDB * kdb = elektraKdbOpen (contract, parentKey);
 
 	KeySet * ks = ksNew (0, KS_END);
-	kdbGet (kdb, ks, parentKey);
+	elektraKdbGet (kdb, ks, parentKey);
 
 	KeySet * generated = keySetBuilder ();
 	ksAppend (ks, generated);
 	ksDel (generated);
 
 	timeInit ();
-	kdbSet (kdb, ks, parentKey);
+	elektraKdbSet (kdb, ks, parentKey);
 	int insertingTime = timeGetDiffMicroseconds ();
 
-	kdbClose (kdb, parentKey);
+	elektraKdbClose (kdb, parentKey);
 	ksDel (ks);
 
 	ks = ksNew (0, KS_END);
-	kdb = kdbOpen (contract, parentKey);
-	kdbGet (kdb, ks, parentKey);
+	kdb = elektraKdbOpen (contract, parentKey);
+	elektraKdbGet (kdb, ks, parentKey);
 
 	size_t modified = 0;
 	for (size_t i = keys / 2; i < keys; i++)
@@ -184,7 +184,7 @@ int main (int argc, char ** argv)
 	}
 
 	timeInit ();
-	kdbSet (kdb, ks, parentKey);
+	elektraKdbSet (kdb, ks, parentKey);
 	int modifyTime = timeGetDiffMicroseconds ();
 
 	if (verbose)
@@ -196,7 +196,7 @@ int main (int argc, char ** argv)
 
 	printf ("%d;%d\n", insertingTime, modifyTime);
 
-	kdbClose (kdb, parentKey);
+	elektraKdbClose (kdb, parentKey);
 	ksDel (contract);
 	ksDel (ks);
 	keyDel (parentKey);

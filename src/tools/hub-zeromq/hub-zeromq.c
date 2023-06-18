@@ -48,7 +48,7 @@ int main (void)
 	keyAddBaseName (configXSubEndpoint, "bind_xsub");
 	Key * configXPubEndpoint = keyDup (parentKey, KEY_CP_ALL);
 	keyAddBaseName (configXPubEndpoint, "bind_xpub");
-	KDB * kdb = kdbOpen (NULL, parentKey);
+	KDB * kdb = elektraKdbOpen (NULL, parentKey);
 	if (kdb == NULL)
 	{
 		printf ("could not open KDB. aborting\n");
@@ -57,7 +57,7 @@ int main (void)
 
 	const char * xSubEndpoint = "tcp://127.0.0.1:6000";
 	const char * xPubEndpoint = "tcp://127.0.0.1:6001";
-	kdbGet (kdb, config, parentKey);
+	elektraKdbGet (kdb, config, parentKey);
 	Key * xSubEndpointKey = ksLookup (config, configXSubEndpoint, 0);
 	if (xSubEndpointKey)
 	{
@@ -71,7 +71,7 @@ int main (void)
 
 	keyDel (configXSubEndpoint);
 	keyDel (configXPubEndpoint);
-	kdbClose (kdb, parentKey);
+	elektraKdbClose (kdb, parentKey);
 	keyDel (parentKey);
 
 	context = zmq_ctx_new ();

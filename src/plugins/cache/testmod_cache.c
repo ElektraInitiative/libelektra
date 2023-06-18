@@ -43,24 +43,24 @@ static void test_cacheNonBackendKeys (void)
 	KeySet * conf = ksNew (0, KS_END);
 
 	Key * key = keyNew ("user:/tests/cache", KEY_END);
-	KDB * handle = kdbOpen (NULL, key);
+	KDB * handle = elektraKdbOpen (NULL, key);
 
 	// the key should be in the keyset, but should not be cached
 	Key * doNotCache = keyNew ("user:/tests/cache/somekey", KEY_END);
 	ksAppendKey (conf, doNotCache);
-	kdbGet (handle, conf, key);
+	elektraKdbGet (handle, conf, key);
 	Key * result = ksLookupByName (conf, "user:/tests/cache/somekey", 0);
 	succeed_if (result != 0, "key is missing from keyset");
 
 	// the cached key should not have been persisted, so it is not in the fresh keyset
 	KeySet * freshConf = ksNew (0, KS_END);
-	kdbGet (handle, freshConf, key);
+	elektraKdbGet (handle, freshConf, key);
 	Key * freshResult = ksLookupByName (freshConf, "user:/tests/cache/somekey", 0);
 	succeed_if (freshResult == 0, "key was persisted/cached, even though it was not committed");
 	ksDel (freshConf);
 
 	ksDel (conf);
-	kdbClose (handle, key);
+	elektraKdbClose (handle, key);
 	keyDel (key);
 }
 

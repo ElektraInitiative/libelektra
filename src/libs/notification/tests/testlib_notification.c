@@ -28,28 +28,28 @@ static void test_registerInt (void)
 	int startValue = -1;
 	int value = startValue;
 
-	KDB * kdb = kdbOpen (NULL, key);
+	KDB * kdb = elektraKdbOpen (NULL, key);
 
 	succeed_if (elektraNotificationRegisterInt (kdb, valueKey, &value) == 0, "register should fail without contract");
 
-	kdbClose (kdb, key);
+	elektraKdbClose (kdb, key);
 
 	KeySet * contract = ksNew (0, KS_END);
 	elektraNotificationContract (contract);
-	kdb = kdbOpen (contract, key);
+	kdb = elektraKdbOpen (contract, key);
 
 	succeed_if (elektraNotificationRegisterInt (kdb, valueKey, &value), "register failed");
 
 	// call kdbGet; value gets automatically updated
 	KeySet * config = ksNew (0, KS_END);
-	succeed_if (kdbGet (kdb, config, key), "kdbGet failed");
+	succeed_if (elektraKdbGet (kdb, config, key), "kdbGet failed");
 
 	succeed_if (value != startValue, "value was not changed");
 
 	// cleanup
 	ksDel (config);
 	ksDel (contract);
-	kdbClose (kdb, key);
+	elektraKdbClose (kdb, key);
 	keyDel (key);
 	keyDel (valueKey);
 }
@@ -67,28 +67,28 @@ static void test_registerCallback (void)
 	Key * valueKey = keyNew ("system:/elektra/version/constants/KDB_VERSION_MAJOR", KEY_END);
 	callback_called = 0;
 
-	KDB * kdb = kdbOpen (NULL, key);
+	KDB * kdb = elektraKdbOpen (NULL, key);
 
 	succeed_if (elektraNotificationRegisterCallback (kdb, valueKey, testCallback, NULL) == 0, "register should fail without contract");
 
-	kdbClose (kdb, key);
+	elektraKdbClose (kdb, key);
 
 	KeySet * contract = ksNew (0, KS_END);
 	elektraNotificationContract (contract);
-	kdb = kdbOpen (contract, key);
+	kdb = elektraKdbOpen (contract, key);
 
 	succeed_if (elektraNotificationRegisterCallback (kdb, valueKey, testCallback, NULL), "register failed");
 
 	// call kdbGet; value gets automatically updated
 	KeySet * config = ksNew (0, KS_END);
-	succeed_if (kdbGet (kdb, config, key), "kdbGet failed");
+	succeed_if (elektraKdbGet (kdb, config, key), "kdbGet failed");
 
 	succeed_if (callback_called, "callback was not called");
 
 	// cleanup
 	ksDel (config);
 	ksDel (contract);
-	kdbClose (kdb, key);
+	elektraKdbClose (kdb, key);
 	keyDel (key);
 	keyDel (valueKey);
 }

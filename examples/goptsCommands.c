@@ -61,14 +61,14 @@ static KeySet * createSpec (void)
 static int setupSpec (void)
 {
 	Key * parentKey = keyNew (SPEC_BASE_KEY, KEY_END);
-	KDB * kdb = kdbOpen (NULL, parentKey);
+	KDB * kdb = elektraKdbOpen (NULL, parentKey);
 	KeySet * ks = ksNew (0, KS_END);
-	kdbGet (kdb, ks, parentKey);
+	elektraKdbGet (kdb, ks, parentKey);
 
 	KeySet * existing = ksCut (ks, parentKey);
 	if (ksGetSize (existing) > 0)
 	{
-		kdbClose (kdb, parentKey);
+		elektraKdbClose (kdb, parentKey);
 		ksDel (ks);
 		ksDel (existing);
 		return 0;
@@ -78,8 +78,8 @@ static int setupSpec (void)
 	KeySet * spec = createSpec ();
 	ksAppend (ks, spec);
 	ksDel (spec);
-	kdbSet (kdb, ks, parentKey);
-	kdbClose (kdb, parentKey);
+	elektraKdbSet (kdb, ks, parentKey);
+	elektraKdbClose (kdb, parentKey);
 	ksDel (ks);
 
 	return 1;
@@ -89,13 +89,13 @@ static int setupSpec (void)
 static void removeSpec (void)
 {
 	Key * parentKey = keyNew (SPEC_BASE_KEY, KEY_END);
-	KDB * kdb = kdbOpen (NULL, parentKey);
+	KDB * kdb = elektraKdbOpen (NULL, parentKey);
 	KeySet * ks = ksNew (0, KS_END);
-	kdbGet (kdb, ks, parentKey);
+	elektraKdbGet (kdb, ks, parentKey);
 	KeySet * spec = ksCut (ks, parentKey);
 	ksDel (spec);
-	kdbSet (kdb, ks, parentKey);
-	kdbClose (kdb, parentKey);
+	elektraKdbSet (kdb, ks, parentKey);
+	elektraKdbClose (kdb, parentKey);
 	ksDel (ks);
 }
 
@@ -120,15 +120,15 @@ int main (int argc, const char ** argv)
 
 	elektraGOptsContract (contract, argc, argv, (const char * const *) environ, parentKey, goptsConfig);
 
-	KDB * kdb = kdbOpen (contract, parentKey);
+	KDB * kdb = elektraKdbOpen (contract, parentKey);
 
 	KeySet * ks = ksNew (0, KS_END);
-	int rc = kdbGet (kdb, ks, parentKey);
+	int rc = elektraKdbGet (kdb, ks, parentKey);
 
 	if (rc == -1)
 	{
 		fprintf (stderr, "ERROR: kdbGet failed! %s\n", keyString (keyGetMeta (parentKey, "error/reason")));
-		kdbClose (kdb, parentKey);
+		elektraKdbClose (kdb, parentKey);
 		keyDel (parentKey);
 		ksDel (ks);
 		removeSpec ();
@@ -140,7 +140,7 @@ int main (int argc, const char ** argv)
 	{
 		const char * help = keyString (ksLookupByName (ks, "proc:/elektra/gopts/help/message", 0));
 		printf ("%s\n", help);
-		kdbClose (kdb, parentKey);
+		elektraKdbClose (kdb, parentKey);
 		keyDel (parentKey);
 		ksDel (ks);
 		removeSpec ();
@@ -154,7 +154,7 @@ int main (int argc, const char ** argv)
 	{
 		printf ("print version information\n");
 
-		kdbClose (kdb, parentKey);
+		elektraKdbClose (kdb, parentKey);
 		keyDel (parentKey);
 		ksDel (ks);
 		removeSpec ();
@@ -168,7 +168,7 @@ int main (int argc, const char ** argv)
 		if (lookup == NULL || strlen (keyString (lookup)) == 0)
 		{
 			printf ("report the error 'empty parameter: keyname'\n");
-			kdbClose (kdb, parentKey);
+			elektraKdbClose (kdb, parentKey);
 			keyDel (parentKey);
 			ksDel (ks);
 			removeSpec ();
@@ -190,7 +190,7 @@ int main (int argc, const char ** argv)
 		if (lookup == NULL || strlen (keyname = keyString (lookup)) == 0)
 		{
 			printf ("report the error 'missing parameter: keyname'\n");
-			kdbClose (kdb, parentKey);
+			elektraKdbClose (kdb, parentKey);
 			keyDel (parentKey);
 			ksDel (ks);
 			removeSpec ();
@@ -200,7 +200,7 @@ int main (int argc, const char ** argv)
 		if (lookup == NULL)
 		{
 			printf ("report the error 'missing parameter: value'\n");
-			kdbClose (kdb, parentKey);
+			elektraKdbClose (kdb, parentKey);
 			keyDel (parentKey);
 			ksDel (ks);
 			removeSpec ();
@@ -237,7 +237,7 @@ int main (int argc, const char ** argv)
 		}
 	}
 
-	kdbClose (kdb, parentKey);
+	elektraKdbClose (kdb, parentKey);
 	keyDel (parentKey);
 	ksDel (ks);
 

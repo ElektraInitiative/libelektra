@@ -15,12 +15,12 @@ int main (void)
 {
 	KeySet * myConfig = ksNew (0, KS_END);
 	Key * key = keyNew ("system:/test/myapp", KEY_END);
-	KDB * handle = kdbOpen (NULL, key);
+	KDB * handle = elektraKdbOpen (NULL, key);
 
-	kdbGet (handle, myConfig, key);
+	elektraKdbGet (handle, myConfig, key);
 
 	keySetName (key, "user:/test/myapp");
-	kdbGet (handle, myConfig, key);
+	elektraKdbGet (handle, myConfig, key);
 
 	// check for errors in key
 	keyDel (key);
@@ -39,6 +39,6 @@ int main (void)
 
 	// maybe you want kdbSet() myConfig here
 
-	kdbClose (handle, 0); // no more affairs with the key database.
+	elektraKdbClose (handle, 0); // no more affairs with the key database.
 	return 0;
 }

@@ -11,7 +11,7 @@ static void test_contextShouldNotBeNull (void)
 	// Arrange
 	Key * parentKey = keyNew ("user:/test", KEY_END);
 	KeySet * contract = ksNew (0, KS_END);
-	KDB * kdb = kdbOpen (contract, parentKey);
+	KDB * kdb = elektraKdbOpen (contract, parentKey);
 
 	// Act
 	const ChangeTrackingContext * context = elektraChangeTrackingGetContextFromKdb (kdb);
@@ -19,7 +19,7 @@ static void test_contextShouldNotBeNull (void)
 	// Assert
 	succeed_if (context != NULL, "context should not be null");
 
-	kdbClose (kdb, parentKey);
+	elektraKdbClose (kdb, parentKey);
 	keyDel (parentKey);
 	ksDel (contract);
 }
@@ -31,12 +31,12 @@ static void test_shouldFindAddedKeys (void)
 	// Arrange
 	Key * parentKey = keyNew ("user:/test/add", KEY_END);
 	KeySet * contract = ksNew (0, KS_END);
-	KDB * kdb = kdbOpen (contract, parentKey);
+	KDB * kdb = elektraKdbOpen (contract, parentKey);
 
 	KeySet * ks = ksNew (0, KS_END);
 
 	// Act
-	kdbGet (kdb, ks, parentKey);
+	elektraKdbGet (kdb, ks, parentKey);
 	ksAppendKey (ks, keyNew ("user:/test/add/123", KEY_VALUE, "xyz", KEY_END));
 
 	const ChangeTrackingContext * context = elektraChangeTrackingGetContextFromKdb (kdb);
@@ -55,7 +55,7 @@ static void test_shouldFindAddedKeys (void)
 	succeed_if (ksGetSize (removedKeys) == 0, "removedKeys should contain no keys");
 	succeed_if (ksGetSize (modifiedKeys) == 0, "modifiedKeys should contain no keys");
 
-	kdbClose (kdb, parentKey);
+	elektraKdbClose (kdb, parentKey);
 	keyDel (parentKey);
 	ksDel (contract);
 	ksDel (ks);
@@ -78,21 +78,21 @@ static void test_shouldFindKeysWithModifiedStringValue (void)
 	KeySet * ks = ksNew (0, KS_END);
 
 	// First store something into KDB
-	KDB * kdb = kdbOpen (contract, parentKey);
-	kdbGet (kdb, ks, parentKey);
+	KDB * kdb = elektraKdbOpen (contract, parentKey);
+	elektraKdbGet (kdb, ks, parentKey);
 	ksAppendKey (ks, keyNew ("user:/test/modify/123", KEY_VALUE, "xyz", KEY_END));
-	kdbSet (kdb, ks, parentKey);
-	kdbClose (kdb, parentKey);
+	elektraKdbSet (kdb, ks, parentKey);
+	elektraKdbClose (kdb, parentKey);
 
 
 	ksClear (ks);
 
 	// Reopen KDB
-	kdb = kdbOpen (contract, parentKey);
+	kdb = elektraKdbOpen (contract, parentKey);
 
 
 	// Act
-	kdbGet (kdb, ks, parentKey);
+	elektraKdbGet (kdb, ks, parentKey);
 	Key * key = ksLookupByName (ks, "user:/test/modify/123", 0);
 	exit_if_fail (key != NULL, "did not find test key");
 
@@ -116,9 +116,9 @@ static void test_shouldFindKeysWithModifiedStringValue (void)
 
 	// Cleanup
 	keyDel (ksLookupByName (ks, "user:/test/modify/123", KDB_O_POP));
-	kdbSet (kdb, ks, parentKey);
+	elektraKdbSet (kdb, ks, parentKey);
 
-	kdbClose (kdb, parentKey);
+	elektraKdbClose (kdb, parentKey);
 	keyDel (parentKey);
 	ksDel (contract);
 	ksDel (ks);
@@ -141,20 +141,20 @@ static void test_shouldFindRemoved (void)
 	KeySet * ks = ksNew (0, KS_END);
 
 	// First store something into KDB
-	KDB * kdb = kdbOpen (contract, parentKey);
-	kdbGet (kdb, ks, parentKey);
+	KDB * kdb = elektraKdbOpen (contract, parentKey);
+	elektraKdbGet (kdb, ks, parentKey);
 	ksAppendKey (ks, keyNew ("user:/test/remove/123", KEY_VALUE, "xyz", KEY_END));
-	kdbSet (kdb, ks, parentKey);
-	kdbClose (kdb, parentKey);
+	elektraKdbSet (kdb, ks, parentKey);
+	elektraKdbClose (kdb, parentKey);
 
 
 	ksClear (ks);
 
 	// Reopen KDB
-	kdb = kdbOpen (contract, parentKey);
+	kdb = elektraKdbOpen (contract, parentKey);
 
 	// Act
-	kdbGet (kdb, ks, parentKey);
+	elektraKdbGet (kdb, ks, parentKey);
 	Key * key = ksLookupByName (ks, "user:/test/remove/123", KDB_O_POP);
 	exit_if_fail (key != NULL, "did not find test key");
 
@@ -177,9 +177,9 @@ static void test_shouldFindRemoved (void)
 	succeed_if (ksGetSize (modifiedKeys) == 0, "modifiedKeys should contain no keys");
 
 	// Cleanup
-	kdbSet (kdb, ks, parentKey);
+	elektraKdbSet (kdb, ks, parentKey);
 
-	kdbClose (kdb, parentKey);
+	elektraKdbClose (kdb, parentKey);
 	keyDel (parentKey);
 	ksDel (contract);
 	ksDel (ks);

@@ -21,14 +21,14 @@ int main (void)
 {
 	KeySet * myConfig = ksNew (0, KS_END);
 	Key * key = keyNew ("/sw/MyApp", KEY_END);
-	KDB * handle = kdbOpen (NULL, key);
+	KDB * handle = elektraKdbOpen (NULL, key);
 
 	if (!handle) printError (key);
 
 
 	printWarnings (key);
 
-	if (kdbGet (handle, myConfig, key) < 0) printError (key);
+	if (elektraKdbGet (handle, myConfig, key) < 0) printError (key);
 
 
 	printWarnings (key);
@@ -53,7 +53,7 @@ int main (void)
 
 	// maybe you want kdbSet() myConfig here
 
-	kdbClose (handle, 0); // no more affairs with the key database.
+	elektraKdbClose (handle, 0); // no more affairs with the key database.
 }
 
 

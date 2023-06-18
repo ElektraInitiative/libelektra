@@ -35,11 +35,11 @@ void print_warnings (Key * err)
 void check_key (void)
 {
 	Key * error_key = keyNew ("/", KEY_END);
-	KDB * kdb_handle = kdbOpen (NULL, error_key);
+	KDB * kdb_handle = elektraKdbOpen (NULL, error_key);
 	Key * top = keyNew ("/", KEY_END);
 	keySetName (top, "user:/sw/MyApp"); // == 14
 	KeySet * ks = ksNew (0, KS_END);
-	kdbGet (kdb_handle, ks, top);
+	elektraKdbGet (kdb_handle, ks, top);
 	Key * key = keyNew ("/", KEY_END);
 	keySetName (key, "user:/sw/MyApp/Tests/TestKey1"); // == 14
 	Key * result = ksLookup (ks, key, KDB_O_NONE);
@@ -50,7 +50,7 @@ void check_key (void)
 	ksDel (ks);
 	keyDel (key);
 	keyDel (top);
-	kdbClose (kdb_handle, error_key);
+	elektraKdbClose (kdb_handle, error_key);
 	keyDel (error_key);
 }
 
@@ -58,23 +58,23 @@ void check_key (void)
 int main (void)
 {
 	Key * error_key = keyNew ("/", KEY_END);
-	KDB * kdb_handle = kdbOpen (NULL, error_key);
+	KDB * kdb_handle = elektraKdbOpen (NULL, error_key);
 	Key * top = keyNew ("/", KEY_END);
 	keySetName (top, "user:/sw/MyApp");
 
 	KeySet * ks = ksNew (0, KS_END);
-	kdbGet (kdb_handle, ks, top);
+	elektraKdbGet (kdb_handle, ks, top);
 
 	Key * key = keyNew ("/", KEY_END);
 	keySetName (key, "user:/sw/MyApp/Tests/TestKey1"); // == 31
 	keySetString (key, "NULLTestValue");		   // == 14
 	keySetMeta (key, "comment/#0", "NULLTestComment"); // == 16
 	ksAppendKey (ks, key);				   // == 1
-	kdbSet (kdb_handle, ks, top);			   // == -1
+	elektraKdbSet (kdb_handle, ks, top);			   // == -1
 	print_warnings (top);
 	keyDel (top);
 	ksDel (ks);
-	kdbClose (kdb_handle, error_key);
+	elektraKdbClose (kdb_handle, error_key);
 	keyDel (error_key);
 
 	check_key ();
