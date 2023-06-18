@@ -7,10 +7,10 @@ libelektra_0.8 {
 	elektraPluginGetFunction;
 	elektraPluginOpen;
 
-	kdbClose;
-	kdbGet;
-	kdbOpen;
-	kdbSet;
+	elektraKdbClose;
+	elektraKdbGet;
+	elektraKdbOpen;
+	elektraKdbSet;
 };
 
 libelektra_1.0 {
