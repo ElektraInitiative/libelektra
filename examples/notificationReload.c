@@ -76,7 +76,7 @@ static void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 	if (data->kdb != NULL)
 	{
 		// Cleanup notifications and close KDB
-		kdbClose (data->kdb, data->parentKey);
+		elektraKdbClose (data->kdb, data->parentKey);
 		didReload = 1;
 	}
 
@@ -84,7 +84,7 @@ static void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 	elektraIoContract (contract, data->binding);
 	elektraNotificationContract (contract);
 
-	data->kdb = kdbOpen (contract, data->parentKey);
+	data->kdb = elektraKdbOpen (contract, data->parentKey);
 	if (data->kdb == NULL)
 	{
 		printf ("could not open KDB, aborting\n");
@@ -107,7 +107,7 @@ static void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 	keyDel (elektraKey);
 
 	// Get configuration
-	kdbGet (data->kdb, data->config, data->parentKey);
+	elektraKdbGet (data->kdb, data->config, data->parentKey);
 
 	if (didReload)
 	{
@@ -123,7 +123,7 @@ static gboolean onSIGNAL (gpointer user_data)
 	elektraFree (data->timer);
 	elektraIoBindingRemoveTimer (data->reload);
 	elektraFree (data->reload);
-	kdbClose (data->kdb, data->parentKey);
+	elektraKdbClose (data->kdb, data->parentKey);
 	elektraIoBindingCleanup (data->binding);
 
 	g_main_loop_quit (data->loop);

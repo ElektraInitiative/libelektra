@@ -57,7 +57,7 @@ public class KDB implements AutoCloseable {
     var errorKey = Key.create();
     var session =
         checkKDBPointer(
-            Elektra.INSTANCE.kdbOpen(
+            Elektra.INSTANCE.elektraKdbOpen(
                 contract == null ? null : contract.getPointer(), errorKey.getPointer()),
             errorKey);
 
@@ -81,7 +81,7 @@ public class KDB implements AutoCloseable {
   @Nonnull
   public static KDB open(Key warningsKey) throws KDBException {
     argNotNull(warningsKey, "Key 'warningsKey'");
-    return checkKDBPointer(Elektra.INSTANCE.kdbOpen(null, warningsKey.getPointer()), warningsKey);
+    return checkKDBPointer(Elektra.INSTANCE.elektraKdbOpen(null, warningsKey.getPointer()), warningsKey);
   }
 
   /**
@@ -103,7 +103,7 @@ public class KDB implements AutoCloseable {
     argNotNull(contract, "KeySet 'contract'");
     argNotNull(warningsKey, "Key 'warningsKey'");
     return checkKDBPointer(
-        Elektra.INSTANCE.kdbOpen(contract.getPointer(), warningsKey.getPointer()), warningsKey);
+        Elektra.INSTANCE.elektraKdbOpen(contract.getPointer(), warningsKey.getPointer()), warningsKey);
   }
 
   @Nonnull
@@ -142,7 +142,7 @@ public class KDB implements AutoCloseable {
    */
   public void close(Key warningsKey) throws KDBException {
     argNotNull(warningsKey, "Key 'warningsKey'");
-    if (Elektra.INSTANCE.kdbClose(getPointer(), warningsKey.getPointer()) != 0) {
+    if (Elektra.INSTANCE.elektraKdbClose(getPointer(), warningsKey.getPointer()) != 0) {
       throw KDBException.getMappedException(warningsKey);
     }
     pointer = null;
@@ -268,7 +268,7 @@ public class KDB implements AutoCloseable {
     argNotNull(keySet, "KeySet 'keySet'");
     argNotNull(parentKey, "Key 'parentKey'");
     checkKDBReturnValue(
-        Elektra.INSTANCE.kdbGet(getPointer(), keySet.getPointer(), parentKey.getPointer()),
+        Elektra.INSTANCE.elektraKdbGet(getPointer(), keySet.getPointer(), parentKey.getPointer()),
         parentKey);
     return this;
   }
@@ -299,7 +299,7 @@ public class KDB implements AutoCloseable {
     argNotNull(keySet, "KeySet 'keySet'");
     argNotNull(parentKey, "Key 'parentKey'");
     checkKDBReturnValue(
-        Elektra.INSTANCE.kdbSet(getPointer(), keySet.getPointer(), parentKey.getPointer()),
+        Elektra.INSTANCE.elektraKdbSet(getPointer(), keySet.getPointer(), parentKey.getPointer()),
         parentKey);
     return this;
   }

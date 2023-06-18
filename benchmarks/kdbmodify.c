@@ -28,12 +28,12 @@ int main (void)
 	timeInit ();
 
 	Key * parentKey = keyNew ("user:/benchmark", KEY_END);
-	KDB * handle = kdbOpen (NULL, parentKey);
+	KDB * handle = elektraKdbOpen (NULL, parentKey);
 	fprintf (stdout, CSV_STR_FMT, "core", "kdbOpen", timeGetDiffMicroseconds ());
 
 	KeySet * returned = ksNew (0, KS_END);
 	timeInit ();
-	kdbGet (handle, returned, parentKey);
+	elektraKdbGet (handle, returned, parentKey);
 	fprintf (stdout, CSV_STR_FMT, "core", "kdbGet", timeGetDiffMicroseconds ());
 
 	if (ksGetSize (returned) == 0)
@@ -53,7 +53,7 @@ int main (void)
 	}
 
 error:
-	kdbClose (handle, parentKey);
+	elektraKdbClose (handle, parentKey);
 	ksDel (returned);
 	keyDel (parentKey);
 

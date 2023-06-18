@@ -47,9 +47,9 @@ int main (void)
 //! [set]
 KeySet * myConfig = ksNew (0, KS_END);
 Key * parentKey = keyNew ("system:/sw/MyApp", KEY_END);
-KDB * handle = kdbOpen (NULL, parentKey);
+KDB * handle = elektraKdbOpen (NULL, parentKey);
 
-kdbGet (handle, myConfig, parentKey); // kdbGet needs to be called first!
+elektraKdbGet (handle, myConfig, parentKey); // kdbGet needs to be called first!
 KeySet * base = ksDup (myConfig);     // save a copy of original keyset
 
 // change the keys within myConfig
@@ -57,12 +57,12 @@ ksAppendKey (myConfig, keyNew ("system:/sw/MyApp/Test", KEY_VALUE, "5", KEY_END)
 
 KeySet * ours = ksDup (myConfig); // save a copy of our keyset
 KeySet * theirs;		  // needed for 3-way merging
-int ret = kdbSet (handle, myConfig, parentKey);
+int ret = elektraKdbSet (handle, myConfig, parentKey);
 while (ret == -1) // as long as we have an error
 {
 	int strategy = showElektraErrorDialog (parentKey);
 	theirs = ksDup (ours);
-	kdbGet (handle, theirs, parentKey); // refresh key database
+	elektraKdbGet (handle, theirs, parentKey); // refresh key database
 	KeySet * result = elektraMerge(
 		ksCut(ours, parentKey), parentKey,
 		ksCut(theirs, parentKey), parentKey,
@@ -71,7 +71,7 @@ while (ret == -1) // as long as we have an error
 	int numberOfConflicts = elektraMergeGetConflicts (parentKey);
 	ksDel (theirs);
 	if (result != NULL) {
-		ret = kdbSet (handle, result, parentKey);
+		ret = elektraKdbSet (handle, result, parentKey);
 	} else {
 		// an error happened while merging
 		if (numberOfConflicts > 0 && strategy == MERGE_STRATEGY_ABORT)
@@ -92,7 +92,7 @@ ksDel (ours);
 ksDel (base);
 ksDel (myConfig); // delete the in-memory configuration
 
-kdbClose (handle, parentKey); // no more affairs with the key database.
+elektraKdbClose (handle, parentKey); // no more affairs with the key database.
 keyDel (parentKey);
 //! [set]
 }

@@ -177,10 +177,10 @@ void printVersion ()
 {
 	cout << "Elektra getenv is active" << std::endl;
 	Key * k = keyNew ("system:/elektra/version", KEY_END);
-	KDB * kdb = kdbOpen (NULL, k);
+	KDB * kdb = elektraKdbOpen (NULL, k);
 	KeySet * c = ksNew (20, KS_END);
-	kdbGet (kdb, c, k);
-	kdbClose (kdb, k);
+	elektraKdbGet (kdb, c, k);
+	elektraKdbClose (kdb, k);
 	keyDel (k);
 	Key * kdb_version = ksLookupByName (c, "system:/elektra/version/constants/KDB_VERSION", 0);
 	if (!kdb_version)
@@ -433,8 +433,8 @@ extern "C" void elektraOpen (int * argc, char ** argv)
 
 	elektraParentKey = keyNew ("/elektra/intercept/getenv", KEY_END);
 	elektraConfig = ksNew (20, KS_END);
-	elektraRepo = kdbOpen (NULL, elektraParentKey);
-	kdbGet (elektraRepo, elektraConfig, elektraParentKey);
+	elektraRepo = elektraKdbOpen (NULL, elektraParentKey);
+	elektraKdbGet (elektraRepo, elektraConfig, elektraParentKey);
 
 	parseEnvironment ();
 	if (argc && argv)
@@ -443,10 +443,10 @@ extern "C" void elektraOpen (int * argc, char ** argv)
 	}
 
 	// reopen everything (if wrong variable names were used before)
-	kdbClose (elektraRepo, elektraParentKey);
-	elektraRepo = kdbOpen (NULL, elektraParentKey);
+	elektraKdbClose (elektraRepo, elektraParentKey);
+	elektraRepo = elektraKdbOpen (NULL, elektraParentKey);
 	std::string name = keyName (elektraParentKey);
-	kdbGet (elektraRepo, elektraConfig, elektraParentKey);
+	elektraKdbGet (elektraRepo, elektraConfig, elektraParentKey);
 	addLayers ();
 	applyOptions ();
 	elektraUnlockMutex ();
@@ -457,7 +457,7 @@ extern "C" void elektraClose ()
 	elektraLockMutex ();
 	if (elektraRepo)
 	{
-		kdbClose (elektraRepo, elektraParentKey);
+		elektraKdbClose (elektraRepo, elektraParentKey);
 		ksDel (elektraConfig);
 		keyDel (elektraParentKey);
 		elektraRepo = nullptr;
@@ -595,7 +595,7 @@ char * elektraGetEnv (const char * cname, gfcn origGetenv)
 		// are we now ready to reload?
 		if (now >= elektraReloadNext)
 		{
-			int ret = kdbGet (elektraRepo, elektraConfig, elektraParentKey);
+			int ret = elektraKdbGet (elektraRepo, elektraConfig, elektraParentKey);
 
 			// was there a change?
 			if (ret == 1)

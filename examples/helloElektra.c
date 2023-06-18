@@ -17,10 +17,10 @@ int main (void)
 	Key * root = keyNew ("user:/test", KEY_END);
 
 	printf ("Open key database\n");
-	KDB * handle = kdbOpen (NULL, root);
+	KDB * handle = elektraKdbOpen (NULL, root);
 
 	printf ("Retrieve key set\n");
-	kdbGet (handle, config, root);
+	elektraKdbGet (handle, config, root);
 
 	printf ("Number of key-value pairs: %zd\n", ksGetSize (config));
 
@@ -37,7 +37,7 @@ int main (void)
 	printf ("Delete key-value pairs inside memory\n");
 	ksDel (config);
 	printf ("Close key database\n");
-	kdbClose (handle, 0);
+	elektraKdbClose (handle, 0);
 
 	return 0;
 }

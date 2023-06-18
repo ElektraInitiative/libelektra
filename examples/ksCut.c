@@ -24,12 +24,12 @@ int main (void)
 	// clang-format off
 	//! [cut]
 	Key * parentKey = keyNew ("system:/mountpoint/interest", KEY_END);
-	KDB * kdb = kdbOpen (NULL, parentKey);
+	KDB * kdb = elektraKdbOpen (NULL, parentKey);
 	KeySet * ks = ksNew (0, KS_END);
-	kdbGet (kdb, ks, parentKey);
+	elektraKdbGet (kdb, ks, parentKey);
 	KeySet * returned = ksCut (ks, parentKey);
-	kdbSet (kdb, ks, parentKey); // all keys below cutpoint are now removed
-	kdbClose (kdb, parentKey);
+	elektraKdbSet (kdb, ks, parentKey); // all keys below cutpoint are now removed
+	elektraKdbClose (kdb, parentKey);
 	//! [cut]
 	outputKeySet (returned);
 	outputKeySet (ks);

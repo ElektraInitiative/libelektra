@@ -18,7 +18,7 @@ impl Drop for KDB {
     fn drop(&mut self) {
         let mut err_key = StringKey::new_empty();
         unsafe {
-            elektra_sys::kdbClose(self.as_ptr(), err_key.as_ptr());
+            elektra_sys::elektraKdbClose(self.as_ptr(), err_key.as_ptr());
         }
     }
 }
@@ -33,8 +33,8 @@ impl KDB {
         let contract_opt = contract.into();
 
         let kdb_ptr = match contract_opt {
-            Some(mut contract) => unsafe { elektra_sys::kdbOpen(contract.as_ptr(), key.as_ptr()) },
-            None => unsafe { elektra_sys::kdbOpen(std::ptr::null_mut(), key.as_ptr()) },
+            Some(mut contract) => unsafe { elektra_sys::elektraKdbOpen(contract.as_ptr(), key.as_ptr()) },
+            None => unsafe { elektra_sys::elektraKdbOpen(std::ptr::null_mut(), key.as_ptr()) },
         };
 
         if kdb_ptr.is_null() {
@@ -57,7 +57,7 @@ impl KDB {
         keyset: &mut KeySet,
         key: &mut StringKey<'a>,
     ) -> Result<bool, KDBError<'a>> {
-        let ret_val = unsafe { elektra_sys::kdbGet(self.as_ptr(), keyset.as_ptr(), key.as_ptr()) };
+        let ret_val = unsafe { elektra_sys::elektraKdbGet(self.as_ptr(), keyset.as_ptr(), key.as_ptr()) };
 
         if ret_val == 1 {
             Ok(true)
@@ -79,7 +79,7 @@ impl KDB {
         keyset: &mut KeySet,
         key: &mut StringKey<'a>,
     ) -> Result<bool, KDBError<'a>> {
-        let ret_val = unsafe { elektra_sys::kdbSet(self.as_ptr(), keyset.as_ptr(), key.as_ptr()) };
+        let ret_val = unsafe { elektra_sys::elektraKdbSet(self.as_ptr(), keyset.as_ptr(), key.as_ptr()) };
 
         if ret_val == 1 {
             Ok(true)
@@ -93,7 +93,7 @@ impl KDB {
     /// Returns the raw pointer of the KDB object.
     /// Should be used with caution. In particular,
     /// the pointer should only be modified with
-    /// `elektra_sys::kdb*` functions, but `kdbClose`
+    /// `elektra_sys::kdb*` functions, but `elektraKdbClose`
     /// should not be called.
     pub fn as_ptr(&mut self) -> *mut elektra_sys::KDB {
         self.ptr.as_ptr()

@@ -35,16 +35,16 @@ int main (void)
 		Key * parentKey = keyNew ("user:/", KEY_END);
 
 		timeInit ();
-		KDB * handle = kdbOpen (NULL, parentKey);
+		KDB * handle = elektraKdbOpen (NULL, parentKey);
 		fprintf (stdout, CSV_STR_FMT, "core", "kdbOpen", timeGetDiffMicroseconds ());
 
-		kdbGet (handle, returned, parentKey);
+		elektraKdbGet (handle, returned, parentKey);
 		fprintf (stdout, CSV_STR_FMT, "core", "kdbGet", timeGetDiffMicroseconds ());
 
 		// ksAppend (returned, large);
-		kdbSet (handle, large, parentKey);
+		elektraKdbSet (handle, large, parentKey);
 		fprintf (stdout, CSV_STR_FMT, "core", "kdbSet", timeGetDiffMicroseconds ());
-		kdbClose (handle, parentKey);
+		elektraKdbClose (handle, parentKey);
 		keyDel (parentKey);
 		ksDel (returned);
 	}
@@ -53,15 +53,15 @@ int main (void)
 	{
 		timeInit ();
 		Key * parentKey = keyNew ("user:/benchmark", KEY_END);
-		KDB * handle = kdbOpen (NULL, parentKey);
+		KDB * handle = elektraKdbOpen (NULL, parentKey);
 		fprintf (stdout, CSV_STR_FMT, "core", "kdbOpen", timeGetDiffMicroseconds ());
 
 		KeySet * returned = ksNew (0, KS_END);
 		timeInit ();
-		kdbGet (handle, returned, parentKey);
+		elektraKdbGet (handle, returned, parentKey);
 		fprintf (stdout, CSV_STR_FMT, "core", "kdbGet", timeGetDiffMicroseconds ());
 
-		kdbClose (handle, parentKey);
+		elektraKdbClose (handle, parentKey);
 		ksDel (returned);
 		keyDel (parentKey);
 	}

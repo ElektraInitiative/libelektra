@@ -26,11 +26,11 @@ int main (void)
 
 	for (size_t i = 0; i < NUM_RUNS; ++i)
 	{
-		KDB * handle = kdbOpen (NULL, parentKey);
+		KDB * handle = elektraKdbOpen (NULL, parentKey);
 
 		KeySet * ks = ksNew (0, KS_END);
 
-		kdbGet (handle, ks, parentKey);
+		elektraKdbGet (handle, ks, parentKey);
 
 		printf ("Retrieved %d keys\n", (int) ksGetSize (ks));
 
@@ -42,7 +42,7 @@ int main (void)
 	{
 		printf ("Freeing %d keys\n", (int) ksGetSize (keysets[i]));
 
-		kdbClose (handles[i], parentKey);
+		elektraKdbClose (handles[i], parentKey);
 		ksDel (keysets[i]);
 	}
 

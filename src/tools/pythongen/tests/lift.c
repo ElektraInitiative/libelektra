@@ -40,17 +40,17 @@ void kdbGetByName (KDB * kdb, KeySet * conf, Key * parentKey, char * where)
 {
 	keySetName (parentKey, "system");
 	keyAddName (parentKey, where);
-	kdbGet (kdb, conf, parentKey);
+	elektraKdbGet (kdb, conf, parentKey);
 
 	keySetName (parentKey, "user");
 	keyAddName (parentKey, where);
-	kdbGet (kdb, conf, parentKey);
+	elektraKdbGet (kdb, conf, parentKey);
 }
 
 int main (int argc, char ** argv)
 {
 	Key * parentKey = keyNew ("", KEY_END);
-	KDB * kdb = kdbOpen (NULL, parentKey);
+	KDB * kdb = elektraKdbOpen (NULL, parentKey);
 	KeySet * conf = ksNew (0, KS_END);
 
 	// get all config files
@@ -86,11 +86,11 @@ int main (int argc, char ** argv)
 	{
 		printf ("Write out config\n");
 		keySetName (parentKey, "user:/test/lift");
-		kdbSet (kdb, conf, parentKey);
+		elektraKdbSet (kdb, conf, parentKey);
 	}
 
 	ksDel (conf);
-	kdbClose (kdb, parentKey);
+	elektraKdbClose (kdb, parentKey);
 	keyDel (parentKey);
 	return retval;
 }

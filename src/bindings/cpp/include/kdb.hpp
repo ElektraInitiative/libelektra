@@ -136,7 +136,7 @@ inline KDB::KDB (KeySet & contract, Key & errorKey)
  */
 inline void KDB::open (Key & errorKey)
 {
-	handle = ckdb::kdbOpen (NULL, errorKey.getKey ());
+	handle = ckdb::elektraKdbOpen (NULL, errorKey.getKey ());
 	if (!handle)
 	{
 		throw kdb::KDBException (errorKey);
@@ -154,7 +154,7 @@ inline void KDB::open (Key & errorKey)
  */
 inline void KDB::open (KeySet & contract, Key & errorKey)
 {
-	handle = ckdb::kdbOpen (contract.getKeySet (), errorKey.getKey ());
+	handle = ckdb::elektraKdbOpen (contract.getKeySet (), errorKey.getKey ());
 	if (!handle)
 	{
 		throw kdb::KDBException (errorKey);
@@ -171,7 +171,7 @@ inline void KDB::open (KeySet & contract, Key & errorKey)
 inline void KDB::close () throw ()
 {
 	Key errorKey;
-	ckdb::kdbClose (handle, errorKey.getKey ());
+	ckdb::elektraKdbClose (handle, errorKey.getKey ());
 	handle = nullptr;
 }
 
@@ -187,7 +187,7 @@ inline void KDB::close () throw ()
  */
 inline void KDB::close (Key & errorKey) throw ()
 {
-	ckdb::kdbClose (handle, errorKey.getKey ());
+	ckdb::elektraKdbClose (handle, errorKey.getKey ());
 	handle = nullptr;
 }
 
@@ -236,7 +236,7 @@ inline int KDB::get (KeySet & returned, std::string const & keyname)
  */
 inline int KDB::get (KeySet & returned, Key & parentKey)
 {
-	int ret = ckdb::kdbGet (handle, returned.getKeySet (), parentKey.getKey ());
+	int ret = ckdb::elektraKdbGet (handle, returned.getKeySet (), parentKey.getKey ());
 	if (ret == -1)
 	{
 		throw KDBException (parentKey);
@@ -280,7 +280,7 @@ inline int KDB::set (KeySet & returned, std::string const & keyname)
  */
 inline int KDB::set (KeySet & returned, Key & parentKey)
 {
-	int ret = ckdb::kdbSet (handle, returned.getKeySet (), parentKey.getKey ());
+	int ret = ckdb::elektraKdbSet (handle, returned.getKeySet (), parentKey.getKey ());
 	if (ret == -1)
 	{
 		throw KDBException (parentKey);

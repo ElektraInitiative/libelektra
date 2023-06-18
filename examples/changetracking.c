@@ -14,10 +14,10 @@
 int main (void)
 {
 	Key * parentKey = keyNew ("/sample", KEY_END);
-	KDB * kdb = kdbOpen (NULL, parentKey);
+	KDB * kdb = elektraKdbOpen (NULL, parentKey);
 
 	KeySet * myKeySet = ksNew (0, KS_END);
-	kdbGet (kdb, myKeySet, parentKey);
+	elektraKdbGet (kdb, myKeySet, parentKey);
 
 	ksAppendKey (myKeySet, keyNew ("user:/sample/added", KEY_END));
 
@@ -33,7 +33,7 @@ int main (void)
 
 	elektraDiffDel (diff);
 
-	kdbClose (kdb, parentKey);
+	elektraKdbClose (kdb, parentKey);
 	ksDel (myKeySet);
 	keyDel (parentKey);
 

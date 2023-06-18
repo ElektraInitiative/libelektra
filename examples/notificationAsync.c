@@ -106,7 +106,7 @@ int main (void)
 	elektraNotificationContract (contract);
 
 	Key * key = keyNew ("/sw/example/notification/#0/current", KEY_END);
-	KDB * kdb = kdbOpen (contract, key);
+	KDB * kdb = elektraKdbOpen (contract, key);
 	if (kdb == NULL)
 	{
 		printf ("could not open KDB, aborting\n");
@@ -142,7 +142,7 @@ int main (void)
 	printf ("Send SIGINT (Ctl+C) to exit.\n\n");
 
 	// Get configuration
-	kdbGet (kdb, config, key);
+	elektraKdbGet (kdb, config, key);
 	printVariable (timer); // "value" was automatically updated
 
 	// This allows us to wake the loop from our signal handler
@@ -158,7 +158,7 @@ int main (void)
 	resetTerminalColor ();
 	elektraIoBindingRemoveTimer (timer);
 	elektraFree (timer);
-	kdbClose (kdb, key);
+	elektraKdbClose (kdb, key);
 
 	elektraIoBindingCleanup (binding);
 	uv_run (loop, UV_RUN_NOWAIT);

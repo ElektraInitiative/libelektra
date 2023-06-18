@@ -141,20 +141,20 @@ TEST_F (Error, CSimple)
 {
 	using namespace ckdb;
 	Key * parentKey = keyNew (testRoot.c_str (), KEY_END);
-	KDB * kdb = kdbOpen (NULL, parentKey);
+	KDB * kdb = elektraKdbOpen (NULL, parentKey);
 	KeySet * ks = ksNew (20, KS_END);
 
 	ksAppendKey (ks, keyNew (("system:" + testRoot + "key").c_str (), KEY_META, "trigger/error", "C01310", KEY_END));
 
-	ASSERT_EQ (kdbGet (kdb, ks, parentKey), 2) << "should be nothing to update";
+	ASSERT_EQ (elektraKdbGet (kdb, ks, parentKey), 2) << "should be nothing to update";
 	ASSERT_EQ (ksGetSize (ks), 1) << "did not keep key at get" << ks;
 
-	EXPECT_EQ (kdbSet (kdb, ks, parentKey), -1) << "could not trigger error";
+	EXPECT_EQ (elektraKdbSet (kdb, ks, parentKey), -1) << "could not trigger error";
 
 	EXPECT_TRUE (ckdb::keyGetMeta (parentKey, "error"));
 	EXPECT_STREQ (keyString (ckdb::keyGetMeta (parentKey, "error/number")), "C01310");
 
-	kdbClose (kdb, parentKey);
+	elektraKdbClose (kdb, parentKey);
 	keyDel (parentKey);
 	ksDel (ks);
 }
@@ -163,16 +163,16 @@ TEST_F (Error, ToWarning)
 {
 	using namespace ckdb;
 	Key * parentKey = keyNew (testRoot.c_str (), KEY_END);
-	KDB * kdb = kdbOpen (NULL, parentKey);
+	KDB * kdb = elektraKdbOpen (NULL, parentKey);
 	KeySet * ks = ksNew (20, KS_END);
 
 	ksAppendKey (ks, keyNew (("system:" + testRoot + "key1").c_str (), KEY_META, "trigger/error/nofail", "C01310", KEY_END));
 	ksAppendKey (ks, keyNew (("system:" + testRoot + "key2").c_str (), KEY_META, "trigger/error", "C01110", KEY_END));
 
-	ASSERT_EQ (kdbGet (kdb, ks, parentKey), 2) << "should be nothing to update";
+	ASSERT_EQ (elektraKdbGet (kdb, ks, parentKey), 2) << "should be nothing to update";
 	ASSERT_EQ (ksGetSize (ks), 2) << "did not keep key at get" << ks;
 
-	EXPECT_EQ (kdbSet (kdb, ks, parentKey), -1) << "could not trigger error";
+	EXPECT_EQ (elektraKdbSet (kdb, ks, parentKey), -1) << "could not trigger error";
 
 	EXPECT_TRUE (ckdb::keyGetMeta (parentKey, "error"));
 	EXPECT_STREQ (keyString (ckdb::keyGetMeta (parentKey, "error/number")), "C01310");
@@ -181,7 +181,7 @@ TEST_F (Error, ToWarning)
 	EXPECT_STREQ (keyString (ckdb::keyGetMeta (parentKey, "warnings/#0/number")), "C01110");
 
 
-	kdbClose (kdb, parentKey);
+	elektraKdbClose (kdb, parentKey);
 	keyDel (parentKey);
 	ksDel (ks);
 }
@@ -190,15 +190,15 @@ TEST_F (Error, Persists)
 {
 	using namespace ckdb;
 	Key * parentKey = keyNew (testRoot.c_str (), KEY_END);
-	KDB * kdb = kdbOpen (NULL, parentKey);
+	KDB * kdb = elektraKdbOpen (NULL, parentKey);
 	KeySet * ks = ksNew (20, KS_END);
 
 	ksAppendKey (ks, keyNew (("system:" + testRoot + "key").c_str (), KEY_META, "trigger/error", "C01310", KEY_END));
 
-	ASSERT_EQ (kdbGet (kdb, ks, parentKey), 2) << "should be nothing to update";
+	ASSERT_EQ (elektraKdbGet (kdb, ks, parentKey), 2) << "should be nothing to update";
 	ASSERT_EQ (ksGetSize (ks), 1) << "did not keep key at get" << ks;
 
-	EXPECT_EQ (kdbSet (kdb, ks, parentKey), -1) << "could not trigger error";
+	EXPECT_EQ (elektraKdbSet (kdb, ks, parentKey), -1) << "could not trigger error";
 
 	EXPECT_TRUE (ckdb::keyGetMeta (parentKey, "error"));
 	EXPECT_STREQ (keyString (ckdb::keyGetMeta (parentKey, "error/number")), "C01310");
@@ -206,12 +206,12 @@ TEST_F (Error, Persists)
 
 	keyDel (ksLookup (ks, keyNew (("system:" + testRoot + "key").c_str (), KEY_END), KDB_O_POP | KDB_O_DEL));
 
-	EXPECT_EQ (kdbSet (kdb, ks, parentKey), 0) << "kdbSet failed";
+	EXPECT_EQ (elektraKdbSet (kdb, ks, parentKey), 0) << "elektraKdbSet failed";
 	EXPECT_FALSE (ckdb::keyGetMeta (parentKey, "error"));
 	EXPECT_FALSE (ckdb::keyGetMeta (parentKey, "error/number"));
 
 
-	kdbClose (kdb, parentKey);
+	elektraKdbClose (kdb, parentKey);
 	keyDel (parentKey);
 	ksDel (ks);
 }

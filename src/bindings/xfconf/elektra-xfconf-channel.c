@@ -298,7 +298,7 @@ static KeySet * keySet_from_channel (const gchar * channel_name, uint reference,
 		require_channel_write_lock ()
 	}
 	g_debug ("Refreshing keyset for channel %s from kdb, currently %ld keys", channel_name, ksGetSize (channelPair->keySet));
-	int getStatusCode = kdbGet (elektraKdb, channelPair->keySet, parentKey);
+	int getStatusCode = elektraKdbGet (elektraKdb, channelPair->keySet, parentKey);
 	g_debug ("Refreshed keyset (status code was %d) now has %ld keys", getStatusCode, ksGetSize (channelPair->keySet));
 	if (already_locked != 1)
 	{
@@ -540,7 +540,7 @@ static int appendKeyToChannel (const XfconfChannel * channel, Key * key)
 	const char * parentKeyName = channelNameToKeyName (channel->channel_name);
 	Key * parentKey = keyNew (parentKeyName, KEY_END);
 	keySet = keySet_from_channel (channel->channel_name, 1, 1);
-	int resultCode = kdbSet (elektraKdb, keySet, parentKey);
+	int resultCode = elektraKdbSet (elektraKdb, keySet, parentKey);
 	g_debug ("the keyset contains %ld keysx after appending", ksGetSize (keySet));
 	release_channel_lock ();
 	g_debug ("storing key set for parent key %s returned %d", parentKeyName, resultCode);

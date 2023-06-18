@@ -95,7 +95,7 @@ int main (void)
 	elektraNotificationContract (contract);
 
 	Key * key = keyNew ("/sw/example/notification/#0/current", KEY_END);
-	KDB * kdb = kdbOpen (contract, key);
+	KDB * kdb = elektraKdbOpen (contract, key);
 	if (kdb == NULL)
 	{
 		printf ("could not open KDB, aborting\n");
@@ -126,7 +126,7 @@ int main (void)
 	{
 		// After this kdbGet the integer variable is updated and the callback was called.
 		// see "notificationAsync" for an example without polling
-		kdbGet (kdb, config, key);
+		elektraKdbGet (kdb, config, key);
 
 		// Print values
 		printf ("My integer value is %d\n", value);
@@ -139,7 +139,7 @@ int main (void)
 
 	// Cleanup
 	resetTerminalColor ();
-	kdbClose (kdb, key);
+	elektraKdbClose (kdb, key);
 	ksDel (config);
 	keyDel (intKeyToWatch);
 	keyDel (callbackKeyToWatch);

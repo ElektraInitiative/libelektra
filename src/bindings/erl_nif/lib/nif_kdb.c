@@ -201,7 +201,7 @@ static ERL_NIF_TERM kdb_open (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv
 
 	KDB ** kdb_resource = enif_alloc_resource (KDB_RESOURCE_TYPE, sizeof (KDB *));
 
-	KDB * kdb = kdbOpen (contract, parentKey);
+	KDB * kdb = elektraKdbOpen (contract, parentKey);
 
 	*kdb_resource = kdb;
 
@@ -237,7 +237,7 @@ static ERL_NIF_TERM kdb_close (ErlNifEnv * env, int argc, const ERL_NIF_TERM arg
 	KDB * handle = handle_resource == NULL ? NULL : *handle_resource;
 	Key * errorKey = errorKey_resource == NULL ? NULL : *errorKey_resource;
 
-	int rc = kdbClose (handle, errorKey);
+	int rc = elektraKdbClose (handle, errorKey);
 	ERL_NIF_TERM term = enif_make_int (env, rc);
 
 	return term;
@@ -279,7 +279,7 @@ static ERL_NIF_TERM kdb_get (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[
 	KeySet * returned = returned_resource == NULL ? NULL : *returned_resource;
 	Key * parentKey = parentKey_resource == NULL ? NULL : *parentKey_resource;
 
-	int rc = kdbGet (handle, returned, parentKey);
+	int rc = elektraKdbGet (handle, returned, parentKey);
 
 	ERL_NIF_TERM term = enif_make_int (env, rc);
 
@@ -322,7 +322,7 @@ static ERL_NIF_TERM kdb_set (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[
 	KeySet * returned = returned_resource == NULL ? NULL : *returned_resource;
 	Key * parentKey = parentKey_resource == NULL ? NULL : *parentKey_resource;
 
-	int rc = kdbSet (handle, returned, parentKey);
+	int rc = elektraKdbSet (handle, returned, parentKey);
 
 	ERL_NIF_TERM term = enif_make_int (env, rc);
 

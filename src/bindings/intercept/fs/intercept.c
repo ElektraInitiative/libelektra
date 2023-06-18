@@ -122,8 +122,8 @@ void init (void)
 	getcwd (cwd, KDB_MAX_PATH_LENGTH);
 	KeySet * tmpKS = ksNew (0, KS_END);
 	Key * parentKey = keyNew (PRELOAD_PATH, KEY_END);
-	KDB * handle = kdbOpen (NULL, parentKey);
-	kdbGet (handle, tmpKS, parentKey);
+	KDB * handle = elektraKdbOpen (NULL, parentKey);
+	elektraKdbGet (handle, tmpKS, parentKey);
 	KeySet * ks = ksCut (tmpKS, parentKey);
 	ssize_t size = ksGetSize (ks);
 	if (size <= 1) goto CleanUp;
@@ -197,7 +197,7 @@ CleanUp:
 	ksAppend (tmpKS, ks);
 	ksDel (tmpKS);
 	ksDel (ks);
-	kdbClose (handle, parentKey);
+	elektraKdbClose (handle, parentKey);
 	keyDel (parentKey);
 }
 
@@ -260,9 +260,9 @@ int __xstat64 (int ver, const char * path, struct stat64 * buf);
 static void exportConfiguration (Node * node)
 {
 	Key * key = keyNew (node->exportKey, KEY_END);
-	KDB * handle = kdbOpen (NULL, key);
+	KDB * handle = elektraKdbOpen (NULL, key);
 	KeySet * ks = ksNew (0, KS_END);
-	kdbGet (handle, ks, key);
+	elektraKdbGet (handle, ks, key);
 	KeySet * exportKS;
 	exportKS = ksCut (ks, key);
 	KeySet * modules = ksNew (0, KS_END);
@@ -278,7 +278,7 @@ static void exportConfiguration (Node * node)
 	ksDel (modules);
 	keyDel (key);
 	ksDel (ks);
-	kdbClose (handle, 0);
+	elektraKdbClose (handle, 0);
 	struct stat buf;
 	if (!__xstat (3, node->value, &buf)) node->creationTime = buf.st_mtim.tv_sec;
 }

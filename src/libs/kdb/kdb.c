@@ -378,7 +378,7 @@ static KeySet * elektraBoostrap (KDB * handle, Key * errorKey)
 	KeySet * elektraKs = ksNew (0, KS_END);
 	Key * bootstrapParent = keyNew (KDB_SYSTEM_ELEKTRA, KEY_END);
 
-	if (kdbGet (handle, elektraKs, bootstrapParent) == -1)
+	if (elektraKdbGet (handle, elektraKs, bootstrapParent) == -1)
 	{
 		ELEKTRA_SET_INSTALLATION_ERROR (errorKey,
 						"Bootstrapping failed, please fix '" KDB_DB_SYSTEM "/" KDB_DB_INIT
@@ -924,7 +924,7 @@ static bool addHardcodedMountpoints (KDB * handle, Key * errorKey)
  * @ingroup kdb
  * @see kdbClose() to close the session of a Key database opened by kdbOpen()
  */
-KDB * kdbOpen (const KeySet * contract, Key * errorKey)
+KDB * elektraKdbOpen (const KeySet * contract, Key * errorKey)
 {
 	if (!errorKey)
 	{
@@ -1012,7 +1012,7 @@ error:
 	if (handle != NULL)
 	{
 		Key * closeKey = keyNew ("/", KEY_END);
-		kdbClose (handle, closeKey);
+		elektraKdbClose (handle, closeKey);
 		keyDel (closeKey);
 	}
 
@@ -1049,7 +1049,7 @@ error:
  * @ingroup kdb
  * @see kdbOpen() for opening a session with a Key database
  */
-int kdbClose (KDB * handle, Key * errorKey)
+int elektraKdbClose (KDB * handle, Key * errorKey)
 {
 	if (!handle)
 	{
@@ -1708,7 +1708,7 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, uint16_t phase)
  * @see kdbSet() to save the configuration afterwards
  * @see kdbClose() to finish affairs with the key database.
  */
-int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
+int elektraKdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 {
 	// TODO [new_backend]: handle all namespaces according to kdb-operations.md
 	//  including checking for non-loadable namespace (see above) keys in ks
@@ -2316,7 +2316,7 @@ static bool runSetPhase (KeySet * backends, Key * parentKey, ElektraKdbPhase pha
  * @see kdbClose() that must be called afterwards
  * @see ksCurrent() contains the error Key
  */
-int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
+int elektraKdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 {
 	// TODO [new_backend]: handle all namespaces according to kdb-operations.md
 	//    including returning an error, as described above (Persistable Namespaces)
