@@ -262,6 +262,8 @@ int ELEKTRA_PLUGIN_FUNCTION (commit) (Plugin * plugin, KeySet * ks ELEKTRA_UNUSE
 		else
 		{
 			ELEKTRA_LOG_DEBUG ("Commit failed!\n");
+			/* Connection handle was freed by endTransaction() */
+			sharedData->connection = NULL;
 			ksAppendKey (elektraPluginGetGlobalKeySet (plugin),
 				     keyNew ("system:/elektra/kdb/backend/failedphase", KEY_BINARY, KEY_SIZE, sizeof (ElektraKdbPhase),
 					     KEY_VALUE, &phase, KEY_END));
@@ -270,9 +272,7 @@ int ELEKTRA_PLUGIN_FUNCTION (commit) (Plugin * plugin, KeySet * ks ELEKTRA_UNUSE
 	}
 
 	case ELEKTRA_KDB_SET_PHASE_POST_COMMIT:
-		/* Not used by the ODBC backend plugin (this phase is mostly useful for logging) */
-		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-
+		return freeSharedHandles (plugin, parentKey);
 	default:
 		ELEKTRA_SET_INTERNAL_ERRORF (parentKey,
 					     "An unknown commit phase (not precommit, commit or postcommit) was encountered.\n"
@@ -326,16 +326,6 @@ int ELEKTRA_PLUGIN_FUNCTION (error) (Plugin * plugin, KeySet * ks ELEKTRA_UNUSED
 
 		bool ret = endTransaction (sharedData->connection, false, parentKey);
 
-		/* Close the connection and free handles for connection and environment */
-		if (!clearOdbcSharedData (sharedData, false, false))
-		{
-			ELEKTRA_ADD_RESOURCE_WARNING (parentKey,
-						      "Could not successfully close the connection and free the SQL handles for "
-						      " the connection and environment. Please check the state of your data source.");
-		}
-
-		elektraPluginSetData (plugin, sharedData);
-
 		if (ret)
 		{
 			ELEKTRA_LOG_DEBUG ("ROLLBACK succeeded!\n");
@@ -343,14 +333,14 @@ int ELEKTRA_PLUGIN_FUNCTION (error) (Plugin * plugin, KeySet * ks ELEKTRA_UNUSED
 		}
 		else
 		{
+			sharedData->connection = NULL;
 			ELEKTRA_LOG_DEBUG ("ROLLBACK failed!\n");
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
 
 	case ELEKTRA_KDB_SET_PHASE_POST_ROLLBACK:
-		/* Phase is not used by the ODBC backend plugin */
-		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+		return freeSharedHandles (plugin, parentKey);
 	default:
 		ELEKTRA_SET_INTERNAL_ERRORF (parentKey,
 					     "An unknown rollback phase (not prerollback, rollback or postrollback) was"
@@ -367,6 +357,7 @@ int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * plugin ELEKTRA_UNUSED, Key * error
 {
 	struct odbcSharedData * sharedData = elektraPluginGetData (plugin);
 	clearOdbcSharedData (sharedData, true, true);
+	elektraFree (sharedData);
 	elektraPluginSetData (plugin, NULL);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }

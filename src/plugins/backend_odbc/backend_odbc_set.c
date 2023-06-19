@@ -26,7 +26,9 @@
 // #include <sql.h>
 #include <sqlext.h>
 
-/* TODO: add quoted identifiers */
+
+/* Value for SQLLite, adjust for your ODBC driver/DBMS */
+#define ODBC_SQL_MAX_PARAMS 32766
 
 
 /**
@@ -426,8 +428,12 @@ static bool bindStringsToStatement (SQLHSTMT sqlStmt, ssize_t startPos, Key * er
  *
  * @param sqlStmt The statement for which the values should be bound.
  * @param keysToBind The KeySet that contains the Keys for which you want to bind the key-names.
- * @param startPos The position of the parameter marker ('?') for which the first given value is going to be bound.
-	The first parameter has the value '1', so a startPos <1 is an invalid value.
+ * @param startPosStatement The position of the parameter marker ('?') for which the first given value is going to be bound.
+ *	The first parameter has the value '1', so a startPos <1 is an invalid value.
+ * @param startPosKeySet The position of the first key in @p keyToBind that gets bound
+ * 	The index of the first key has the value '0'.
+ * @param endPosKeySet The position of the last key in @p keyToBind that gets bound
+ * 	The index of the last key has the value ksGetSize(keysToBind)-1.
  * @param useRelativeKeyNames Should the relative names of the key-names be bound? This is the keyname without the beginning-part.
  * 	The key-name of @parentKey is used to determine the relative name.
  * 	Example: key-name = "user:/software/odbc", key-name of parent key = "user:/software" --> string "odbc" gets bound.
@@ -442,12 +448,22 @@ static bool bindStringsToStatement (SQLHSTMT sqlStmt, ssize_t startPos, Key * er
  * @see elektraKeyGetRelativeName
  * @see keyBaseName
  */
-static bool bindKeyNamesToStatement (SQLHSTMT sqlStmt, const KeySet * keysToBind, ssize_t startPos, bool useRelativeKeyNames,
-				     Key * parentKey)
+static bool bindKeyNamesToStatement (SQLHSTMT sqlStmt, const KeySet * keysToBind, ssize_t startPosStatement, ssize_t startPosKeySet,
+					ssize_t endPosKeySet, bool useRelativeKeyNames, Key * parentKey)
 {
 	if (!sqlStmt)
 	{
 		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "The provided statement handle must not be NULL.");
+		return false;
+	}
+
+	if (startPosStatement < 1)
+	{
+		ELEKTRA_SET_INTERFACE_ERRORF (parentKey,
+					      "The first parameter has the position 1, so the argument 'startPosStatement' must be >= 1, "
+					      "but you provided %zd",
+					      startPosStatement);
+		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 		return false;
 	}
 
@@ -458,7 +474,7 @@ static bool bindKeyNamesToStatement (SQLHSTMT sqlStmt, const KeySet * keysToBind
 		return false;
 	}
 
-	if (ksGetSize (keysToBind) > USHRT_MAX)
+	if ((endPosKeySet - startPosKeySet) >= USHRT_MAX)
 	{
 		ELEKTRA_SET_INTERFACE_ERRORF (parentKey,
 					      "The maximum number of parameter values to bind is %hu, but you specified a number of %zd",
@@ -467,17 +483,18 @@ static bool bindKeyNamesToStatement (SQLHSTMT sqlStmt, const KeySet * keysToBind
 		return false;
 	}
 
-	if (startPos < 1)
+	if (ksGetSize (keysToBind) <= endPosKeySet)
 	{
 		ELEKTRA_SET_INTERFACE_ERRORF (parentKey,
-					      "The first parameter has the position 1, so the argument 'startPos' must be >= 1, "
-					      "but you provided %zd",
-					      startPos);
+					      "The given end position (%zd) is beyond the index of the last element (%zd) in the KeySet.",
+					      endPosKeySet, ksGetSize (keysToBind) - 1);
 		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 		return false;
 	}
 
-	for (elektraCursor it = 0; it < ksGetSize (keysToBind); it++)
+
+
+	for (elektraCursor it = startPosKeySet; it <= endPosKeySet; it++)
 	{
 		const char * curKeyName = NULL;
 		if (useRelativeKeyNames)
@@ -490,7 +507,7 @@ static bool bindKeyNamesToStatement (SQLHSTMT sqlStmt, const KeySet * keysToBind
 			curKeyName = keyBaseName (ksAtCursor (keysToBind, it));
 		}
 
-		SQLRETURN ret = SQLBindParameter (sqlStmt, it + startPos, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_CHAR, strlen (curKeyName), 0,
+		SQLRETURN ret = SQLBindParameter (sqlStmt, (it + startPosStatement) - startPosKeySet , SQL_PARAM_INPUT, SQL_C_CHAR, SQL_CHAR, strlen (curKeyName), 0,
 						  (SQLCHAR *) curKeyName, (SQLLEN) strlen (curKeyName) + 1, NULL);
 
 		ELEKTRA_LOG ("Bound value '%s' to statement\n", curKeyName);
@@ -522,8 +539,6 @@ static bool bindKeyNamesToStatement (SQLHSTMT sqlStmt, const KeySet * keysToBind
  * @param tableName The name of the table from which the rows should be removed.
  * @param keyColName The name of the column that contains the name of the Keys.
  * @param quoteStr The char(s) that should be used for quoting identifiers.
- * @param bindParams Should the parameters be bound to the statement or are they already bound?
- * 	This is useful of you want to call the function with the same statement multiple times.
  * @param[in,out] parentKey The key-name of this key is needed to determine the relative key-names of the Keys in the KeySet.
  * 	Used to store errors and warnings.
  *
@@ -532,7 +547,7 @@ static bool bindKeyNamesToStatement (SQLHSTMT sqlStmt, const KeySet * keysToBind
  * @retval -2 it the number of deleted rows could not be retrieved (e.g. because the used ODBC driver doesn't support this feature).
  */
 static SQLLEN removeRows (SQLHSTMT sqlStmt, const KeySet * ksRemovedKeys, const char * tableName, const char * keyColName,
-			  const char * quoteStr, bool bindParams, Key * parentKey)
+			  const char * quoteStr, Key * parentKey)
 {
 	if (!sqlStmt)
 	{
@@ -540,37 +555,74 @@ static SQLLEN removeRows (SQLHSTMT sqlStmt, const KeySet * ksRemovedKeys, const 
 		return -1;
 	}
 
-	if (bindParams && (!bindKeyNamesToStatement (sqlStmt, ksRemovedKeys, 1, true, parentKey)))
+	ssize_t numRemovedKeys = ksGetSize (ksRemovedKeys);
+	char * queryDelete = NULL;
+	SQLLEN sumAffectedRows = 0;
+	ssize_t endPos = -1;
+
+	for (ssize_t startPos = 0; numRemovedKeys > 0; startPos = endPos + 1)
 	{
-		/* sqlStmt was already freed by bindRelativeKeyNamesToStatement() */
-		/* bindRelativeKeyNamesToStatement() should've set an error in the parentKey */
-		return -1;
+		if (numRemovedKeys > ODBC_SQL_MAX_PARAMS)
+		{
+			if (!queryDelete)
+			{
+				queryDelete = getDeleteQuery (ODBC_SQL_MAX_PARAMS, tableName, keyColName, quoteStr, parentKey);
+			}
+
+			endPos += ODBC_SQL_MAX_PARAMS;
+			numRemovedKeys -= ODBC_SQL_MAX_PARAMS;
+		}
+		else
+		{
+			if (queryDelete)
+			{
+				elektraFree (queryDelete);
+			}
+
+			SQLFreeStmt (sqlStmt, SQL_RESET_PARAMS);
+			queryDelete = getDeleteQuery (numRemovedKeys, tableName, keyColName, quoteStr, parentKey);
+
+			/* Last iteration */
+			endPos += numRemovedKeys;
+			numRemovedKeys = 0;
+		}
+
+		if (!queryDelete)
+		{
+			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
+			SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
+			return -1;
+		}
+
+		if (!bindKeyNamesToStatement (sqlStmt, ksRemovedKeys, 1, startPos, endPos, true, parentKey))
+		{
+			/* sqlStmt was already freed by bindRelativeKeyNamesToStatement() */
+			/* bindRelativeKeyNamesToStatement() should've set an error in the parentKey */
+			return -1;
+		}
+
+		/* Now our statement handle is ready to use */
+		/* Execute the delete query (not persisted until transaction is committed!) */
+		SQLLEN affectedRows = executeQuery (sqlStmt, queryDelete, parentKey);
+
+		if (affectedRows == -1)
+		{
+			/* error, statement handle got freed by executeQuery() */
+			return -1;
+		}
+		else if (affectedRows > 0)
+		{
+			sumAffectedRows += affectedRows;
+		}
+		else
+		{
+			sumAffectedRows = -2;
+		}
 	}
 
-	/* Now our statement handle is ready to use */
-
-	/* TODO: add configuration option for data sources that have cascading delete enabled
-	 * --> no extra deletion of tuples in the metatable required */
-
-	char * queryDelete = getDeleteQuery (ksGetSize (ksRemovedKeys), tableName, keyColName, quoteStr, parentKey);
-	if (!queryDelete)
-	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
-		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
-		return -1;
-	}
-
-	/* Execute the delete query (not persisted until transaction is committed!) */
-	SQLLEN affectedRows = executeQuery (sqlStmt, queryDelete, parentKey);
 	elektraFree (queryDelete);
 
-	if (affectedRows == -1)
-	{
-		/* error, statement handle got freed by executeQuery() */
-		return -1;
-	}
-
-	return affectedRows;
+	return sumAffectedRows;
 }
 
 
@@ -610,44 +662,79 @@ static SQLLEN processMetaDataForModifiedKey (SQLHSTMT sqlStmt, Key * modifiedKey
 	if (ksGetSize (ksMetaRemoved) > 0)
 	{
 		/* DELETE FROM metaTable where keyname=? and metaKeyName IN (?,?,?,...) */
-		char * queryMetaDelete = getDeleteMetaDataQuery (ksGetSize (ksMetaRemoved), dsConfig, quoteStr, parentKey);
-		if (!queryMetaDelete)
-		{
-			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
-			SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
-			ksDel (ksMetaRemoved);
-			return -1;
-		}
 
 		/* At first, we've to bind the key-name */
-		bool ret = bindStringsToStatement (sqlStmt, 1, parentKey, 1, elektraKeyGetRelativeName (modifiedKey, parentKey));
-		if (ret)
-		{
-			/* Now, we bind the names of the metakeys */
-			ret = bindKeyNamesToStatement (sqlStmt, ksMetaRemoved, 2, false, parentKey);
-		}
-
-		if (!ret)
+		if (!bindStringsToStatement (sqlStmt, 1, parentKey, 1, elektraKeyGetRelativeName (modifiedKey, parentKey)))
 		{
 			/* sqlStmt was already freed by the binding functions */
 			ksDel (ksMetaRemoved);
-			elektraFree (queryMetaDelete);
 			return -1;
 		}
 
-		curAffectedRows = executeQuery (sqlStmt, queryMetaDelete, parentKey);
+		char * queryMetaDelete = NULL;
+		ssize_t numMetaRemoved = ksGetSize (ksMetaRemoved);
+		ssize_t endPos = -1;
+
+		for (ssize_t startPos = 0; numMetaRemoved > 0; startPos = endPos + 1)
+		{
+			/* Get the SQL DELETE query with the correct number of parameters for this iteration */
+			if (numMetaRemoved > ODBC_SQL_MAX_PARAMS)
+			{
+				if (!queryMetaDelete)
+				{
+					queryMetaDelete = getDeleteMetaDataQuery (ODBC_SQL_MAX_PARAMS, dsConfig, quoteStr, parentKey);
+				}
+
+				endPos += ODBC_SQL_MAX_PARAMS;
+				numMetaRemoved -= ODBC_SQL_MAX_PARAMS;
+			}
+			else
+			{
+				if (queryMetaDelete)
+				{
+					elektraFree (queryMetaDelete);
+				}
+
+				queryMetaDelete = getDeleteMetaDataQuery (numMetaRemoved, dsConfig, quoteStr, parentKey);
+				endPos += numMetaRemoved;
+
+				/* We are in the last iteration */
+				numMetaRemoved = 0;
+			}
+
+			if (!queryMetaDelete)
+			{
+				ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
+				SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
+				ksDel (ksMetaRemoved);
+				return -1;
+			}
+
+			/* Now, we bind the names of the metakeys */
+			if (!bindKeyNamesToStatement (sqlStmt, ksMetaRemoved, 2, startPos, endPos, false, parentKey))
+			{
+				/* sqlStmt was already freed by the binding functions */
+				ksDel (ksMetaRemoved);
+				elektraFree (queryMetaDelete);
+				return -1;
+			}
+
+			startPos = endPos + 1;
+			curAffectedRows = executeQuery (sqlStmt, queryMetaDelete, parentKey);
+
+			if (curAffectedRows == -1)
+			{
+				/* sqlStmt was already freed by executeQuery() */
+				ksDel (ksMetaRemoved);
+				return -1;
+			}
+			else if (curAffectedRows > 0)
+			{
+				sumAffectedRows += curAffectedRows;
+			}
+		}
+
 		elektraFree (queryMetaDelete);
-
-		if (curAffectedRows == -1)
-		{
-			/* sqlStmt was already freed by executeQuery() */
-			ksDel (ksMetaRemoved);
-			return -1;
-		}
-		else if (curAffectedRows > 0)
-		{
-			sumAffectedRows += curAffectedRows;
-		}
 	}
 
 	ksDel (ksMetaRemoved);
@@ -1005,7 +1092,6 @@ static void logChangedKeys (ElektraDiff * diffSet, Key * parentKey)
  */
 SQLLEN storeKeysInDataSource (struct odbcSharedData * sharedData, KeySet * ks, Key * parentKey)
 {
-
 	/* Arguments are checked inside getKeysFromDataSource() */
 
 	/* 1. Get the current data from the data source and the string for quoting identifiers*/
@@ -1059,9 +1145,12 @@ SQLLEN storeKeysInDataSource (struct odbcSharedData * sharedData, KeySet * ks, K
 			return -1;
 		}
 
+		/* TODO: add configuration option for data sources that have cascading delete enabled
+	 	 * --> no extra deletion of tuples in the metatable required */
+
 		/* At first delete the rows from the meta table */
 		SQLLEN curAffectedRows = removeRows (sqlStmt, ksRemovedKeys, sharedData->dsConfig->metaTableName,
-						     sharedData->dsConfig->metaTableKeyColName, quoteStr, true, parentKey);
+							sharedData->dsConfig->metaTableKeyColName, quoteStr, parentKey);
 		if (curAffectedRows == -1)
 		{
 			elektraFree (quoteStr);
@@ -1076,8 +1165,7 @@ SQLLEN storeKeysInDataSource (struct odbcSharedData * sharedData, KeySet * ks, K
 
 		/* We can use the already bound parameters for deleting rows from the 2nd table (key-table) */
 		curAffectedRows = removeRows (sqlStmt, ksRemovedKeys, sharedData->dsConfig->tableName, sharedData->dsConfig->keyColName,
-					      quoteStr, false, parentKey);
-
+						quoteStr, parentKey);
 		ELEKTRA_LOG ("DELETE affected %ld rows!\n", curAffectedRows);
 
 		if (curAffectedRows == -1)
@@ -1101,11 +1189,6 @@ SQLLEN storeKeysInDataSource (struct odbcSharedData * sharedData, KeySet * ks, K
 
 	if (ksGetSize (ksModifiedNewKeys) > 0)
 	{
-		// KeySet * ksModifiedNewKeys = getModifiedNewKeys (ks, ksModifiedOldKeys);
-
-		/* We only need the keys with the new values */
-		// ksDel (ksModifiedOldKeys);
-
 		if (!ksModifiedNewKeys)
 		{
 			ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);

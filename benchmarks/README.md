@@ -50,7 +50,53 @@ This benchmark has several command-line options:
 - `--verbose`: print how many keys have been generated and modified
 - `--binary-tree`: build a binary tree of keys instead of a linear list
 
-## OPMPHM
+
+# mountpoint
+
+The mountpoint benchmark evaluates the performance of storing, reading, modifying and deleting keys and metadata.
+Only the time for the `kdbGet` and `kdbSet` calls are benchmarked.
+The time for preparing the keys and KeySets is not a part of the benchmark.
+The main purpose of this benchmark is to compare the performance of different backends and storage plugins.
+
+Just create a mountpoint for the backends and/or plugins you want to benchmark and give this mountpoint or a path
+below as an argument to the benchmark.
+
+The benchmark takes one mandatory argument and several optional arguments.
+```sh
+benchmark_mountpoint [options] <parentKey>
+```
+
+Be aware that it is expected that no keys are present at or below `<parentKey>`.
+If you specify a `<parent key>` that already contains keys, these keys get deleted by the benchmark.
+They can also influence the results of the benchmark.
+
+This optional arguemnts are:
+
+- `--key-count <keys>`: how many keys should be generated (default 3)
+  - The default value is just intended for testing of the benchmark finished successfully. For real benchmarks, much higher values are recommended to get meaningful results.
+- `--harmonize-names`: all key-values and -names have the same length
+- `--single-keysets`: store and persists each individual key separately (one `kdbSet` call per key).
+  - This option only influences the first benchmark.
+- `--with-meta`: also run benchmarks for metadata
+- `--only-meta`: run only the benchmarks for metadata
+- `--verbose`: print more details
+
+This benchmark-suite contains eight individual benchmarks:
+1. Store keys without metadata in a single KeySet and persist it with `kdbSet`.
+    - If `--single-keysets` was specified, each Key is persisted with its own `kdbSet` call.
+2. Read the stored keys from the data source into a KeySet with `kdbGet`.
+3. Modify the values of all the keys in the KeySet and persist it with `kdbSet`.
+4. Delete all the keys that were added to the KeySet during the benchmark and persist it with `kdbSet`.
+    - Now the data source is in the same state as in the beginning of the test.
+
+The following steps are performed if you called the benchmark with the arguemnt `--with-meta`.
+5. Store one Key with the given number of metakeys in a KeySet and persist it with `kdbSet`.
+6. Read that key from the data source back into a KeySet with `kdbGet`.
+7. Modify the values of all the metakeys and persist them with `kdbSet`.
+8. Delete the key that has all the metakeys attached to it and persist it with `kdbSet`.
+
+
+# OPMPHM
 
 The OPMPHM benchmarks need an external seed source. Use the `generate-seeds` script
 to generate a file containing the seeds. The number of seeds vary, execute the
@@ -76,7 +122,7 @@ Then pass it to the benchmark:
 cat mySeedFile | benchmark_opmphm opmphmbuildtime
 ```
 
-## plugingetset
+# plugingetset
 
 The `benchmark_plugingetset` is different than the other benchmarks. It doesn't do any benchmarking by itself.
 Instead it simple takes 3 or 4 arguments:

@@ -14,6 +14,7 @@
 #define ELEKTRA_BACKEND_ODBC_HELPERS_H
 
 #include <kdb.h>
+#include <kdbplugin.h>
 #include <stdbool.h>
 
 /* ODBC related includes */
@@ -110,6 +111,10 @@ bool checkIdentifiersForSubString (const struct dataSourceConfig * dsConfig, con
 /* Get a string representation of all members of a dataSourceConfig struct which define a data source */
 char * dsConfigToString (const struct dataSourceConfig * dsConfig);
 
+/* Close the connection and free handles for connection and environment, optionally also free the data source config struct and its strings */
 bool clearOdbcSharedData (struct odbcSharedData * sharedData, bool freeDsConfig, bool freeDsConfigStrings);
+
+/* Close the connection and free handles for connection and environment */
+bool freeSharedHandles (Plugin * plugin, Key * errorKey);
 
 #endif // ELEKTRA_BACKEND_ODBC_HELPERS_H

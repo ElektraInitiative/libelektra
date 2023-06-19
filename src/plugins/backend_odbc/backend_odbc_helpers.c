@@ -775,7 +775,25 @@ bool clearOdbcSharedData (struct odbcSharedData * sharedData, bool freeDsConfig,
 		clearDsConfig (sharedData->dsConfig, freeDsConfigStrings);
 	}
 
-	elektraFree (sharedData);
-
 	return finalRet;
+}
+
+
+/* Close the connection and free handles for connection and environment */
+bool freeSharedHandles (Plugin * plugin, Key * errorKey)
+{
+	struct odbcSharedData * sharedData = elektraPluginGetData (plugin);
+	if (!clearOdbcSharedData (sharedData, false, false))
+	{
+		sharedData->connection = NULL;
+		sharedData->environment = NULL;
+		ELEKTRA_ADD_RESOURCE_WARNING (errorKey,
+					      "Could not successfully close the connection and free the SQL handles for "
+					      " the connection and environment. Please check the state of your data source.");
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+	else
+	{
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	}
 }
