@@ -134,7 +134,14 @@ int main (int argc, char ** argv)
 	char keyNameBuf[2048];
 	char keyValueBuf[2048];
 
-	char * strEnd = stpncpy (keyNameBuf, argv[optind], sizeof (keyNameBuf));
+
+	if (strlen (argv[optind]) >= sizeof (keyNameBuf))
+	{
+		fprintf (stderr, "The length of the name of the given parent key was too long.\n");
+		return EXIT_FAILURE;
+	}
+
+	char * strEnd = stpcpy (keyNameBuf, argv[optind]);
 
 	if (strEnd[-1] != '/')
 	{
