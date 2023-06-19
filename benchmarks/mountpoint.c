@@ -12,8 +12,8 @@
  */
 
 #include <benchmarks.h>
-#include <kdb.h>
 #include <getopt.h>
+#include <kdb.h>
 
 /* Default values for optional arguments */
 elektraCursor numKeys = 3;
@@ -31,7 +31,6 @@ char * keyValueModifiedFormat = "abcde%zu";
 char * metaNameFormat = "met%zu";
 char * metaValueFormat = "metav%zu";
 char * metaValueModifiedFormat = "memod%zu";
-
 
 
 static bool processCommandLineArguments (int argc, char ** argv)
@@ -96,6 +95,11 @@ static bool processCommandLineArguments (int argc, char ** argv)
 	return true;
 }
 
+/**
+ * @brief Run benchmarks that test the performance of `kdbSet` and `kdbGet` for a specified path in the KDB
+ *
+ *  The path where the benchmark data is written to is based on the key-name of the parent-key argument.
+ */
 int main (int argc, char ** argv)
 {
 
@@ -126,9 +130,11 @@ int main (int argc, char ** argv)
 		printf ("Only run benchmarks for metadata: %s\n", onlyMeta ? "true" : "false");
 	}
 
+
 	char keyNameBuf[2048];
 	char keyValueBuf[2048];
-	char * strEnd = stpcpy (keyNameBuf, argv[optind]);
+
+	char * strEnd = stpncpy (keyNameBuf, argv[optind], sizeof (keyNameBuf));
 
 	if (strEnd[-1] != '/')
 	{
@@ -168,7 +174,6 @@ int main (int argc, char ** argv)
 			ksBenchSingle[0] = ksDup (ksBench);
 
 
-
 			for (elektraCursor it = 0; it < numKeys; it++)
 			{
 				snprintf (strEnd, 2048 - (strEnd - keyNameBuf), keyNameFormat, it);
@@ -177,7 +182,7 @@ int main (int argc, char ** argv)
 				/* Use the KeySet from the previous iteration and add one key to it */
 				if (it > 0)
 				{
-					ksBenchSingle[it] = ksDup (ksBenchSingle[it-1]);
+					ksBenchSingle[it] = ksDup (ksBenchSingle[it - 1]);
 				}
 
 				ksAppendKey (ksBenchSingle[it], keyNew (keyNameBuf, KEY_VALUE, keyValueBuf, KEY_END));
@@ -212,8 +217,9 @@ int main (int argc, char ** argv)
 		}
 
 		printf ("Benchmark 2: Read %zu keys from data source into KeySet.\n", numKeys);
-		kdbClose (kdb, parentKey);
 
+		/* Close and re-open the KDB the get all data for the mountpoint */
+		kdbClose (kdb, parentKey);
 		kdb = kdbOpen (NULL, parentKey);
 		ksClear (ksBench);
 

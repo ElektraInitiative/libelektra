@@ -449,7 +449,7 @@ static bool bindStringsToStatement (SQLHSTMT sqlStmt, ssize_t startPos, Key * er
  * @see keyBaseName
  */
 static bool bindKeyNamesToStatement (SQLHSTMT sqlStmt, const KeySet * keysToBind, ssize_t startPosStatement, ssize_t startPosKeySet,
-					ssize_t endPosKeySet, bool useRelativeKeyNames, Key * parentKey)
+				     ssize_t endPosKeySet, bool useRelativeKeyNames, Key * parentKey)
 {
 	if (!sqlStmt)
 	{
@@ -493,7 +493,6 @@ static bool bindKeyNamesToStatement (SQLHSTMT sqlStmt, const KeySet * keysToBind
 	}
 
 
-
 	for (elektraCursor it = startPosKeySet; it <= endPosKeySet; it++)
 	{
 		const char * curKeyName = NULL;
@@ -507,8 +506,8 @@ static bool bindKeyNamesToStatement (SQLHSTMT sqlStmt, const KeySet * keysToBind
 			curKeyName = keyBaseName (ksAtCursor (keysToBind, it));
 		}
 
-		SQLRETURN ret = SQLBindParameter (sqlStmt, (it + startPosStatement) - startPosKeySet , SQL_PARAM_INPUT, SQL_C_CHAR, SQL_CHAR, strlen (curKeyName), 0,
-						  (SQLCHAR *) curKeyName, (SQLLEN) strlen (curKeyName) + 1, NULL);
+		SQLRETURN ret = SQLBindParameter (sqlStmt, (it + startPosStatement) - startPosKeySet, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_CHAR,
+						  strlen (curKeyName), 0, (SQLCHAR *) curKeyName, (SQLLEN) strlen (curKeyName) + 1, NULL);
 
 		ELEKTRA_LOG ("Bound value '%s' to statement\n", curKeyName);
 
@@ -1146,11 +1145,11 @@ SQLLEN storeKeysInDataSource (struct odbcSharedData * sharedData, KeySet * ks, K
 		}
 
 		/* TODO: add configuration option for data sources that have cascading delete enabled
-	 	 * --> no extra deletion of tuples in the metatable required */
+		 * --> no extra deletion of tuples in the metatable required */
 
 		/* At first delete the rows from the meta table */
 		SQLLEN curAffectedRows = removeRows (sqlStmt, ksRemovedKeys, sharedData->dsConfig->metaTableName,
-							sharedData->dsConfig->metaTableKeyColName, quoteStr, parentKey);
+						     sharedData->dsConfig->metaTableKeyColName, quoteStr, parentKey);
 		if (curAffectedRows == -1)
 		{
 			elektraFree (quoteStr);
@@ -1165,7 +1164,7 @@ SQLLEN storeKeysInDataSource (struct odbcSharedData * sharedData, KeySet * ks, K
 
 		/* We can use the already bound parameters for deleting rows from the 2nd table (key-table) */
 		curAffectedRows = removeRows (sqlStmt, ksRemovedKeys, sharedData->dsConfig->tableName, sharedData->dsConfig->keyColName,
-						quoteStr, parentKey);
+					      quoteStr, parentKey);
 		ELEKTRA_LOG ("DELETE affected %ld rows!\n", curAffectedRows);
 
 		if (curAffectedRows == -1)

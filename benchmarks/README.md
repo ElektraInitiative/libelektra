@@ -50,7 +50,6 @@ This benchmark has several command-line options:
 - `--verbose`: print how many keys have been generated and modified
 - `--binary-tree`: build a binary tree of keys instead of a linear list
 
-
 # mountpoint
 
 The mountpoint benchmark evaluates the performance of storing, reading, modifying and deleting keys and metadata.
@@ -62,6 +61,7 @@ Just create a mountpoint for the backends and/or plugins you want to benchmark a
 below as an argument to the benchmark.
 
 The benchmark takes one mandatory argument and several optional arguments.
+
 ```sh
 benchmark_mountpoint [options] <parentKey>
 ```
@@ -82,19 +82,15 @@ This optional arguemnts are:
 - `--verbose`: print more details
 
 This benchmark-suite contains eight individual benchmarks:
+
 1. Store keys without metadata in a single KeySet and persist it with `kdbSet`.
-    - If `--single-keysets` was specified, each Key is persisted with its own `kdbSet` call.
+   - If `--single-keysets` was specified, each Key is persisted with its own `kdbSet` call.
 2. Read the stored keys from the data source into a KeySet with `kdbGet`.
 3. Modify the values of all the keys in the KeySet and persist it with `kdbSet`.
 4. Delete all the keys that were added to the KeySet during the benchmark and persist it with `kdbSet`.
-    - Now the data source is in the same state as in the beginning of the test.
+   - Now the data source is in the same state as in the beginning of the test.
 
-The following steps are performed if you called the benchmark with the arguemnt `--with-meta`.
-5. Store one Key with the given number of metakeys in a KeySet and persist it with `kdbSet`.
-6. Read that key from the data source back into a KeySet with `kdbGet`.
-7. Modify the values of all the metakeys and persist them with `kdbSet`.
-8. Delete the key that has all the metakeys attached to it and persist it with `kdbSet`.
-
+The following steps are performed if you called the benchmark with the arguemnt `--with-meta`. 5. Store one Key with the given number of metakeys in a KeySet and persist it with `kdbSet`. 6. Read that key from the data source back into a KeySet with `kdbGet`. 7. Modify the values of all the metakeys and persist them with `kdbSet`. 8. Delete the key that has all the metakeys attached to it and persist it with `kdbSet`.
 
 # OPMPHM
 
