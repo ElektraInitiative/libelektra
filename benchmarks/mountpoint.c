@@ -303,22 +303,20 @@ int main (int argc, char ** argv)
 
 	kdbClose (kdb, parentKey);
 
-	if (verbose)
+	printf ("\n");
+
+	if (!onlyMeta)
 	{
-		printf ("\n");
-
-		if (!onlyMeta)
-		{
-			printf ("Insert Time (us); Read time (us); Modification Time (us); Deletion time (us)\n");
-			printf ("%d; %d; %d; %d\n", insertingTime, readTime, modifyTime, deleteTime);
-		}
-
-		if (withMeta || onlyMeta)
-		{
-			printf ("Insert meta time (us); Read meta time; Modify meta time (us); Delete meta time (us)\n");
-			printf ("%d; %d; %d; %d\n", insertingMetaTime, readMetaTime, modifyMetaTime, deleteMetaTime);
-		}
+		printf ("Insert Time (us); Read time (us); Modification Time (us); Deletion time (us)\n");
+		printf ("%d; %d; %d; %d\n", insertingTime, readTime, modifyTime, deleteTime);
 	}
+
+	if (withMeta || onlyMeta)
+	{
+		printf ("Insert meta time (us); Read meta time; Modify meta time (us); Delete meta time (us)\n");
+		printf ("%d; %d; %d; %d\n", insertingMetaTime, readMetaTime, modifyMetaTime, deleteMetaTime);
+	}
+
 
 	return EXIT_SUCCESS;
 }
