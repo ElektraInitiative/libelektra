@@ -70,8 +70,9 @@ Be aware that it is expected that no keys are present at or below `<parentKey>`.
 If you specify a `<parent key>` that already contains keys, these keys get deleted by the benchmark.
 They can also influence the results of the benchmark.
 
-This optional arguemnts are:
+This optional arguments are:
 
+- `--help`: Display help message exit
 - `--key-count <keys>`: how many keys should be generated (default 3)
   - The default value is just intended for testing of the benchmark finished successfully. For real benchmarks, much higher values are recommended to get meaningful results.
 - `--harmonize-names`: all key-values and -names have the same length
@@ -90,7 +91,13 @@ This benchmark-suite contains eight individual benchmarks:
 4. Delete all the keys that were added to the KeySet during the benchmark and persist it with `kdbSet`.
    - Now the data source is in the same state as in the beginning of the test.
 
-The following steps are performed if you called the benchmark with the arguemnt `--with-meta`. 5. Store one Key with the given number of metakeys in a KeySet and persist it with `kdbSet`. 6. Read that key from the data source back into a KeySet with `kdbGet`. 7. Modify the values of all the metakeys and persist them with `kdbSet`. 8. Delete the key that has all the metakeys attached to it and persist it with `kdbSet`.
+The following steps are performed if you called the benchmark with the argument `--with-meta`.
+For more reliable results, it is recommended to run the tests with metadata with a separate execution of the benchmark suite, using `--only-meta`.
+
+5. Store one Key with the given number of metakeys in a KeySet and persist it with `kdbSet`.
+6. Read that key from the data source back into a KeySet with `kdbGet`.
+7. Modify the values of all the metakeys and persist them with `kdbSet`.
+8. Delete the key that has all the metakeys attached to it and persist it with `kdbSet`.
 
 # OPMPHM
 
