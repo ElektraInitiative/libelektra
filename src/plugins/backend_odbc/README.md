@@ -97,3 +97,32 @@ For unmounting, there is no new command necessary.
 Just use the well-known `kdb umount <mountpoint>`, exactly like for the file-based backend.
 
 For more information about the ODBC backend, there is a tutorial available at [/doc/tutorials/odbc-backend.md](/doc/tutorials/odbc-backend.md).
+
+## Testing and Benchmarking
+
+There are no dedicated unit tests that actually store, read or delete data from
+an ODBC data source.
+The reason is, that with the current concept, a valid ODBC data source
+definition (for unixODBC in `/etc/unixODBC/odbc.ini`) must be present.
+We don't want to write to such an important system file that can influence other
+applications. It would also be cumbersome if we require the user to set up a
+specific ODBC configuration before running the tests .
+
+However, for basic functionality testing and performance evaluation,
+you can create a valid ODBC mountpoint yourself using `kdb mountOdbc`
+and then run the benchmark which is implemented in [/benchmarks/mountpoint.c](/benchmarks/mountpoint.c)
+for the created mountpoint.
+This approach makes it possible to test and benchmark any valid mountpoint in the KDB.
+So different backends and plugins with different configurations can be tested and benchmarked.
+Just create a mountpoint with the backends, plugins and configuration that you want and run
+the benchmark with e.g. `bin/benchmark_mountpoint <MP path>/benchmark` for this mountpoint.
+
+A short example that shows creating a new ODBC mountpoint and running benchmarks for KeySets and metadata:
+
+```sh
+bin/kdb mountOdbc Selektra "" "" elektraKeys keyName keyValue metaKeys keyName metaKeyName metaKeyValue "" user:/odbcSqlite
+bin/benchmark_mountpoint -c 1000 user:/odbcSqlite
+bin/benchmark_mountpoint -Mc 1000 user:/odbcSqlite
+```
+
+More information about benchmarking is available at [/benchmarks/README.md](/benchmarks/README.md).

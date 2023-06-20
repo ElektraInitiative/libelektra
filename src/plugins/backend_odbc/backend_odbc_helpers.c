@@ -728,9 +728,9 @@ void clearDsConfig (struct dataSourceConfig * dsConfig, bool freeStrings)
  * @param freeDsConfigStrings only considered, if @p freeDsConfig is 'true', then it specifies if the strings
  * 	inside the dataSourceConfig struct should be freed too.
  *
- * @retval 'false' if a NULL pointer was passed for @p sharedData or an error was reported by ODBC when trying to disconnect or free
+ * @retval false if a NULL pointer was passed for @p sharedData or an error was reported by ODBC when trying to disconnect or free
  * 	the handles.
- * @retval 'true' otherwise.
+ * @retval true otherwise.
  */
 bool clearOdbcSharedData (struct odbcSharedData * sharedData, bool freeDsConfig, bool freeDsConfigStrings)
 {
@@ -779,7 +779,14 @@ bool clearOdbcSharedData (struct odbcSharedData * sharedData, bool freeDsConfig,
 }
 
 
-/* Close the connection and free handles for connection and environment */
+/**
+ * @brief Close the connection and free handles for connection and environment
+ * @param plugin The plugin that contains the odbcSharedData struct which should be cleared
+ * @param[out] errorKey Used to add warnings.
+ *
+ * @retval true if the plugin data was NULL or the ODBC handles could be freed successfully
+ * @retval false if an error occurred
+ */
 bool freeSharedHandles (Plugin * plugin, Key * errorKey)
 {
 	struct odbcSharedData * sharedData = elektraPluginGetData (plugin);

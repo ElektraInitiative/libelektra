@@ -33,10 +33,25 @@ char * metaValueFormat = "metav%zu";
 char * metaValueModifiedFormat = "memod%zu";
 
 
+static void printHelp (void)
+{
+	puts ("Optional arguments:");
+	puts ("-c or --key-count <number of keys>: Specify the number of keys to benchmark.");
+	puts ("-H or --harmonize-names");
+	puts ("-h or --help: display this help");
+	puts ("-s or --single-keysets: Store each key in its own KeySet for Benchmark 1");
+	puts ("-m or --with-meta: include benchmarks for metadata, for the most reliable results it is recommended to run the tests for "
+	      "metadata separately (see -M)");
+	puts ("-M or --only-meta: only run benchmarks for metadata");
+	puts ("-v or --verbose: more detailed output");
+	exit (EXIT_SUCCESS);
+}
+
 static bool processCommandLineArguments (int argc, char ** argv)
 {
 	struct option long_options[] = { { "key-count", required_argument, 0, 'c' },
-					 { "harmonize-names", no_argument, 0, 'h' },
+					 { "harmonize-names", no_argument, 0, 'H' },
+					 { "help", no_argument, 0, 'h' },
 					 { "single-keysets", no_argument, 0, 's' },
 					 { "with-meta", no_argument, 0, 'm' },
 					 { "only-meta", no_argument, 0, 'M' },
@@ -67,6 +82,9 @@ static bool processCommandLineArguments (int argc, char ** argv)
 			break;
 		}
 		case 'h':
+			printHelp ();
+			break;
+		case 'H':
 			harmonizeKeys = true;
 			keyNameFormat = "key%08zu";
 			keyValueFormat = "value%08zu";
@@ -88,7 +106,8 @@ static bool processCommandLineArguments (int argc, char ** argv)
 			verbose = true;
 			break;
 		default:
-			break;
+			fprintf (stderr, "The specified argument %c is not valid!", c);
+			printHelp ();
 		}
 	}
 
@@ -105,7 +124,8 @@ int main (int argc, char ** argv)
 
 	if (argc < 2)
 	{
-		fprintf (stderr, "Usage: %s [options] <parentKey>\n", argv[0]);
+		fprintf (stderr, "Usage: %s [options] <parentKey>\n\n", argv[0]);
+		printHelp ();
 		return EXIT_FAILURE;
 	}
 
