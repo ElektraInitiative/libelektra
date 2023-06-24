@@ -69,7 +69,7 @@ This optional arguments are:
 
 - `--help`: Display help message exit
 - `--key-count <keys>`: how many keys should be generated (default 3)
-  - The default value is just intended for testing of the benchmark finished successfully.
+  - The default value is just intended for testing if the benchmark runs successfully.
   - For real benchmarks, much higher values are recommended to get meaningful results.
 - `--harmonize-names`: all key-values and -names have the same length
 - `--single-keysets`: store and persists each individual key separately (one `kdbSet` call per key).
