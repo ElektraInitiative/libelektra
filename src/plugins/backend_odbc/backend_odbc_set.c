@@ -343,7 +343,7 @@ static bool bindStringsToStatementV (SQLHSTMT sqlStmt, ssize_t startPos, Key * e
 	if (numParams > USHRT_MAX)
 	{
 		ELEKTRA_SET_INTERFACE_ERRORF (errorKey,
-					      "The maximum number of parameter values to bind is %hu, but you specified a number of %u",
+					      "The maximum number of parameter values to bind is %d, but you specified a number of %u",
 					      USHRT_MAX, numParams);
 		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 		return false;
@@ -476,7 +476,7 @@ static bool bindKeyNamesToStatement (SQLHSTMT sqlStmt, const KeySet * keysToBind
 	if ((endPosKeySet - startPosKeySet) >= USHRT_MAX)
 	{
 		ELEKTRA_SET_INTERFACE_ERRORF (parentKey,
-					      "The maximum number of parameter values to bind is %hu, but you specified a number of %zd",
+					      "The maximum number of parameter values to bind is %d, but you specified a number of %zd",
 					      USHRT_MAX, ksGetSize (keysToBind));
 		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 		return false;

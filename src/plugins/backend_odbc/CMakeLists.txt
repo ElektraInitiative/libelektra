@@ -20,6 +20,6 @@ add_plugin (
 		backend_odbc_set.h
 		backend_odbc_set.c
 	INCLUDE_DIRECTORIES ${ODBC_INCLUDE_DIRS}
-	LINK_ELEKTRA elektra-ease
+	LINK_ELEKTRA elektra-ease elektra-kdb
 	LINK_LIBRARIES ${ODBC_LIBRARIES}
 	ADD_TEST COMPONENT libelektra${SO_VERSION})
