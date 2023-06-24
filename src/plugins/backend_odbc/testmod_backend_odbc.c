@@ -210,7 +210,6 @@ static void test_invalid_helpers_fillDsStructFromDefinitionKs (void)
 	ksDel (ksWrongKeyName);
 
 
-
 	Key * keyDsName = keyNew ("system:/dataSourceName", KEY_VALUE, "dsName", KEY_END);
 	Key * keyTableName = keyNew ("system:/table/name", KEY_VALUE, "tableName", KEY_END);
 	Key * keyTKeyColName = keyNew ("system:/table/keyColName", KEY_VALUE, "tableKeyColName", KEY_END);
@@ -253,8 +252,8 @@ static void test_invalid_helpers_fillDsStructFromDefinitionKs (void)
 
 static void test_invalid_helpers (void)
 {
-	test_invalid_helpers_OdbcError();
-	test_invalid_helpers_fillDsStructFromDefinitionKs();
+	test_invalid_helpers_OdbcError ();
+	test_invalid_helpers_fillDsStructFromDefinitionKs ();
 
 	struct dataSourceConfig * dsConfig = elektraCalloc (sizeof (struct dataSourceConfig));
 	fillDsStructExceptDsName (dsConfig);
@@ -368,10 +367,9 @@ static void test_invalid_general (void)
 	elektraFree (dsConfig);
 
 	/* pass invalid handle (environment instead of connection) */
-	succeed_if (strcmp(getQuoteStr (hEnv, NULL), "\"") == 0, "should return \"");
+	succeed_if (strcmp (getQuoteStr (hEnv, NULL), "\"") == 0, "should return \"");
 	SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
-	succeed_if (strcmp(getQuoteStr (hEnv, testKey), "\"") == 0, "should return \"");
-
+	succeed_if (strcmp (getQuoteStr (hEnv, testKey), "\"") == 0, "should return \"");
 
 
 	/* Try to get statement handle from a non-active connection */
@@ -381,13 +379,14 @@ static void test_invalid_general (void)
 	hConn = allocateConnectionHandle (hEnv, NULL);
 	succeed_if (hConn, "Could not allocate connection handle");
 
-	succeed_if (!allocateStatementHandle (hConn, NULL), "should return NULL (getting statement handle for "
+	succeed_if (!allocateStatementHandle (hConn, NULL),
+		    "should return NULL (getting statement handle for "
 		    "non-active connection)");
 
 	/* Try to get quote string for non-active connection (should return default quote string) */
 	hConn = allocateConnectionHandle (hEnv, NULL);
 	succeed_if (hConn, "Could not allocate connection handle");
-	succeed_if (strcmp(getQuoteStr (hConn, NULL), "\"") == 0, "should return \"");
+	succeed_if (strcmp (getQuoteStr (hConn, NULL), "\"") == 0, "should return \"");
 
 	/* Try to end a transaction on a non-active connection */
 	succeed_if (!endTransaction (hConn, false, NULL), "should return false");
@@ -491,7 +490,7 @@ static void test_empty_general (void)
 	succeed_if (sqlConnection, "Could not allocate SQL connection handle!");
 
 	struct dataSourceConfig * dsConfig = elektraCalloc (sizeof (struct dataSourceConfig));
-	succeed_if (!connectToDataSource(sqlConnection, dsConfig, NULL), "should return false");
+	succeed_if (!connectToDataSource (sqlConnection, dsConfig, NULL), "should return false");
 }
 
 static void test_empty_get (void)
@@ -574,7 +573,6 @@ static void test_valid_helpers (void)
 	clearOdbcSharedData (&sharedData, true, true);
 
 	dsConfig = NULL;
-
 }
 
 static void test_valid_general (void)

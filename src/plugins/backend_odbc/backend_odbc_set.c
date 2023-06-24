@@ -1033,8 +1033,8 @@ static void logChangedKeys (ElektraDiff * diffSet, Key * parentKey)
 	KeySet * ksDiff = elektraDiffGetAddedKeys (diffSet);
 	for (elektraCursor it = 0; it < ksGetSize (ksDiff); it++)
 	{
-		ELEKTRA_LOG ("keyname: %s, string: %s, relative: %s\n", keyName (ksAtCursor (ksDiff, it)), keyString (ksAtCursor (ksDiff, it)),
-			     elektraKeyGetRelativeName (ksAtCursor (ksDiff, it), parentKey));
+		ELEKTRA_LOG ("keyname: %s, string: %s, relative: %s\n", keyName (ksAtCursor (ksDiff, it)),
+			     keyString (ksAtCursor (ksDiff, it)), elektraKeyGetRelativeName (ksAtCursor (ksDiff, it), parentKey));
 	}
 	ksDel (ksDiff);
 
@@ -1042,8 +1042,8 @@ static void logChangedKeys (ElektraDiff * diffSet, Key * parentKey)
 	ksDiff = elektraDiffGetRemovedKeys (diffSet);
 	for (elektraCursor it = 0; it < ksGetSize (ksDiff); it++)
 	{
-		ELEKTRA_LOG ("keyname: %s, string: %s, relative: %s\n", keyName (ksAtCursor (ksDiff, it)), keyString (ksAtCursor (ksDiff, it)),
-			     elektraKeyGetRelativeName (ksAtCursor (ksDiff, it), parentKey));
+		ELEKTRA_LOG ("keyname: %s, string: %s, relative: %s\n", keyName (ksAtCursor (ksDiff, it)),
+			     keyString (ksAtCursor (ksDiff, it)), elektraKeyGetRelativeName (ksAtCursor (ksDiff, it), parentKey));
 	}
 	ksDel (ksDiff);
 
@@ -1051,8 +1051,8 @@ static void logChangedKeys (ElektraDiff * diffSet, Key * parentKey)
 	ksDiff = elektraDiffGetModifiedKeys (diffSet);
 	for (elektraCursor it = 0; it < ksGetSize (ksDiff); it++)
 	{
-		ELEKTRA_LOG ("keyname: %s, string: %s, relative: %s\n", keyName (ksAtCursor (ksDiff, it)), keyString (ksAtCursor (ksDiff, it)),
-			     elektraKeyGetRelativeName (ksAtCursor (ksDiff, it), parentKey));
+		ELEKTRA_LOG ("keyname: %s, string: %s, relative: %s\n", keyName (ksAtCursor (ksDiff, it)),
+			     keyString (ksAtCursor (ksDiff, it)), elektraKeyGetRelativeName (ksAtCursor (ksDiff, it), parentKey));
 	}
 	ksDel (ksDiff);
 }
@@ -1094,7 +1094,7 @@ SQLLEN storeKeysInDataSource (struct odbcSharedData * sharedData, KeySet * ks, K
 	/* This starts a new transaction that is kept open. The handles for the ODBC environment and connection are stored in sharedData */
 	KeySet * ksDs = getKeysFromDataSource (sharedData, true, parentKey);
 	if (!ksDs)
-	{	/* error should've been set be getKeysFromDataSource */
+	{ /* error should've been set be getKeysFromDataSource */
 		return -1;
 	}
 
