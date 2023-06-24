@@ -87,8 +87,7 @@ The key-values for the keys under `definition` are defined as follows:
 - _metaTable/metaValColName:_ The name of the column where the value (string) of the metakeys is stored
 
 There is a new command for the kdb-tool: `kdb mountOdbc`.
-Please be aware that the ODBC backend, in contrast to the classic file-based backend,
-currently does not support adding other plugins to the mountpoint.
+Please be aware that the ODBC backend, in contrast to the classic file-based backend, currently does not support adding other plugins to the mountpoint.
 
 The `kdb mountOdbc` command accepts arguments for the previously described values of the _mountpoint definition_.
 For further details, please refer to the [man page](/doc/help/kdb-mountOdbc.md) for that command.
@@ -100,22 +99,15 @@ For more information about the ODBC backend, there is a tutorial available at [/
 
 ## Testing and Benchmarking
 
-There are no dedicated unit tests that actually store, read or delete data from
-an ODBC data source.
-The reason is, that with the current concept, a valid ODBC data source
-definition (for unixODBC in `/etc/unixODBC/odbc.ini`) must be present.
-We don't want to write to such an important system file that can influence other
-applications. It would also be cumbersome if we require the user to set up a
-specific ODBC configuration before running the tests .
+There are no dedicated unit tests that actually store, read or delete data from an ODBC data source.
+The reason is, that with the current concept, a valid ODBC data source definition (for unixODBC in `/etc/unixODBC/odbc.ini`) must be present.
+We don't want to write to such an important system file that can influence other applications.
+It would also be cumbersome if we require the user to set up a specific ODBC configuration before running the tests .
 
-However, for basic functionality testing and performance evaluation,
-you can create a valid ODBC mountpoint yourself using `kdb mountOdbc`
-and then run the benchmark which is implemented in [/benchmarks/mountpoint.c](/benchmarks/mountpoint.c)
-for the created mountpoint.
+However, for basic functionality testing and performance evaluation, you can create a valid ODBC mountpoint yourself using `kdb mountOdbc` and then run the benchmark which is implemented in [/benchmarks/mountpoint.c](/benchmarks/mountpoint.c) for the created mountpoint.
 This approach makes it possible to test and benchmark any valid mountpoint in the KDB.
 So different backends and plugins with different configurations can be tested and benchmarked.
-Just create a mountpoint with the backends, plugins and configuration that you want and run
-the benchmark with e.g. `bin/benchmark_mountpoint <MP path>/benchmark` for this mountpoint.
+Just create a mountpoint with the backends, plugins and configuration that you want and run the benchmark with e.g. `bin/benchmark_mountpoint <MP path>/benchmark` for this mountpoint.
 
 A short example that shows creating a new ODBC mountpoint and running benchmarks for KeySets and metadata:
 

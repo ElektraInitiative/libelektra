@@ -23,11 +23,10 @@
 #include <string.h>
 
 /* ODBC related includes */
-// #include <sql.h>
 #include <sqlext.h>
 
 
-/* Value for SQLLite, adjust for your ODBC driver/DBMS */
+/* Value for SQLite, adjust for your ODBC driver/DBMS */
 #define ODBC_SQL_MAX_PARAMS 32766
 
 
@@ -302,7 +301,7 @@ static char * getInsertQuery (const struct dataSourceConfig * dsConfig, bool for
 	}
 	else
 	{
-		/* Set value first to have to same parameter order as for the UPDATE query */
+		/* Set value first to have the same parameter order as for the UPDATE query */
 		return elektraFormat ("INSERT INTO %s%s%s (%s%s%s, %s%s%s) VALUES (?,?)", quoteStr, dsConfig->tableName, quoteStr, quoteStr,
 				      dsConfig->valColName, quoteStr, quoteStr, dsConfig->keyColName, quoteStr);
 	}
@@ -1015,6 +1014,7 @@ static SQLLEN insertOrUpdateRows (SQLHSTMT sqlStmt, const KeySet * ks, const str
 }
 
 
+#ifdef DEBUG
 #if DEBUG
 /**
  * @internal
@@ -1033,9 +1033,8 @@ static void logChangedKeys (ElektraDiff * diffSet, Key * parentKey)
 	KeySet * ksDiff = elektraDiffGetAddedKeys (diffSet);
 	for (elektraCursor it = 0; it < ksGetSize (ksDiff); it++)
 	{
-		Key * curKey = ksAtCursor (ksDiff, it);
-		ELEKTRA_LOG ("keyname: %s, string: %s, relative: %s\n", keyName (curKey), keyString (curKey),
-			     elektraKeyGetRelativeName (curKey, parentKey));
+		ELEKTRA_LOG ("keyname: %s, string: %s, relative: %s\n", keyName (ksAtCursor (ksDiff, it)), keyString (ksAtCursor (ksDiff, it)),
+			     elektraKeyGetRelativeName (ksAtCursor (ksDiff, it), parentKey));
 	}
 	ksDel (ksDiff);
 
@@ -1043,9 +1042,8 @@ static void logChangedKeys (ElektraDiff * diffSet, Key * parentKey)
 	ksDiff = elektraDiffGetRemovedKeys (diffSet);
 	for (elektraCursor it = 0; it < ksGetSize (ksDiff); it++)
 	{
-		Key * curKey = ksAtCursor (ksDiff, it);
-		ELEKTRA_LOG ("keyname: %s, string: %s, relative: %s\n", keyName (curKey), keyString (curKey),
-			     elektraKeyGetRelativeName (curKey, parentKey));
+		ELEKTRA_LOG ("keyname: %s, string: %s, relative: %s\n", keyName (ksAtCursor (ksDiff, it)), keyString (ksAtCursor (ksDiff, it)),
+			     elektraKeyGetRelativeName (ksAtCursor (ksDiff, it), parentKey));
 	}
 	ksDel (ksDiff);
 
@@ -1053,14 +1051,13 @@ static void logChangedKeys (ElektraDiff * diffSet, Key * parentKey)
 	ksDiff = elektraDiffGetModifiedKeys (diffSet);
 	for (elektraCursor it = 0; it < ksGetSize (ksDiff); it++)
 	{
-		Key * curKey = ksAtCursor (ksDiff, it);
-		ELEKTRA_LOG ("keyname: %s, string: %s, relative: %s\n", keyName (curKey), keyString (curKey),
-			     elektraKeyGetRelativeName (curKey, parentKey));
+		ELEKTRA_LOG ("keyname: %s, string: %s, relative: %s\n", keyName (ksAtCursor (ksDiff, it)), keyString (ksAtCursor (ksDiff, it)),
+			     elektraKeyGetRelativeName (ksAtCursor (ksDiff, it), parentKey));
 	}
 	ksDel (ksDiff);
 }
 #endif
-
+#endif
 
 /**
  * @brief Change the data in the ODBC data source so that it represents the state the is given in @ks.
@@ -1096,6 +1093,11 @@ SQLLEN storeKeysInDataSource (struct odbcSharedData * sharedData, KeySet * ks, K
 	/* 1. Get the current data from the data source and the string for quoting identifiers*/
 	/* This starts a new transaction that is kept open. The handles for the ODBC environment and connection are stored in sharedData */
 	KeySet * ksDs = getKeysFromDataSource (sharedData, true, parentKey);
+	if (!ksDs)
+	{	/* error should've been set be getKeysFromDataSource */
+		return -1;
+	}
+
 	char * quoteStr = getQuoteStr (sharedData->connection, parentKey);
 
 	if (!quoteStr || !(*quoteStr))
@@ -1183,7 +1185,6 @@ SQLLEN storeKeysInDataSource (struct odbcSharedData * sharedData, KeySet * ks, K
 	ksDel (ksRemovedKeys);
 
 	/* The keys in ksModifiedKeys contain the old values, but we need the new values for storing the in the data source */
-	// KeySet * ksModifiedOldKeys = elektraDiffGetModifiedKeys (diffSet);
 	KeySet * ksModifiedNewKeys = elektraDiffGetModifiedNewKeys (diffSet);
 
 	if (ksGetSize (ksModifiedNewKeys) > 0)

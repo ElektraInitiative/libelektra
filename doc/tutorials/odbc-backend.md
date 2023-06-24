@@ -128,8 +128,7 @@ As PostgreSQL natively supports transactions and multiple clients, it is also po
 Another option is to save the configurations for different users in separate tables.
 When a user logs in on any client PC in the network, the table with the matching configuration data can then, with some scripting, be mounted via Elektra.
 
-If you need detailed information about how to set up and use a PostgreSQL DBMS instance, there is excellent documentation, including tutorials for beginners,
-available at the [PostgreSQL website](https://www.postgresql.org/docs/current/tutorial.html).
+If you need detailed information about how to set up and use a PostgreSQL DBMS instance, there is excellent documentation, including tutorials for beginners, available at the [PostgreSQL website](https://www.postgresql.org/docs/current/tutorial.html).
 
 However, for this tutorial, we present a single-user scenario on a local PC.
 

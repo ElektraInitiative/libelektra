@@ -203,7 +203,9 @@ size_t elektraPluginGetFunction (Plugin * plugin, const char * name)
  * Gets a string with the name of the given constant for a plugin phase
  *
  * @param phase The ElektraKdbPhase value for which a string representation should be returned
- * @return A string with the name of the given phase
+ *
+ * @return A string with the name of the given phase.
+ * 	The returned string is a constant value and must never be freed!
  * @retval "???" if an unknown value for the phase was given
  */
 const char * elektraPluginPhaseName (ElektraKdbPhase phase)

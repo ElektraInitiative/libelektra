@@ -616,10 +616,16 @@ char * dsConfigToString (const struct dataSourceConfig * dsConfig)
  *
  * @retval true if the @p subStr was found in any of the identifiers.
  * @retval false if the @p subStr was NOT found in any of the identifiers.
- * @retval true if @p subStr is null or empty.
+ * @retval false if @p dsConfig was NULL
+ * @retval true if @p dsConfig was NOT NULL and @p subStr was NULL or empty.
  */
 bool checkIdentifiersForSubString (const struct dataSourceConfig * dsConfig, const char * subStr, Key * errorKey)
 {
+	if (!dsConfig)
+	{
+		return false;
+	}
+
 	if (!subStr || !(*subStr))
 	{
 		return true;
@@ -628,41 +634,41 @@ bool checkIdentifiersForSubString (const struct dataSourceConfig * dsConfig, con
 	const char * foundIdentifierName = NULL;
 	const char * foundIdentifierVal;
 
-	if (strstr (dsConfig->tableName, subStr))
+	if (dsConfig->tableName && strstr (dsConfig->tableName, subStr))
 	{
 		foundIdentifierName = "tableName";
 		foundIdentifierVal = dsConfig->tableName;
 	}
-	else if (strstr (dsConfig->keyColName, subStr))
+	else if (dsConfig->keyColName && strstr (dsConfig->keyColName, subStr))
 	{
 		foundIdentifierName = "keyColName";
 		foundIdentifierVal = dsConfig->keyColName;
 	}
-	else if (strstr (dsConfig->valColName, subStr))
+	else if (dsConfig->valColName && strstr (dsConfig->valColName, subStr))
 	{
 		foundIdentifierName = "valColName";
 		foundIdentifierVal = dsConfig->valColName;
 	}
 
-	else if (strstr (dsConfig->metaTableName, subStr))
+	else if (dsConfig->metaTableName && strstr (dsConfig->metaTableName, subStr))
 	{
 		foundIdentifierName = "metaTableName";
 		foundIdentifierVal = dsConfig->metaTableName;
 	}
 
-	else if (strstr (dsConfig->metaTableKeyColName, subStr))
+	else if (dsConfig->metaTableKeyColName && strstr (dsConfig->metaTableKeyColName, subStr))
 	{
 		foundIdentifierName = "metaTableKeyColName";
 		foundIdentifierVal = dsConfig->metaTableKeyColName;
 	}
 
-	else if (strstr (dsConfig->metaTableMetaKeyColName, subStr))
+	else if (dsConfig->metaTableMetaKeyColName && strstr (dsConfig->metaTableMetaKeyColName, subStr))
 	{
 		foundIdentifierName = "metaTableMetaKeyColName";
 		foundIdentifierVal = dsConfig->metaTableMetaKeyColName;
 	}
 
-	else if (strstr (dsConfig->metaTableMetaValColName, subStr))
+	else if (dsConfig->metaTableMetaValColName && strstr (dsConfig->metaTableMetaValColName, subStr))
 	{
 		foundIdentifierName = "metaTableMetaValColName";
 		foundIdentifierVal = dsConfig->metaTableMetaValColName;
@@ -722,6 +728,11 @@ void clearDsConfig (struct dataSourceConfig * dsConfig, bool freeStrings)
  *
  * If the connection handle is not NULL, the function disconnects and frees the connection handle.
  * If the environment handle is not NULL, the function frees the environment handle.
+ *
+ * @post The referenced handles for environment and connection are freed and the connection is closed.
+ * 	The struct @p sharedData get NOT freed by this function. Call elektraFree (sharedData) yourself if you want to free
+ * 	this struct too.
+ * 	Therefore, this function is named 'clearOdbcSharedData', and not 'freeOdbcSharedData'!
  *
  * @param sharedData The struct of type odbcSharedData
  * @param freeDsConfig 'true' if the dataSourceConfig struct inside @p sharedData should be freed too
@@ -785,11 +796,23 @@ bool clearOdbcSharedData (struct odbcSharedData * sharedData, bool freeDsConfig,
  * @param[out] errorKey Used to add warnings.
  *
  * @retval true if the plugin data was NULL or the ODBC handles could be freed successfully
- * @retval false if an error occurred
+ * @retval false if the given plugin was NULL or an error occurred
  */
 bool freeSharedHandles (Plugin * plugin, Key * errorKey)
 {
+	if (!plugin)
+	{
+		return false;
+	}
+
 	struct odbcSharedData * sharedData = elektraPluginGetData (plugin);
+
+	if (!sharedData)
+	{
+		/* Nothing there to free, consider this as ok */
+		return true;
+	}
+
 	if (!clearOdbcSharedData (sharedData, false, false))
 	{
 		sharedData->connection = NULL;
@@ -797,10 +820,10 @@ bool freeSharedHandles (Plugin * plugin, Key * errorKey)
 		ELEKTRA_ADD_RESOURCE_WARNING (errorKey,
 					      "Could not successfully close the connection and free the SQL handles for "
 					      " the connection and environment. Please check the state of your data source.");
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
+		return false;
 	}
 	else
 	{
-		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+		return true;
 	}
 }

@@ -354,6 +354,7 @@ SQLLEN executeQuery (SQLHSTMT stmt, const char * query, Key * errorKey)
 	if (!stmt)
 	{
 		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "The provided statement handle must not be null.");
+		return -1;
 	}
 
 	SQLRETURN ret = SQLExecDirect (stmt, (SQLCHAR *) query, SQL_NTS);
@@ -436,6 +437,8 @@ char * getQuoteStr (SQLHDBC sqlConnection, Key * errorKey)
 	if (!identifierQuoteStr)
 	{
 		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
+		SQLDisconnect (sqlConnection);
+		SQLFreeHandle (SQL_HANDLE_DBC, sqlConnection);
 		return NULL;
 	}
 

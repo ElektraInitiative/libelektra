@@ -56,15 +56,6 @@ int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * ksDefinition, Key 
 	}
 
 	sharedData->dsConfig = dsConfig;
-
-	// void * pluginData = elektraPluginGetData (plugin);
-
-	/* TODO: Check if freeing this memory is safe in all cases! */
-	// if (pluginData)
-	//{
-	//	elektraFree (pluginData);
-	// }
-
 	elektraPluginSetData (plugin, sharedData);
 
 	/* init as read-write backend */

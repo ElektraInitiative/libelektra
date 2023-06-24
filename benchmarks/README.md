@@ -1,16 +1,13 @@
 This directory is for benchmarking.
 
-Instead of collecting all statistics in a single file,
-commits are used per benchmark.
+Instead of collecting all statistics in a single file, commits are used per benchmark.
 
-So to do a benchmark you first write the code and
-go to a specific commit of Elektra. Then you can
-run a benchmark. Afterwards you commit all information
-you have collected.
+So to do a benchmark you first write the code and go to a specific commit of Elektra.
+Then you can run a benchmark.
+Afterward you commit all information you have collected.
 
 This has the advantage that it is reproducible.
-Everyone can go anytime back to the benchmark commits
-and run the same benchmarks again.
+Everyone can go anytime back to the benchmark commits and run the same benchmarks again.
 
 For running benchmarks you can use on Unix:
 
@@ -20,8 +17,7 @@ make benchmark_<filename>_callgrind
 
 which will run the `callgrind` tool of Valgrind on it.
 
-The old STATISTICS file is no longer used and will be
-removed with this commit.
+The old STATISTICS file is no longer used and will be removed with this commit.
 
 # changetracking
 
@@ -57,8 +53,7 @@ Only the time for the `kdbGet` and `kdbSet` calls are benchmarked.
 The time for preparing the keys and KeySets is not a part of the benchmark.
 The main purpose of this benchmark is to compare the performance of different backends and storage plugins.
 
-Just create a mountpoint for the backends and/or plugins you want to benchmark and give this mountpoint or a path
-below as an argument to the benchmark.
+Just create a mountpoint for the backends and/or plugins you want to benchmark and give this mountpoint or a path below as an argument to the benchmark.
 
 The benchmark takes one mandatory argument and several optional arguments.
 
@@ -67,14 +62,15 @@ benchmark_mountpoint [options] <parentKey>
 ```
 
 Be aware that it is expected that no keys are present at or below `<parentKey>`.
-If you specify a `<parent key>` that already contains keys, these keys get deleted by the benchmark.
+If you specify a `<parent key>` that already contains keys, those keys get deleted by the benchmark.
 They can also influence the results of the benchmark.
 
 This optional arguments are:
 
 - `--help`: Display help message exit
 - `--key-count <keys>`: how many keys should be generated (default 3)
-  - The default value is just intended for testing of the benchmark finished successfully. For real benchmarks, much higher values are recommended to get meaningful results.
+  - The default value is just intended for testing of the benchmark finished successfully.
+  - For real benchmarks, much higher values are recommended to get meaningful results.
 - `--harmonize-names`: all key-values and -names have the same length
 - `--single-keysets`: store and persists each individual key separately (one `kdbSet` call per key).
   - This option only influences the first benchmark.
@@ -101,9 +97,9 @@ For more reliable results, it is recommended to run the tests with metadata with
 
 # OPMPHM
 
-The OPMPHM benchmarks need an external seed source. Use the `generate-seeds` script
-to generate a file containing the seeds. The number of seeds vary, execute the
-`benchmark_opmphm` without parameter to get the number of seeds.
+The OPMPHM benchmarks need an external seed source.
+Use the `generate-seeds` script to generate a file containing the seeds.
+The number of seeds vary, execute the `benchmark_opmphm` without parameter to get the number of seeds.
 Then execute:
 
 ```sh
@@ -127,15 +123,16 @@ cat mySeedFile | benchmark_opmphm opmphmbuildtime
 
 # plugingetset
 
-The `benchmark_plugingetset` is different than the other benchmarks. It doesn't do any benchmarking by itself.
-Instead it simple takes 3 or 4 arguments:
+The `benchmark_plugingetset` is different from the other benchmarks.
+It doesn't do any benchmarking by itself.
+Instead, it simply takes 3 or 4 arguments:
 
 ```sh
 benchmark_plugingetset <path> <parent> <plugin> [get]
 ```
 
-. It then looks for the file `test.<plugin>.in` under the path `<path>`
-and calls the `get` method of plugin `<plugin>` on this file with parent Key `<parent>`. Lastly it calls the `set` method of `<plugin>`
-on the file `test.<plugin>.out` with parent Key `<parent>`, if you did not specify `get` as fourth argument.
+. It then looks for the file `test.<plugin>.in` under the path `<path>` and calls the `get` method of plugin `<plugin>` on this file with parent Key `<parent>`.
+Lastly it calls the `set` method of `<plugin>` on the file `test.<plugin>.out` with parent Key `<parent>`, if you did not specify `get` as fourth argument.
 
-`benchmark_plugingetset` can be used with `time` (or similar programs) to compare the speed of two (or more) storage plugins for specific files. The [benchmarking tutorial](../doc/tutorials/benchmarking.md) provides one example on how to do that.
+`benchmark_plugingetset` can be used with `time` (or similar programs) to compare the speed of two (or more) storage plugins for specific files.
+The [benchmarking tutorial](../doc/tutorials/benchmarking.md) provides one example on how to do that.
