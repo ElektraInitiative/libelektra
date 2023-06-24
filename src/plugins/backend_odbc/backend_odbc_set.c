@@ -1014,6 +1014,7 @@ static SQLLEN insertOrUpdateRows (SQLHSTMT sqlStmt, const KeySet * ks, const str
 }
 
 
+#ifdef HAVE_LOGGER
 #ifdef DEBUG
 #if DEBUG
 /**
@@ -1056,6 +1057,7 @@ static void logChangedKeys (ElektraDiff * diffSet, Key * parentKey)
 	}
 	ksDel (ksDiff);
 }
+#endif
 #endif
 #endif
 
@@ -1121,9 +1123,14 @@ SQLLEN storeKeysInDataSource (struct odbcSharedData * sharedData, KeySet * ks, K
 		return 0;
 	}
 
+#ifdef HAVE_LOGGER
+#ifdef DEBUG
 #if DEBUG
 	logChangedKeys (diffSet, parentKey);
 #endif
+#endif
+#endif
+
 	/* 3. Execute the DELETE, UPDATE, and INSERT queries based on the calculated diff */
 	SQLHSTMT sqlStmt = NULL;
 	SQLLEN sumAffectedRows = 0;
