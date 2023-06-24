@@ -395,6 +395,9 @@ static void test_invalid_general (void)
 	succeed_if (!endTransaction (hConn, true, NULL), "should return false");
 	succeed_if (!endTransaction (hConn, true, testKey), "should return false");
 #endif
+
+	SQLFreeHandle (SQL_HANDLE_DBC, hConn);
+	SQLFreeHandle (SQL_HANDLE_ENV, hEnv);
 	keyDel (testKey);
 }
 
