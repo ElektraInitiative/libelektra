@@ -287,7 +287,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Implemented the first revision of the Xfconf binding. _(Richard Stöckl @Eiskasten)_
 - This allows to use elektra as a drop-in replacement for applications which use Xfconf. _(Richard Stöckl @Eiskasten)_
 - Xfconf applications can now read and write configuration settings to elektra. _(Richard Stöckl @Eiskasten)_
-- <<TODO>>
+- Use cmake variables in the replace and restore scripts. _(Richard Stöckl @Eiskasten)_
 
 ## Tools
 

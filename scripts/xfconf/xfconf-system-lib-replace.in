@@ -4,5 +4,5 @@
 # @brief Replaces the systems Xfconf library with the Xfconf binding and creates backup.
 # @date 15.05.2023
 
-mv "@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/libxfconf-0.so.3.0.0" "@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/libxfconf-0.so.3.0.0.bak"
-cp "@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/libxfconf-elektra.so" "@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/libxfconf-0.so.3.0.0"
+mv "@XFCONF_LIBRARY_REALPATH@" "@XFCONF_LIBRARY_REALPATH@.bak"
+cp "@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/libxfconf-elektra.so" "@XFCONF_LIBRARY_REALPATH@"
