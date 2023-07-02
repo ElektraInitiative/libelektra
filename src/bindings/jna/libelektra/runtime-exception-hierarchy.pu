@@ -1,0 +1,25 @@
+@startuml
+
+hide members
+
+
+class RuntimeException
+class IllegalStateException
+class KDBClosedException
+class KeyBinaryValueException
+class KeyException
+class KeyMetaException
+class KeyNameException
+class KeySetException
+class KeyStringValueException
+
+RuntimeException <-- IllegalStateException
+RuntimeException <-- KeyException
+RuntimeException <-- KeySetException
+IllegalStateException <-- KDBClosedException
+IllegalStateException <-- KeyBinaryValueException
+IllegalStateException <-- KeyStringValueException
+KeyException <-- KeyMetaException
+KeyException <-- KeyNameException
+
+@enduml

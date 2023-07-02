@@ -1,0 +1,38 @@
+@startuml
+
+hide members
+
+class Exception
+abstract KDBException {
+    static KDBException getMappedException(Key errorKey)
+}
+class ConflictingStateException
+class PermanentException
+abstract LogicalException
+class InterfaceException
+class InstallationException
+class InternalException
+class ResourceException
+class OutOfMemoryException
+class PluginMisbehaviorException
+class SemanticValidationException
+abstract ValidationException
+class SyntacticValidationException
+
+show KDBException methods
+
+Exception <-- KDBException
+KDBException <-- ConflictingStateException
+KDBException <-- PermanentException
+KDBException <-- ValidationException
+PermanentException <-- InstallationException
+PermanentException <-- LogicalException
+PermanentException <-- ResourceException
+ValidationException <-- SemanticValidationException
+ValidationException <-- SyntacticValidationException
+LogicalException <-- InterfaceException
+LogicalException <-- InternalException
+LogicalException <-- PluginMisbehaviorException
+ResourceException <-- OutOfMemoryException
+
+@enduml
