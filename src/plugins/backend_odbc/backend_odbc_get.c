@@ -9,14 +9,18 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-
 #include "./backend_odbc_get.h"
+#include "./backend_odbc_general.h"
 
 #include <kdbassert.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
 #include <kdblogger.h>
 #include <string.h>
+
+/* ODBC related includes */
+#include <sql.h>
+#include <sqlext.h>
 
 /**
  * @internal
@@ -28,22 +32,23 @@
  * @param dsConfig A valid data source config, as returned by the fillDsStructFromDefinitionKs() function
  * @param quoteString The characters that should be added before and after identifiers, pass NULL if your identifiers in dsConfig are
  * 	already quoted or if you don't want to use quoted identifiers
+ * @param[out] errorKey Used to store errors and warnings.
  *
  * @return The query string for the select query to get keynames, key-values and metadata from an SQL data source.
  * 	Make sure to free the returned string.
  * @retval NULL if memory allocation failed, no @p quoteString was given or an invalid identifier value
  * 	was in @p dsConfig, see warnings and error in @p errorKey for more details
  */
-static char * getSelectQueryString (struct dataSourceConfig * dsConfig, char * quoteString, Key * errorKey)
+static char * getSelectQueryString (const struct dataSourceConfig * dsConfig, char * quoteString, Key * errorKey)
 {
 	/* A sample query string that shows the structure of the SELECT query that this function generates:
 	 * SELECT "elektra"."key", "elektra"."val", "elektrameta"."metakey", "elektrameta"."metaval" FROM {oj "elektra" LEFT OUTER JOIN
-	 * "elektrameta" ON "elektra"."key"="elektrameta"."key"}
+	 * "elektrameta" ON "elektra"."key"="elektrameta"."key"} ORDER BY "elektra"."key".
 	 */
 
 	if (!quoteString || !(*quoteString))
 	{
-		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "NULL or empty strings are not supported for the quoteString");
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "NULL or empty strings are not supported for the quote string.");
 		return NULL;
 	}
 
@@ -56,7 +61,7 @@ static char * getSelectQueryString (struct dataSourceConfig * dsConfig, char * q
 
 	// clang-format off
 	char * queryString = elektraFormat ("SELECT %s%s%s.%s%s%s, %s%s%s.%s%s%s, %s%s%s.%s%s%s, %s%s%s.%s%s%s FROM {oj %s%s%s "
-		"LEFT OUTER JOIN %s%s%s ON %s%s%s.%s%s%s=%s%s%s.%s%s%s}",
+		"LEFT OUTER JOIN %s%s%s ON %s%s%s.%s%s%s=%s%s%s.%s%s%s} ORDER BY %s%s%s.%s%s%s",
 		quoteString, dsConfig->tableName, quoteString,
 		quoteString, dsConfig->keyColName, quoteString,
 
@@ -77,7 +82,10 @@ static char * getSelectQueryString (struct dataSourceConfig * dsConfig, char * q
 		quoteString, dsConfig->keyColName, quoteString,
 
 		quoteString, dsConfig->metaTableName, quoteString,
-		quoteString, dsConfig->metaTableKeyColName, quoteString);
+		quoteString, dsConfig->metaTableKeyColName, quoteString,
+
+		quoteString, dsConfig->tableName, quoteString,
+		quoteString, dsConfig->keyColName, quoteString);
 	// clang-format on
 
 
@@ -103,7 +111,7 @@ static char * getSelectQueryString (struct dataSourceConfig * dsConfig, char * q
  * @param sqlConnection The initialized connection handle. It must represent an active connection.
  * 	This handle gets freed if an error occurred, so don't dereference it if the function returned NULL.
  * @param dsConfig The configuration of the ODBC data source, as retrieved by fillDsStructFromDefinitionKs()
- * @param[out] errorKey Used to store errors and warnings
+ * @param[out] errorKey Used to store errors and warnings.
  *
  * @return A handle to the prepared statement
  * 	Make sure to free the returned handle with SQLFreeHandle().
@@ -111,91 +119,19 @@ static char * getSelectQueryString (struct dataSourceConfig * dsConfig, char * q
  *
  * @see fillDsStructFromDefinitionKs() for getting a valid dataSourceConfig struct
  */
-static SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfig * dsConfig, Key * errorKey)
+static SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, const struct dataSourceConfig * dsConfig, Key * errorKey)
 {
 	/* Handle for a statement */
-	SQLHSTMT sqlStmt = NULL;
+	SQLHSTMT sqlStmt = allocateStatementHandle (sqlConnection, errorKey);
 
-	SQLRETURN ret = SQLAllocHandle (SQL_HANDLE_STMT, sqlConnection, &sqlStmt);
-
-	if (!SQL_SUCCEEDED (ret))
+	if (!sqlStmt)
 	{
-		ELEKTRA_LOG_NOTICE ("SQLAllocHandle() failed!\nCould not allocate a handle for an SQL statement!");
-		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_DBC, sqlConnection, errorKey);
-
-		if (sqlStmt)
-		{
-			SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
-		}
-
-		SQLDisconnect (sqlConnection);
-		SQLFreeHandle (SQL_HANDLE_DBC, sqlConnection);
 		return NULL;
 	}
-	else if (ret == SQL_SUCCESS_WITH_INFO)
-	{
-		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_DBC, sqlConnection, errorKey);
-		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_STMT, sqlStmt, errorKey);
-	}
 
-
-	/* Get driver specific identifier quote character
-	 * (see: https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/quoted-identifiers) for more information */
-
-	char identifierQuoteChar[2] = { 0, 0 };
-	SQLSMALLINT quoteCharLen = 0;
-	ret = SQLGetInfo (sqlConnection, SQL_IDENTIFIER_QUOTE_CHAR, identifierQuoteChar, 2, &quoteCharLen);
-
-	if (!SQL_SUCCEEDED (ret))
-	{
-		/* treat error as info and try to use the standard value " for quoting identifiers */
-		ELEKTRA_LOG_NOTICE ("Could not get an identifier quote char from the driver, using \" as defined by the SQL-92 standard");
-		identifierQuoteChar[0] = '"';
-		identifierQuoteChar[1] = '\0';
-	}
-
-	if (!SQL_SUCCEEDED (ret) || ret == SQL_SUCCESS_WITH_INFO)
-	{
-		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_DBC, sqlConnection, errorKey);
-	}
-
-	char * queryString;
-	if ((quoteCharLen) > 1)
-	{
-		/* TODO: Check support for Unicode */
-		ELEKTRA_LOG_WARNING (
-			"Got a string for the info SQL_IDENTIFIER_QUOTE_CHAR with more than one byte, this is unusual."
-			"If you are using Unicode on MS Windows (UTF-16), please be aware that this could lead to errors.");
-		char * identifierQuoteStr = elektraMalloc ((quoteCharLen + 1) * sizeof (char));
-		ret = SQLGetInfo (sqlConnection, SQL_IDENTIFIER_QUOTE_CHAR, identifierQuoteStr, 1, &quoteCharLen);
-
-		if (!SQL_SUCCEEDED (ret))
-		{
-			/* treat error as info and try to use the standard value " for quoting identifiers */
-			ELEKTRA_LOG_NOTICE (
-				"Could not get an identifier quote string from the driver, despite the driver state that the string for "
-				"the info SQL_IDENTIFIER_QUOTE_CHAR has more than one character!");
-			ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_DBC, sqlConnection, errorKey);
-
-			elektraFree (identifierQuoteStr);
-			SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
-			SQLDisconnect (sqlConnection);
-			SQLFreeHandle (SQL_HANDLE_DBC, sqlConnection);
-
-			return NULL;
-		}
-		else if (ret == SQL_SUCCESS_WITH_INFO)
-		{
-			ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_DBC, sqlConnection, errorKey);
-		}
-
-		queryString = getSelectQueryString (dsConfig, identifierQuoteStr, errorKey);
-		elektraFree (identifierQuoteStr);
-	}
-	else
-	{
-		queryString = getSelectQueryString (dsConfig, identifierQuoteChar, errorKey);
-	}
+	char * identifierQuoteStr = getQuoteStr (sqlConnection, errorKey);
+	char * queryString = getSelectQueryString (dsConfig, identifierQuoteStr, errorKey);
+	elektraFree (identifierQuoteStr);
 
 	if (!queryString || !(*queryString))
 	{
@@ -205,6 +141,7 @@ static SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfi
 		}
 		else
 		{
+			elektraFree (queryString);
 			ELEKTRA_SET_INSTALLATION_ERROR (errorKey,
 							"The input configuration for the data source contained missing or invalid values.\n"
 							"Please check your ODBC- and data source configuration!");
@@ -217,7 +154,7 @@ static SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfi
 	}
 
 	/* Prepare the statement that retrieves key-names and string-values */
-	ret = SQLPrepare (sqlStmt, (SQLCHAR *) queryString, SQL_NTS);
+	SQLRETURN ret = SQLPrepare (sqlStmt, (SQLCHAR *) queryString, SQL_NTS);
 
 	/* Not a deferred buffer, according to: https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/deferred-buffers */
 	elektraFree (queryString);
@@ -242,6 +179,87 @@ static SQLHSTMT prepareSelectStmt (SQLHDBC sqlConnection, struct dataSourceConfi
 		SQLFreeHandle (SQL_HANDLE_DBC, sqlConnection);
 		return NULL;
 	}
+}
+
+
+/**
+ * @internal
+ *
+ * @brief Binds the buffers in the struct @p columnData to the columns defined by the @p sqlStmt
+ *
+ * This function assumes that there are four columns ('key-name', 'key-value', 'metakey-name' and 'metakey-value')
+ *
+ * @param sqlStmt The allocated and prepared SQL statement for which the columns should be bound
+ * 	This handle gets freed if an error occurred, so don't dereference it if the function returned 'false'.
+ * @param buffers The buffers where the data for that columns should be stored
+ * @param[out] errorKey Used to store errors and warnings
+ *
+ * @retval 'true' if the operation was successful
+ * @retval 'false' if an error occurred (see @p errorKey for details)
+ *
+ * @see prepareSelectStmt() for getting a statement handle that can be used by this function
+ */
+static bool bindColumns (SQLHSTMT sqlStmt, struct columnData * buffers, Key * errorKey)
+{
+	/* TODO: Support for binary keys */
+
+	/* Bind column 1 (key-name) */
+	SQLRETURN ret = SQLBindCol (sqlStmt, 1, SQL_C_CHAR, buffers->bufferKeyName, KEYNAME_BUFFER_SIZE, &(buffers->nameLenInd));
+	if (!SQL_SUCCEEDED (ret))
+	{
+		ELEKTRA_LOG_NOTICE ("SQLBindCol() failed!\nCould not bind the first column to the keyName!");
+		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_STMT, sqlStmt, errorKey);
+		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
+		return false;
+	}
+	else if (ret == SQL_SUCCESS_WITH_INFO)
+	{
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_STMT, sqlStmt, errorKey);
+	}
+
+	/* Bind column 2 (key-value) */
+	ret = SQLBindCol (sqlStmt, 2, SQL_C_CHAR, buffers->bufferKeyStr, KEYSTRING_BUFFER_SIZE, &(buffers->strLenInd));
+	if (!SQL_SUCCEEDED (ret))
+	{
+		ELEKTRA_LOG_NOTICE ("SQLBindCol() failed!\nCould not bind the second column to the keyString (value of the key)!");
+		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_STMT, sqlStmt, errorKey);
+		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
+		return false;
+	}
+	else if (ret == SQL_SUCCESS_WITH_INFO)
+	{
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_STMT, sqlStmt, errorKey);
+	}
+
+	/* Bind column 3 (metakey-name) */
+	ret = SQLBindCol (sqlStmt, 3, SQL_C_CHAR, buffers->bufferMetaKeyName, METAKEYNAME_BUFFER_SIZE, &(buffers->metaNameLenInd));
+	if (!SQL_SUCCEEDED (ret))
+	{
+		ELEKTRA_LOG_NOTICE ("SQLBindCol() failed!\nCould not bind the second column to the keyString (value of the key)!");
+		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_STMT, sqlStmt, errorKey);
+		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
+		return false;
+	}
+	else if (ret == SQL_SUCCESS_WITH_INFO)
+	{
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_STMT, sqlStmt, errorKey);
+	}
+
+	/* Bind column 4 (metakey-value) */
+	ret = SQLBindCol (sqlStmt, 4, SQL_C_CHAR, buffers->bufferMetaKeyStr, METASTRING_BUFFER_SIZE, &(buffers->metaStrLenInd));
+	if (!SQL_SUCCEEDED (ret))
+	{
+		ELEKTRA_LOG_NOTICE ("SQLBindCol() failed!\nCould not bind the second column to the keyString (value of the key)!");
+		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_STMT, sqlStmt, errorKey);
+		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
+		return false;
+	}
+	else if (ret == SQL_SUCCESS_WITH_INFO)
+	{
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_STMT, sqlStmt, errorKey);
+	}
+
+	return true;
 }
 
 
@@ -325,12 +343,14 @@ static bool getLongData (SQLHSTMT sqlStmt, SQLUSMALLINT colNumber, SQLSMALLINT t
 	}
 	else if (!targetValue)
 	{
+		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 		ELEKTRA_SET_INTERFACE_ERROR (errorKey,
 					     "A NULL pointer was given as an argument for the buffer 'targetValue' to getLongData()");
 		return false;
 	}
 	else if (bufferSize <= 0)
 	{
+		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "A buffer size <=0 was given as an argument to getLongData()");
 		return false;
 	}
@@ -390,16 +410,15 @@ static bool getLongData (SQLHSTMT sqlStmt, SQLUSMALLINT colNumber, SQLSMALLINT t
  * 	See 'struct columnData'.
  * @param[out] parentKey Used to store errors and warnings and for getting the mountpoint root path
  *
- * @returns The KeySet with the data retrieved from the SQL SELECT query.
+ * @returns The KeySet with the data retrieved from the SQL SELECT query. (empty if no data was fetched (empty data table)
  * 	Make sure to ksDel() the returned KeySet.
- * @retval NULL if no data was fetched or an error occurred (see @p errorKey for details)
+ * @retval NULL if an error occurred (see @p errorKey for details)
  *
  * @see executeSqlStatement() for executing a prepared SQL statement
  */
 static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key * parentKey)
 {
 	SQLRETURN ret;
-	KeySet * ksResult = NULL;
 
 	/* Needed for detecting if the current row contains a new key or just a further metakey for a previous key (outer join) */
 	char * prevKeyName = NULL;
@@ -408,27 +427,26 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 
 	if (!sqlStmt || !buffers)
 	{
-		if (parentKey)
-		{
-			ELEKTRA_SET_INTERFACE_ERROR (
-				parentKey, "A NULL pointer was given as an argument to fetchResults() for 'sqlStmt' or 'columnData'");
-		}
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey,
+					     "A NULL pointer was given as an argument to fetchResults() for 'sqlStmt' or 'columnData'");
 		return NULL;
 	}
 
+	KeySet * ksResult = ksNew (0, KS_END);
+	if (!ksResult)
+	{
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
+		return NULL;
+	}
+
+
 	while ((ret = SQLFetch (sqlStmt)) != SQL_NO_DATA)
 	{
-
 		if (!SQL_SUCCEEDED (ret))
 		{
 			ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_STMT, sqlStmt, parentKey);
 			elektraFree (prevKeyName);
-
-			if (ksResult)
-			{
-				ksDel (ksResult);
-			}
-
+			ksDel (ksResult);
 			SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
 			return NULL;
 		}
@@ -493,7 +511,7 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 					retGetLongData =
 						getLongData (sqlStmt, 2, SQL_C_CHAR, &longKeyString, KEYSTRING_BUFFER_SIZE * 2, parentKey);
 				}
-				else if (!isFurtherMetaKey && KEYSTRING_BUFFER_SIZE <= buffers->strLenInd)
+				else if (!isFurtherMetaKey && retGetLongData && KEYSTRING_BUFFER_SIZE <= buffers->strLenInd)
 				{
 					longKeyString = (char *) elektraMalloc (sizeof (char) * (buffers->strLenInd + 1));
 					retGetLongData =
@@ -507,7 +525,7 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 					retGetLongData = getLongData (sqlStmt, 3, SQL_C_CHAR, &longMetaKeyName, METAKEYNAME_BUFFER_SIZE * 2,
 								      parentKey);
 				}
-				else if (METAKEYNAME_BUFFER_SIZE <= buffers->metaNameLenInd)
+				else if (retGetLongData && METAKEYNAME_BUFFER_SIZE <= buffers->metaNameLenInd)
 				{
 					longMetaKeyName = (char *) elektraMalloc (sizeof (char) * (buffers->metaNameLenInd + 1));
 					retGetLongData = getLongData (sqlStmt, 3, SQL_C_CHAR, &longMetaKeyName,
@@ -521,7 +539,7 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 					retGetLongData = getLongData (sqlStmt, 4, SQL_C_CHAR, &longMetaKeyString,
 								      METASTRING_BUFFER_SIZE * 2, parentKey);
 				}
-				else if (METASTRING_BUFFER_SIZE <= buffers->metaStrLenInd)
+				else if (retGetLongData && METASTRING_BUFFER_SIZE <= buffers->metaStrLenInd)
 				{
 					longMetaKeyString = (char *) elektraMalloc (sizeof (char) * (buffers->metaStrLenInd + 1));
 					retGetLongData = getLongData (sqlStmt, 4, SQL_C_CHAR, &longMetaKeyString,
@@ -539,12 +557,7 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 					elektraFree (longMetaKeyString);
 
 					/* Statement handle was already freed by getLongData() function */
-					if (ksResult)
-					{
-						ksDel (ksResult);
-					}
-
-					SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
+					ksDel (ksResult);
 					return NULL;
 				}
 			}
@@ -566,11 +579,6 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 				elektraFree (prevKeyName);
 				prevKeyName = elektraStrDup ((const char *) buffers->bufferKeyName);
 			}
-		}
-
-		if (!ksResult)
-		{
-			ksResult = ksNew (0, KS_END);
 		}
 
 		if (!isFurtherMetaKey)
@@ -608,7 +616,7 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 		{
 			ELEKTRA_ASSERT (curKey,
 					"The flag the indicates that a further metakey is present was set, but the current key was NULL. "
-					"This is likely a programming error.\nPlease report this issues at https://issues.libelektra.org");
+					"This is likely a bug.\nPlease report this issues at https://issues.libelektra.org");
 		}
 
 		const char * metaKeyName = NULL;
@@ -627,7 +635,6 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 					"No metakey-name was found, but a metakey-string, maybe the datasource contains invalid "
 					"data, please check your datasource!");
 		}
-
 
 		if (metaKeyName)
 		{
@@ -658,6 +665,7 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 			ksAppendKey (ksResult, prevKey);
 		}
 
+		/* Prepare buffers for next iteration */
 		buffers->bufferKeyName[0] = 0;
 		buffers->bufferKeyStr[0] = 0;
 		buffers->bufferMetaKeyName[0] = 0;
@@ -672,28 +680,36 @@ static KeySet * fetchResults (SQLHSTMT sqlStmt, struct columnData * buffers, Key
 		ksAppendKey (ksResult, curKey);
 	}
 
-	if (!ksResult && sqlStmt)
-	{
-		/* The statement handle must be freed if the function returns NULL */
-		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
-	}
-
 	return ksResult;
 }
+
 
 /** @brief Use ODBC to get keys and values from a data source.
  *
  * @param dsConfig The configuration of the data source.
+ * @param keepTransaction If true, autocommit is disabled, the started transaction is kept open and the environment and connection handles
+ * 	are stored in @p sharedData.
  * @param[out] errorKey Used to store errors and warnings
+ *
  * @returns A KeySet with Keys that represent the data that was fetched from the data source
  * 	Make sure to ksDel() the returned KeySet.
  * @retval NULL if an error occurred (see @p errorKey for details)
  */
-KeySet * getKeysFromDataSource (struct dataSourceConfig * dsConfig, Key * errorKey)
+KeySet * getKeysFromDataSource (struct odbcSharedData * sharedData, bool keepTransaction, Key * errorKey)
 {
-	if (!dsConfig)
+	if (!sharedData || !sharedData->dsConfig)
 	{
-		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "The provided data source configuration (struct dataSourceConfig) was NULL!");
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey,
+					     "The provided data source configuration (struct odbcSharedData or the inner struct "
+					     "dataSourceConfig) was NULL!");
+		return NULL;
+	}
+
+	if (sharedData->environment && sharedData->connection)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey,
+					     "The provided struct odbcSharedData must not contain SQL environment or connection "
+					     "handles for the kdbGet(). These variables must be NULL pointers at this stage.");
 		return NULL;
 	}
 
@@ -718,28 +734,30 @@ KeySet * getKeysFromDataSource (struct dataSourceConfig * dsConfig, Key * errorK
 		return NULL;
 	}
 
-	if (!setLoginTimeout (sqlConnection, dsConfig->timeOut, errorKey))
+	if (!setLoginTimeout (sqlConnection, sharedData->dsConfig->timeOut, errorKey))
 	{
 		SQLFreeHandle (SQL_HANDLE_ENV, sqlEnv);
 		return NULL;
 	}
 
-	/* For the GET operation, only a single SELECT-query is made, therefore we don't need a rollback of transactions here */
-	if (!setAutocommit (sqlConnection, true, errorKey))
+	/* For the GET operation, only a single SELECT-query is made, therefore we don't need a rollback of transactions here,
+	 * however, if you want to use a transaction and get the open transaction back, this is also supported and e.g. used by
+	 * the kdbSet() function for the this ODBC backend plugin */
+	if (!setAutocommit (sqlConnection, !keepTransaction, errorKey))
 	{
 		SQLFreeHandle (SQL_HANDLE_ENV, sqlEnv);
 		return NULL;
 	}
 
 	/* 3. Connect to the datasource */
-	if (!connectToDataSource (sqlConnection, dsConfig, errorKey))
+	if (!connectToDataSource (sqlConnection, sharedData->dsConfig, errorKey))
 	{
 		SQLFreeHandle (SQL_HANDLE_ENV, sqlEnv);
 		return NULL;
 	}
 
 	/* 4. Create and prepare the SELECT query based on the given dsConfig */
-	SQLHSTMT sqlStmt = prepareSelectStmt (sqlConnection, dsConfig, errorKey);
+	SQLHSTMT sqlStmt = prepareSelectStmt (sqlConnection, sharedData->dsConfig, errorKey);
 
 	if (!sqlStmt)
 	{
@@ -779,6 +797,13 @@ KeySet * getKeysFromDataSource (struct dataSourceConfig * dsConfig, Key * errorK
 	if (ksResult)
 	{
 		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
+
+		if (keepTransaction)
+		{
+			sharedData->environment = sqlEnv;
+			sharedData->connection = sqlConnection;
+			return ksResult;
+		}
 	}
 
 	SQLDisconnect (sqlConnection);

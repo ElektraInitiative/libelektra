@@ -16,7 +16,7 @@
 #include <kdberrors.h>
 #include <kdblogger.h>
 #include <sqlext.h>
-#include <stddef.h> /* for NULL */
+#include <string.h>
 
 
 /**
@@ -45,6 +45,92 @@ SQLHENV allocateEnvHandle (Key * errorKey)
 	}
 
 	return sqlEnv;
+}
+
+/**
+ * @brief Allocate a new ODBC connection handle
+ *
+ * @param sqlEnv An allocated ODBC environment handle, for which the ODBC version has been set
+ * 	This handle gets freed if an error occurred, so don't dereference it if the function returned NULL.
+ * @param[out] errorKey Used to store errors and warnings
+ *
+ * @return The allocated connection handle
+ * 	Make sure to free the returned handle by calling SQLFreeHandle().
+ * @retval NULL on errors (see @p errorKey for details)
+ *
+ * @see allocateEnvHandle() for getting a new environment handle
+ * @see setOdbcVersion() for setting the ODBC version that should be used with the environment the handle refers to
+ */
+SQLHDBC allocateConnectionHandle (SQLHENV sqlEnv, Key * errorKey)
+{
+	SQLHDBC sqlConnection = NULL;
+	SQLRETURN ret = SQLAllocHandle (SQL_HANDLE_DBC, sqlEnv, &sqlConnection);
+
+	if (!SQL_SUCCEEDED (ret))
+	{
+		ELEKTRA_LOG_NOTICE ("SQLAllocHandle () failed!\nCould not allocate handle for ODBC connection!");
+		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_ENV, sqlEnv, errorKey);
+
+		if (sqlConnection)
+		{
+			SQLFreeHandle (SQL_HANDLE_DBC, sqlConnection);
+		}
+
+		SQLFreeHandle (SQL_HANDLE_ENV, sqlEnv);
+		return NULL;
+	}
+	else if (ret == SQL_SUCCESS_WITH_INFO)
+	{
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_ENV, sqlEnv, errorKey);
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_DBC, sqlConnection, errorKey);
+	}
+
+	return sqlConnection;
+}
+
+
+/**
+ * @brief Allocate a new ODBC statement handle
+ *
+ * @param sqlConnection An initialized connection handle. It must represent an active connection.
+ * 	This handle gets freed if an error occurred, so don't dereference it if the function returned NULL.
+ * @param[out] errorKey Used to store errors and warnings
+ *
+ * @return The allocated statement handle
+ * 	Make sure to free the returned handle by calling SQLFreeHandle().
+ * @retval NULL on errors (see @p errorKey for details)
+ *
+ * @see allocateEnvHandle() for getting a new environment handle
+ * @see allocateConnectionHandle() for getting a new connection handle
+ * @see connectToDataSource() for setting up an active connection, this is needed for allocating a statement with this function
+ */
+SQLHDBC allocateStatementHandle (SQLHDBC sqlConnection, Key * errorKey)
+{
+	/* Handle for a statement */
+	SQLHSTMT sqlStmt = NULL;
+	SQLRETURN ret = SQLAllocHandle (SQL_HANDLE_STMT, sqlConnection, &sqlStmt);
+
+	if (!SQL_SUCCEEDED (ret))
+	{
+		ELEKTRA_LOG_NOTICE ("SQLAllocHandle() failed!\nCould not allocate a handle for an SQL statement!");
+		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_DBC, sqlConnection, errorKey);
+
+		if (sqlStmt)
+		{
+			SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
+		}
+
+		SQLDisconnect (sqlConnection);
+		SQLFreeHandle (SQL_HANDLE_DBC, sqlConnection);
+		return NULL;
+	}
+	else if (ret == SQL_SUCCESS_WITH_INFO)
+	{
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_DBC, sqlConnection, errorKey);
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_STMT, sqlStmt, errorKey);
+	}
+
+	return sqlStmt;
 }
 
 
@@ -80,42 +166,6 @@ bool setOdbcVersion (SQLHENV sqlEnv, unsigned long version, Key * errorKey)
 	}
 
 	return true;
-}
-
-
-/**
- * @brief Allocate a new ODBC connection handle
- *
- * @param sqlEnv An allocated ODBC environment handle, for which the ODBC version has been set
- * 	This handle gets freed if an error occurred, so don't dereference it if the function returned NULL.
- * @param[out] errorKey Used to store errors and warnings
- *
- * @return The allocated connection handle
- * 	Make sure to free the returned handle by calling SQLFreeHandle().
- * @retval NULL on errors (see @p errorKey for details)
- *
- * @see allocateEnvHandle() for getting a new environment handle
- * @see setOdbcVersion() for setting the ODBC version that should be used with the environment the handle refers to
- */
-SQLHDBC allocateConnectionHandle (SQLHENV sqlEnv, Key * errorKey)
-{
-	SQLHDBC sqlConnection = NULL;
-	SQLRETURN ret = SQLAllocHandle (SQL_HANDLE_DBC, sqlEnv, &sqlConnection);
-
-	if (!SQL_SUCCEEDED (ret))
-	{
-		ELEKTRA_LOG_NOTICE ("SQLAllocHandle () failed!\nCould not allocate handle for ODBC connection!");
-		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_ENV, sqlEnv, errorKey);
-		SQLFreeHandle (SQL_HANDLE_ENV, sqlEnv);
-		return NULL;
-	}
-	else if (ret == SQL_SUCCESS_WITH_INFO)
-	{
-		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_ENV, sqlEnv, errorKey);
-		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_DBC, sqlConnection, errorKey);
-	}
-
-	return sqlConnection;
 }
 
 
@@ -243,20 +293,20 @@ bool endTransaction (SQLHDBC sqlConnection, bool commit, Key * errorKey)
 
 
 /**
- * @brief Establish a connection to an ODBC data source
+ * @brief Establish a connection to an ODBC data source.
  *
- * @param sqlConnection An allocated ODBC connection handle
+ * @param sqlConnection An allocated ODBC connection handle.
  * 	This handle gets freed if an error occurred, so don't dereference it if the function returned 'false'.
- * @param dsConfig A valid data source configuration
- * @param[out] errorKey Used to store errors and warnings
+ * @param dsConfig A valid data source configuration.
+ * @param[out] errorKey Used to store errors and warnings.
  *
- * @retval 'true' if the operation was successful
- * @retval 'false' if an error occurred (see @p errorKey for details)
+ * @retval 'true' if the operation was successful.
+ * @retval 'false' if an error occurred (see @p errorKey for details).
  *
- * @see allocateConnectionHandle() for getting a connection handle that can be passed to this function
- * @see fillDsStructFromDefinitionKs() for getting a @p dsConfig that can be passed to this function
+ * @see allocateConnectionHandle() for getting a connection handle that can be passed to this function.
+ * @see fillDsStructFromDefinitionKs() for getting a @p dsConfig that can be passed to this function.
  */
-bool connectToDataSource (SQLHDBC sqlConnection, struct dataSourceConfig * dsConfig, Key * errorKey)
+bool connectToDataSource (SQLHDBC sqlConnection, const struct dataSourceConfig * dsConfig, Key * errorKey)
 {
 	if (!dsConfig || !(dsConfig->dataSourceName))
 	{
@@ -286,81 +336,141 @@ bool connectToDataSource (SQLHDBC sqlConnection, struct dataSourceConfig * dsCon
 	return true;
 }
 
+/**
+ * @brief Execute an SQL query on a given statement handle.
+ *
+ * @pre The statement must have bounded the correct values for each of the parameter markers ('?') in the given query string.
+ *
+ * @param stmt The statement on which the query should be executed.
+ * @param query The query to execute.
+ * @param[out] errorKey Use to store errors and warnings.
+ *
+ * @return The number of affected rows as reported by the ODBC driver.
+ * @retval -1 on error.
+ * @retval -2 if the number of affected rows was not reported by the ODBC driver.
+ */
+SQLLEN executeQuery (SQLHSTMT stmt, const char * query, Key * errorKey)
+{
+	if (!stmt)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "The provided statement handle must not be null.");
+		return -1;
+	}
+
+	SQLRETURN ret = SQLExecDirect (stmt, (SQLCHAR *) query, SQL_NTS);
+
+	if (SQL_SUCCEEDED (ret) || ret == SQL_NO_DATA)
+	{
+		if (ret == SQL_SUCCESS_WITH_INFO)
+		{
+			ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_STMT, stmt, errorKey);
+		}
+	}
+	else
+	{
+		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_STMT, stmt, errorKey);
+		SQLFreeHandle (SQL_HANDLE_STMT, stmt);
+		return -1;
+	}
+
+
+	SQLLEN rowCount = 0;
+	ret = SQLRowCount (stmt, &rowCount);
+
+	if (SQL_SUCCEEDED (ret))
+	{
+		if (ret == SQL_SUCCESS_WITH_INFO)
+		{
+			ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_STMT, stmt, errorKey);
+		}
+
+		return rowCount;
+	}
+	else
+	{
+		ELEKTRA_ADD_INTERNAL_WARNINGF (errorKey, "Could not get the number of affected rows for the following SQL query: %s",
+					       query);
+		return -2;
+	}
+}
 
 /**
- * @brief Binds the buffers in the struct @p columnData to the columns defined by the @p sqlStmt
+ * Get the character or string that should be used for quoting identifiers.
+ * The value is requested from the ODBC driver.
  *
- * This function assumes that there are four columns ('key-name', 'key-value', 'metakey-name' and 'metakey-value')
+ * If no char or string coule be retrieved, the standard quote character (string with one char) '"' (double quote) is returned.
  *
- * @param sqlStmt The allocated and prepared SQL statement for which the columns should be bound
- * 	This handle gets freed if an error occurred, so don't dereference it if the function returned 'false'.
- * @param buffers The buffers where the data for that columns should be stored
- * @param[out] errorKey Used to store errors and warnings
+ * @param sqlConnection An open connection to an ODBC data source.
+ * @param[out] errorKey Used to store errors and warnings.
  *
- * @retval 'true' if the operation was successful
- * @retval 'false' if an error occurred (see @p errorKey for details)
+ * @return The string (probably only with one char + \0) that should be added before and after identifiers to quote them.
+ * 	Make sure to free the returned string.
  *
- * @see prepareSelectStmt() for getting a statement handle that can be used by this function
+ * @retval "\"" If no quote string could be retrieved from the ODBC driver.
+ * @retval NULL on error
  */
-bool bindColumns (SQLHSTMT sqlStmt, struct columnData * buffers, Key * errorKey)
+char * getQuoteStr (SQLHDBC sqlConnection, Key * errorKey)
 {
-	/* TODO: Support for binary keys */
+	/* Get driver specific identifier quote character
+	 * (see: https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/quoted-identifiers) for more information */
 
-	/* Bind column 1 (key-name) */
-	SQLRETURN ret = SQLBindCol (sqlStmt, 1, SQL_C_CHAR, buffers->bufferKeyName, KEYNAME_BUFFER_SIZE, &(buffers->nameLenInd));
+	char identifierQuoteChar[2] = { 0, 0 };
+	SQLSMALLINT quoteCharLen = 0;
+	SQLRETURN ret = SQLGetInfo (sqlConnection, SQL_IDENTIFIER_QUOTE_CHAR, identifierQuoteChar, 2, &quoteCharLen);
+
+	/* Treat error as warning and try to use the standard value " for quoting identifiers */
 	if (!SQL_SUCCEEDED (ret))
 	{
-		ELEKTRA_LOG_NOTICE ("SQLBindCol() failed!\nCould not bind the first column to the keyName!");
-		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_STMT, sqlStmt, errorKey);
-		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
-		return false;
-	}
-	else if (ret == SQL_SUCCESS_WITH_INFO)
-	{
-		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_STMT, sqlStmt, errorKey);
+		ELEKTRA_ADD_INTERNAL_WARNING (
+			errorKey, "Could not get an identifier quote char from the driver, using \" as defined by the SQL-92 standard");
+		identifierQuoteChar[0] = '"';
+		identifierQuoteChar[1] = '\0';
 	}
 
-	/* Bind column 2 (key-value) */
-	ret = SQLBindCol (sqlStmt, 2, SQL_C_CHAR, buffers->bufferKeyStr, KEYSTRING_BUFFER_SIZE, &(buffers->strLenInd));
-	if (!SQL_SUCCEEDED (ret))
+	if (!SQL_SUCCEEDED (ret) || ret == SQL_SUCCESS_WITH_INFO)
 	{
-		ELEKTRA_LOG_NOTICE ("SQLBindCol() failed!\nCould not bind the second column to the keyString (value of the key)!");
-		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_STMT, sqlStmt, errorKey);
-		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
-		return false;
-	}
-	else if (ret == SQL_SUCCESS_WITH_INFO)
-	{
-		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_STMT, sqlStmt, errorKey);
+		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_DBC, sqlConnection, errorKey);
 	}
 
-	/* Bind column 3 (metakey-name) */
-	ret = SQLBindCol (sqlStmt, 3, SQL_C_CHAR, buffers->bufferMetaKeyName, METAKEYNAME_BUFFER_SIZE, &(buffers->metaNameLenInd));
-	if (!SQL_SUCCEEDED (ret))
+	char * identifierQuoteStr = elektraMalloc ((quoteCharLen + 1) * sizeof (char));
+
+	if (!identifierQuoteStr)
 	{
-		ELEKTRA_LOG_NOTICE ("SQLBindCol() failed!\nCould not bind the second column to the keyString (value of the key)!");
-		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_STMT, sqlStmt, errorKey);
-		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
-		return false;
-	}
-	else if (ret == SQL_SUCCESS_WITH_INFO)
-	{
-		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_STMT, sqlStmt, errorKey);
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
+		SQLDisconnect (sqlConnection);
+		SQLFreeHandle (SQL_HANDLE_DBC, sqlConnection);
+		return NULL;
 	}
 
-	/* Bind column 4 (metakey-value) */
-	ret = SQLBindCol (sqlStmt, 4, SQL_C_CHAR, buffers->bufferMetaKeyStr, METASTRING_BUFFER_SIZE, &(buffers->metaStrLenInd));
-	if (!SQL_SUCCEEDED (ret))
+	if (quoteCharLen > 1)
 	{
-		ELEKTRA_LOG_NOTICE ("SQLBindCol() failed!\nCould not bind the second column to the keyString (value of the key)!");
-		ELEKTRA_SET_ODBC_ERROR (SQL_HANDLE_STMT, sqlStmt, errorKey);
-		SQLFreeHandle (SQL_HANDLE_STMT, sqlStmt);
-		return false;
+		/* TODO: Check support for Unicode */
+		ELEKTRA_ADD_INTERNAL_WARNING (
+			errorKey,
+			"Got a string for the info SQL_IDENTIFIER_QUOTE_CHAR with more than one byte, this is unusual."
+			"If you are using Unicode on MS Windows (UTF-16), please be aware that this could lead to errors.");
+
+		ret = SQLGetInfo (sqlConnection, SQL_IDENTIFIER_QUOTE_CHAR, identifierQuoteStr, (SQLSMALLINT) (quoteCharLen + 1), NULL);
+
+		if (!SQL_SUCCEEDED (ret))
+		{
+			/* Treat error as warning and try to use the standard value " for quoting identifiers */
+			ELEKTRA_ADD_INTERNAL_WARNING (
+				errorKey,
+				"Could not get an identifier quote string from the driver, despite the driver states that the string for "
+				"the info SQL_IDENTIFIER_QUOTE_CHAR has more than one character!");
+			ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_DBC, sqlConnection, errorKey);
+			strcpy (identifierQuoteStr, "\"");
+		}
+		else if (ret == SQL_SUCCESS_WITH_INFO)
+		{
+			ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_DBC, sqlConnection, errorKey);
+		}
 	}
-	else if (ret == SQL_SUCCESS_WITH_INFO)
+	else
 	{
-		ELEKTRA_ADD_ODBC_WARNING (SQL_HANDLE_STMT, sqlStmt, errorKey);
+		strcpy (identifierQuoteStr, identifierQuoteChar);
 	}
 
-	return true;
+	return identifierQuoteStr;
 }

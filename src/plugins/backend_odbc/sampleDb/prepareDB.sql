@@ -9,7 +9,7 @@ CREATE TABLE metaKeys (
     keyName TEXT NOT NULL,
     metaKeyName TEXT NOT NULL,
     metaKeyValue TEXT DEFAULT NULL,
-    CONSTRAINT fk_metakeys FOREIGN KEY (keyName) REFERENCES elektraKeys (keyName),
+    CONSTRAINT fk_metakeys FOREIGN KEY (keyName) REFERENCES elektraKeys (keyName) ON DELETE CASCADE,
     CONSTRAINT pk_metaKeys PRIMARY KEY (keyName, metaKeyName)
 );
 

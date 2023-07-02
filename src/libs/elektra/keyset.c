@@ -889,7 +889,7 @@ static ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
 
 /**
  * Search in a key set, either yielding the actual index of the
- * key, if the ley has been found within the key set, or a negative
+ * key, if the key has been found within the key set, or a negative
  * value indicating the insertion index of the key, if the key
  * would be inserted.
  *

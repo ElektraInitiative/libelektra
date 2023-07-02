@@ -5,12 +5,12 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = backend
-- infos/status = unfinished experimental
+- infos/status = experimental reviewed
 - infos/description = Plugin implementing full backend functionality for ODBC data sources
 
 ## Introduction
 
-This plugin is a backend plugin that retrieves data using ODBC (Open Database Connectivity) data sources.
+This plugin is a backend plugin that stores and retrieves data using ODBC (Open Database Connectivity) data sources.
 It was tested with unixODBC on Linux, but should also work with iODBC and Microsoft ODBC (on Windows).
 
 > If you want to use it with one of the latter two ODBC implementations, feel free to update this documentation with your experiences!
@@ -37,14 +37,12 @@ In the language of ER-modelling, the metatable can therefore by considered a **w
 > If you want to use metadata, the ODBC driver for your data source has to support **outer joins**.
 > This implies that currently, only ODBC drivers with support for outer joins are supported by the ODBC backend.
 
-The tables may also contain other columns, but they are not processed by this plugin and must support NULL- or DEFAULT-values, if you want to add tuples to the table via Elektra (e.g. by calling `kdb set <key> <value>`) in future versions.
+The tables may also contain other columns, but they are not processed by this plugin and must support NULL- or DEFAULT-values, if you want to add tuples to the table via Elektra (e.g. by calling `kdb set <key> <value>`).
 
-If the column for the key-name is not defined as a primary key and multiple rows contain the same key-name,
-they are treated as one key, where the value is taken from the first row and the metadata is combined.
+If the column for the key-name is not defined as a primary key and multiple rows contain the same key-name, they are treated as one key, where the value is taken from the first row and the metadata is combined.
 If multiple metakeys with the same metakey-name exist for a key, the last metavalue is used.
 This behavior is part of the internal algorithm of the plugin and could change in the future.
-So if you want a predictable and expectable behavior, make sure that the described primary- and foreign-key constraints
-are respected.
+So if you want a predictable and expectable behavior, make sure that the described primary- and foreign-key constraints are respected.
 
 ## Mounting
 
@@ -89,8 +87,7 @@ The key-values for the keys under `definition` are defined as follows:
 - _metaTable/metaValColName:_ The name of the column where the value (string) of the metakeys is stored
 
 There is a new command for the kdb-tool: `kdb mountOdbc`.
-Please be aware that the ODBC backend, in contrast to the classic file-based backend,
-currently does not support adding other plugins to the mountpoint.
+Please be aware that the ODBC backend, in contrast to the classic file-based backend, currently does not support adding other plugins to the mountpoint.
 
 The `kdb mountOdbc` command accepts arguments for the previously described values of the _mountpoint definition_.
 For further details, please refer to the [man page](/doc/help/kdb-mountOdbc.md) for that command.
@@ -99,3 +96,25 @@ For unmounting, there is no new command necessary.
 Just use the well-known `kdb umount <mountpoint>`, exactly like for the file-based backend.
 
 For more information about the ODBC backend, there is a tutorial available at [/doc/tutorials/odbc-backend.md](/doc/tutorials/odbc-backend.md).
+
+## Testing and Benchmarking
+
+There are no dedicated unit tests that actually store, read or delete data from an ODBC data source.
+The reason is, that with the current concept, a valid ODBC data source definition (for unixODBC in `/etc/unixODBC/odbc.ini`) must be present.
+We don't want to write to such an important system file that can influence other applications.
+It would also be cumbersome if we require the user to set up a specific ODBC configuration before running the tests .
+
+However, for basic functionality testing and performance evaluation, you can create a valid ODBC mountpoint yourself using `kdb mountOdbc` and then run the benchmark which is implemented in [/benchmarks/mountpoint.c](/benchmarks/mountpoint.c) for the created mountpoint.
+This approach makes it possible to test and benchmark any valid mountpoint in the KDB.
+So different backends and plugins with different configurations can be tested and benchmarked.
+Just create a mountpoint with the backends, plugins and configuration that you want and run the benchmark with e.g. `bin/benchmark_mountpoint <MP path>/benchmark` for this mountpoint.
+
+A short example that shows creating a new ODBC mountpoint and running benchmarks for KeySets and metadata:
+
+```sh
+bin/kdb mountOdbc Selektra "" "" elektraKeys keyName keyValue metaKeys keyName metaKeyName metaKeyValue "" user:/odbcSqlite
+bin/benchmark_mountpoint -c 1000 user:/odbcSqlite
+bin/benchmark_mountpoint -Mc 1000 user:/odbcSqlite
+```
+
+More information about benchmarking is available at [/benchmarks/README.md](/benchmarks/README.md).

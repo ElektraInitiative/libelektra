@@ -19,8 +19,8 @@
 - `timeout (s)`: The timeout (in seconds) that should be used when connecting to the data source. When passing '0', the timeout gets disabled and the application could potentially wait forever. So use this option with care! If you want to use a default timeout, you can just pass `""` for this argument.
 - `mountpoint`: The place in the KDB where the ODBC data source should be mounted. The syntax is the same as with the file-based backend, but you can only use `user:/` and `system:/` namespaces as mountpoints for ODBC data sources.
 
-> All columns in the data source that are specified via one of the described arguments, should be of type `TEXT`.
-> The tables can have additional columns. These are not processed by the ODBC backend, but should support NULL or DEFAULT values.
+> All columns in the data source that are specified via one of the described arguments, should be of type `TEXT`, `CHAR` or `VARCHAR`.
+> The tables can have additional columns. These are not processed by the ODBC backend, but should support `NULL` or `DEFAULT` values.
 
 ## DESCRIPTION
 
