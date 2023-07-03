@@ -53,9 +53,7 @@ docker run -it elektra/elektra
 ### <<HIGHLIGHT>>
 
 - Session Recording
-- New Changetracking API
-- New spec plugin
-- <<HIGHLIGHT>>
+- ODBC Backend _(Florian Lindner @flo91)_
 
 ### Session Recording
 
@@ -75,14 +73,9 @@ As long as it is active, a global lock will be created to ensure no two processe
 This behavior is similar as to when multiple processes will write to the same configuration file.
 Applications should already handle this case gracefully, and just retry writing their configuration.
 
-### New Changetracking API
-
-### <<HIGHLIGHT>>
-
 ### ODBC Backend
 
-Based on the new and more versatile concept for [backends](/doc/dev/backend-plugins.md),
-where backends are implemented as plugins, a new backend-plugin that uses ODBC data sources for storing keys has been developed.
+Based on the new and more versatile concept for [backends](/doc/dev/backend-plugins.md), where backends are implemented as plugins, a new backend-plugin that uses ODBC data sources for storing keys has been developed.
 It was tested on Gentoo Linux with [unixODBC](https://www.unixodbc.org) using [SQLite](https://www.sqlite.org) and [PostgreSQL](https://www.postgresql.org) data sources.
 The ODBC backend-plugin can only be built if the ODBC library is available on the build system. This can be accomplished by installing e.g. unixODBC.
 Microsoft ODBC (on MS Windows) and [iODBC](https://www.iodbc.org) should also be supported, but were not tested yet.
@@ -90,13 +83,9 @@ If you use the plugin with another ODBC implementation as unixODBC, you are very
 
 The [tutorial](../tutorials/odbc-backend.md) is a good place for getting started with the new ODBC backend for Elektra.
 
-### <<HIGHLIGHT>>
-
 ## Plugins
 
 The following text lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
-
-### <<Plugin>>
 
 ### General
 
@@ -105,46 +94,26 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 ### spec
 
 - Remove metakeys from array elements correctly [#4961](https://issues.libelektra.org/4961) _(Tomislav Makar @tmakar)_
-- <<TODO>>
-- <<TODO>>
 
 ### recorder
 
 - Add recorder plugin. _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
 
 ### jdbc
 
 - Fix formatting/spelling problem in README.md _(Hannes Laimer @hannes99)_
-- <<TODO>>
-- <<TODO>>
 
 ### backend_odbc
 
-- Add write functionality to the ODBC backend (INSERT, UPDATE, DELETE) _(Florian Lindner @flo91)_
-- <<TODO>>
-- <<TODO>>
-
-### <<Plugin>>
+- Add ODBC backend _(Florian Lindner @flo91)_
 
 ### ansible
 
 - Add `ansible` plugin for exporting keysets as [ansible-libelektra](https://galaxy.ansible.com/elektra_initiative/libelektra) playbooks. _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
-
-### logchange
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### toml
 
 - Fix error reporting when unsupported metakey has been encountered. _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
 
 ### Xfconf
 
@@ -163,88 +132,33 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Implemented the first revision of the Xfconf binding. _(Richard Stöckl @Eiskasten)_
+- This allows to use elektra as a drop-in replacement for applications which use Xfconf. _(Richard Stöckl @Eiskasten)_
+- Xfconf applications can now read and write configuration settings to elektra. _(Richard Stöckl @Eiskasten)_
+- Use cmake variables in the replace and restore scripts. _(Richard Stöckl @Eiskasten)_
 
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
 
-### Compatibility
+### kdb
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### Core
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Add `elektraCopyError` function to copy error from one key to another _(Maximilian Irlinger @atmaxinger)_
+- Add `elektraCopyWarnings` function to copy warnings from one key to another _(Maximilian Irlinger @atmaxinger)_
+- Add `elektraCopyErrorAndWarnings` function to copy error and warnings from one key to another _(Maximilian Irlinger @atmaxinger)_
 
 ### record
 
 - Add record library used for session recording. _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
 
 ### ease
 
 - Add `elektraArrayGetPrefix` function. _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
-
-### <<Library>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Library>>
-
-- <<TODO>>
-- <<TODO>>
-- Add new changetracking API _(Maximilian Irlinger @atmaxinger)_
-- Fix unwanted removal of subkeys when using mv _(Hannes Laimer @hannes99)_
-- Fix inconsistent return values in code, tests and man pages _(Hannes Laimer @hannes99)_
-- Remove `smount` alias _(Hannes Laimer @hannes99)_
-- Add `elektraCopyError` function to copy error from one key to another _(Maximilian Irlinger @atmaxinger)_
-- Add `elektraCopyWarnings` function to copy warnings from one key to another _(Maximilian Irlinger @atmaxinger)_
-- Add `elektraCopyErrorAndWarnings` function to copy error and warnings from one key to another _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-
-### <<Library>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Library>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Bindings
 
 Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme).
 This section keeps you up-to-date with the multi-language support provided by Elektra.
-
-### <<Binding>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### C++
 
@@ -295,63 +209,17 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ## Tools
 
-### <<Tool>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
 ### kdb
 
 - Add commands for session recording. _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
 - The `kdb mount` command will now automatically detect whether the given path is an absolute path. _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-
-### <<Tool>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Tool>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-## Scripts
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Fix unwanted removal of subkeys when using mv _(Hannes Laimer @hannes99)_
+- Fix inconsistent return values in code, tests and man pages _(Hannes Laimer @hannes99)_
+- Remove `smount` alias _(Hannes Laimer @hannes99)_
 
 ## Documentation
 
-- <<TODO>>
-- <<TODO>>
 - Fix bug in Doxygen comment for `const char * keyName (const Key * key)` which lead to failed building of the refman.pdf on recent TeX Live releases _(Florian Lindner @flo91)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 - Update release documentation regarding version tags. _(Mihael Pranjić @mpranj)_
 - <<TODO>>
 - Add glossaries for [developers](/doc/dev/dev-glossary.md) and [contributors](/doc/contrib/contrib-glossary.md) _(Maximilian Irlinger @atmaxinger)_
@@ -380,7 +248,6 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ### Use Cases
 
-- <<TODO>>
 - Add end-user and developer integration use case _(Hannes Laimer @hannes99)_
 - <<TODO>>
 - <<TODO>>
@@ -395,126 +262,28 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Add use cases for using the bindings. _(Richard Stöckl @Eiskasten)_
+- Add use cases for libelektra-core _(@lawli3t)_
 
 ### Decisions
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 - Add decision for [Elixir bindings](../decisions/3_decided/elixir_bindings.md). _(@0x6178656c)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Tutorials
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Add tutorial for [session recording](../tutorials/recording.md). _(Maximilian Irlinger @atmaxinger)_
+- Add tutorial for [ODBC backend](../tutorials/odbc-backend.md). _(Florian Lindner @flo91)_
 
 ### Man Pages
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Add man pages for session recording
 
 ## Tests
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 - Add macro `succeed_if_keyset_contains_key_with_string` to assert that a certain key with a certain value must exist. _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### C
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### Shell Recorder
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### C++
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-## Packaging
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-## Build
-
-### CMake
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Docker
 
-- <<TODO>>
-- <<TODO>>
 - Use openwrt/sdk instead of openwrtorg/sdk. _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
@@ -542,41 +311,13 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ### Cirrus
 
-- <<TODO>>
-- <<TODO>>
 - The arch package `texlive-most` is no longer available, replaced it with other texlive packages. See https://archlinux.org/packages/?q=texlive _(Florian Lindner @flo91)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### GitHub Actions
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-## Website
-
-The website is generated from the repository, so all information about plugins, bindings and tools are always up-to-date. Furthermore, we changed:
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Outlook
 
 We are currently working on following topics:
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Rewrite the `kdb` tool in C.
 
 ## Statistics
 
