@@ -4,7 +4,7 @@
 - infos/provides = check
 - infos/needs =
 - infos/placements = postgetstorage presetstorage
-- infos/status = recommended maintained unittest tested nodep libc
+- infos/status = recommended maintained unittest tested nodep libc configurable
 - infos/metadata = check/type type check/enum check/enum/# check/enum/delimiter check/boolean/true check/boolean/false
 - infos/description = type checker using COBRA data types
 

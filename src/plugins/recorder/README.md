@@ -5,7 +5,7 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = hook
-- infos/status = recommended productive maintained conformant
+- infos/status = recommended productive maintained conformant unittest nodep configurable nodoc
 - infos/metadata =
 - infos/description = provides session recording functionality
 

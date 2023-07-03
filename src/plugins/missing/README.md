@@ -6,7 +6,7 @@
 - infos/provides = missing
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = nodep
+- infos/status = nodep nodoc
 - infos/metadata =
 - infos/description = A plugin which informs the user about a missing backend.
 

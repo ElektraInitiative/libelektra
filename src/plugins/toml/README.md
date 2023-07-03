@@ -5,7 +5,7 @@
 - infos/needs = base64
 - infos/recommends = type
 - infos/placements = getstorage setstorage
-- infos/status = experimental unfinished
+- infos/status = unittest experimental unfinished
 - infos/metadata = order comment/# comment/#/start comment/#/space type tomltype origvalue
 - infos/description = This storage plugin reads and writes TOML files using Flex and Bison.
 
