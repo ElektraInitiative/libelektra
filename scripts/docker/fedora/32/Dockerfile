@@ -1,65 +1,65 @@
 FROM fedora:32
 
-RUN dnf upgrade -y && dnf install -y \
-        augeas-devel \
-        bison \
-        bison-devel \
-        cmake \
-        curl \
-        dbus-devel \
-        dbus-x11 \
-        diffutils \
-        dnf-plugins-core \
-        file \
-        findutils \
-        flex \
-        flex-devel \
-        gcc-c++ \
-        git \
-        glib2 \
-        gpgme-devel \
-        java-11-openjdk-devel \
-        jna \
-        libasan \
-        libcurl-devel \
-        libev-devel \
-        libgcrypt-devel \
-        libgit2-devel \
-        libmarkdown-devel \
-        libubsan \
-        libuv-devel \
-        libxml2-devel \
-        llvm \
-        lua-devel \
-        make \
-        ninja-build \
-        openssl-devel \
-        procps-ng \
-        python3-devel \
-        qt5-devel \
-        ruby-devel \
-        rubygem-test-unit \
-        swig \
-        unzip \
-        unixODBC \
-        valgrind \
-        wget \
-        which \
-        xerces-c-devel \
-        xfconf-devel \
-        yajl-devel \
-        yaml-cpp-devel \
-        zlib-devel \
-        python3-pip \
-        golang \
+RUN dnf upgrade -y && dnf install -y --setopt=install_weak_deps=False \
+    augeas-devel \
+    bison \
+    bison-devel \
+    cmake \
+    curl \
+    dbus-devel \
+    dbus-x11 \
+    diffutils \
+    dnf-plugins-core \
+    file \
+    findutils \
+    flex \
+    flex-devel \
+    gcc-c++ \
+    git \
+    glib2 \
+    gpgme-devel \
+    java-11-openjdk-devel \
+    jna \
+    libasan \
+    libcurl-devel \
+    libev-devel \
+    libgcrypt-devel \
+    libgit2-devel \
+    libmarkdown-devel \
+    libubsan \
+    libuv-devel \
+    libxml2-devel \
+    llvm \
+    lua-devel \
+    make \
+    ninja-build \
+    openssl-devel \
+    procps-ng \
+    python3-devel \
+    qt5-devel \
+    ruby-devel \
+    rubygem-test-unit \
+    swig \
+    unzip \
+    unixODBC \
+    valgrind \
+    wget \
+    which \
+    xerces-c-devel \
+    xfconf-devel \
+    yajl-devel \
+    yaml-cpp-devel \
+    zlib-devel \
+    python3-pip \
+    golang \
     && dnf debuginfo-install -y \
-        bison \
-        flex \
-        glib2 \
-        glibc \
-        gpgme \
-        libgcrypt \
-        ruby-libs \
+    bison \
+    flex \
+    glib2 \
+    glibc \
+    gpgme \
+    libgcrypt \
+    ruby-libs \
     && dnf clean all -y
 
 # Build dependency for libelektra-fuse
@@ -74,7 +74,7 @@ ARG GTEST_VER=release-1.12.1
 RUN mkdir -p ${GTEST_ROOT} \
     && cd /tmp \
     && curl -o gtest.tar.gz \
-      -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
+    -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
     && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
     && rm gtest.tar.gz
 
