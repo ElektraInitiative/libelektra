@@ -514,7 +514,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Use openwrt/sdk instead of openwrtorg/sdk. _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Reduce fedora docker image size (PR #4637) _(@4ydan)_
 
 ## Infrastructure
 
