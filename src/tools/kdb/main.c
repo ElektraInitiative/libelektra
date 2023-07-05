@@ -28,6 +28,7 @@
 #include <meta-set.h>
 #include <meta-show.h>
 #include <mount.h>
+#include <mountOdbc.h>
 #include <mv.h>
 #include <namespace.h>
 #include <plugin-check.h>
@@ -83,6 +84,7 @@ cppCommand cppSubcommands[] = {
 	{ "meta-rm", addMetaRmSpec, execCppMetaRm },
 	{ "meta-set", addMetaSetSpec, execCppMetaSet },
 	{ "meta-show", addMetaShowSpec, execCppMetaShow },
+	{ "mountOdbc", addMountOdbcSpec, execCppMountOdbc },
 	{ "mv", addMvSpec, execCppMv },
 	{ "namespace", addNamespaceSpec, execCppNamespace },
 	{ "rm", addRmSpec, execCppRm },
