@@ -453,11 +453,13 @@ def dockerInit() {
     )
 
     /* Image to build openwrt package */
+    /* TODO: Reenable when we have a new maintainer for openwrt
+     *
     DOCKER_IMAGES.openwrt_sdk = dockerUtils.createDockerImageDesc(
       'openwrt-sdk', dockerUtils.&idTesting,
       './scripts/docker/openwrt/sdk',
       './scripts/docker/openwrt/sdk/Dockerfile'
-    )
+    )*/
   }
 }
 
