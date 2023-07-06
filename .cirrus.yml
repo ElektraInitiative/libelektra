@@ -117,7 +117,8 @@ task:
     - | # Install Homebrew formulas
       brew update
       brew config
-      brew pin libassuan@2.5.5
+      brew install libassuan@2.5.5
+      brew pin libassuan
       brew install openjdk \
         antlr \
         antlr4-cpp-runtime \
