@@ -152,6 +152,9 @@ task:
         yaml-cpp \
         zeromq
 
+    - > # Install downgraded gpgme version #4976
+      curl -L  https://raw.githubusercontent.com/Homebrew/homebrew-core/fcc09354286d707de1c3b3a498571cbb978aed69/Formula/gpgme.rb > gpgme.rb && brew install gpgme.rb
+
     - > # Try to install `checkbashisms` (The file server that hosts the package is unfortunately quite unreliable.)
       brew install checkbashisms || >&2 printf 'Warning: Unable to install `checkbashims`\n'
     - | # Start D-Bus session bus
