@@ -95,13 +95,13 @@ The [tutorial](../tutorials/odbc-backend.md) is a good place for getting started
 ## Plugins
 
 The following text lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
-Downgraded gpgme to 1.19.0 in the cirrus/macOs pipeline
 
 ### <<Plugin>>
 
 ### General
 
 - Updated target name of shared object files according to [#3486](https://issues.libelektra.org/3486)
+- Downgraded gpgme to 1.19.0 in the cirrus/macOs pipeline #4976 _(4ydan)_ .
 
 ### spec
 
