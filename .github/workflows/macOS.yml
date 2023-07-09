@@ -8,6 +8,7 @@ env:
   BUILD_TYPE: RelWithDebInfo
   # Skip homebrew cleanup to avoid issues with removal of packages
   HOMEBREW_NO_INSTALL_CLEANUP: 1
+  HOMEBREW_NO_INSTALL_FROM_API: 1
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -19,7 +20,7 @@ jobs:
     # well on Windows or Mac.  You can convert this to a matrix build if you need
     # cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-    runs-on: macos-11
+    runs-on: macos-12
     strategy:
       # Do not abort all jobs upon first failure
       fail-fast: false
