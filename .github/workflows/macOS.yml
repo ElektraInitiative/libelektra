@@ -113,6 +113,7 @@ jobs:
           doxygen \
           flex \
           glib \
+          gpgme \
           gradle \
           graphviz \
           libev \
