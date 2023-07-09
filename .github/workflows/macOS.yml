@@ -79,6 +79,8 @@ jobs:
         set -ex
 
         brew config
+        brew cleanup
+        brew update-reset
 
         brew update
 
