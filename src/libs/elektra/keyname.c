@@ -397,11 +397,12 @@ static char * findStartOfLastPart (char * name, size_t len)
  *
  *
  * @retval "" when there is no keyName. The reason is
+ *
  * @code
-key=keyNew(0);
-keySetName(key,"");
-keyName(key); // you would expect "" here
-keyDel(key);
+ * key=keyNew(0);
+ * keySetName(key,"");
+ * keyName(key); // you would expect "" here
+ * keyDel(key);
  * @endcode
  *
  * Valid key names are:

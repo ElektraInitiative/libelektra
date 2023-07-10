@@ -161,6 +161,7 @@ libelektra_1.0 {
 	elektraDiffGetAddedKeys;
 	elektraDiffGetRemovedKeys;
 	elektraDiffGetModifiedKeys;
+	elektraDiffGetModifiedNewKeys;
 	elektraDiffKeyValueChanged;
 	elektraDiffKeyOnlyMetaChanged;
 	elektraDiffGetAddedMetaKeys;
@@ -212,7 +213,6 @@ libelektraprivate_1.0 {
 
 	elektraDiffNew;
 	elektraDiffAppend;
-	elektraDiffGetModifiedNewKeys;
 
 	elektraChangeTrackingCreateContextForTesting;
 	elektraChangeTrackingContextDel;
@@ -254,4 +254,7 @@ libelektraprivate_1.0 {
 	elektraCopyError;
 	elektraCopyWarnings;
 	elektraCopyErrorAndWarnings;
+
+	# kdbplugin.h
+	elektraPluginPhaseName;
 };

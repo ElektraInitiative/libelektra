@@ -135,6 +135,7 @@ void * elektraPluginGetData (Plugin * plugin);
 KeySet * elektraPluginGetGlobalKeySet (Plugin * plugin);
 ElektraKdbPhase elektraPluginGetPhase (Plugin * plugin);
 Plugin * elektraPluginFromMountpoint (Plugin * plugin, const char * ref);
+const char * elektraPluginPhaseName (ElektraKdbPhase phase);
 
 #define PLUGINVERSION "1"
 

@@ -544,13 +544,13 @@ char * dsConfigToString (const struct dataSourceConfig * dsConfig)
 
 	/* add one char for the \0 and 3 char for separating the values with ' - ' */
 	size_t dsConfigStrLen = 1 + (dsConfig->dataSourceName ? strlen (dsConfig->dataSourceName) : 0) +
-				+(dsConfig->tableName ? 3 + strlen (dsConfig->tableName) : 0) +
-				+(dsConfig->keyColName ? 3 + strlen (dsConfig->keyColName) : 0) +
-				+(dsConfig->valColName ? 3 + strlen (dsConfig->valColName) : 0) +
-				+(dsConfig->metaTableName ? 3 + strlen (dsConfig->metaTableName) : 0) +
-				+(dsConfig->metaTableKeyColName ? 3 + strlen (dsConfig->metaTableKeyColName) : 0) +
-				+(dsConfig->metaTableMetaKeyColName ? 3 + strlen (dsConfig->metaTableMetaKeyColName) : 0) +
-				+(dsConfig->metaTableMetaValColName ? 3 + strlen (dsConfig->metaTableMetaValColName) : 0);
+				(dsConfig->tableName ? 3 + strlen (dsConfig->tableName) : 0) +
+				(dsConfig->keyColName ? 3 + strlen (dsConfig->keyColName) : 0) +
+				(dsConfig->valColName ? 3 + strlen (dsConfig->valColName) : 0) +
+				(dsConfig->metaTableName ? 3 + strlen (dsConfig->metaTableName) : 0) +
+				(dsConfig->metaTableKeyColName ? 3 + strlen (dsConfig->metaTableKeyColName) : 0) +
+				(dsConfig->metaTableMetaKeyColName ? 3 + strlen (dsConfig->metaTableMetaKeyColName) : 0) +
+				(dsConfig->metaTableMetaValColName ? 3 + strlen (dsConfig->metaTableMetaValColName) : 0);
 
 	ELEKTRA_ASSERT (dsConfigStrLen > 1,
 			"Calculated length for dsConfig was <= 1. This looks like a bug. Please report this issue at "
@@ -606,20 +606,26 @@ char * dsConfigToString (const struct dataSourceConfig * dsConfig)
 
 
 /**
- * @brief Check if any identifier that is part of @p dsConfig, does contain to specified substring
+ * @brief Check if any identifier that is part of @p dsConfig, does contain the specified substring.
  *
- * @param dsConfig The data source configuration struct to check
- * @param subStr The substring to check for
- * @param[out] errorKey If not NULL and if @p subStr was found, an error is set which mentions the name
+ * @param dsConfig The data source configuration struct to check.
+ * @param subStr The substring to check for.
+ * @param[out] errorKey If not NULL and if @p subStr was found, an error is set which mentions the name.
  * 	of the first wrong identifier and its value. This parameter is esp. intended for detecting invalid substrings.
  *
  *
- * @retval true if the @p subStr was found in any of the identifiers
- * @retval false if the @p subStr was NOT found in any of the identifiers
- * @retval true if @p subStr is null or empty
+ * @retval true if the @p subStr was found in any of the identifiers.
+ * @retval false if the @p subStr was NOT found in any of the identifiers.
+ * @retval false if @p dsConfig was NULL
+ * @retval true if @p dsConfig was NOT NULL and @p subStr was NULL or empty.
  */
 bool checkIdentifiersForSubString (const struct dataSourceConfig * dsConfig, const char * subStr, Key * errorKey)
 {
+	if (!dsConfig)
+	{
+		return false;
+	}
+
 	if (!subStr || !(*subStr))
 	{
 		return true;
@@ -628,41 +634,41 @@ bool checkIdentifiersForSubString (const struct dataSourceConfig * dsConfig, con
 	const char * foundIdentifierName = NULL;
 	const char * foundIdentifierVal;
 
-	if (strstr (dsConfig->tableName, subStr))
+	if (dsConfig->tableName && strstr (dsConfig->tableName, subStr))
 	{
 		foundIdentifierName = "tableName";
 		foundIdentifierVal = dsConfig->tableName;
 	}
-	else if (strstr (dsConfig->keyColName, subStr))
+	else if (dsConfig->keyColName && strstr (dsConfig->keyColName, subStr))
 	{
 		foundIdentifierName = "keyColName";
 		foundIdentifierVal = dsConfig->keyColName;
 	}
-	else if (strstr (dsConfig->valColName, subStr))
+	else if (dsConfig->valColName && strstr (dsConfig->valColName, subStr))
 	{
 		foundIdentifierName = "valColName";
 		foundIdentifierVal = dsConfig->valColName;
 	}
 
-	else if (strstr (dsConfig->metaTableName, subStr))
+	else if (dsConfig->metaTableName && strstr (dsConfig->metaTableName, subStr))
 	{
 		foundIdentifierName = "metaTableName";
 		foundIdentifierVal = dsConfig->metaTableName;
 	}
 
-	else if (strstr (dsConfig->metaTableKeyColName, subStr))
+	else if (dsConfig->metaTableKeyColName && strstr (dsConfig->metaTableKeyColName, subStr))
 	{
 		foundIdentifierName = "metaTableKeyColName";
 		foundIdentifierVal = dsConfig->metaTableKeyColName;
 	}
 
-	else if (strstr (dsConfig->metaTableMetaKeyColName, subStr))
+	else if (dsConfig->metaTableMetaKeyColName && strstr (dsConfig->metaTableMetaKeyColName, subStr))
 	{
 		foundIdentifierName = "metaTableMetaKeyColName";
 		foundIdentifierVal = dsConfig->metaTableMetaKeyColName;
 	}
 
-	else if (strstr (dsConfig->metaTableMetaValColName, subStr))
+	else if (dsConfig->metaTableMetaValColName && strstr (dsConfig->metaTableMetaValColName, subStr))
 	{
 		foundIdentifierName = "metaTableMetaValColName";
 		foundIdentifierVal = dsConfig->metaTableMetaValColName;
@@ -672,7 +678,7 @@ bool checkIdentifiersForSubString (const struct dataSourceConfig * dsConfig, con
 	{
 		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (errorKey,
 							 "The identifier %s in the data source configuration contained the "
-							 "invalid substring '%s'. The value of the invalid string is '%s'",
+							 "invalid substring '%s'. The value of the invalid string is '%s'.",
 							 foundIdentifierName, subStr, foundIdentifierVal);
 		return true;
 	}
@@ -680,5 +686,144 @@ bool checkIdentifiersForSubString (const struct dataSourceConfig * dsConfig, con
 	{
 		/* substr not found */
 		return false;
+	}
+}
+
+/**
+ * @brief Free the struct @p dsConfig and (if enabled) the strings it contains
+ *
+ * @param dsConfig The dataSourceConfig struct which should be freed.
+ * @param freeStrings if true, the individual strings (char *) in the struct are freed too.
+ */
+void clearDsConfig (struct dataSourceConfig * dsConfig, bool freeStrings)
+{
+	if (!dsConfig)
+	{
+		return;
+	}
+
+	if (freeStrings)
+	{
+		elektraFree (dsConfig->dataSourceName);
+
+		elektraFree (dsConfig->userName);
+		elektraFree (dsConfig->password);
+
+		elektraFree (dsConfig->tableName);
+		elektraFree (dsConfig->keyColName);
+		elektraFree (dsConfig->valColName);
+
+		elektraFree (dsConfig->metaTableName);
+		elektraFree (dsConfig->metaTableKeyColName);
+		elektraFree (dsConfig->metaTableMetaKeyColName);
+		elektraFree (dsConfig->metaTableMetaValColName);
+	}
+
+	elektraFree (dsConfig);
+}
+
+/**
+ * @brief Cleanup and free the struct for the shared data, and (if enabled) the inside struct with the data source config
+ * and optionally also the strings it contains.
+ *
+ * If the connection handle is not NULL, the function disconnects and frees the connection handle.
+ * If the environment handle is not NULL, the function frees the environment handle.
+ *
+ * @post The referenced handles for environment and connection are freed and the connection is closed.
+ * 	The struct @p sharedData get NOT freed by this function. Call elektraFree (sharedData) yourself if you want to free
+ * 	this struct too.
+ * 	Therefore, this function is named 'clearOdbcSharedData', and not 'freeOdbcSharedData'!
+ *
+ * @param sharedData The struct of type odbcSharedData
+ * @param freeDsConfig 'true' if the dataSourceConfig struct inside @p sharedData should be freed too
+ * @param freeDsConfigStrings only considered, if @p freeDsConfig is 'true', then it specifies if the strings
+ * 	inside the dataSourceConfig struct should be freed too.
+ *
+ * @retval false if a NULL pointer was passed for @p sharedData or an error was reported by ODBC when trying to disconnect or free
+ * 	the handles.
+ * @retval true otherwise.
+ */
+bool clearOdbcSharedData (struct odbcSharedData * sharedData, bool freeDsConfig, bool freeDsConfigStrings)
+{
+	bool finalRet = true;
+
+	if (!sharedData)
+	{
+		return false;
+	}
+
+	if (sharedData->connection)
+	{
+		SQLRETURN ret = SQLDisconnect (sharedData->connection);
+
+		if (!SQL_SUCCEEDED (ret))
+		{
+			finalRet = false;
+		}
+
+		ret = SQLFreeHandle (SQL_HANDLE_DBC, sharedData->connection);
+
+		if (!SQL_SUCCEEDED (ret))
+		{
+			finalRet = false;
+		}
+
+		sharedData->connection = NULL;
+	}
+
+	if (sharedData->environment)
+	{
+		if (!SQL_SUCCEEDED (SQLFreeHandle (SQL_HANDLE_ENV, sharedData->environment)))
+		{
+			finalRet = false;
+		}
+
+		sharedData->environment = NULL;
+	}
+
+	if (freeDsConfig)
+	{
+		clearDsConfig (sharedData->dsConfig, freeDsConfigStrings);
+	}
+
+	return finalRet;
+}
+
+
+/**
+ * @brief Close the connection and free handles for connection and environment
+ * @param plugin The plugin that contains the odbcSharedData struct which should be cleared
+ * @param[out] errorKey Used to add warnings.
+ *
+ * @retval true if the plugin data was NULL or the ODBC handles could be freed successfully
+ * @retval false if the given plugin was NULL or an error occurred
+ */
+bool freeSharedHandles (Plugin * plugin, Key * errorKey)
+{
+	if (!plugin)
+	{
+		return false;
+	}
+
+	struct odbcSharedData * sharedData = elektraPluginGetData (plugin);
+
+	if (!sharedData)
+	{
+		/* Nothing there to free, consider this as ok */
+		return true;
+	}
+
+	if (!clearOdbcSharedData (sharedData, false, false))
+	{
+		sharedData->connection = NULL;
+		sharedData->environment = NULL;
+		ELEKTRA_ADD_RESOURCE_WARNING (errorKey,
+					      "Could not successfully close the connection and free the SQL handles for "
+					      " the connection and environment. Please check the state of your data source.");
+		return false;
+	}
+	else
+	{
+		return true;
 	}
 }

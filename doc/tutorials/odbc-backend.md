@@ -2,9 +2,7 @@
 
 This tutorial describes how to set up unixODBC on Linux and use Elektra to retrieve configuration data from an _SQLite_ or _PostgreSQL_ database.
 
-> Currently, the _backend_odbc_ plugin is marked as EXPERIMENTAL and only supports reading data from data sources.
-> Writing data (e.g. with `kdb set`) should be supported soon.
-> Also, currently only data sources that define a table for _metadata_ are supported.
+> Currently, the _backend_odbc_ plugin is marked as EXPERIMENTAL and only data sources that define a table for _metadata_ are supported.
 > In the future, we plan to also support data sources without metadata tables.
 >
 > Please be aware that for using metadata, _outer joins_ have to be supported by the ODBC driver.
@@ -50,11 +48,8 @@ The table for the metadata needs at least three columns:
 
 > The column for the **key-name** and the column for the **metakey-name** together should form the PK of that table.
 
-Again, all these columns should be defined to store the data types `TEXT`, `CHAR` or `VARCHAR` column.
-
-It is allowed that the tables contain more columns, these additional columns are not processed by Elektra,
-_must not_ be part of a PK and _must_ support NULL- or DEFAULT-values (if you want to add new keys in a future version of Elektra).
-Currently, as only read support is implemented, columns that don't support NULL values are also possible, but not recommended.
+Again, all these columns must be defined to store an UTF-8 compatible text.
+It is allowed that the tables contain more columns, these additional columns are not processed by Elektra, _must not_ be part of a PK and _must_ support NULL- or DEFAULT-values (if you want to add new keys via Elektra).
 
 The following ER-diagram shows the described scheme:
 
@@ -133,8 +128,7 @@ As PostgreSQL natively supports transactions and multiple clients, it is also po
 Another option is to save the configurations for different users in separate tables.
 When a user logs in on any client PC in the network, the table with the matching configuration data can then, with some scripting, be mounted via Elektra.
 
-If you need detailed information about how to set up and use a PostgreSQL DBMS instance, there is excellent documentation, including tutorials for beginners,
-available at the [PostgreSQL website](https://www.postgresql.org/docs/current/tutorial.html).
+If you need detailed information about how to set up and use a PostgreSQL DBMS instance, there is excellent documentation, including tutorials for beginners, available at the [PostgreSQL website](https://www.postgresql.org/docs/current/tutorial.html).
 
 However, for this tutorial, we present a single-user scenario on a local PC.
 
@@ -288,6 +282,10 @@ kdb ls user:/odbcSqlite/
 
 kdb get /odbcSqlite/sqliteapp1/key1
 # sqlite val 1.1
+
+kdb set /odbcSqlite/sqliteapp1/key1 newVal
+kdb get /odbcSqlite/sqliteapp1/key1
+# sqlite newVal
 
 kdb meta-show user:/odbcSqlite/sqliteapp1/key1
 # metakey 1.1.1: metaval 1.1.1

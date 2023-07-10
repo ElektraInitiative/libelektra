@@ -12,13 +12,8 @@
 #ifndef ELEKTRA_BACKEND_ODBC_GET_H
 #define ELEKTRA_BACKEND_ODBC_GET_H
 
-#include "./backend_odbc_general.h"
+#include "./backend_odbc_helpers.h"
 
-/* ODBC related includes */
-#include <sql.h>
-#include <sqlext.h>
-#include <sqltypes.h>
-
-KeySet * getKeysFromDataSource (struct dataSourceConfig * dsConfig, Key * errorKey);
+KeySet * getKeysFromDataSource (struct odbcSharedData * sharedData, bool keepTransaction, Key * errorKey);
 
 #endif // ELEKTRA_BACKEND_ODBC_GET_H

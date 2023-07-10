@@ -13,8 +13,12 @@ RUN pacman -Sy --noconfirm \
     qt5-base \
     qt5-declarative \
     rubygems \
-    texlive-most \
     unixodbc \
+    texlive-core \
+    texlive-bin \
+    texlive-latexextra \
+    texlive-fontsextra \
+    texlive-science \
     wget \
     xfconf \
     yajl \

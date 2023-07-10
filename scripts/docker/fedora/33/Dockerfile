@@ -1,6 +1,6 @@
 FROM fedora:33
 
-RUN dnf upgrade --refresh -y && dnf install -y \
+RUN dnf upgrade --refresh -y && dnf install -y --setopt=install_weak_deps=False \
         augeas-devel \
         bison \
         bison-devel \

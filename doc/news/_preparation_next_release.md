@@ -120,9 +120,9 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### backend_odbc
 
-- <<TODO>>
+- Add write functionality to the ODBC backend (INSERT, UPDATE, DELETE) _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 
@@ -248,6 +248,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Add an overload for `KeySet::cut` that accepts a string for the keyname _(Maximilian Irlinger)_
 - The `dup` method of `Key` now returns a wrapped object _(Maximilian Irlinger @atmaxinger)_
 - Add overloads for `Key::isBelow`, `Key::isBelowOrSame` and `Key::isDirectBelow` that accept a string as the key name _(Maximilian Irlinger @atmaxinger)_
+- Include the header `cstdint` in `key.hpp`. It is needed for an enum of type `std::uint8_t` _(Florian Lindner @flo91)_
 
 ### <<Binding>>
 
@@ -286,7 +287,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Implemented the first revision of the Xfconf binding. _(Richard Stöckl @Eiskasten)_
 - This allows to use elektra as a drop-in replacement for applications which use Xfconf. _(Richard Stöckl @Eiskasten)_
 - Xfconf applications can now read and write configuration settings to elektra. _(Richard Stöckl @Eiskasten)_
-- <<TODO>>
+- Use cmake variables in the replace and restore scripts. _(Richard Stöckl @Eiskasten)_
 
 ## Tools
 
@@ -342,7 +343,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Fix bug in Doxygen comment for `const char * keyName (const Key * key)` which lead to failed building of the refman.pdf on recent TeX Live releases _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -359,6 +360,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Add use cases for using the bindings. _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -369,7 +371,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Add use cases for libelektra-core _(@lawli3t)_
 
 ### Use Cases
 
@@ -395,7 +397,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Add decision for [Elixir bindings](../decisions/3_decided/elixir_bindings.md). _(@0x6178656c)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -512,7 +514,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Use openwrt/sdk instead of openwrtorg/sdk. _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Reduce fedora docker image size (PR #4637) _(@4ydan)_
 
 ## Infrastructure
 
@@ -521,7 +523,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Disable openwrt build until we have found a new maintainer for it. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -538,6 +540,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - <<TODO>>
 - <<TODO>>
+- The arch package `texlive-most` is no longer available, replaced it with other texlive packages. See https://archlinux.org/packages/?q=texlive _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
