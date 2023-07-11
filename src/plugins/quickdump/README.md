@@ -83,7 +83,7 @@ sudo kdb mount quickdump.eqd user:/tests/quickdump quickdump
 kdb set user:/tests/quickdump/key value
 #> Create a new key user:/tests/quickdump/key with string "value"
 
-kdb meta-set user:/tests/quickdump/key meta "metavalue"
+kdb meta set user:/tests/quickdump/key meta "metavalue"
 
 kdb set user:/tests/quickdump/otherkey "other value"
 #> Create a new key user:/tests/quickdump/otherkey with string "other value"
@@ -115,13 +115,13 @@ rm b.tmp
 kdb get user:/tests/quickdump/key
 #> other value
 
-kdb meta-get user:/tests/quickdump/key meta
+kdb meta get user:/tests/quickdump/key meta
 #> metavalue
 
 kdb get user:/tests/quickdump/otherkey
 #> other value
 
-kdb meta-get user:/tests/quickdump/otherkey meta
+kdb meta get user:/tests/quickdump/otherkey meta
 #> metavalue
 
 # Cleanup

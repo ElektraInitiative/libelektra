@@ -99,6 +99,19 @@ For example,
 kdb set /tests/tutorial/cascading/key1 "hello world"
 # RET: 2
 # STDERR: .*key does not specify a namespace
+
+kdb meta set /tests/tutorial/cascading/key1 meta1 hello
+# RET: 2
+# STDERR: .*key does not specify a namespace
+
+kdb meta set user:/tests/tutorial/cascading/key1 meta1 hello
+
+kdb meta rm /tests/tutorial/cascading/key1 meta1
+# RET: 2
+# STDERR: .*key does not specify a namespace
+
+# cleanup
+kdb rm user:/tests/tutorial/cascading/key1
 ```
 
 ## Override Links
@@ -136,7 +149,7 @@ sudo kdb set system:/tests/overrides/test "hello override"
 Override links can be defined by adding them to the `override/#` metadata array key of the corresponding `spec-key`:
 
 ```sh
-sudo kdb meta-set spec:/tests/tutorial/cascading/#0/current/test override/#0 /tests/overrides/test
+sudo kdb meta set spec:/tests/tutorial/cascading/#0/current/test override/#0 /tests/overrides/test
 ```
 
 Now when doing a cascading lookup, we get the value of our target key instead of the specified one:

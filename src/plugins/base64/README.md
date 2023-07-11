@@ -119,7 +119,7 @@ kdb file user:/tests/base64/encoded | xargs cat | grep encoded
 #> encoded = dmFsdWUA
 
 # Tell Base64 plugin to decode and encode key value
-kdb meta-set user:/tests/base64/encoded type binary
+kdb meta set user:/tests/base64/encoded type binary
 
 # Receive key data (the `\x0` at the end marks the end of the string)
 kdb get user:/tests/base64/encoded

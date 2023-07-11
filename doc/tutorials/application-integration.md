@@ -236,7 +236,7 @@ You can use those features like following:
 
 ```sh
 kdb set /overrides/test "example override"
-sudo kdb meta-set spec:/test override/#0 /overrides/test
+sudo kdb meta set spec:/test override/#0 /overrides/test
 ```
 
 This technique provides complete transparency how a program will fetch a
@@ -260,7 +260,7 @@ we want to use `/sw/otherorg/otherapp/#0/current/section/subsection/key`.
 So we specify:
 
 ```sh
-kdb meta-set spec:/sw/org/myapp/#0/current/section/subsection/key \
+kdb meta set spec:/sw/org/myapp/#0/current/section/subsection/key \
     "fallback/#0" /sw/otherorg/otherapp/#0/current/section/subsection/key
 ```
 
@@ -297,7 +297,7 @@ cat << HERE | kdb import spec:/sw/org/myapp/#0/current ni  \
 fallback/#0=/sw/otherorg/otherapp/#0/current/section/subsection/key  \
 description = A description of the key     \
 HERE
-kdb meta-ls spec:/sw/org/myapp/#0/current # verify if specification is present now
+kdb meta ls spec:/sw/org/myapp/#0/current # verify if specification is present now
 #> infos/plugins
 #> mountpoint
 ```

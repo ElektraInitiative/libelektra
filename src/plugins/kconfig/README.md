@@ -92,7 +92,7 @@ kdb get /tests/kconfig/group/subgroup/key.name
 #> New Value
 
 # Retrieve the meta values
-kdb meta-get /tests/kconfig/group/subgroup/key.name kconfig
+kdb meta get /tests/kconfig/group/subgroup/key.name kconfig
 #> ai
 
 # Manually add a group and a localized key

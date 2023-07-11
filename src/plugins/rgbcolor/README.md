@@ -33,7 +33,7 @@ sudo kdb mount color.ecf user:/tests/color dump rgbcolor
 kdb set user:/tests/color/hex "#a1C2b3"
 
 # Tell the plugin to validate the key and normalize if necessary
-kdb meta-set user:/tests/color/hex check/rgbcolor ""
+kdb meta set user:/tests/color/hex check/rgbcolor ""
 
 # Colors are normalized to 32-bit unsigned integers
 # This one is normalized to 0xa1C2b3ff
@@ -48,7 +48,7 @@ kdb get user:/tests/color/hex
 #> 2597139199
 
 kdb set user:/tests/color/hex/subcolor "#abc"
-kdb meta-set user:/tests/color/hex/subcolor check/rgbcolor ""
+kdb meta set user:/tests/color/hex/subcolor check/rgbcolor ""
 
 # Expanded to rgba: #aabbccff
 kdb get user:/tests/color/hex/subcolor

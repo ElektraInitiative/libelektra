@@ -25,9 +25,9 @@ void addMetaRmSpec (KeySet * spec);
  * @param errorKey key where errors and warnings should be saved
  *
  * @retval 0 rm command ran without errors
- * @retval 1 errors occurred, keyGetMeta (errorKey, "error/reason") for info
+ * @retval >0 errors occurred, keyGetMeta (errorKey, "error/reason") for info
  *
  */
-int execCppMetaRm (int argc, char ** argv);
+int execMetaRm (KeySet * options, Key * errorKey);
 
 #endif // ELEKTRA_KDB_META_RM_H

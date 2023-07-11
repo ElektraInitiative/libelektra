@@ -25,9 +25,9 @@ void addMetaLsSpec (KeySet * spec);
  * @param errorKey key where errors and warnings should be saved
  *
  * @retval 0 ls command ran without errors
- * @retval 1 errors occurred, keyGetMeta (errorKey, "error/reason") for info
+ * @retval >0 errors occurred, keyGetMeta (errorKey, "error/reason") for info
  *
  */
-int execCppMetaLs (int argc, char ** argv);
+int execMetaLs (KeySet * options, Key * errorKey);
 
 #endif // ELEKTRA_KDB_META_LS_H

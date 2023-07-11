@@ -65,7 +65,7 @@ kdb get system:/hosts/ipv4/localhost
 Check if a comment is belonging to host "localhost":
 
 ```bash
-kdb meta-ls system:/hosts/ipv4/localhost
+kdb meta ls system:/hosts/ipv4/localhost
 ```
 
 Try to change the host "localhost", should fail because it is not an

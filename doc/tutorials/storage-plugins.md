@@ -57,7 +57,7 @@ kdb set user:/tests/storage/empty ''
 #> Create a new key user:/tests/storage/empty with string ""
 kdb get user:/tests/storage/empty
 #>
-kdb meta-ls user:/tests/storage/empty
+kdb meta ls user:/tests/storage/empty
 #>
 
 # Undo modifications to the key database
@@ -77,7 +77,7 @@ In the test we also use the [`type` plugin](../../src/plugins/type/README.md) to
 sudo kdb mount config.yaml user:/tests/storage yamlcpp type
 
 kdb set user:/tests/storage/bool/value true
-kdb meta-set user:/tests/storage/bool/value type boolean
+kdb meta set user:/tests/storage/bool/value type boolean
 kdb get user:/tests/storage/bool/value
 #> 1
 
@@ -188,12 +188,12 @@ are normal key-value pairs. The following example shows that the storage plugin 
 sudo kdb mount config.yaml user:/tests/storage yamlcpp
 
 # Create an array containing two elements
-kdb meta-set user:/tests/storage/array array ''
+kdb meta set user:/tests/storage/array array ''
 kdb set user:/tests/storage/array/#0 one
 kdb set user:/tests/storage/array/#1 two
 
 # The array parent key stores the basename of the last element
-kdb meta-get user:/tests/storage/array array
+kdb meta get user:/tests/storage/array array
 #> #1
 
 # If you do not add the metakey `array`, then keys
@@ -202,7 +202,7 @@ kdb meta-get user:/tests/storage/array array
 kdb set user:/tests/storage/map ""
 kdb set user:/tests/storage/map/#0 ""
 kdb set user:/tests/storage/map/#1 ""
-kdb meta-get user:/tests/storage/map array
+kdb meta get user:/tests/storage/map array
 # RET: 12
 
 # Undo modifications to the key database
@@ -229,13 +229,13 @@ echo '127.0.0.1    localhost # test comment' >  `kdb file user:/tests/hosts`
 kdb get user:/tests/hosts/ipv4/localhost
 #> 127.0.0.1
 
-kdb meta-ls user:/tests/hosts/ipv4/localhost
+kdb meta ls user:/tests/hosts/ipv4/localhost
 #> comment/#0
 #> comment/#0/space
 #> comment/#0/start
 #> order
 
-kdb meta-get user:/tests/hosts/ipv4/localhost 'comment/#0'
+kdb meta get user:/tests/hosts/ipv4/localhost 'comment/#0'
 #>  test comment
 
 # Undo modifications to the key database
@@ -263,15 +263,15 @@ kdb ls user:/tests/hosts/ipv4
 #> user:/tests/hosts/ipv4/localhost.2
 
 # Checking the created Meta KeySet
-kdb meta-ls user:/tests/hosts/ipv4/localhost.1
+kdb meta ls user:/tests/hosts/ipv4/localhost.1
 #> comment/#0
 #> order
 
 # Getting the content of the order
-kdb meta-get user:/tests/hosts/ipv4/localhost.1 order
+kdb meta get user:/tests/hosts/ipv4/localhost.1 order
 #> 1
 
-kdb meta-get user:/tests/hosts/ipv4/localhost.2 order
+kdb meta get user:/tests/hosts/ipv4/localhost.2 order
 #> 2
 
 # adding some additional Keys out of order
@@ -286,8 +286,8 @@ cat `kdb file user:/tests/hosts`
 #> 127.0.0.1	localhost.2
 
 # setting the correct order
-kdb meta-set user:/tests/hosts/ipv4/localhost.4 order 4
-kdb meta-set user:/tests/hosts/ipv4/localhost.3 order 3
+kdb meta set user:/tests/hosts/ipv4/localhost.4 order 4
+kdb meta set user:/tests/hosts/ipv4/localhost.3 order 3
 
 # lines in hosts file are also in correct order afterwards
 cat `kdb file user:/tests/hosts`

@@ -26,7 +26,7 @@ succeed_if "could not mount root: $ROOT_FILE at $ROOT_MOUNTPOINT"
 "$KDB" set $ROOT/valueable_data important_unrecoverable_data > /dev/null
 succeed_if "cannot set valuable data"
 
-"$KDB" meta-set $ROOT/valueable_data trigger/error "C03100"
+"$KDB" meta set $ROOT/valueable_data trigger/error "C03100"
 succeed_if "cannot set metadata"
 
 TMPFILE="$(mktempfile_elektra)"

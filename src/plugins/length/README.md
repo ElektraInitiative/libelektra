@@ -28,7 +28,7 @@ The package is called `libelektra5-experimental`.
 kdb mount config.dump /tests/length length
 
 # Check the validity of the string stored in `/tests/length/text`
-kdb meta-set spec:/tests/length/text check/length/max 3
+kdb meta set spec:/tests/length/text check/length/max 3
 
 # Try to set a longer string
 kdb set user:/tests/length/text abcd

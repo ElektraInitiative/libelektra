@@ -52,23 +52,23 @@ cat `kdb file user:/tests/storage/types`
 
 # Print types and values of the keys with `kdb`
 
-kdb meta-get 'user:/tests/storage/types/plain_decimal' 'type'
+kdb meta get 'user:/tests/storage/types/plain_decimal' 'type'
 # > long_long
 kdb get 'user:/tests/storage/types/plain_decimal'
 # > 1000
 
-kdb meta-get 'user:/tests/storage/types/file_permissions' 'type'
+kdb meta get 'user:/tests/storage/types/file_permissions' 'type'
 # > unsigned_long_long
 # The octal value will be converted to decimal
 kdb get 'user:/tests/storage/types/file_permissions'
 # > 511
 
-kdb meta-get 'user:/tests/storage/types/pi' 'type'
+kdb meta get 'user:/tests/storage/types/pi' 'type'
 # > double
 kdb get 'user:/tests/storage/types/pi'
 # > 3.1415
 
-kdb meta-get 'user:/tests/storage/types/division_gone_wrong' 'type'
+kdb meta get 'user:/tests/storage/types/division_gone_wrong' 'type'
 # > double
 kdb get 'user:/tests/storage/types/division_gone_wrong'
 # > -inf
@@ -99,7 +99,7 @@ sudo kdb mount test.toml user:/tests/storage/types toml type
 kdb set 'user:/tests/storage/types/value' '1'
 
 # The plugin infers `long_long` for this value
-kdb meta-get 'user:/tests/storage/types/value' 'type'
+kdb meta get 'user:/tests/storage/types/value' 'type'
 # > long_long
 
 # The value is written as an integer
@@ -107,14 +107,14 @@ cat `kdb file user:/tests/storage/types`
 # > value = 1
 
 # Manually set the `type` metakey to boolean
-kdb meta-set 'user:/tests/storage/types/value' 'type' 'boolean'
+kdb meta set 'user:/tests/storage/types/value' 'type' 'boolean'
 
 # The value is written as a boolean
 cat `kdb file user:/tests/storage/types`
 # > value = true
 
 # Manually set the `type` metakey to string
-kdb meta-set 'user:/tests/storage/types/value' 'type' 'string'
+kdb meta set 'user:/tests/storage/types/value' 'type' 'string'
 
 # The value is written as a string
 cat `kdb file user:/tests/storage/types`
@@ -147,25 +147,25 @@ kdb get 'user:/tests/storage/numbers/a'
 # > 511
 
 # Get the original octal value
-kdb meta-get 'user:/tests/storage/numbers/a' 'origvalue'
+kdb meta get 'user:/tests/storage/numbers/a' 'origvalue'
 # > 0o777
 
 # Get the type of the number; since it's originally octal, we get `unsigned_long_long`
-kdb meta-get 'user:/tests/storage/numbers/a' 'type'
+kdb meta get 'user:/tests/storage/numbers/a' 'type'
 # > unsigned_long_long
 
 # Change the value by changing the `origvalue` metakey
-kdb meta-set 'user:/tests/storage/numbers/a' 'origvalue' '0o666'
+kdb meta set 'user:/tests/storage/numbers/a' 'origvalue' '0o666'
 
 # Get the new value as decimal
 kdb get 'user:/tests/storage/numbers/a'
 # > 438
 
 # Change the value to an invalid octal value.
-kdb meta-set 'user:/tests/storage/numbers/a' 'origvalue' '0o888'
+kdb meta set 'user:/tests/storage/numbers/a' 'origvalue' '0o888'
 
 # The key value is no longer considered a number
-kdb meta-get 'user:/tests/storage/numbers/a' 'type'
+kdb meta get 'user:/tests/storage/numbers/a' 'type'
 # > string
 
 # Cleanup
@@ -282,7 +282,7 @@ cat `kdb file user:/tests/storage`
 #> common.c = 2
 
 # Create a simple table key
-kdb meta-set 'user:/tests/storage/common' 'tomltype' 'simpletable'
+kdb meta set 'user:/tests/storage/common' 'tomltype' 'simpletable'
 
 # Print the content of the resulting TOML file
 cat `kdb file user:/tests/storage`
@@ -305,7 +305,7 @@ Table arrays are represented by setting the `tomltype` metakey to `tablearray`. 
 sudo kdb mount test_table_array.toml user:/tests/storage toml type
 
 # Create a table array containing two entries, each with a key 'a' and 'b'
-kdb meta-set 'user:/tests/storage/tablearray' 'tomltype' 'tablearray'
+kdb meta set 'user:/tests/storage/tablearray' 'tomltype' 'tablearray'
 kdb set 'user:/tests/storage/tablearray/#0/a' '1'
 kdb set 'user:/tests/storage/tablearray/#0/b' '2'
 
@@ -313,7 +313,7 @@ kdb set 'user:/tests/storage/tablearray/#1/a' '3'
 kdb set 'user:/tests/storage/tablearray/#1/b' '4'
 
 # Print the highest index of the table array
-kdb meta-get 'user:/tests/storage/tablearray' 'array'
+kdb meta get 'user:/tests/storage/tablearray' 'array'
 #> #1
 
 # Print the content of the resulting TOML file
@@ -339,10 +339,10 @@ Inline tables are represented by setting the `tomltype` metakey to `inlinetable`
 sudo kdb mount test_inline_table.toml user:/tests/storage toml type
 
 # Create a table array containing two entries, each with a key 'a' and 'b'
-kdb meta-set 'user:/tests/storage/inlinetable' 'tomltype' 'inlinetable'
+kdb meta set 'user:/tests/storage/inlinetable' 'tomltype' 'inlinetable'
 kdb set 'user:/tests/storage/inlinetable/a' '1'
 kdb set 'user:/tests/storage/inlinetable/b' '2'
-kdb meta-set 'user:/tests/storage/inlinetable/nested' 'tomltype' 'inlinetable'
+kdb meta set 'user:/tests/storage/inlinetable/nested' 'tomltype' 'inlinetable'
 kdb set 'user:/tests/storage/inlinetable/nested/x' '3'
 kdb set 'user:/tests/storage/inlinetable/nested/y' '4'
 
@@ -369,7 +369,7 @@ kdb set 'user:/tests/storage/array/#1' '2'
 kdb set 'user:/tests/storage/array/#2' '3'
 
 # Print the highest index of the array
-kdb meta-get 'user:/tests/storage/array' 'array'
+kdb meta get 'user:/tests/storage/array' 'array'
 #> #2
 
 # Print the content of the resulting TOML file
@@ -408,18 +408,18 @@ sudo kdb mount test_comments.toml user:/tests/storage toml type
 kdb set 'user:/tests/storage/key' '1'
 
 # add an inline comment with 4 leading spaces
-kdb meta-set 'user:/tests/storage/key' 'comment/#0' ' This value is very interesting'
-kdb meta-set 'user:/tests/storage/key' 'comment/#0/space' '    '
+kdb meta set 'user:/tests/storage/key' 'comment/#0' ' This value is very interesting'
+kdb meta set 'user:/tests/storage/key' 'comment/#0/space' '    '
 
 # add some comments preceding the key
-kdb meta-set 'user:/tests/storage/key' 'comment/#1' ' I am the top-most comment relative to my key.'
-kdb meta-set 'user:/tests/storage/key' 'comment/#2' ' I am in the middle. Just boring.'
-kdb meta-set 'user:/tests/storage/key' 'comment/#3' ' I am in the line right above my key.'
+kdb meta set 'user:/tests/storage/key' 'comment/#1' ' I am the top-most comment relative to my key.'
+kdb meta set 'user:/tests/storage/key' 'comment/#2' ' I am in the middle. Just boring.'
+kdb meta set 'user:/tests/storage/key' 'comment/#3' ' I am in the line right above my key.'
 
 # add file ending comments and empty lines
-kdb meta-set 'user:/tests/storage' 'comment/#1' ' First file-ending comment'
-kdb meta-set 'user:/tests/storage' 'comment/#2/start' ''
-kdb meta-set 'user:/tests/storage' 'comment/#3' ' Second file-ending comment. I am the last line of the file.'
+kdb meta set 'user:/tests/storage' 'comment/#1' ' First file-ending comment'
+kdb meta set 'user:/tests/storage' 'comment/#2/start' ''
+kdb meta set 'user:/tests/storage' 'comment/#3' ' Second file-ending comment. I am the last line of the file.'
 
 # Print the content of the resulting TOML file
 cat `kdb file user:/tests/storage`
@@ -453,29 +453,29 @@ kdb set 'user:/tests/storage/array/#1' '2'
 kdb set 'user:/tests/storage/array/#2' '3'
 
 # Add inline comment after the array
-kdb meta-set 'user:/tests/storage/array' 'comment/#0' ' Inline comment after the array'
-kdb meta-set 'user:/tests/storage/array' 'comment/#0/start' '#'
-kdb meta-set 'user:/tests/storage/array' 'comment/#0/space' '     '
+kdb meta set 'user:/tests/storage/array' 'comment/#0' ' Inline comment after the array'
+kdb meta set 'user:/tests/storage/array' 'comment/#0/start' '#'
+kdb meta set 'user:/tests/storage/array' 'comment/#0/space' '     '
 
 # Add comments for array elements
-kdb meta-set 'user:/tests/storage/array/#0' 'comment/#0' ' Inline comment of first element'
-kdb meta-set 'user:/tests/storage/array/#0' 'comment/#0/start' '#'
-kdb meta-set 'user:/tests/storage/array/#0' 'comment/#0/space' '    '
+kdb meta set 'user:/tests/storage/array/#0' 'comment/#0' ' Inline comment of first element'
+kdb meta set 'user:/tests/storage/array/#0' 'comment/#0/start' '#'
+kdb meta set 'user:/tests/storage/array/#0' 'comment/#0/space' '    '
 
-kdb meta-set 'user:/tests/storage/array/#0' 'comment/#1' ' Comment preceding the first element'
-kdb meta-set 'user:/tests/storage/array/#0' 'comment/#1/space' '    '
+kdb meta set 'user:/tests/storage/array/#0' 'comment/#1' ' Comment preceding the first element'
+kdb meta set 'user:/tests/storage/array/#0' 'comment/#1/space' '    '
 
-kdb meta-set 'user:/tests/storage/array/#0' 'comment/#2' ' Another comment preceding the first element'
-kdb meta-set 'user:/tests/storage/array/#0' 'comment/#2/space' '      '
+kdb meta set 'user:/tests/storage/array/#0' 'comment/#2' ' Another comment preceding the first element'
+kdb meta set 'user:/tests/storage/array/#0' 'comment/#2/space' '      '
 
-kdb meta-set 'user:/tests/storage/array/#1' 'comment/#0' ' Inline comment of second element'
-kdb meta-set 'user:/tests/storage/array/#1' 'comment/#0/space' '    '
+kdb meta set 'user:/tests/storage/array/#1' 'comment/#0' ' Inline comment of second element'
+kdb meta set 'user:/tests/storage/array/#1' 'comment/#0/space' '    '
 
-kdb meta-set 'user:/tests/storage/array/#1' 'comment/#1' ' Comment preceding the second element'
-kdb meta-set 'user:/tests/storage/array/#1' 'comment/#1/space' '      '
+kdb meta set 'user:/tests/storage/array/#1' 'comment/#1' ' Comment preceding the second element'
+kdb meta set 'user:/tests/storage/array/#1' 'comment/#1/space' '      '
 
-kdb meta-set 'user:/tests/storage/array/#2' 'comment/#0' ' Inline comment of the last element'
-kdb meta-set 'user:/tests/storage/array/#2' 'comment/#0/space' '     '
+kdb meta set 'user:/tests/storage/array/#2' 'comment/#0' ' Inline comment of the last element'
+kdb meta set 'user:/tests/storage/array/#2' 'comment/#0/space' '     '
 
 # Print the content of the resulting TOML file
 cat `kdb file user:/tests/storage`
@@ -524,7 +524,7 @@ cat `kdb file user:/tests/storage`
 #> d = 3
 
 # Create a simple table for the three keys under `common`
-kdb meta-set 'user:/tests/storage/common' 'tomltype' 'simpletable'
+kdb meta set 'user:/tests/storage/common' 'tomltype' 'simpletable'
 
 # Print the content of the resulting TOML file
 cat `kdb file user:/tests/storage`

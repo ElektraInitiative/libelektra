@@ -14,7 +14,7 @@ Storage: mathcheck
 
 < kdb set $Mountpoint/check/gp
 
-< kdb meta-set $Mountpoint/check/gp check/math ":= + ../test0/points ../test1/points"
+< kdb meta set $Mountpoint/check/gp check/math ":= + ../test0/points ../test1/points"
 
 STDOUT: 10.4
 < kdb get $Mountpoint/check/gp
@@ -30,7 +30,7 @@ RET: 0
 
 < kdb set $Mountpoint/check/gp
 
-< kdb meta-set $Mountpoint/check/gp check/math ":= + ./test0/points ./test1/points"
+< kdb meta set $Mountpoint/check/gp check/math ":= + ./test0/points ./test1/points"
 
 STDOUT: 10.4
 < kdb get $Mountpoint/check/gp
@@ -45,7 +45,7 @@ RET: 0
 
 < kdb set $Mountpoint/check/gp
 
-< kdb meta-set $Mountpoint/check/gp check/math ":= + @/check/test0/points @/check/test1/points"
+< kdb meta set $Mountpoint/check/gp check/math ":= + @/check/test0/points @/check/test1/points"
 
 STDOUT: 10.4
 < kdb get $Mountpoint/check/gp
@@ -59,7 +59,7 @@ RET: 0
 
 < kdb set $Mountpoint/sum
 
-< kdb meta-set $Mountpoint/sum check/math ":= + @/key0 @/key1"
+< kdb meta set $Mountpoint/sum check/math ":= + @/key0 @/key1"
 
 STDOUT: 5
 < kdb get $Mountpoint/sum
@@ -73,7 +73,7 @@ RET: 0
 
 < kdb set $Mountpoint/sub
 
-< kdb meta-set $Mountpoint/sub check/math ":= - @/key0 @/key1"
+< kdb meta set $Mountpoint/sub check/math ":= - @/key0 @/key1"
 
 STDOUT: 5
 < kdb get $Mountpoint/sub
@@ -87,7 +87,7 @@ RET: 0
 
 < kdb set $Mountpoint/mul
 
-< kdb meta-set $Mountpoint/mul check/math ":= * @/key0 @/key1"
+< kdb meta set $Mountpoint/mul check/math ":= * @/key0 @/key1"
 
 STDOUT: 5
 < kdb get $Mountpoint/mul
@@ -101,7 +101,7 @@ RET: 0
 
 < kdb set $Mountpoint/div
 
-< kdb meta-set $Mountpoint/div check/math ":= / @/key0 @/key1"
+< kdb meta set $Mountpoint/div check/math ":= / @/key0 @/key1"
 
 STDOUT: 5
 < kdb get $Mountpoint/div
@@ -109,7 +109,7 @@ STDOUT: 5
 < kdb set $Mountpoint/check/a 3.1
 < kdb set $Mountpoint/check/b 4.5
 < kdb set $Mountpoint/check/k 7.6
-< kdb meta-set $Mountpoint/check/k check/math "== + ../a ../b"
+< kdb meta set $Mountpoint/check/k check/math "== + ../a ../b"
 
 ERROR: C03200
 < kdb set $Mountpoint/check/k 7.7

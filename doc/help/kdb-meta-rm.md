@@ -2,7 +2,7 @@
 
 ## SYNOPSIS
 
-`kdb meta-rm <key name> <metaname>`
+`kdb meta rm <key name> <metaname>`
 
 Where `key name` is the name of the key and `metaname` is the name of the metakey you want to remove.
 
@@ -31,11 +31,13 @@ This command will return the following values as an exit status:<br>
   No errors.
 - 11:
   Key not found. (Invalid `path`)
+- 12:
+  Metaname does not exist
 
 ## EXAMPLES
 
 To remove metakey `metakey` of a key:<br>
-`kdb meta-rm user:/example metakey`
+`kdb meta rm user:/example metakey`
 
 ## SEE ALSO
 

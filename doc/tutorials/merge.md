@@ -124,7 +124,7 @@ To demonstrate this, we continue the hosts example:
 recorder tests -->
 
 ```
-kdb meta-get user:/tests/hosts/result/ipv6/ip6-localhost comment/#2
+kdb meta get user:/tests/hosts/result/ipv6/ip6-localhost comment/#2
 #>  THEIR The following lines are desirable for IPv6 capable hosts
 ```
 
@@ -133,21 +133,21 @@ We set up some keys:
 ```sh
 kdb set user:/tests/meta/base equal
 #> Create a new key user:/tests/meta/base with string "equal"
-kdb meta-set user:/tests/meta/base comment/#0 "This is the original inline comment"
-kdb meta-set user:/tests/meta/base comment/#1 "This is the first line of the original comment above the key"
-kdb meta-set user:/tests/meta/base comment/#2 "This is the second line of the original comment above the key"
+kdb meta set user:/tests/meta/base comment/#0 "This is the original inline comment"
+kdb meta set user:/tests/meta/base comment/#1 "This is the first line of the original comment above the key"
+kdb meta set user:/tests/meta/base comment/#2 "This is the second line of the original comment above the key"
 
 kdb set user:/tests/meta/their equal
 #> Create a new key user:/tests/meta/their with string "equal"
-kdb meta-set user:/tests/meta/their comment/#0 "This is their inline comment"
-kdb meta-set user:/tests/meta/their comment/#1 "This is the first line of their comment above the key"
-kdb meta-set user:/tests/meta/their comment/#2 "This is the second line of their comment above the key"
+kdb meta set user:/tests/meta/their comment/#0 "This is their inline comment"
+kdb meta set user:/tests/meta/their comment/#1 "This is the first line of their comment above the key"
+kdb meta set user:/tests/meta/their comment/#2 "This is the second line of their comment above the key"
 
 kdb set user:/tests/meta/our equal
 #> Create a new key user:/tests/meta/our with string "equal"
-kdb meta-set user:/tests/meta/our comment/#0 "This is your custom inline comment"
-kdb meta-set user:/tests/meta/our comment/#1 "This is the first line of your custom comment above the key"
-kdb meta-set user:/tests/meta/our comment/#2 "This is the second line of your custom comment above the key"
+kdb meta set user:/tests/meta/our comment/#0 "This is your custom inline comment"
+kdb meta set user:/tests/meta/our comment/#1 "This is the first line of your custom comment above the key"
+kdb meta set user:/tests/meta/our comment/#2 "This is the second line of your custom comment above the key"
 
 kdb merge user:/tests/meta/our user:/tests/meta/their user:/tests/meta/base user:/tests/meta/metaFromOur
 ```
@@ -158,11 +158,11 @@ Now we can check if the metadata has been merged as expected.
 recorder tests -->
 
 ```
-kdb meta-get user:/tests/meta/metaFromOur comment/#0
+kdb meta get user:/tests/meta/metaFromOur comment/#0
 #> This is your custom inline comment
-kdb meta-get user:/tests/meta/metaFromOur comment/#1
+kdb meta get user:/tests/meta/metaFromOur comment/#1
 #> This is the first line of your custom comment above the key
-kdb meta-get user:/tests/meta/metaFromOur comment/#2
+kdb meta get user:/tests/meta/metaFromOur comment/#2
 #> This is the second line of your custom comment above the key
 ```
 
@@ -181,7 +181,7 @@ We can test again if the result meets our expectations.
 recorder tests -->
 
 ```
-kdb meta-get user:/tests/meta/metaFromChanged comment/#2
+kdb meta get user:/tests/meta/metaFromChanged comment/#2
 #> This is the second line of their comment above the key
 ```
 

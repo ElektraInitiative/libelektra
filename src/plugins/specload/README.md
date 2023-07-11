@@ -75,7 +75,7 @@ ksDel (specloadConf);
 The code above will automatically print the KeySet `ks` to stdout in exactly the way `specload` expects it.
 
 Once the mounting is done you can inspect you specification like you would with any other mounted configuration. If you call `kdb set`
-(or `kdb meta-set` or anything else that calls `kdbSet()`), however, `specload` will verify that the modifications you made are compatible
+(or `kdb meta set` or anything else that calls `kdbSet()`), however, `specload` will verify that the modifications you made are compatible
 with the original specification. Currently this verification is very restrictive and doesn't allow a lot of changes that would be safe.
 This is because the necessary verification becomes very complex very quickly. For example adding `opt/arg` is only safe, if `opt` was also
 added by the user, because the application might rely on the default `opt/arg=none`. See also [Limitations](#limitations).
@@ -95,7 +95,7 @@ This assumes you compiled the file [`testapp.c`](testapp.c) and it is available 
 ```
 sudo kdb mount -R noresolver specload.eqd spec:/tests/specload specload "app=$(pwd)/testapp"
 
-kdb meta-ls spec:/tests/specload/mykey
+kdb meta ls spec:/tests/specload/mykey
 #> default
 
 kdb get /tests/specload/mykey
@@ -111,7 +111,7 @@ Or in direct file mode:
 # This assumes that `$PWD` is the root of the Elektra source tree.
 sudo kdb mount -R noresolver specload.eqd spec:/tests/specload specload "file=$(pwd)/src/plugins/specload/specload/spec.quickdump"
 
-kdb meta-ls spec:/tests/specload/mykey
+kdb meta ls spec:/tests/specload/mykey
 #> default
 
 kdb get /tests/specload/mykey

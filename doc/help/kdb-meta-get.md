@@ -2,7 +2,7 @@
 
 ## SYNOPSIS
 
-`kdb meta-get <key name> <metaname>`<br>
+`kdb meta get <key name> <metaname>`<br>
 
 Where `key name` is the name of the key and
 `metaname` is the name of the metakey the user would like to access.
@@ -44,10 +44,10 @@ This command will return the following values as an exit status:<br>
 ## EXAMPLES
 
 To get the value of a metakey called `description` stored in the key `spec:/example/key`:<br>
-`kdb meta-get spec:/example/key description`
+`kdb meta get spec:/example/key description`
 
 To get the value of metakey called `override/#0` stored in the key `spec:/example/dir/key`:<br>
-`kdb meta-get spec:/example/dir/key "override/#0"`
+`kdb meta get spec:/example/dir/key "override/#0"`
 
 ## SEE ALSO
 

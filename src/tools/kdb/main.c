@@ -22,11 +22,7 @@
 #include <list-tools.h>
 #include <ls.h>
 #include <merge.h>
-#include <meta-get.h>
-#include <meta-ls.h>
-#include <meta-rm.h>
-#include <meta-set.h>
-#include <meta-show.h>
+#include <meta.h>
 #include <mount.h>
 #include <mountOdbc.h>
 #include <mv.h>
@@ -69,6 +65,7 @@ command subcommands[] = {
 	{ "get", addGetSpec, execGet },
 	{ "record-start", addRecordStartSpec, execRecordStart },
 	{ "record-undo", addRecordUndoSpec, execRecordUndo },
+	{ "meta", addMetaSpec, execMeta },
 	{ "set", addSetSpec, execSet },
 };
 
@@ -79,11 +76,6 @@ cppCommand cppSubcommands[] = {
 	{ "find", addFindSpec, execCppFind },
 	{ "ls", addLsSpec, execCppLs },
 	{ "merge", addMergeSpec, execCppMerge },
-	{ "meta-get", addMetaGetSpec, execCppMetaGet },
-	{ "meta-ls", addMetaLsSpec, execCppMetaLs },
-	{ "meta-rm", addMetaRmSpec, execCppMetaRm },
-	{ "meta-set", addMetaSetSpec, execCppMetaSet },
-	{ "meta-show", addMetaShowSpec, execCppMetaShow },
 	{ "mountOdbc", addMountOdbcSpec, execCppMountOdbc },
 	{ "mv", addMvSpec, execCppMv },
 	{ "namespace", addNamespaceSpec, execCppNamespace },

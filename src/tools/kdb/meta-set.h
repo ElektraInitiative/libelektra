@@ -25,9 +25,9 @@ void addMetaSetSpec (KeySet * spec);
  * @param errorKey key where errors and warnings should be saved
  *
  * @retval 0 set command ran without errors
- * @retval 1 errors occurred, keyGetMeta (errorKey, "error/reason") for info
+ * @retval >0 errors occurred, keyGetMeta (errorKey, "error/reason") for info
  *
  */
-int execCppMetaSet (int argc, char ** argv);
+int execMetaSet (KeySet * options, Key * errorKey);
 
 #endif // ELEKTRA_KDB_META_SET_H

@@ -64,7 +64,7 @@ do_tests() {
 	"$KDB" set "$UKEY/myfloatarray/#2" "$MYFLOAT2"
 	"$KDB" set "$UKEY/myfloatarray/#3" "$MYFLOAT3"
 	"$KDB" set "$UKEY/myfloatarray/#4" "$MYFLOAT4"
-	"$KDB" meta-set "$UKEY/myfloatarray" array "#4"
+	"$KDB" meta set "$UKEY/myfloatarray" array "#4"
 
 	./application
 	succeed_if "application could not read changed config"

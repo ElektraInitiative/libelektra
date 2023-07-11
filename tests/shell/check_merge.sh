@@ -78,19 +78,19 @@ echo "Testing metadata"
 "$KDB" set "$OURS_ROOT"/key "init" > /dev/null
 exit_if_fail "could not set"
 
-"$KDB" meta-set "$OURS_ROOT"/key comment "init" > /dev/null
+"$KDB" meta set "$OURS_ROOT"/key comment "init" > /dev/null
 exit_if_fail "could not set meta"
 
 "$KDB" set "$THEIRS_ROOT"/key "init" > /dev/null
 exit_if_fail "could not set"
 
-"$KDB" meta-set "$THEIRS_ROOT"/key comment "theirs" > /dev/null
+"$KDB" meta set "$THEIRS_ROOT"/key comment "theirs" > /dev/null
 exit_if_fail "could not set meta"
 
 "$KDB" set "$BASE_ROOT"/key "init" > /dev/null
 exit_if_fail "could not set"
 
-"$KDB" meta-set "$BASE_ROOT"/key comment "base" > /dev/null
+"$KDB" meta set "$BASE_ROOT"/key comment "base" > /dev/null
 exit_if_fail "could not set meta"
 
 "$KDB" merge "$OURS_ROOT" "$THEIRS_ROOT" "$BASE_ROOT" "$MERGED_ROOT" 2> /dev/null

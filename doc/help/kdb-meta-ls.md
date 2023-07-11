@@ -2,7 +2,7 @@
 
 ## SYNOPSIS
 
-`kdb meta-ls <key name>`
+`kdb meta ls <key name>`
 
 Where `key name` is the name of the key.
 
@@ -26,10 +26,21 @@ If no metakeys are associated with the given key, nothing will be printed.<br>
 - `-d`, `--debug`:
   Give debug information. Prints additional debug information in case of errors/warnings.
 
+## RETURN VALUES
+
+This command will return the following values as an exit status:<br>
+
+- 0:
+  No errors.
+- 2:
+  Not a valid keyname.
+- 11:
+  Key not found.
+
 ## EXAMPLE
 
 To see which metakeys are associated with a key:<br>
-`kdb meta-ls /example/key`
+`kdb meta ls /example/key`
 
 ## SEE ALSO
 

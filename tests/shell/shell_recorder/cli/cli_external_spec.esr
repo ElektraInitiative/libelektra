@@ -1,19 +1,19 @@
 Mountpoint: user:/tests/cli/external
 
 < kdb set spec:/sw/elektra/kdb/#0/current/trash ""
-< kdb meta-set spec:/sw/elektra/kdb/#0/current/trash external 1
-< kdb meta-set spec:/sw/elektra/kdb/#0/current/trash bin "/path/to/trash.sh"
-< kdb meta-set spec:/sw/elektra/kdb/#0/current/trash command "trash"
-< kdb meta-set spec:/sw/elektra/kdb/#0/current/trash description "Move a file to trash"
+< kdb meta set spec:/sw/elektra/kdb/#0/current/trash external 1
+< kdb meta set spec:/sw/elektra/kdb/#0/current/trash bin "/path/to/trash.sh"
+< kdb meta set spec:/sw/elektra/kdb/#0/current/trash command "trash"
+< kdb meta set spec:/sw/elektra/kdb/#0/current/trash description "Move a file to trash"
 < kdb set spec:/sw/elektra/kdb/#0/current/trash/file ""
-< kdb meta-set spec:/sw/elektra/kdb/#0/current/trash/file description "The file that should be moved to trash"
-< kdb meta-set spec:/sw/elektra/kdb/#0/current/trash/file args/index 0
-< kdb meta-set spec:/sw/elektra/kdb/#0/current/trash/file args indexed
+< kdb meta set spec:/sw/elektra/kdb/#0/current/trash/file description "The file that should be moved to trash"
+< kdb meta set spec:/sw/elektra/kdb/#0/current/trash/file args/index 0
+< kdb meta set spec:/sw/elektra/kdb/#0/current/trash/file args indexed
 < kdb set spec:/sw/elektra/kdb/#0/current/trash/force ""
-< kdb meta-set spec:/sw/elektra/kdb/#0/current/trash/force description "Delete the file directly"
-< kdb meta-set spec:/sw/elektra/kdb/#0/current/trash/force opt f
-< kdb meta-set spec:/sw/elektra/kdb/#0/current/trash/force opt/long force
-< kdb meta-set spec:/sw/elektra/kdb/#0/current/trash/force opt/arg none
+< kdb meta set spec:/sw/elektra/kdb/#0/current/trash/force description "Delete the file directly"
+< kdb meta set spec:/sw/elektra/kdb/#0/current/trash/force opt f
+< kdb meta set spec:/sw/elektra/kdb/#0/current/trash/force opt/long force
+< kdb meta set spec:/sw/elektra/kdb/#0/current/trash/force opt/arg none
 
 STDERR: .*trash\s+Move a file to trash.*
 < kdb --help
@@ -21,12 +21,12 @@ STDERR: .*trash\s+Move a file to trash.*
 STDERR: .*Usage: kdb trash \[OPTION...\] <file>.*file\s+The file that should be moved to trash.*
 < kdb trash --help
 
-< kdb meta-set spec:/sw/elektra/kdb/#0/current/trash/file description "The file that will be moved to trash"
+< kdb meta set spec:/sw/elektra/kdb/#0/current/trash/file description "The file that will be moved to trash"
 
 STDERR: .*Usage: kdb trash \[OPTION...\] <file>.*file\s+The file that will be moved to trash.*
 < kdb trash --help
 
-< kdb meta-set spec:/sw/elektra/kdb/#0/current/trash command "delete"
+< kdb meta set spec:/sw/elektra/kdb/#0/current/trash command "delete"
 
 STDERR: .*delete\s+Move a file to trash.*
 < kdb --help

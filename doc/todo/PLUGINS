@@ -73,7 +73,7 @@ logging API:
 implement semlock plugin, see commit bc8b5d66bd4babba6bc8c34804b966daf6878a1d
 
 inherit/copy metadata/bind mounts:
-	kdb meta-set spec:/something inherit/override/# '"/elsewhere/key/" + basename'
+	kdb meta set spec:/something inherit/override/# '"/elsewhere/key/" + basename'
 	und ein inherit-Plugin kopiert dann automatisch ein override /elsewhere/key/ (mit dem richtigen basename dran) in alle Subkeys (die nicht ein anderes inherit/override haben).
 
 werror plugin:

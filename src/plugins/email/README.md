@@ -28,12 +28,15 @@ kdb mount config.dump /tests/email dump email
 
 # Incorrect address is valid with incomplete configuration
 kdb set spec:/tests/email/noaddr ""
-kdb meta-rm spec:/tests/email/noaddr check/email
+kdb meta rm spec:/tests/email/noaddr check/email
+# STDERR: .*No metakey with name 'check/email' present*
+# RET: 12
+
 kdb set user:/tests/email/noaddr invalid..address@com
 # RET: 0
 
 # Check the validity of the email stored in `/tests/email/adr`
-kdb meta-set spec:/tests/email/adr check/email ""
+kdb meta set spec:/tests/email/adr check/email ""
 
 # Set a correct email address
 kdb set user:/tests/email/adr test+email@dev.libelektra.com
@@ -57,7 +60,8 @@ kdb set user:/tests/email/adr @
 # RET: 5
 
 # Undo modifications to the database
-kdb rm -rf /tests/email
+kdb rm -rf user:/tests/email
+kdb rm -rf spec:/tests/email
 kdb umount /tests/email
 ```
 

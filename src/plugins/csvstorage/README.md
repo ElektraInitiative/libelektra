@@ -199,7 +199,7 @@ kdb ls user:/tests/csvstorage
 #> user:/tests/csvstorage/#1/#1
 #> user:/tests/csvstorage/#1/#2
 
-kdb meta-get user:/tests/csvstorage/#0 array
+kdb meta get user:/tests/csvstorage/#0 array
 #> #2
 
 kdb rm -r user:/tests/csvstorage

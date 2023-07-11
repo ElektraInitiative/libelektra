@@ -3,7 +3,7 @@
 # guided setup for proxy preferences used by configure-firefox
 
 setProxyType() {
-	kdb meta-set "${MountPoint}/${prefType}/network/proxy/type" type integer
+	kdb meta set "${MountPoint}/${prefType}/network/proxy/type" type integer
 	kdb set "${MountPoint}/${prefType}/network/proxy/type" "$1"
 }
 
