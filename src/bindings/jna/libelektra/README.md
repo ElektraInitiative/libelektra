@@ -22,7 +22,7 @@ In particular, we had to address the following:
 
 - Documentation of the Java API without replicating the documentation of the underlying C API
 
-To strike a balance between compatibility and the use of language features, Java 11 has been set as the target for compatibility. 
+To strike a balance between compatibility and the use of language features, Java 11 has been set as the target for compatibility.
 
 ## Java API
 
@@ -40,7 +40,7 @@ The following design objectives had been identified and implemented:
 
 - Key and key set representations must leverage common Java interfaces.
   To facilitate this, `Key` implements `Iterable<ReadableKey>` for accessing its meta-keys while `KeySet` extends `AbstractSet<Key>` and implements `NavigableSet<Key>`.
-  
+
   ![Overview `KeySet` and `Key` type hierarchy](key-type-hierarchy.png)
 
 - Access to Elektra's key database needs to implement the convenient interface `AutoClosable` to further enhance the transparency of the underlying native resource.
@@ -86,11 +86,11 @@ This was especially true when Java plugin support was implemented.
 
 There are a few important things to keep in mind when working with native resources:
 
- - Reference counting support from the C API is required.
+- Reference counting support from the C API is required.
 
- - Never depend on when the garbage collector is called.
+- Never depend on when the garbage collector is called.
 
- - Never rely on native resources in exceptions, as their evaluation may be out of scope.
+- Never rely on native resources in exceptions, as their evaluation may be out of scope.
 
 ## Plugin Support
 
@@ -126,7 +126,7 @@ After considering the obvious candidates (Ant, CMake, Maven and Gradle), we conf
 To briefly address the eliminated candidates:
 
 - Ant is a popular build tool that uses XML files to define build processes.
-It is flexible and can be used for a variety of languages, but it can be more verbose and less user-friendly than other build tools.
+  It is flexible and can be used for a variety of languages, but it can be more verbose and less user-friendly than other build tools.
 
 - CMake is a build tool with limited support for Java.
   It is popular for C/C++ projects and can be extensively customised, but it can be more difficult to use than other build tools and is not as flexible for multi-language projects.
@@ -137,9 +137,9 @@ It is flexible and can be used for a variety of languages, but it can be more ve
 
 The main reasons for this decision were:
 
--  Gradle is the modern alternative to Maven, using the same dependency management infrastructure.
+- Gradle is the modern alternative to Maven, using the same dependency management infrastructure.
 
--  It also opens up new opportunities for the growth of Elektra's Java bindings and other Java-based language bindings.
+- It also opens up new opportunities for the growth of Elektra's Java bindings and other Java-based language bindings.
 
 ### CI Integration and Release Asset Publishing
 
