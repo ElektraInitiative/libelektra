@@ -402,7 +402,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- Take decision [commit function](../decisions/1_in_discussion/commit_function.md) to state "in discussion", add constraints and alternatives. _(Florian Lindner @flo91)_
+- Take decision [commit function](../decisions/2_solutions_clear/commit_function.md) to state "solutions clear", add constraints and alternatives, describe some possible solutions in more detail. _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
