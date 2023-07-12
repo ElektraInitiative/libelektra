@@ -5,7 +5,14 @@
 When `kdbSet()` is called, plugins implementing the commit role, need to internally track their state to distinguish between carrying out that role and carrying out potential other roles (e.g. `commit` and `setresolver` for the resolver plugin).
 This limits the possibilities of plugin reuse and the ways plugins can be combined.
 
-More generally, this problem applies to all plugins with one function that is called multiple times for different reasons.
+More generally, this problem applies to all plugins with functions that are called multiple times for different reasons.
+Currently, these are the functions for `get`, `set`, `commit` and `rollback`. 
+
+So the affected functions are:
+- ELEKTRA_PLUGIN_FUNCTION (get)
+- ELEKTRA_PLUGIN_FUNCTION (set)
+- ELEKTRA_PLUGIN_FUNCTION (commit)
+- ELEKTRA_PLUGIN_FUNCTION (error) - for rollback
 
 Between `libelektra-kdb` and backend plugins there is a [contract](../../dev/backend-plugins.md) that uses "phases" for this.
 
