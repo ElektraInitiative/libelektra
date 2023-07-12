@@ -22,10 +22,12 @@ static void test_contract (void)
 	PLUGIN_CLOSE ();
 
 	succeed_if (ksGetSize (contract) > 0, "Empty KeySet was returned for plugin contract");
-	succeed_if (ksLookup (contract, parentKey, KDB_O_NONE), "The key with the name 'system:/elektra/modules/c' was not part of the plugin contract");
+	succeed_if (ksLookup (contract, parentKey, KDB_O_NONE),
+		    "The key with the name 'system:/elektra/modules/c' was not part of the plugin contract");
 
 	Key * keyExportsSet = ksLookupByName (contract, "system:/elektra/modules/c/exports/set", KDB_O_NONE);
-	succeed_if (keyExportsSet, "The set-function was not part of the plugin contract (key 'system:/elektra/modules/c/exports/set' not found)");
+	succeed_if (keyExportsSet,
+		    "The set-function was not part of the plugin contract (key 'system:/elektra/modules/c/exports/set' not found)");
 	succeed_if (keyValue (keyExportsSet), "The set function retrieved as part of the plugin contract was NULL");
 }
 
@@ -36,12 +38,12 @@ static void test_set_empty (void)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("c");
 
-	Key * parentKey = keyNew ("user:/tests/c", KEY_VALUE, elektraFilename(), KEY_END);
+	Key * parentKey = keyNew ("user:/tests/c", KEY_VALUE, elektraFilename (), KEY_END);
 	KeySet * ksEmpty = ksNew (0, KS_END);
 	succeed_if (plugin->kdbSet (plugin, ksEmpty, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Unable to write empty KeySet to file");
 	ksDel (ksEmpty);
 
-	PLUGIN_CLOSE();
+	PLUGIN_CLOSE ();
 }
 
 static void test_set_simple (void)
@@ -51,16 +53,17 @@ static void test_set_simple (void)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("c");
 
-	Key * parentKey = keyNew ("user:/tests/c", KEY_VALUE, elektraFilename(), KEY_END);
+	Key * parentKey = keyNew ("user:/tests/c", KEY_VALUE, elektraFilename (), KEY_END);
 	KeySet * ksTest = ksNew (0, KS_END);
 	ksAppendKey (ksTest, keyNew ("user:/tests/c/key1", KEY_VALUE, "value1", KEY_END));
 	ksAppendKey (ksTest, keyNew ("user:/tests/c/key2", KEY_VALUE, "value2", KEY_END));
 	ksAppendKey (ksTest, keyNew ("user:/tests/c/key3", KEY_VALUE, "value3", KEY_END));
 
-	succeed_if (plugin->kdbSet (plugin, ksTest, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Unable to write non-empty KeySet to file");
+	succeed_if (plugin->kdbSet (plugin, ksTest, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS,
+		    "Unable to write non-empty KeySet to file");
 	ksDel (ksTest);
 
-	PLUGIN_CLOSE();
+	PLUGIN_CLOSE ();
 }
 
 static void test_set_meta (void)
@@ -70,7 +73,7 @@ static void test_set_meta (void)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("c");
 
-	Key * parentKey = keyNew ("user:/tests/c", KEY_VALUE, elektraFilename(), KEY_END);
+	Key * parentKey = keyNew ("user:/tests/c", KEY_VALUE, elektraFilename (), KEY_END);
 	KeySet * ksTest = ksNew (0, KS_END);
 
 	Key * k1 = keyNew ("user:/tests/c/key1", KEY_VALUE, "value1", KEY_END);
@@ -86,10 +89,11 @@ static void test_set_meta (void)
 	ksAppendKey (ksTest, k2);
 	ksAppendKey (ksTest, k3);
 
-	succeed_if (plugin->kdbSet (plugin, ksTest, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Unable to write KeySet with keys containing metadata to file");
+	succeed_if (plugin->kdbSet (plugin, ksTest, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS,
+		    "Unable to write KeySet with keys containing metadata to file");
 	ksDel (ksTest);
 
-	PLUGIN_CLOSE();
+	PLUGIN_CLOSE ();
 }
 
 

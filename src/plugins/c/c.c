@@ -48,7 +48,7 @@ static char * escapeString (char ** str)
 			++size;
 		}
 		else
-		{	/* convert to hex value, needs 4 chars */
+		{ /* convert to hex value, needs 4 chars */
 			size += 4;
 		}
 	}
