@@ -6,9 +6,10 @@ When `kdbSet()` is called, plugins implementing the commit role, need to interna
 This limits the possibilities of plugin reuse and the ways plugins can be combined.
 
 More generally, this problem applies to all plugins with functions that are called multiple times for different reasons.
-Currently, these are the functions for `get`, `set`, `commit` and `rollback`. 
+Currently, these are the functions for `get`, `set`, `commit` and `rollback`.
 
 So the affected functions are:
+
 - ELEKTRA_PLUGIN_FUNCTION (get)
 - ELEKTRA_PLUGIN_FUNCTION (set)
 - ELEKTRA_PLUGIN_FUNCTION (commit)
