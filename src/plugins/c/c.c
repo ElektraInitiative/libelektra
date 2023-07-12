@@ -20,6 +20,18 @@ static const char * const escapes = "\"'\\?nrt";
 
 static const char * const hex = "0123456789abcdef";
 
+/**
+ * @internal
+ *
+ * @brief The function escapes the string @p str and replaces non-printable characters with their HEX values.
+ *
+ * @param str The string to escape
+ *		Please note that the given pointer points to a different memory area after the function was executed.
+ *		New memory is allocated for the escaped string and *str points to it then.
+ *		The memory for the old string is freed by this function.
+ *		You must free the returned string.
+ * @return	The escaped string. (the same pointer as @p *str is set to)
+ */
 static char * escapeString (char ** str)
 {
 	size_t size = 0;
@@ -36,7 +48,7 @@ static char * escapeString (char ** str)
 			++size;
 		}
 		else
-		{
+		{	/* convert to hex value, needs 4 chars */
 			size += 4;
 		}
 	}
@@ -55,6 +67,7 @@ static char * escapeString (char ** str)
 
 		if (e != NULL)
 		{
+			/* add '\' and escaped character */
 			char escaped = escapes[e - toEscape];
 			*newCur = '\\';
 			++newCur;
@@ -63,11 +76,13 @@ static char * escapeString (char ** str)
 		}
 		else if (isprint (c))
 		{
+			/* just copy the printable character */
 			*newCur = c;
 			++newCur;
 		}
 		else
 		{
+			/* convert the character to a HEX value */
 			*newCur = '\\';
 			++newCur;
 			*newCur = 'x';
@@ -85,17 +100,22 @@ static char * escapeString (char ** str)
 }
 
 /**
- * Generate a C-Style key and stream it.
  *
- * This keyset can be used to include as c-code for
- * applikations using elektra.
+ * @internal
  *
- * @param key the key object to work with
- * @param stream the file pointer where to send the stream
+ * @brief Generate a C-style key and stream it.
+ *
+ * The result can be included in C-code for applications using Elektra.
+ *
+ * @param key The key to work with
+ * @param stream The file pointer where to send the stream to
+ *
  * @retval 1 on success
+ * @retval -1 on error
+ *
  * @ingroup stream
  */
-int keyGenerate (const Key * key, FILE * stream)
+static int keyGenerate (const Key * key, FILE * stream)
 {
 	size_t n = keyGetNameSize (key);
 	if (n > 1)
@@ -106,7 +126,7 @@ int keyGenerate (const Key * key, FILE * stream)
 		fprintf (stream, "\tkeyNew (\"%s\"", escapeString (&nam));
 		elektraFree (nam);
 	}
-	else if (n == 1)
+	else if (n == 1) /* size 1 because of \0 */
 	{
 		fprintf (stream, "\tkeyNew(\"\"");
 	}
@@ -129,13 +149,15 @@ int keyGenerate (const Key * key, FILE * stream)
 		elektraFree (str);
 	}
 
-	const Key * meta;
+	/* Dup key because keyMeta() needs a non-const key */
 	Key * dup = keyDup (key, KEY_CP_ALL);
 	KeySet * metaKeys = keyMeta (dup);
 
 	for (elektraCursor it = 0; it < ksGetSize (metaKeys); ++it)
 	{
-		meta = ksAtCursor (metaKeys, it);
+		const Key * meta = ksAtCursor (metaKeys, it);
+
+		/* Dup the key-name without "meta:/" prefix (remove namespace) */
 		char * metaName = elektraStrDup (keyName (meta) + sizeof ("meta:/") - 1);
 		char * metaStr = elektraStrDup (keyString (meta));
 		fprintf (stream, ", KEY_META, \"%s\", \"%s\"", escapeString (&metaName), escapeString (&metaStr));
@@ -150,37 +172,42 @@ int keyGenerate (const Key * key, FILE * stream)
 
 
 /**
- * Generate a C-Style keyset and stream it.
+ * @internal
  *
- * This keyset can be used to include as c-code for
- * applikations using elektra.
+ * Generate a C-Style KeySet and stream it.
  *
- * @param ks the keyset to work with
- * @param stream the file pointer where to send the stream
+ * The result can be included in C-code for applications using Elektra.
+ *
+ * @param ks The KeySet to work with
+ * @param stream The file pointer where to send the stream to
+ *
  * @retval 1 on success
+ * @retval -1 on error
+ *
  * @ingroup stream
  */
-int ksGenerate (const KeySet * ks, FILE * stream)
+static int ksGenerate (const KeySet * ks, FILE * stream)
 {
-	Key * key;
-	KeySet * cks = ksDup (ks);
+	fprintf (stream, "ksNew (%d,\n", (int) ksGetSize (ks));
 
-	fprintf (stream, "ksNew (%d,\n", (int) ksGetSize (cks));
-
-	for (elektraCursor it = 0; it < ksGetSize (cks); ++it)
+	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 	{
-		key = ksAtCursor (cks, it);
+		Key * key = ksAtCursor (ks, it);
 		keyGenerate (key, stream);
 		fprintf (stream, ",\n");
 	}
 
 	fprintf (stream, "\tKS_END);\n");
 
-	ksDel (cks);
 	return 1;
 }
 
-int elektraCGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+/**
+ * @brief The get function of this plugin is only used to define the contract.
+ *
+ * @return 1
+ */
+int elektraCGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/c"))
 	{
@@ -188,7 +215,6 @@ int elektraCGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSE
 					   keyNew ("system:/elektra/modules/c/exports", KEY_END),
 					   keyNew ("system:/elektra/modules/c/exports/get", KEY_FUNC, elektraCGet, KEY_END),
 					   keyNew ("system:/elektra/modules/c/exports/set", KEY_FUNC, elektraCSet, KEY_END),
-					   keyNew ("system:/elektra/modules/c/exports/checkconf", KEY_FUNC, elektraCCheckConf, KEY_END),
 #include ELEKTRA_README
 					   keyNew ("system:/elektra/modules/c/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -196,12 +222,25 @@ int elektraCGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSE
 
 		return 1; // success
 	}
-	// get all keys
 
+	// no action if no contract is requested (write-only plugin)
 	return 1; // success
 }
 
-int elektraCSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+/**
+ * @brief Generate the C-code and put it in the file whose name is defined as the value of @p parentKey.
+ *
+ * @post The given KeySet and its keys are converted into C-code that can be used with Elektra
+ * and the generated code is written into the file defined by the string-value of parent key.
+ * Please note that any existing content in the given file is deleted.
+ *
+ * @param returned The KeySet for which the C-code should be generated
+ * @param parentKey The value of the key is the name of the file where the generated code gets written to
+ *
+ * @retval 1 on success
+ * @retval -1 on error
+ */
+int elektraCSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	FILE * fp = fopen (keyString (parentKey), "w");
 
@@ -215,18 +254,6 @@ int elektraCSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSE
 
 	fclose (fp);
 	return 1; // success
-}
-
-int elektraCCheckConf (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
-{
-	// validate plugin configuration
-	// this function is optional
-
-	// the return codes have the following meaning:
-	// 0: The configuration was OK and has not been changed
-	// 1: The configuration has been changed and now it is OK
-	// -1: The configuration was not OK and could not be fixed. An error has to be set to errorKey.
-	return 0;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT

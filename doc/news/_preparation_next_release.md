@@ -47,7 +47,7 @@ docker run -it elektra/elektra
 - <<HIGHLIGHT>>
 - <<HIGHLIGHT>>
 - New Changetracking API
-- ODBC Backend _(Florian Lindner @flo91)_
+- ODBC Backend
 - <<HIGHLIGHT>>
 
 ### <<HIGHLIGHT>>
@@ -149,6 +149,12 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 ### Xfconf
 
 - Make Xfconf storage plugin compatible with new backend and noresolver. _(Richard Stöckl @Eiskasten)_
+- <<TODO>>
+- <<TODO>>
+
+### c
+
+- Improve the c plugin: some refactoring, add documentation, extend README.md, add unit tests. _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 
