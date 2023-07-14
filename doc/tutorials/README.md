@@ -54,6 +54,7 @@ already somehow integrated with Elektra.
 - [Install Configuration Files](install-config-files.md)
 - [Write a specification for dockerd](dockerd-specification.md)
 - [Recording Changes](recording.md)
+- [Configure Xfconf Applications](xfconf.md)
 
 ## Elektra Developers
 
