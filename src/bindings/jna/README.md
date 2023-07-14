@@ -9,7 +9,9 @@
 A Java binding using JNA. This binding requires Elektra to be installed on
 the system to work.
 
-In preparation for introducing a more high level dynamic proxy based API, the JNA binding is currently structured as Gradle mulit-project setup with just one `java-library` project.
+In preparation for introducing a more high level dynamic proxy based API, the JNA binding is currently structured as Gradle multi-project setup.
+
+To read more about the thinking behind the current implementation, [click here](./libelektra/README.md).
 
 You can run the `HelloElekra` example by executing:
 

@@ -1,0 +1,26 @@
+@startuml
+
+hide members
+
+interface Comparable<ReadableKey>
+interface Iterable<ReadableKey>
+class ReadableKey
+class Key {
+    Optional<ReadableKey> getMeta(String metaName)
+    Iterator<ReadableKey> iterator()
+}
+
+interface NavigableSet<Key>
+abstract AbstractSet<Key>
+class KeySet
+
+show Key methods
+
+Comparable <.. ReadableKey
+ReadableKey <-- Key
+Iterable <.. Key
+
+AbstractSet <-- KeySet
+NavigableSet <.. KeySet
+
+@enduml

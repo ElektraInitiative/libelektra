@@ -250,11 +250,9 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Add overloads for `Key::isBelow`, `Key::isBelowOrSame` and `Key::isDirectBelow` that accept a string as the key name _(Maximilian Irlinger @atmaxinger)_
 - Include the header `cstdint` in `key.hpp`. It is needed for an enum of type `std::uint8_t` _(Florian Lindner @flo91)_
 
-### <<Binding>>
+### Java
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Added documentation about the design of the binding. _(Michael Tucek @tucek)_
 
 ### Python
 
