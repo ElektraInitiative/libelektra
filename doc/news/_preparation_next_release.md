@@ -348,6 +348,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Update release documentation regarding version tags. _(Mihael Pranjić @mpranj)_
 - <<TODO>>
+- Add glossaries for [developers](/doc/dev/dev-glossary.md) and [contributors](/doc/contrib/contrib-glossary.md) _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -375,7 +376,6 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - <<TODO>>
 - Add end-user and developer integration use case _(Hannes Laimer @hannes99)_
-- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

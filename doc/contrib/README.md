@@ -1,6 +1,7 @@
 This folder contains information for contributors to Elektra.
 
 - [Documentation Guidelines](documentation.md)
+- [Contributor's Glossary](contrib-glossary.md)
 - [Copy on Write](copy_on_write.md)
 - [mmapstorage](mmapstorage.md)
 - [Session Recording](recording.md)
