@@ -225,47 +225,14 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - Fix bug in Doxygen comment for `const char * keyName (const Key * key)` which lead to failed building of the refman.pdf on recent TeX Live releases _(Florian Lindner @flo91)_
 - Update release documentation regarding version tags. _(Mihael Pranjić @mpranj)_
-- <<TODO>>
 - Add glossaries for [developers](/doc/dev/dev-glossary.md) and [contributors](/doc/contrib/contrib-glossary.md) _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 - Add use cases for using the bindings. _(Richard Stöckl @Eiskasten)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 - Write the Xfconf tutorial. _(Richard Stöckl @Eiskasten)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 - Add use cases for libelektra-core _(@lawli3t)_
 
 ### Use Cases
 
 - Add end-user and developer integration use case _(Hannes Laimer @hannes99)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 - Add use cases for using the bindings. _(Richard Stöckl @Eiskasten)_
 - Add use cases for libelektra-core _(@lawli3t)_
 
@@ -297,21 +264,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ### Jenkins
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 - Disable openwrt build until we have found a new maintainer for it. _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Cirrus
 
