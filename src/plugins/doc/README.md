@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = prerollback rollback postrollback getresolver pregetstorage getstorage procgetstorage postgetstorage setresolver presetstorage setstorage precommit commit postcommit
-- infos/status = nodep libc configurable experimental nodoc discouraged -1000000
+- infos/status = nodep libc experimental discouraged -1000000
 - infos/metadata =
 - infos/description = documentation plugin without functionality
 

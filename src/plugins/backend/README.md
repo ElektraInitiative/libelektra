@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = backend
-- infos/status = unittest nodep configurable nodoc
+- infos/status = nodep nodoc
 - infos/description = Plugin implementing full backend functionality
 
 ## Introduction

@@ -5,7 +5,7 @@
 - infos/provides = version
 - infos/recommends =
 - infos/placements = backend
-- infos/status = unittest nodep nodoc
+- infos/status = unittest nodep
 - infos/metadata =
 - infos/description = Provides version information for this Elektra installation.
 
