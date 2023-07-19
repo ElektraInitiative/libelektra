@@ -115,6 +115,10 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 
 - Fix error reporting when unsupported metakey has been encountered. _(Maximilian Irlinger @atmaxinger)_
 
+### length
+
+- Remove experimental status. _(Maximilian Irlinger @atmaxinger)_
+
 ### Xfconf
 
 - Make Xfconf storage plugin compatible with new backend and noresolver. _(Richard Stöckl @Eiskasten)_
