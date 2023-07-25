@@ -205,7 +205,7 @@ static int ksGenerate (const KeySet * ks, FILE * stream)
 /**
  * @brief The get function of this plugin is only used to define the contract.
  *
- * @return 1
+ * @retval 1 on success (always as parsing is not yet implemented)
  */
 int elektraCGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {

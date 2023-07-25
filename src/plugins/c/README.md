@@ -52,7 +52,7 @@ kdb set user:/tests/cplugin/key2 metakey2.2 metaval2.2
 kdb set user:/tests/cplugin/key3 value3
 #> Create a new key user:/tests/cplugin/key3 with string "value3"
 
-bin/kdb export user:/tests/cplugin c
+kdb export user:/tests/cplugin c
 #> ksNew (3,
 #>	keyNew ("user:/tests/cplugin/key1", KEY_VALUE, "value1", KEY_END),
 #>	keyNew ("user:/tests/cplugin/key2", KEY_VALUE, "value2", KEY_META, "metakey2.1", "metaval2.1", KEY_META, "metakey2.2", "metaval2.2", KEY_END),
