@@ -12,13 +12,8 @@
 
 #include <kdbplugin.h>
 
-
-int elektraCOpen (Plugin * handle, Key * errorKey);
-int elektraCClose (Plugin * handle, Key * errorKey);
 int elektraCGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraCSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraCError (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraCCheckConf (Key * errorKey, KeySet * conf);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 
