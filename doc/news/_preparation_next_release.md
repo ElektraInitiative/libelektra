@@ -44,16 +44,8 @@ docker run -it elektra/elektra
 
 ## Highlights
 
-- <<HIGHLIGHT>>
-- <<HIGHLIGHT>>
-- New Changetracking API
-- ODBC Backend
-- <<HIGHLIGHT>>
-
-### <<HIGHLIGHT>>
-
 - Session Recording
-- ODBC Backend _(Florian Lindner @flo91)_
+- ODBC Backend
 
 ### Session Recording
 
@@ -121,25 +113,15 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 
 ### Xfconf
 
+- Implemented the first revision of the Xfconf binding. _(Richard Stöckl @Eiskasten)_
 - Make Xfconf storage plugin compatible with new backend and noresolver. _(Richard Stöckl @Eiskasten)_
-- <<TODO>>
-- <<TODO>>
+- This allows to use elektra as a drop-in replacement for applications which use Xfconf. _(Richard Stöckl @Eiskasten)_
+- Xfconf applications can now read and write configuration settings to elektra. _(Richard Stöckl @Eiskasten)_
+- Use cmake variables in the replace and restore scripts. _(Richard Stöckl @Eiskasten)_
 
 ### c
 
 - Improve the c plugin: some refactoring, add documentation, extend README.md, add unit tests. _(Florian Lindner @flo91)_
-- <<TODO>>
-- <<TODO>>
-
-### <<Plugin>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- Implemented the first revision of the Xfconf binding. _(Richard Stöckl @Eiskasten)_
-- This allows to use elektra as a drop-in replacement for applications which use Xfconf. _(Richard Stöckl @Eiskasten)_
-- Xfconf applications can now read and write configuration settings to elektra. _(Richard Stöckl @Eiskasten)_
-- Use cmake variables in the replace and restore scripts. _(Richard Stöckl @Eiskasten)_
 
 ## Libraries
 
@@ -256,8 +238,6 @@ This section keeps you up-to-date with the multi-language support provided by El
 ### Docker
 
 - Use openwrt/sdk instead of openwrtorg/sdk. _(Richard Stöckl @Eiskasten)_
-- <<TODO>>
-- <<TODO>>
 - Reduce fedora docker image size (PR #4637) _(@4ydan)_
 
 ## Infrastructure
