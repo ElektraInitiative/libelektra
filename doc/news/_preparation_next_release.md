@@ -280,9 +280,9 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 
-### <<Binding>>
+### Rust
 
-- <<TODO>>
+- Upgrade bindgen dependency to version 0.55.1. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 

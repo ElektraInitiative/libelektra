@@ -16,5 +16,5 @@ resolver = "2"
 [dependencies]
 
 [build-dependencies]
-bindgen = "= 0.50.0"
+bindgen = "= 0.55.1"
 object = "< 0.30.0"
