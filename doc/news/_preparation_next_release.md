@@ -168,23 +168,9 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Add new module `kdb.record` for interfacing with the session recording capabilities of Elektra _(Maximilian Irlinger @atmaxinger)_
 - Add `getConflictingKeys` method to `kdb.merge.MergeResult`. _(Maximilian Irlinger @atmaxinger)_
 
-### <<Binding>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Binding>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
 ### Rust
 
 - Upgrade bindgen dependency to version 0.55.1. _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
 
 ### Xfconf
 
