@@ -240,7 +240,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 We are currently working on following topics:
 
-- Rewrite the `kdb` tool in C.
+- Fix bugs!
+- Improvements for https://opensesame.libelektra.org/
 
 ## Statistics
 
