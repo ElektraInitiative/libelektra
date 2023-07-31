@@ -32,9 +32,15 @@ int MvCommand::execute (Cmdline const & cl)
 	}
 
 	KeySet conf;
-	Key sourceKey = cl.createKey (0, false);
+	Key sourceKey = cl.createKey (0);
 
-	Key destKey = cl.createKey (1, false);
+	Key destKey = cl.createKey (1);
+
+	if (sourceKey.getNamespace () == kdb::ElektraNamespace::CASCADING || destKey.getNamespace () == kdb::ElektraNamespace::CASCADING)
+	{
+		cerr << "Aborting: Specify a namespace for destination and source when moving a key." << endl;
+		return 12;
+	}
 	string newDirName = destKey.getName ();
 
 	Key root = tools::helper::commonKeyName (sourceKey, destKey);

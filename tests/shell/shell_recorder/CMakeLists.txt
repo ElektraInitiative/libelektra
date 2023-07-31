@@ -41,6 +41,7 @@ if (ENABLE_KDB_TESTING)
 	add_shell_recorder_test (selftest.esr REQUIRED_PLUGINS mini)
 	add_shell_recorder_test (record.esr REQUIRED_PLUGINS recorder)
 	add_shell_recorder_test (record_undo.esr REQUIRED_PLUGINS recorder)
+	add_shell_recorder_test (cascading_writes.esr)
 
 	if (ENABLE_REPLAY_TESTS)
 		file (GLOB REPLAY_TESTS replay_tests/*.esr)

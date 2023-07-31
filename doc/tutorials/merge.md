@@ -273,6 +273,8 @@ kdb get user:/tests/result/key4
 
 kdb get user:/tests/result/key5
 #> 5
+
+kdb rm -r user:/tests/
 ```
 
 Here the state of theirs is simply copied to the `resultpath`.

@@ -25,12 +25,14 @@ The user should specify the format that the current configuration or keys are in
 - 11:
   could not export configuration.
 - 12:
-  could not start editor.
+  No namespace specified.
 - 13:
   could not import configuration because of conflicts
 - 14:
   could not import configuration because of error during kdbSet()
   (Most likely a validation error)
+- 15:
+  could not start editor.
 
 ## OPTIONS
 

@@ -149,7 +149,7 @@ kdb ls /tests/csv
 kdb get /tests/csv/tt0108052/Title
 #> Schindler´s List
 
-kdb rm -r /tests/csv
+kdb rm -r user:/tests/csv
 sudo kdb umount /tests/csv
 
 ```
@@ -175,7 +175,7 @@ kdb export /tests/csv csvstorage -c "delimiter=;,header=colname,columns/index=IM
 #> tt0110413;1994
 
 
-kdb rm -r /tests/csv
+kdb rm -r user:/tests/csv
 sudo kdb umount /tests/csv
 
 ```

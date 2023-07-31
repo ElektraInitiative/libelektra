@@ -207,6 +207,8 @@ kdb cmerge -f user:/tests/arrays/changed user:/tests/arrays/original user:/tests
 
 kdb get user:/tests/arrays/result/#0
 #> previous
+
+kdb rm -r user:/tests/
 ```
 
 ## Scripts

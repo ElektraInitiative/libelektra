@@ -98,15 +98,15 @@ kdb get /tests/hosts/ipv6/localhost
 #> ::1
 
 # Should both fail with error C03200 and return 5
-kdb set /tests/hosts/ipv4/localhost ::1
+kdb set user:/tests/hosts/ipv4/localhost ::1
 # RET:5
 # ERROR:C03200
-kdb set /tests/hosts/ipv6/localhost 127.0.0.1
+kdb set user:/tests/hosts/ipv6/localhost 127.0.0.1
 # RET:5
 # ERROR:C03200
 
 # cleanup
-kdb rm -r /tests/hosts
+kdb rm -r user:/tests/hosts
 sudo kdb umount /tests/hosts
 ```
 

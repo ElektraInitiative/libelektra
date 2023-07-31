@@ -28,6 +28,8 @@ This command will return the following values as an exit status:
   standard exit codes, see [kdb(1)](kdb.md)
 - 11:
   No key to move found.
+- 12:
+  No namespace specified.
 
 ## OPTIONS
 

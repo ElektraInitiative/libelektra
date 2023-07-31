@@ -64,7 +64,7 @@ kdb get /test/xfwm/general/button_layout
 #> C|
 
 # restore old layout
-kdb set /test/xfwm/general/button_layout "$OLD_LAYOUT"
+kdb set system:/test/xfwm/general/button_layout "$OLD_LAYOUT"
 
 # umount the channel
 kdb umount /test/xfwm

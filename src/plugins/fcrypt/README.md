@@ -59,7 +59,6 @@ Please report the issue at https://issues.libelektra.org/
 you might want to consider disabling the sync plugin by entering:
 
 ```sh
-kdb set /sw/elektra/kdb/#0/current/plugins ""
 kdb set system:/sw/elektra/kdb/#0/current/plugins ""
 ```
 
@@ -103,7 +102,7 @@ kdb mount test.ecf /t fcrypt \
 If you create a key under `/t`
 
 ```sh
-kdb set /t/a "hello world"
+kdb set user:/t/a "hello world"
 ```
 
 you will notice that you can not read the plain text of `test.ecf` because it has been encrypted by GPG.

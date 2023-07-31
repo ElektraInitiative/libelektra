@@ -191,11 +191,12 @@ As last part in this tutorial we remove the modifications to the database we mad
 
 ```sh
 kdb rm -r user:/tests/tutorial/
-sudo kdb rm -r system:/tests/tutorial
-sudo kdb rm -r system:/tests/overrides
+kdb rm -r dir:/tests/tutorial/
+sudo kdb rm -r system:/tests/tutorial/
+sudo kdb rm -r system:/tests/overrides/
 kdb import system:/tests/overrides dump < $(kdb get user:/tests/overrides)
 rm $(kdb get user:/tests/overrides)
-kdb rm user:/tests/overrides
+kdb rm -r user:/tests/overrides/
 
 sudo kdb rm -r spec:/tests/tutorial/
 

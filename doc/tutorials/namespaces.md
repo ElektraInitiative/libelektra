@@ -187,3 +187,8 @@ kdb get "/sw/elektra/kdb/#0/debug/verbose"
 ```
 
 Now `kdb get -p debug /some/key` is not verbose anymore for this user.
+
+```sh
+# Cleanup`
+kdb rm -r user:/tests/
+```

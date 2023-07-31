@@ -86,7 +86,13 @@ int EditorCommand::execute (Cmdline const & cl)
 	{
 		throw invalid_argument ("wrong number of arguments, 1 needed");
 	}
-	Key root = cl.createKey (0, false);
+	Key root = cl.createKey (0);
+
+	if (root.getNamespace () == kdb::ElektraNamespace::CASCADING)
+	{
+		cerr << "Aborting: Specify a namespace for editing a value." << endl;
+		return 12;
+	}
 
 	KeySet ours;
 	KDB kdb;
@@ -140,7 +146,7 @@ int EditorCommand::execute (Cmdline const & cl)
 		if (!runAllEditors (filename))
 		{
 			std::cerr << "Could not run any editor, please change /sw/elektra/kdb/#0/current/editor" << std::endl;
-			return 12;
+			return 15;
 		}
 	}
 
