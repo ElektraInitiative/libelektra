@@ -121,6 +121,18 @@ private:
 	bool compare (const BaseNotification & other) const final;
 };
 
+class CliWarning : public Warning
+{
+public:
+	using Warning::Warning;
+
+	std::string code () const override;
+	CliWarning * clone () const override;
+
+private:
+	bool compare (const BaseNotification & other) const final;
+};
+
 } // namespace errors
 } // namespace tools
 } // namespace kdb

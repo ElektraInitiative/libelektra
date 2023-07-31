@@ -109,6 +109,7 @@ libelektra_0.8 {
 
 libelektra_1.0 {
 	# kdberrors.h
+	ELEKTRA_ERROR_CLI;
 	ELEKTRA_ERROR_CONFLICTING_STATE;
 	ELEKTRA_ERROR_INSTALLATION;
 	ELEKTRA_ERROR_INTERFACE;
@@ -119,6 +120,7 @@ libelektra_1.0 {
 	ELEKTRA_ERROR_VALIDATION_SEMANTIC;
 	ELEKTRA_ERROR_VALIDATION_SYNTACTIC;
 
+	ELEKTRA_WARNING_CLI;
 	ELEKTRA_WARNING_CONFLICTING_STATE;
 	ELEKTRA_WARNING_INSTALLATION;
 	ELEKTRA_WARNING_INTERFACE;
@@ -227,6 +229,7 @@ libelektraprivate_1.0 {
 	elektraRandGetInitSeed;
 
 	# kdberrors.h
+	elektraSetErrorCLI;
 	elektraSetErrorCONFLICTING_STATE;
 	elektraSetErrorINSTALLATION;
 	elektraSetErrorINTERFACE;
@@ -237,6 +240,7 @@ libelektraprivate_1.0 {
 	elektraSetErrorVALIDATION_SEMANTIC;
 	elektraSetErrorVALIDATION_SYNTACTIC;
 
+	elektraAddWarningCLI;
 	elektraAddWarningCONFLICTING_STATE;
 	elektraAddWarningINSTALLATION;
 	elektraAddWarningINTERFACE;

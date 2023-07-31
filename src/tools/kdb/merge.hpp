@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#ifndef MERGE_HPP
-#define MERGE_HPP
+#ifndef CMERGE_HPP
+#define CMERGE_HPP
 
 #include <command.hpp>
 #include <kdb.hpp>
@@ -26,7 +26,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "fsi";
+		return "sf";
 	}
 
 	virtual std::string getSynopsis () override
@@ -41,8 +41,8 @@ public:
 
 	virtual std::string getLongHelpText () override
 	{
-		return "Does a three-way merge between keysets.\n"
-		       "On success the resulting keyset will be saved to mergepath.\n"
+		return "Performs a three-way merge between keysets.\n"
+		       "On success the resulting keyset will be saved to resultpath.\n"
 		       "On unresolved conflicts nothing will be changed.\n";
 	}
 };

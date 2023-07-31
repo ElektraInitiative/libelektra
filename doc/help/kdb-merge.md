@@ -1,14 +1,18 @@
 # kdb-merge(1) -- Three-way merge of KeySets
 
+## NAME
+
+kdb-merge - Join three key sets together
+
 ## SYNOPSIS
 
-`kdb merge [options] ourpath theirpath basepath resultpath`<br>
+`kdb merge [OPTIONS] our their base result`
 
 - ourpath:
-  Path to the keyset to serve as `ours`<br>
+  Path to the keyset to serve as `our`<br>
 
 - theirpath:
-  path to the keyset to serve as `theirs`<br>
+  path to the keyset to serve as `their`<br>
 
 - basepath:
   path to the `base` keyset<br>
@@ -18,55 +22,25 @@
 
 ## DESCRIPTION
 
-Does a three-way merge between keysets.<br>
+`kdb merge` can incorporate changes from two modified versions (our and their) into a common preceding version (base) of a key set.
+This lets you merge the sets of changes represented by the two newer key sets. This is called a three-way merge between key sets.<br>
 On success the resulting keyset will be saved to mergepath.<br>
 On unresolved conflicts nothing will be changed.<br>
-
-## THREE-WAY MERGE
-
-The `kdb merge` command uses a three-way merge by default.<br>
-A three-way merge is when three versions of a file (or in this case, KeySet) are compared in order to automatically merge the changes made to the KeySet over time.<br>
-These three versions of the KeySet are:<br>
-
-- `base`:
-  The `base` KeySet is the original version of the KeySet.<br>
-
-- `ours`:
-  The `ours` KeySet represents the user's current version of the KeySet.<br>
-  This KeySet differs from `base` for every key you changed.<br>
-
-- `theirs`:
-  The `theirs` KeySet usually represents the default version of a KeySet (usually the package maintainer's version).<br>
-  This KeySet differs from `base` for every key someone has changed.<br>
-
-The three-way merge works by comparing the `ours` KeySet and the `theirs` KeySet to the `base` KeySet. By looking for differences in these KeySets, a new KeySet called `result` is created that represents a merge of these KeySets.<br>
-
-## CONFLICTS
-
-Conflicts occur when a Key has a different value in all three KeySets.<br>
-Conflicts in a merge can be resolved using a [strategy](#STRATEGIES) with the `-s` option.
-To interactively resolve conflicts, use the `-i` option.
+This tool currently exists alongside `kdb merge` until it is completely ready to supersede it.
+At this moment, merge will be renamed to merge.
 
 ## OPTIONS
 
-- `-H`, `--help`:
-  Show the man page.
-- `-V`, `--version`:
-  Print version info.
-- `-p`, `--profile <profile>`:
-  Use a different kdb profile.
-- `-C`, `--color <when>`:
-  Print never/auto(default)/always colored output.
-- `-f`, `--force`:
-  Will remove existing keys from `resultpath` instead of failing.
-- `-s`, `--strategy <name>`:
-  Specify which strategy should be used to resolve conflicts.
-- `-v`, `--verbose`:
-  Explain what is happening. Prints additional information in case of errors/warnings.
-- `-d`, `--debug`:
-  Give debug information. Prints additional debug information in case of errors/warnings.
-- `-i`, `--interactive`
-  Interactively resolve the conflicts.
+The options of `kdb merge` are:
+
+- `-f`, `--force`: overwrite existing keys in `result`
+- `-v`, `--verbose`: give additional information
+
+Strategies offer fine grained control over conflict handling. The option is:
+
+- `-s <name>`, `--strategy <name>`: which is used to specify a strategy to use in case of a conflict
+
+Strategies have their own [man page](/doc/help/elektra-merge-strategy.md) which can be accessed with `man elektra-merge-strategies`.
 
 ## RETURN VALUE
 
@@ -74,20 +48,58 @@ To interactively resolve conflicts, use the `-i` option.
   Successful.
 
 - 11:
-  A conflict occurred during the merge.
+  An error happened.
+
+- 12:
+  A merge conflict occurred and merge strategy abort was set.
+
+The result of the merge is stored in `result`.
+
+## THREE-WAY MERGE
+
+You can think of the three-way merge as subtracting base from their and adding the result to our, or as merging into our the changes that would turn base into their.
+Thus, it behaves exactly as the GNU diff3 tool.
+These three versions of the KeySet are:<br>
+
+- `base`:
+  The `base` KeySet is the original version of the key set.<br>
+
+- `our`:
+  The `our` KeySet represents the user's current version of the KeySet.<br>
+  This KeySet differs from `base` for every key you changed.<br>
+
+- `their`:
+  The `their` KeySet usually represents the default version of a KeySet (usually the package maintainer's version).<br>
+  This KeySet differs from `base` for every key someone has changed.<br>
+
+The three-way merge works by comparing the `our` KeySet and the `their` KeySet to the `base` KeySet.
+By looking for differences in these KeySets, a new KeySet called `result` is created that represents a merge of these KeySets.<br>
+
+## CONFLICTS
+
+Conflicts occur when a key has a different value in all three key sets or when only base differs.
+When all three values for a key differ, we call this an overlap. Different [merge strategies](elektra-merge-strategy.md) exist to resolve
+those conflicts.<br>
 
 ## EXAMPLES
 
 To complete a simple merge of three KeySets:<br>
-`kdb merge user:/ours user:/theirs user:/base user:/result`<br>
 
-To complete a merge whilst using the `ours` version of the KeySet to resolve conflicts:<br>
-`kdb merge -s ours user:/ours user:/theirs user:/base user:/result`<br>
+````sh
+kdb set user:/base "A"
+#> Create a new key user:/base with string "A"
+kdb set user:/their "A"
+#> Create a new key user:/their with string "A"
+kdb set user:/our "B"
+#> Create a new key user:/our with string "B"
+kdb merge user:/our user:/their user:/base user:/result
+kdb get user:/result
+#>B
 
-To complete a three-way merge and overwrite all current keys in the `resultpath`:<br>
-`kdb merge -s cut user:/ours user:/theirs user:/base user:/result`<br>
+```<br>
 
 ## SEE ALSO
 
 - [elektra-merge-strategy(7)](elektra-merge-strategy.md)
 - [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.
+````

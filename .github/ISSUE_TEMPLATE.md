@@ -17,7 +17,7 @@ kdb get user:/tests/hello
 
 kdb get user:/tests/hello/does/not/exist
 # RET: 11
-# STDERR: [Dd]id not find key 'user:/tests/hello/does/not/exist'
+# STDERR: .*[Dd]id not find key 'user:/tests/hello/does/not/exist'
 
 kdb rm user:/tests/hello
 ```

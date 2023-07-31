@@ -28,7 +28,7 @@ from the key database has issued warnings.
 - `-f`, `--force`:
   Force writing the configuration even on warnings.
 - `-H`, `--help`:
-  Show the man page.
+  Show usage of command.
 - `-p <name>`, `--profile <name>`:
   Use a different profile for kdb configuration.
 - `-v`, `--verbose`:

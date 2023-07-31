@@ -14,7 +14,7 @@ RET: 0
 STDOUT: Hans
 < kdb get user:/testundo/name
 
-STDERR: Did not find key 'user:/testundo/age'
+STDERR: .*Did not find key 'user:/testundo/age'
 < kdb get user:/testundo/age
 
 RET: 0
@@ -26,16 +26,16 @@ STDOUT: swimming
 #
 
 RET: 0
-< kdb record-undo user:/testundo/hobby
+< kdb record-undo -P user:/testundo/hobby
 
-STDERR: Did not find key 'user:/testundo/hobby'
+STDERR: .*Did not find key 'user:/testundo/hobby'
 < kdb get user:/testundo/hobby
 
 RET: 0
 STDOUT: Hans
 < kdb get user:/testundo/name
 
-STDERR: Did not find key 'user:/testundo/age'
+STDERR: .*Did not find key 'user:/testundo/age'
 < kdb get user:/testundo/age
 
 #
@@ -55,3 +55,4 @@ STDOUT: 28
 
 < kdb record-stop
 < kdb record-reset
+< kdb rm -rf user:/testundo

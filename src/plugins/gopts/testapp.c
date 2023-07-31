@@ -69,6 +69,13 @@ int main (int argc, const char ** argv)
 	KeySet * ks = getSpec (specname, &parentKey);
 
 	bool libFailed = elektraGetOpts (ks, argc - 1, &argv[1], (const char **) environ, parentKey) != 0;
+
+	keySetMeta (parentKey, "internal/libopts/help/usage", NULL);
+	keySetMeta (parentKey, "internal/libopts/help/options", NULL);
+	keySetMeta (parentKey, "internal/libopts/help/commands", NULL);
+	keySetMeta (parentKey, "internal/libopts/help/args", NULL);
+	keySetMeta (parentKey, "internal/libopts/help/envs", NULL);
+
 	Key * libHelpKey = keyNew ("proc:/elektra/gopts/help", KEY_VALUE, "0", KEY_END);
 	keyCopyAllMeta (libHelpKey, parentKey);
 	ksAppendKey (ks, libHelpKey);
@@ -99,6 +106,16 @@ int main (int argc, const char ** argv)
 		yield_error (buf);
 
 		return nbError;
+	}
+	Key * cur = NULL;
+	for (elektraCursor it = 0; it < ksGetSize (ks2); ++it)
+	{
+		cur = ksAtCursor (ks2, it);
+		keySetMeta (cur, "internal/libopts/help/usage", NULL);
+		keySetMeta (cur, "internal/libopts/help/options", NULL);
+		keySetMeta (cur, "internal/libopts/help/commands", NULL);
+		keySetMeta (cur, "internal/libopts/help/args", NULL);
+		keySetMeta (cur, "internal/libopts/help/envs", NULL);
 	}
 
 	compare_key (parentKey, parentKey2);

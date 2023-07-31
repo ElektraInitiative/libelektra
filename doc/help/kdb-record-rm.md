@@ -16,8 +16,6 @@ If the key is changed again after it was removed from the session, it will be pu
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile <profile>`:
-  Use a different kdb profile.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
 - `-r`, `--recursive`:

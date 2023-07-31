@@ -23,8 +23,6 @@ For now, the output format is not considered stable and may change over time.
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile <profile>`:
-  Use a different kdb profile.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
 - `-v`, `--verbose`:

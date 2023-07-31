@@ -266,6 +266,33 @@ using KeySet = ckdb::KeySet;
 						      ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), reason, __VA_ARGS__);                       \
 	} while (0)
 
+#define ELEKTRA_SET_CLI_ERROR(key, reason)                                                                                                 \
+	do                                                                                                                                 \
+	{                                                                                                                                  \
+		ELEKTRA_LOG ("Add Error %s: %s", ELEKTRA_ERROR_CLI, reason);                                                               \
+		elektraSetErrorCLI (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), reason);         \
+	} while (0)
+#define ELEKTRA_SET_CLI_ERRORF(key, reason, ...)                                                                                           \
+	do                                                                                                                                 \
+	{                                                                                                                                  \
+		ELEKTRA_LOG ("Add Error %s: " reason, ELEKTRA_ERROR_CLI, __VA_ARGS__);                                                     \
+		elektraSetErrorCLI (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), reason,          \
+				    __VA_ARGS__);                                                                                          \
+	} while (0)
+#define ELEKTRA_ADD_CLI_WARNING(key, reason)                                                                                               \
+	do                                                                                                                                 \
+	{                                                                                                                                  \
+		ELEKTRA_LOG ("Add Warning %s: %s", ELEKTRA_WARNING_CLI, reason);                                                           \
+		elektraAddWarningCLI (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), reason);       \
+	} while (0)
+#define ELEKTRA_ADD_CLI_WARNINGF(key, reason, ...)                                                                                         \
+	do                                                                                                                                 \
+	{                                                                                                                                  \
+		ELEKTRA_LOG ("Add Warning %s: " reason, ELEKTRA_WARNING_CLI, __VA_ARGS__);                                                 \
+		elektraAddWarningCLI (key, __FILE__, ELEKTRA_STRINGIFY (__LINE__), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME), reason,        \
+				      __VA_ARGS__);                                                                                        \
+	} while (0)
+
 #define DECLARE_ERROR_CODE(cname)                                                                                                          \
 	extern const char * const ELEKTRA_ERROR_##cname;                                                                                   \
 	extern const char * const ELEKTRA_WARNING_##cname;                                                                                 \
@@ -282,6 +309,7 @@ DECLARE_ERROR_CODE (PLUGIN_MISBEHAVIOR)
 DECLARE_ERROR_CODE (CONFLICTING_STATE)
 DECLARE_ERROR_CODE (VALIDATION_SYNTACTIC)
 DECLARE_ERROR_CODE (VALIDATION_SEMANTIC)
+DECLARE_ERROR_CODE (CLI)
 
 #undef DECLARE_ERROR_CODE
 

@@ -2,11 +2,10 @@
 
 ## SYNOPSIS
 
-`kdb complete [path]`
+`kdb complete path`
 
 Where `path` is the path for which the user would like to receive completion suggestion.
-If `path` is not specified, it will show every possible completion. It's synonymous
-to calling `kdb complete ""`.
+Calling `kdb complete ""` will show every possible completion.
 
 ## DESCRIPTION
 
@@ -22,11 +21,9 @@ originates from.
 ## OPTIONS
 
 - `-H`, `--help`:
-  Show the man page.
+  Show usage of command.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile <profile>`:
-  Use a different kdb profile.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
 - `-m`, `--min-depth <min-depth>`:
@@ -69,7 +66,7 @@ kdb complete user:/ --max-depth=1
 # STDOUT-REGEX: .+
 
 # list all possible namespaces or mount points, only the current level
-kdb complete --max-depth=1
+kdb complete "" --max-depth=1
 # STDOUT-REGEX: .+
 
 # list suggestions for /tests/complete/examples/kdb-complete, only the current level

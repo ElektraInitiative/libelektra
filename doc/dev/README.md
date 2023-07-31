@@ -26,5 +26,6 @@ It complements the man pages found [here](/doc/help).
 ## Internals
 
 - [Algorithm](algorithm.md)
+- [Add C command to KDB](kdb-add-new-command.md)
 - [Plugins Ordering](plugins-ordering.md)
 - [KDB Operations](kdb-operations.md)

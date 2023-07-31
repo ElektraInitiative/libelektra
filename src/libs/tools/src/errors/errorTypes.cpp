@@ -130,6 +130,18 @@ bool ValidationSemanticError::compare (const BaseNotification & other) const
 		return Error::compare (other);
 }
 
+std::string CliError::code () const
+{
+	return ELEKTRA_ERROR_CLI;
+}
+bool CliError::compare (const BaseNotification & other) const
+{
+	if (!(dynamic_cast<const CliError *> (&other)))
+		return false;
+	else
+		return Error::compare (other);
+}
+
 } // namespace errors
 } // namespace tools
 } // namespace kdb

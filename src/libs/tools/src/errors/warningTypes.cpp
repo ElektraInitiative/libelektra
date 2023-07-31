@@ -159,6 +159,22 @@ ValidationSemanticWarning * ValidationSemanticWarning::clone () const
 	return new ValidationSemanticWarning (*this);
 }
 
+std::string CliWarning::code () const
+{
+	return ELEKTRA_WARNING_VALIDATION_SYNTACTIC;
+}
+bool CliWarning::compare (const BaseNotification & other) const
+{
+	if (!(dynamic_cast<const CliWarning *> (&other)))
+		return false;
+	else
+		return Warning::compare (other);
+}
+CliWarning * CliWarning::clone () const
+{
+	return new CliWarning (*this);
+}
+
 
 } // namespace errors
 } // namespace tools

@@ -2,12 +2,11 @@
 
 ## SYNOPSIS
 
-`kdb record-undo [<parent_key>]`<br>
+`kdb record-undo`<br>
 
 ## DESCRIPTION
 
 This command will undo all the changes that have been recorded.
-The optional parameter `parent_key` can be used to restrict the undo operation to a specific subtree of the KDB.
 After execution, the recording session will no longer contain the undone keys.
 
 ## OPTIONS
@@ -16,8 +15,8 @@ After execution, the recording session will no longer contain the undone keys.
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile <profile>`:
-  Use a different kdb profile.
+- `-P`, `--parent <key>`:
+  Restrict the undo operation to a specific subtree of the KDB.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
 - `-v`, `--verbose`:

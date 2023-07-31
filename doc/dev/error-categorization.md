@@ -161,6 +161,16 @@ the values (`enum` plugin), etc.
 Users should try a different value or fix the underlying specification and retry
 again.
 
+#### CLI ("C03300", concrete)
+
+Command Line Interface (CLI) Errors are errors that occur due to problematic interactions with the application via the command line.
+These types of errors typically involve an issue with the user's input or a misunderstanding of the application's expected command structure and specifications.
+
+The primary focus of this category is on correctly executing command line instructions and ensuring communication between the user and the application is as intended.
+CLI errors can occur when users attempt to execute commands that do not align with the application's requirements, despite the command's syntactical correctness.
+
+By correctly categorizing and handling CLI errors, developers can improve the application's usability and robustness, ensuring accurate responses to user commands and better overall command line experience.
+
 ## Underlying design decision document
 
 - [Decision Document](../decisions/6_implemented/error_codes.md) The underlying design

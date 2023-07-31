@@ -25,7 +25,6 @@
 // TODO: to add a new command, 1.) include your header here
 #include <basename.hpp>
 #include <cache.hpp>
-#include <cmerge.hpp>
 #include <complete.hpp>
 #include <convert.hpp>
 #include <cp.hpp>
@@ -35,7 +34,6 @@
 #include <file.hpp>
 #include <find.hpp>
 #include <gen.hpp>
-#include <get.hpp>
 #include <import.hpp>
 #include <listcommands.hpp>
 #include <ls.hpp>
@@ -55,13 +53,10 @@
 #include <recordexport.hpp>
 #include <recordreset.hpp>
 #include <recordrm.hpp>
-#include <recordstart.hpp>
 #include <recordstate.hpp>
 #include <recordstop.hpp>
-#include <recordundo.hpp>
 #include <remount.hpp>
 #include <rm.hpp>
-#include <set.hpp>
 #include <sget.hpp>
 #include <shell.hpp>
 #include <showmeta.hpp>
@@ -96,8 +91,6 @@ public:
 	Factory () : m_factory ()
 	{
 		// TODO: to add a new command, 2.) add a line here  -> and you are done
-		m_factory.insert (std::make_pair ("get", std::make_shared<Cnstancer<GetCommand>> ()));
-		m_factory.insert (std::make_pair ("set", std::make_shared<Cnstancer<SetCommand>> ()));
 		m_factory.insert (std::make_pair ("rm", std::make_shared<Cnstancer<RemoveCommand>> ()));
 		m_factory.insert (std::make_pair ("ls", std::make_shared<Cnstancer<LsCommand>> ()));
 		m_factory.insert (std::make_pair ("cache", std::make_shared<Cnstancer<CacheCommand>> ()));
@@ -124,7 +117,6 @@ public:
 		m_factory.insert (std::make_pair ("file", std::make_shared<Cnstancer<FileCommand>> ()));
 		m_factory.insert (std::make_pair ("sget", std::make_shared<Cnstancer<ShellGetCommand>> ()));
 		m_factory.insert (std::make_pair ("merge", std::make_shared<Cnstancer<MergeCommand>> ()));
-		m_factory.insert (std::make_pair ("cmerge", std::make_shared<Cnstancer<CMergeCommand>> ()));
 		m_factory.insert (std::make_pair ("plugin-list", std::make_shared<Cnstancer<PluginListCommand>> ()));
 		m_factory.insert (std::make_pair ("editor", std::make_shared<Cnstancer<EditorCommand>> ()));
 		m_factory.insert (std::make_pair ("spec-mount", std::make_shared<Cnstancer<SpecMountCommand>> ()));
@@ -137,10 +129,8 @@ public:
 		m_factory.insert (std::make_pair ("record-reset", std::make_shared<Cnstancer<RecordResetCommand>> ()));
 		m_factory.insert (std::make_pair ("record-export", std::make_shared<Cnstancer<RecordExportCommand>> ()));
 		m_factory.insert (std::make_pair ("record-rm", std::make_shared<Cnstancer<RecordRemoveKeyCommand>> ()));
-		m_factory.insert (std::make_pair ("record-start", std::make_shared<Cnstancer<RecordStartCommand>> ()));
 		m_factory.insert (std::make_pair ("record-state", std::make_shared<Cnstancer<RecordStateCommand>> ()));
 		m_factory.insert (std::make_pair ("record-stop", std::make_shared<Cnstancer<RecordStopCommand>> ()));
-		m_factory.insert (std::make_pair ("record-undo", std::make_shared<Cnstancer<RecordUndoCommand>> ()));
 	}
 
 	std::vector<std::string> getPrettyCommands () const

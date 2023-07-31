@@ -33,11 +33,9 @@ This command will return the following values as an exit status:
 ## OPTIONS
 
 - `-H`, `--help`:
-  Show the man page.
+  Show usage of command.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile <profile>`:
-  Use a different kdb profile.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
 - `-a`, `--all`:
@@ -81,9 +79,9 @@ kdb get -n /tests/get/examples/kdb-get/key
 kdb get -v /tests/get/examples/kdb-get/key
 #> got 3 keys
 #> searching spec:/tests/get/examples/kdb-get/key, found: <nothing>, options: KDB_O_CALLBACK
-#>     searching proc:/tests/get/examples/kdb-get/key, found: <nothing>
-#>     searching dir:/tests/get/examples/kdb-get/key, found: <nothing>
-#>     searching user:/tests/get/examples/kdb-get/key, found: user:/tests/get/examples/kdb-get/key
+#>     searching proc:/tests/get/examples/kdb-get/key, found: <nothing>, options: KDB_O_CALLBACK
+#>     searching dir:/tests/get/examples/kdb-get/key, found: <nothing>, options: KDB_O_CALLBACK
+#>     searching user:/tests/get/examples/kdb-get/key, found: user:/tests/get/examples/kdb-get/key, options: KDB_O_CALLBACK
 #> The resulting keyname is user:/tests/get/examples/kdb-get/key
 #> The resulting value size is 6
 #> myKey

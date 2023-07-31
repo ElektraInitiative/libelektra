@@ -76,7 +76,7 @@ else
 		echo "Could not mount file $their. Got code $?" >&2
 		exit 34
 	fi
-	"$kdbBinary" cmerge -f "$our" $tempPath "$base" "$our" "$format"
+	"$kdbBinary" merge -f "$our" $tempPath "$base" "$our" "$format"
 	if ! [ $? -eq 0 ]; then
 		echo "Merging $our, $tempPath and $base into $our failed." >&2
 		exit 35

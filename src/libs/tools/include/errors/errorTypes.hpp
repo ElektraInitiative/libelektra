@@ -120,6 +120,16 @@ private:
 	bool compare (const BaseNotification & other) const final;
 };
 
+class CliError : public Error
+{
+public:
+	using Error::Error;
+	std::string code () const override;
+
+private:
+	bool compare (const BaseNotification & other) const final;
+};
+
 } // namespace errors
 } // namespace tools
 } // namespace kdb

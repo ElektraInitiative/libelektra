@@ -12,6 +12,7 @@ Read this first to get the basic concepts of Elektra.
 - [Cascading](cascading.md)
 - [Arrays](arrays.md)
 - [Mount Configuration Files](mount.md)
+- [External KDB commands](external-commands.md)
 
 ## Developers
 
@@ -47,8 +48,7 @@ already somehow integrated with Elektra.
 - [Export Configuration](export.md)
 - [Intercept Environment](/src/bindings/intercept/env/README.md)
 - [Intercept File System](/src/bindings/intercept/fs/README.md)
-- [Merge Configuration](cmerge.md) (new version)
-- [Merge Configuration](merge.md) (deprecated)
+- [Merge Configuration](merge.md) (new version)
 - [Validate Configuration](validation.md)
 - [Encrypt Configuration](crypto.md)
 - [Install Configuration Files](install-config-files.md)

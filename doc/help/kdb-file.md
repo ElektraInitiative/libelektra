@@ -16,11 +16,9 @@ This command makes use of Elektra’s `resolver` plugin which the uer can learn 
 ## OPTIONS
 
 - `-H`, `--help`:
-  Show the man page.
+  Show usage of command.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile <profile>`:
-  Use a different kdb profile.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
 - `-n`, `--no-newline`:

@@ -1816,39 +1816,41 @@ void setOption (Key * option, const char * value, bool repeated)
 int writeOptions (Key * command, Key * commandKey, Key * commandArgs, bool writeArgs, bool * argsWritten, KeySet * options,
 		  struct Specification * spec, KeySet * ks, const char * progname, const char ** envp, Key * parentKey)
 {
-	// Check if help message should be generated
+	// Check if --help was used
 	Key * helpKey = keyNew (keyName (command), KEY_END);
 	keyAddName (helpKey, "/long/help");
 
+	char * lastSlash = strrchr (progname, '/');
+	if (lastSlash != NULL)
+	{
+		progname = lastSlash + 1;
+	}
+
 	// Generate help message
+	char * usage = generateUsageLine (progname, ksLookup (spec->commands, command, 0), commandArgs);
+	char * optionsText = generateOptionsList (spec->keys, command);
+	char * commandsText = generateCommandsList (spec->keys, commandKey);
+	char * argsText = generateArgsList (spec->keys, command);
+	char * envsText = generateEnvsList (spec->keys);
+
+	keySetMeta (parentKey, "internal/libopts/help/usage", usage);
+	keySetMeta (parentKey, "internal/libopts/help/options", optionsText);
+	keySetMeta (parentKey, "internal/libopts/help/commands", commandsText);
+	keySetMeta (parentKey, "internal/libopts/help/args", argsText);
+	keySetMeta (parentKey, "internal/libopts/help/envs", envsText);
+
+	elektraFree (usage);
+	elektraFree (optionsText);
+	elektraFree (commandsText);
+	elektraFree (argsText);
+	elektraFree (envsText);
+
+	// --help was used
 	if (ksLookup (options, helpKey, KDB_O_DEL) != NULL)
 	{
-		char * lastSlash = strrchr (progname, '/');
-		if (lastSlash != NULL)
-		{
-			progname = lastSlash + 1;
-		}
-
-		char * usage = generateUsageLine (progname, ksLookup (spec->commands, command, 0), commandArgs);
-		char * optionsText = generateOptionsList (spec->keys, command);
-		char * commandsText = generateCommandsList (spec->keys, commandKey);
-		char * argsText = generateArgsList (spec->keys, command);
-		char * envsText = generateEnvsList (spec->keys);
-
-		keySetMeta (parentKey, "internal/libopts/help/usage", usage);
-		keySetMeta (parentKey, "internal/libopts/help/options", optionsText);
-		keySetMeta (parentKey, "internal/libopts/help/commands", commandsText);
-		keySetMeta (parentKey, "internal/libopts/help/args", argsText);
-		keySetMeta (parentKey, "internal/libopts/help/envs", envsText);
-
-		elektraFree (usage);
-		elektraFree (optionsText);
-		elektraFree (commandsText);
-		elektraFree (argsText);
-		elektraFree (envsText);
 		return 1;
 	}
-	else // Don't generate help message
+	else
 	{
 		KeySet * envValues = parseEnvp (envp);
 

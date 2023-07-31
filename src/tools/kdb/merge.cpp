@@ -6,23 +6,16 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <merge.hpp>
-
+#include "merge.hpp"
+#include "kdbmacros.h"
+#include "kdbmerge.h"
+#include "keyset.hpp"
 #include <cmdline.hpp>
-#include <kdb.hpp>
-#include <keysetio.hpp>
-#include <modules.hpp>
-
 #include <iostream>
+#include <keysetio.hpp>
 #include <string>
 
-#include <mergehelper.hpp>
-#include <merging/metamergestrategy.hpp>
-#include <merging/threewaymerge.hpp>
-
-using namespace kdb;
-using namespace kdb::tools::merging;
-using namespace std;
+using ckdb::keyNew;
 
 MergeCommand::MergeCommand ()
 {
@@ -32,49 +25,72 @@ MergeCommand::~MergeCommand ()
 {
 }
 
-int MergeCommand::execute (Cmdline const & cl)
+int MergeCommand::execute (Cmdline const & cl ELEKTRA_UNUSED)
 {
-
 	if (cl.arguments.size () < 4)
 	{
-		throw invalid_argument ("wrong number of arguments, 4 needed");
+		throw invalid_argument ("Wrong number of arguments! At least 4 arguments needed");
+	}
+	kdb::Key oursRoot = cl.createKey (0);
+	kdb::Key theirsRoot = cl.createKey (1);
+	kdb::Key baseRoot = cl.createKey (2);
+	kdb::Key resultRoot = cl.createKey (3);
+	ckdb::MergeStrategy strategy = ckdb::MERGE_STRATEGY_ABORT;
+	if (cl.strategy == "preserve")
+	{
+		/** This is here for compatibility. The old merge has preserve as default as defined in cmdline.cpp.
+		 *  As cmerge uses the existing functionality it is still default, even though it does not exist in cmerge.
+		 *  Default in new merge is abort.
+		 *
+		 *  This will be obsolete as soon as cmerge supersedes the old merge.
+		 */
+		strategy = ckdb::MERGE_STRATEGY_ABORT;
+	}
+	else if (cl.strategy == "abort")
+	{
+		strategy = ckdb::MERGE_STRATEGY_ABORT;
+	}
+	else if (cl.strategy == "our")
+	{
+		strategy = ckdb::MERGE_STRATEGY_OUR;
+	}
+	else if (cl.strategy == "their")
+	{
+		strategy = ckdb::MERGE_STRATEGY_THEIR;
+	}
+	else
+	{
+		throw invalid_argument ("'" + cl.strategy + "' is not a valid strategy. Valid strategies are: abort, our, their");
 	}
 
-	Key oursRoot = cl.createKey (0);
-	Key theirsRoot = cl.createKey (1);
-	Key baseRoot = cl.createKey (2);
-	Key resultRoot = cl.createKey (3);
-
-	KeySet ours;
-	KeySet theirs;
-	KeySet base;
+	kdb::KeySet ours;
+	kdb::KeySet theirs;
+	kdb::KeySet base;
 
 	{
-		KDB lkdb;
+		kdb::KDB lkdb;
 		lkdb.get (ours, oursRoot);
 		ours = ours.cut (oursRoot);
-		ours.lookup (oursRoot, KDB_O_POP);
-		if (cl.verbose) std::cout << "we got ours: " << oursRoot << " with keys " << ours << std::endl;
+		ours.lookup (oursRoot, 0);
+		if (cl.verbose) std::cout << "we got ours: " << oursRoot << " with keys\n" << ours << std::endl;
 	}
 	{
-		KDB lkdb;
+		kdb::KDB lkdb;
 		lkdb.get (theirs, theirsRoot);
 		theirs = theirs.cut (theirsRoot);
-		ours.lookup (oursRoot, KDB_O_POP);
-		if (cl.verbose) std::cout << "we got theirs: " << theirsRoot << " with keys " << theirs << std::endl;
+		ours.lookup (oursRoot, 0);
+		if (cl.verbose) std::cout << "we got theirs: " << theirsRoot << " with keys\n" << theirs << std::endl;
 	}
 	{
-		KDB lkdb;
+		kdb::KDB lkdb;
 		lkdb.get (base, baseRoot);
 		base = base.cut (baseRoot);
-		ours.lookup (oursRoot, KDB_O_POP);
-		if (cl.verbose) std::cout << "we got base: " << baseRoot << " with keys " << base << std::endl;
+		ours.lookup (oursRoot, 0);
+		if (cl.verbose) std::cout << "we got base: " << baseRoot << " with keys\n" << base << std::endl;
 	}
-
-	KeySet resultKeys;
-	kdb.get (resultKeys, resultRoot);
-
-	KeySet discard = resultKeys.cut (resultRoot);
+	kdb::KeySet keysAtResultRoot;
+	kdb.get (keysAtResultRoot, resultRoot);
+	kdb::KeySet discard = keysAtResultRoot.cut (resultRoot);
 	if (discard.size () != 0)
 	{
 		if (cl.force)
@@ -86,31 +102,39 @@ int MergeCommand::execute (Cmdline const & cl)
 		}
 		else
 		{
-			std::cerr << discard.size () << " keys exist in merge resultpath, will quit. Use -f to override the keys there."
-				  << std::endl;
+			throw CommandAbortException ("There are keys in the result path. Use -f to override them.");
 		}
 	}
-
-	MergeHelper helper;
-	ThreeWayMerge merger;
-
-	helper.configureMerger (cl, merger);
-
-	MergeResult result = merger.mergeKeySet (
-		MergeTask (BaseMergeKeys (base, baseRoot), OurMergeKeys (ours, oursRoot), TheirMergeKeys (theirs, theirsRoot), resultRoot));
-
-	helper.reportResult (cl, result, cout, cerr);
-
-	int ret = 0;
-	if (!result.hasConflicts ())
+	ckdb::KeySet * c_ours = ours.getKeySet ();
+	ckdb::KeySet * c_theirs = theirs.getKeySet ();
+	ckdb::KeySet * c_base = base.getKeySet ();
+	ckdb::Key * informationKey = keyNew ("/", KEY_END);
+	ckdb::KeySet * c_merge_result = elektraMerge (c_ours, oursRoot.getKey (), c_theirs, theirsRoot.getKey (), c_base,
+						      baseRoot.getKey (), resultRoot.getKey (), strategy, informationKey);
+	int numberOfConflicts = elektraMergeGetConflicts (informationKey);
+	ckdb::keyDel (informationKey);
+	if (c_merge_result != NULL)
 	{
-		resultKeys.append (result.getMergedKeys ());
-		kdb.set (resultKeys, resultRoot);
+		kdb::KeySet merge_result = c_merge_result;
+		if (keysAtResultRoot.append (merge_result) < 0)
+		{
+			return 11;
+		}
+		if (kdb.set (keysAtResultRoot, resultRoot) < 0)
+		{
+			return 11;
+		}
+		return 0;
 	}
 	else
 	{
-		ret = 11;
+		if (numberOfConflicts > 0 && strategy == ckdb::MERGE_STRATEGY_ABORT)
+		{
+			return 12;
+		}
+		else
+		{
+			return 11;
+		}
 	}
-
-	return ret;
 }

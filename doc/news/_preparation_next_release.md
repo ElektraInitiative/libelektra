@@ -117,6 +117,10 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 ### jdbc
 
 - Fix formatting/spelling problem in README.md _(Hannes Laimer @hannes99)_
+
+### opts
+
+- Always generate help message even if `--help` is not used, so it can be used more freely. _(Hannes Laimer @hannes99)_
 - <<TODO>>
 - <<TODO>>
 
@@ -255,6 +259,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 - The `dup` method of `Key` now returns a wrapped object _(Maximilian Irlinger @atmaxinger)_
 - Add overloads for `Key::isBelow`, `Key::isBelowOrSame` and `Key::isDirectBelow` that accept a string as the key name _(Maximilian Irlinger @atmaxinger)_
 - Include the header `cstdint` in `key.hpp`. It is needed for an enum of type `std::uint8_t` _(Florian Lindner @flo91)_
+- Add overloads for `Key::isBelow`, `Key::isBelowOrSame` and `Key::isDirectBelow` that accept a string as the key name _(Maximilian Irlinger
+  @atmaxinger)_
 
 ### Java
 
@@ -295,11 +301,22 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ## Tools
 
-### <<Tool>>
+### KDB
 
+- add basic C framework, helper functions and new `get` implementation _(@hannes99)_
+  - Logging levels and error/warning outputs are now handled by the new CLI framework, and not by commands individually.
+  - Using `opts` for command spec allows automatic generation of help messages and handles all the parsing.
+  - The `--help` flag will now show a description of how to use the command, instead of opening the man page.
+  - Not providing the correct options or arguments the commands expect will now result in a short error message describing what is wrong, this is generated my `opts`.
+  - `--profile` is not yet supported in the new `C` version (#4965), other that everything that worked in `C++` still works
 - <<TODO>>
+- add spec for C++ commands _(@hannes99)_
+  - Add specification for commands written in `C++`, this enables `opts` to generate the usage message and makes sure all commands(regardless of their implementation) have the same help message format and generally behave the same.
+  - _NOTE_: The `path` argument for `kdb complete` is now required, so instead of `kdb complete` `kdb complete ""` has to be used. The reason for this is described in issue #4952.
 - <<TODO>>
-- <<TODO>>
+- add support for external commands, with and without spec _(@hannes99)_
+  - It is still possible to execute external binaries that are placed in a specific director, same as it worked in the old implementation.
+  - It is now possible to provide a specification to external commands to `kdb`, so `kdb` checks/parses arguments and then calls the external program with them. [Add external command](../tutorials/external-commands.md)
 
 ### kdb
 
