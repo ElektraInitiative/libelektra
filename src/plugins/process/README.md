@@ -5,7 +5,7 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-- infos/status = maintained unittest shelltest
+- infos/status = maintained unittest shelltest nodep configurable
 - infos/metadata =
 - infos/description = one-line description of process
 

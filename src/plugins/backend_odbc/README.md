@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = backend
-- infos/status = experimental reviewed
+- infos/status = reviewed unittest experimental
 - infos/description = Plugin implementing full backend functionality for ODBC data sources
 
 ## Introduction

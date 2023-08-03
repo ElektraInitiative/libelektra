@@ -5,7 +5,7 @@
 - infos/provides = storage/mmapstorage
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = experimental
+- infos/status = unittest experimental
 - infos/metadata =
 - infos/description = high performance storage using memory mapped files
 

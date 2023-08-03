@@ -5,7 +5,7 @@
 - infos/provides = check
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-- infos/status = maintained nodep
+- infos/status = maintained unittest nodep
 - infos/metadata = check/macaddr
 - infos/description = Validates MAC-addresses and returns them as integers
 

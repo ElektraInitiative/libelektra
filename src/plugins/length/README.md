@@ -6,7 +6,7 @@
 - infos/provides = check
 - infos/recommends =
 - infos/placements = presetstorage postgetstorage
-- infos/status = experimental unittest nodep
+- infos/status = unittest nodep
 - infos/metadata = check/length/max
 - infos/description = validates if input is less or equal to length and throws error otherwise
 

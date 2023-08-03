@@ -4,7 +4,7 @@
 - infos/provides = resolver
 - infos/needs =
 - infos/placements = rollback getresolver setresolver
-- infos/status = recommended maintained nodep configurable unfinished nodoc
+- infos/status = recommended maintained nodep unfinished nodoc
 - infos/description = Returns success on every call and can be used as resolver.
 
 ## Introduction

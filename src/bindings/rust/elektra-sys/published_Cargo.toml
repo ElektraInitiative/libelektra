@@ -1,6 +1,6 @@
 [package]
 name = "elektra-sys"
-version = "0.9.10"
+version = "0.11.0"
 authors = ["PhilippGackstatter <philipp.gackstatter@student.tuwien.ac.at>"]
 edition = "2018"
 build = "build.rs"
@@ -16,5 +16,5 @@ default = []
 [dependencies]
 
 [build-dependencies]
-bindgen = "0.50.0"
+bindgen = "0.55.1"
 pkg-config = { version = "0.3.16", optional = true }

@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides = check apply
 - infos/placements = hook
-- infos/status = recommended productive nodep configurable global
+- infos/status = recommended productive unittest nodep global
 - infos/description = allows to give specifications for keys
 
 ## Introduction

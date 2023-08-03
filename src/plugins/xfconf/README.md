@@ -5,7 +5,7 @@
 - infos/provides = storage/xml
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = maintained libc configurable experimental unfinished concept limited memleak
+- infos/status = maintained unittest libc configurable memleak experimental limited unfinished concept
 - infos/metadata =
 - infos/description = storage plugin for xfconf
 
