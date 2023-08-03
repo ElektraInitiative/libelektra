@@ -1,6 +1,6 @@
 [package]
 name = "elektra"
-version = "0.9.10"
+version = "0.10.0"
 authors = ["PhilippGackstatter <philipp.gackstatter@student.tuwien.ac.at>"]
 edition = "2018"
 description = "Elektra serves as a universal and secure framework to access configuration parameters in a global, hierarchical key database."
