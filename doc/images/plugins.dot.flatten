@@ -1,9 +1,13 @@
 strict digraph G {
 	graph [splines=true];
 	storage	[shape=Mdiamond];
+	ansible	[shape=Mdiamond];
+	ansible -> storage;
+	ansible -> ansible;
 	augeas -> storage;
 	backend	[shape=Mdiamond];
 	backend -> backend;
+	backend_odbc -> backend;
 	binary	[shape=Mdiamond];
 	base64 -> binary;
 	check	[shape=Mdiamond];
@@ -119,6 +123,7 @@ strict digraph G {
 	quickdump -> storage;
 	quickdump -> quickdump;
 	range	[shape=Mdiamond];
+	recorder	[shape=Mdiamond];
 	reference	[shape=Mdiamond];
 	filter	[shape=Mdiamond];
 	rename -> filter;
@@ -150,9 +155,8 @@ strict digraph G {
 	xerces -> storage;
 	xml	[shape=Mdiamond];
 	xerces -> xml;
-	xfconf	[shape=Mdiamond];
 	xfconf -> storage;
-	xfconf -> xfconf;
+	xfconf -> xml;
 	xmltool -> storage;
 	xmltool -> xml;
 	yajl -> storage;
