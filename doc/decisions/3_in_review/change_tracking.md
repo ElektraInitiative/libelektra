@@ -81,7 +81,7 @@ A problem with this approach is that the internally stored keys are recreated as
 ### Combine with internal cache
 
 We already decided that we want to have an internal deep-duped keyset of all the keys we returned.
-See [internal cache decision](../4_decided/internal_cache.md).
+See [internal cache decision](../6_implemented/internal_cache.md).
 
 The difference to `backendData->keys` is that this cache is not recreated each time `kdbGet` is called.
 
@@ -175,7 +175,7 @@ The changetracking plugin needs to export at least functions for the following t
 ## Decision
 
 Plugin and application developers can declare that changetracking is required via a contract.
-Store deep-duped copy-on-write returned keys in a separate keyset, which we might also use as [internal cache](../4_decided/internal_cache.md).
+Store deep-duped copy-on-write returned keys in a separate keyset, which we might also use as [internal cache](../6_implemented/internal_cache.md).
 The whole changetracking logic lives within `libelektra-kdb`.
 We provide an API for developers with `libelektra-kdb`.
 

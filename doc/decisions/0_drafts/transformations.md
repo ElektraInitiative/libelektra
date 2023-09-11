@@ -179,7 +179,7 @@ A drawback to this solution is that it adds some complexity to `libelektra-core`
 - [Hooks](../5_partially_implemented/hooks.md)
 - [Change Tracking](../3_in_review/change_tracking.md)
 - [Operation Sequences](../0_drafts/operation_sequences.md)
-- [Internal Cache](../4_decided/internal_cache.md)
+- [Internal Cache](../6_implemented/internal_cache.md)
 
 ## Notes
 
