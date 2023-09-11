@@ -92,7 +92,7 @@ The function pointers are all listed in `system:/elektra/modules/<plugin>/export
 
 ## Related Decisions
 
-- [Commit Function](commit_function.md)
+- [Commit Function](../2_solutions_clear/commit_function.md)
 - [Plugin Struct](../0a_postponed/plugin_struct.md)
 
 ## Notes
