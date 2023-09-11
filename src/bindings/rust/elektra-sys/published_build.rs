@@ -22,8 +22,8 @@ fn main() {
         // bindings for.
         .header("wrapper.h")
         // Include only the necessary functions and enums
-        .whitelist_function("(key|ks|kdb).*")
-        .whitelist_var("(KEY|KDB).*")
+        .allowlist_function("(key|ks|kdb).*")
+        .allowlist_var("(KEY|KDB).*")
         // bindgen uses clang for anything C-related.
         // Here we set the necessary include directories
         // such that any includes in the wrapper can be found.
